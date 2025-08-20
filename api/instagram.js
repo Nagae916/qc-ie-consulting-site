@@ -7,7 +7,7 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Missing IG env vars' });
     }
 
-    // children まで一括取得（複数枚投稿対応）
+    // 子メディアも取得（複数枚投稿や動画のサムネイル対応）
     const fields = [
       'id',
       'media_type',
@@ -29,7 +29,7 @@ export default async function handler(req, res) {
       return res.status(r.status).json({ error: 'IG error', detail: json });
     }
 
-    // どの投稿でも imgSrc を決めて返す（CAROUSEL/VIDEO対策）
+    // どの投稿タイプでも表示用の imgSrc を決めて返す
     const normalized = (json.data ?? []).map((p) => {
       let img =
         p.media_type === 'IMAGE'
@@ -37,9 +37,8 @@ export default async function handler(req, res) {
           : p.media_type === 'VIDEO'
           ? p.thumbnail_url || p.media_url
           : p.media_type === 'CAROUSEL_ALBUM'
-          ? // 子の最初の画像/サムネを採用
-            (p.children?.data?.[0]?.media_url ||
-              p.children?.data?.[0]?.thumbnail_url)
+          ? (p.children?.data?.[0]?.media_url ||
+             p.children?.data?.[0]?.thumbnail_url)
           : null;
 
       return {
@@ -47,11 +46,12 @@ export default async function handler(req, res) {
         permalink: p.permalink,
         caption: p.caption,
         timestamp: p.timestamp,
-        imgSrc: img, // ←フロントはこれだけ見ればOK
+        imgSrc: img,
       };
     });
 
-    res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=86400'); // 5分キャッシュ
+    // 5分キャッシュ
+    res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=86400');
     return res.status(200).json(normalized);
   } catch (e) {
     return res.status(500).json({ error: 'Server error', detail: e?.message });
