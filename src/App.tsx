@@ -1,4 +1,5 @@
 // src/App.tsx
+import StudyGuide from "./components/StudyGuide";
 import NewsFeed from "./components/NewsFeed";
 import NoteFeed from "./components/NoteFeed";
 import XTimeline from "./components/XTimeline";
