@@ -2,6 +2,7 @@ import NewsFeed from "./components/NewsFeed";
 import BlogList from "./components/BlogList";
 import XTimeline from "./components/XTimeline";
 import InstagramFeed from "./components/InstagramFeed";
+import NoteFeed from "./components/NoteFeed";
 
 export default function App() {
   return (
@@ -71,9 +72,6 @@ export default function App() {
           <BlogList />
         </div>
       </section>
-
-// 例: src/App.tsx のSNSセクションの直前などに
-import NoteFeed from "./components/NoteFeed";
 
 <section id="note" className="mt-12">
   <NoteFeed limit={6} />
