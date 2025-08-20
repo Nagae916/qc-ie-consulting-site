@@ -1,8 +1,8 @@
+// src/App.tsx
 import NewsFeed from "./components/NewsFeed";
-import BlogList from "./components/BlogList";
+import NoteFeed from "./components/NoteFeed";
 import XTimeline from "./components/XTimeline";
 import InstagramFeed from "./components/InstagramFeed";
-import NoteFeed from "./components/NoteFeed";
 
 export default function App() {
   return (
@@ -65,18 +65,14 @@ export default function App() {
         </div>
       </section>
 
-      {/* ニュース & ブログ */}
+      {/* 情報：ニュース＋note（横並び2カラム） */}
       <section id="info" className="mt-12">
         <div className="grid md:grid-cols-2 gap-6">
           <NewsFeed limit={8} />
-          <BlogList />
+          <NoteFeed limit={6} />
         </div>
       </section>
 
-<section id="note" className="mt-12">
-  <NoteFeed limit={6} />
-</section>
-      
       {/* SNS */}
       <section id="sns" className="mt-12">
         <h2 className="text-2xl font-bold text-brand-900 mb-4">SNS</h2>
