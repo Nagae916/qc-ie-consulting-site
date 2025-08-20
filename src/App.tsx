@@ -32,7 +32,7 @@ function useHashRouter(): [RouteState] {
 
 /** =========================
  * 学習ガイドのレジストリ
- * ここに追加して“ストック”できます
+ * （ここに追記してストック）
  * ========================= */
 type GuideMeta = {
   id: string;
@@ -46,12 +46,14 @@ type GuideMeta = {
 function StudyGuide_RegressionAnova() {
   const [goal, setGoal] = useState<"" | "predict" | "compare">("");
   const [groups, setGroups] = useState<"" | "2" | "3+">("");
+
   const active = useMemo(() => {
     if (!goal) return "default";
     if (goal === "predict") return "regression";
     if (goal === "compare") return groups === "2" ? "ttest" : groups === "3+" ? "anova" : "default";
     return "default";
   }, [goal, groups]);
+
   const [open, setOpen] = useState<Record<string, boolean>>({});
 
   return (
@@ -63,6 +65,7 @@ function StudyGuide_RegressionAnova() {
         </p>
       </div>
 
+      {/* ナビゲーター */}
       <div className="bg-white rounded-xl2 border border-brand-200 shadow-soft p-6">
         <h3 className="text-xl font-semibold text-brand-900 text-center mb-6">統計手法ナビゲーター</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -97,7 +100,8 @@ function StudyGuide_RegressionAnova() {
           </div>
         </div>
 
-        <div className="mt-2">
+        {/* 結果 */}
+        <div className="mt-2 space-y-3">
           {active === "default" && (
             <p className="text-center text-gray-500">上の質問に答えると、ここに最適な手法が表示されます。</p>
           )}
@@ -122,6 +126,7 @@ function StudyGuide_RegressionAnova() {
         </div>
       </div>
 
+      {/* 用語 */}
       <div className="mt-10">
         <h4 className="text-xl font-semibold text-brand-900 text-center mb-6">重要用語リスト</h4>
         <div className="max-w-3xl mx-auto space-y-4">
@@ -139,28 +144,22 @@ function StudyGuide_RegressionAnova() {
         </div>
       </div>
 
+      {/* 確認質問 */}
       <div className="mt-10">
         <h4 className="text-xl font-semibold text-brand-900 text-center mb-6">キー質問で理解度チェック</h4>
         <div className="max-w-3xl mx-auto space-y-6">
-          {[
-            {
-              id: "q1",
-              q: "Q1: 気温とアイスの売上の関係をモデル化し、将来の売上を予測したい手法は？",
-              a: "回帰分析。気温を説明変数、売上を目的変数として関係式を構築します。",
-            },
-            {
-              id: "q2",
-              q: "Q2: 4つの製造方法で生産した部品の平均耐久性に差があるか？",
-              a: "分散分析（ANOVA）。3群以上の平均差の検定に用います。",
-            },
-            {
-              id: "q3",
-              q: "Q3: 回帰・分散分析が因果の証明にならない理由は？",
-              a: "相関・関連を示す手法。因果には統制実験や介入設計（DOE等）が必要。",
-            },
-          ].map((x) => (
-            <ToggleQA key={x.id} q={x.q} a={x.a} />
-          ))}
+          <ToggleQA
+            q="Q1: 気温とアイスの売上の関係をモデル化し、将来の売上を予測したい手法は？"
+            a="回帰分析。気温を説明変数、売上を目的変数として関係式を構築します。"
+          />
+          <ToggleQA
+            q="Q2: 4つの製造方法で生産した部品の平均耐久性に差があるか？"
+            a="分散分析（ANOVA）。3群以上の平均差の検定に用います。"
+          />
+          <ToggleQA
+            q="Q3: 回帰・分散分析が因果の証明にならない理由は？"
+            a="相関・関連を示す手法。因果には統制実験や介入設計（DOE等）が必要。"
+          />
         </div>
       </div>
 
@@ -171,7 +170,7 @@ function StudyGuide_RegressionAnova() {
   );
 }
 
-/* ===== ガイドB：統計手法スタディガイド（t/Z/F/χ²/ANOVA ナビ） ===== */
+/* ===== ガイドB：統計手法スタディガイド（t/Z/F/χ²/ANOVA） ===== */
 function StudyGuide_StatTests() {
   const [goal, setGoal] = useState<"" | "mean" | "variance" | "category">("");
   const [groups, setGroups] = useState<"" | "1" | "2" | "3+">("");
@@ -201,9 +200,7 @@ function StudyGuide_StatTests() {
     <section className="mt-2">
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-brand-900">統計手法スタディガイド</h2>
-        <p className="mt-2 text-gray-700">
-          品質管理やR&Dで頻用する検定を、目的とデータ条件からナビゲート（t / Z / F / χ² / ANOVA）。
-        </p>
+        <p className="mt-2 text-gray-700">品質管理やR&Dで頻用する検定を、目的とデータ条件からナビゲート（t / Z / F / χ² / ANOVA）。</p>
       </div>
 
       <div className="bg-white rounded-xl2 border border-brand-200 shadow-soft p-6">
@@ -255,12 +252,11 @@ function StudyGuide_StatTests() {
           </div>
         </div>
 
-        {/* 結果表示 */}
+        {/* 結果 */}
         <div className="space-y-3">
           {active === "default" && (
             <p className="text-center text-gray-500">上の質問に答えると、ここに最適な手法が表示されます。</p>
           )}
-
           {active === "t" && (
             <ResultCard
               color="emerald"
@@ -269,7 +265,6 @@ function StudyGuide_StatTests() {
               cheat={["目的: 平均の差の検定", "データ: 連続量", "条件: 正規/中心極限定理, 等分散前提など", "応用: 工程前後の平均比較"]}
             />
           )}
-
           {active === "z" && (
             <ResultCard
               color="teal"
@@ -278,7 +273,6 @@ function StudyGuide_StatTests() {
               cheat={["目的: 平均の差の検定（母分散既知）", "データ: 連続量", "条件: 母分散既知/大標本", "応用: 理論教材・基礎理解向け"]}
             />
           )}
-
           {active === "f" && (
             <ResultCard
               color="blue"
@@ -287,7 +281,6 @@ function StudyGuide_StatTests() {
               cheat={["目的: 分散（ばらつき）の比較", "データ: 連続量", "条件: 正規性、独立性", "応用: サプライヤ間のばらつき比較"]}
             />
           )}
-
           {active === "chi" && (
             <ResultCard
               color="purple"
@@ -296,7 +289,6 @@ function StudyGuide_StatTests() {
               cheat={["目的: カテゴリの関連性", "データ: クロス集計（度数）", "条件: 期待度数の下限に注意", "応用: ライン×不良種の関連性"]}
             />
           )}
-
           {active === "chi_var" && (
             <ResultCard
               color="fuchsia"
@@ -305,7 +297,6 @@ function StudyGuide_StatTests() {
               cheat={["目的: 分散が規格と一致か", "データ: 連続量", "条件: 正規性", "応用: 寸法ばらつきが仕様内か"]}
             />
           )}
-
           {active === "anova" && (
             <ResultCard
               color="orange"
@@ -425,7 +416,7 @@ function ResultCard({
 }
 
 /** =========================
- * ガイド登録（ここに増やせばストック化）
+ * ガイド登録（2つ）
  * ========================= */
 const GUIDES: GuideMeta[] = [
   {
@@ -522,6 +513,7 @@ function Home() {
   );
 }
 
+// 学習サポート：下層（ガイド選択）
 function LearningIndex() {
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
@@ -553,23 +545,20 @@ function LearningIndex() {
       </div>
 
       <div className="mt-8">
-        <a href="#/" className="text-brand-800 hover:underline">
-          ← トップへ戻る
-        </a>
+        <a href="#/" className="text-brand-800 hover:underline">← トップへ戻る</a>
       </div>
     </main>
   );
 }
 
+// 個別ガイドページ
 function GuidePage({ id }: { id: string }) {
   const guide = GUIDES.find((g) => g.id === id);
   if (!guide) {
     return (
       <main className="mx-auto max-w-6xl px-4 py-10">
         <p className="text-gray-700">指定されたガイドは見つかりませんでした。</p>
-        <a href="#/learn" className="text-brand-800 hover:underline">
-          ← 学習コンテンツ一覧へ
-        </a>
+        <a href="#/learn" className="text-brand-800 hover:underline">← 学習コンテンツ一覧へ</a>
       </main>
     );
   }
@@ -578,9 +567,7 @@ function GuidePage({ id }: { id: string }) {
     <main className="mx-auto max-w-6xl px-4 py-10">
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-3xl font-bold text-brand-900">{guide.title}</h1>
-        <a href="#/learn" className="text-brand-800 hover:underline">
-          一覧へ戻る
-        </a>
+        <a href="#/learn" className="text-brand-800 hover:underline">一覧へ戻る</a>
       </div>
       <Cmp />
     </main>
