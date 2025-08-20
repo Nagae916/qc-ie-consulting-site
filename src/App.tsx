@@ -72,6 +72,13 @@ export default function App() {
         </div>
       </section>
 
+// 例: src/App.tsx のSNSセクションの直前などに
+import NoteFeed from "./components/NoteFeed";
+
+<section id="note" className="mt-12">
+  <NoteFeed limit={6} />
+</section>
+      
       {/* SNS */}
       <section id="sns" className="mt-12">
         <h2 className="text-2xl font-bold text-brand-900 mb-4">SNS</h2>
