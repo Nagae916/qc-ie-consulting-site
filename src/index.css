@@ -5,3 +5,14 @@
 :root{
   color-scheme: light;
 }
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  @apply bg-brand-50 text-gray-800;
+}
