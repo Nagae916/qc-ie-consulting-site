@@ -1,94 +1,80 @@
-// /components/InstagramFeed.tsx
-import React, { useEffect, useState } from 'react';
+// src/components/InstagramFeed.tsx
+import React, { useEffect, useState } from "react";
 
-type Post = {
+type IgItem = {
   id: string;
-  permalink: string;
   caption?: string;
+  media_type?: string;
   media_url?: string;
   thumbnail_url?: string;
+  permalink?: string;
+  timestamp?: string;
 };
 
-export default function InstagramFeed({ limit = 3 }: { limit?: number }) {
-  const [posts, setPosts] = useState<Post[]>([]);
+type ApiResponse = {
+  data?: IgItem[];
+  error?: string;
+};
+
+const LIMIT = 3;
+
+export default function InstagramFeed() {
+  const [items, setItems] = useState<IgItem[]>([]);
   const [err, setErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let mounted = true;
-    (async () => {
-      setLoading(true);
-      setErr(null);
+    const load = async () => {
       try {
-        const res = await fetch(`/api/instagram?limit=${limit}`, { cache: 'no-store' });
-        const text = await res.text();
-        let json: any;
-        try {
-          json = JSON.parse(text);
-        } catch {
-          throw new Error(`Unexpected token: not JSON -> ${text.slice(0, 120)}`);
-        }
-        if (!res.ok || json.error) {
-          throw new Error(json.error || `HTTP ${res.status}`);
-        }
-        if (mounted) setPosts(json.data);
+        const res = await fetch(`/api/instagram?limit=${LIMIT}`, { cache: "no-store" });
+        const json: ApiResponse = await res.json();
+        if (!res.ok || json.error) throw new Error(json.error || `HTTP ${res.status}`);
+        setItems(json.data || []);
       } catch (e: any) {
-        mounted && setErr(e.message || 'Instagramの取得に失敗しました');
+        setErr(e.message || "Instagramの取得に失敗しました");
       } finally {
-        mounted && setLoading(false);
+        setLoading(false);
       }
-    })();
-    return () => { mounted = false; };
-  }, [limit]);
+    };
+    load();
+  }, []);
 
-  if (loading) {
-    return <div className="rounded-2xl bg-white p-6 shadow-sm">読み込み中…</div>;
-  }
-  if (err) {
-    return (
-      <div className="rounded-2xl bg-white p-6 shadow-sm text-red-600">
-        Instagramの読み込みでエラー: {err}
-      </div>
-    );
-  }
+  if (loading) return <div>読み込み中…</div>;
+  if (err) return <div style={{ color: "#b91c1c" }}>Instagramの読み込みでエラー: {err}</div>;
+  if (!items.length) return <div>表示できる投稿がありません。</div>;
 
   return (
-    <div className="rounded-2xl bg-white p-6 shadow-sm">
-      <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-emerald-900">Instagram 最新投稿</h3>
-        <span className="text-sm text-emerald-700/70">自動更新</span>
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-3">
-        {posts.map((p) => {
-          const img = p.media_url || p.thumbnail_url; // どちらかが入る設計
-          return (
-            <a
-              key={p.id}
-              href={p.permalink}
-              target="_blank"
-              rel="noreferrer"
-              className="group block rounded-2xl border border-emerald-100 bg-emerald-50/40 p-3 transition hover:-translate-y-1 hover:shadow-lg"
-            >
-              <div className="relative overflow-hidden rounded-xl bg-emerald-50">
-                {img ? (
-                  <img
-                    src={img}
-                    alt={p.caption || 'Instagram投稿'}
-                    className="aspect-[1/1] w-full object-cover transition duration-300 group-hover:scale-[1.02]"
-                    loading="lazy"
-                  />
-                ) : (
-                  <div className="aspect-[1/1] w-full grid place-items-center text-emerald-700/60">画像なし</div>
-                )}
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {items.map((it) => {
+        const img = it.media_url || it.thumbnail_url;
+        return (
+          <a
+            key={it.id}
+            href={it.permalink}
+            target="_blank"
+            rel="noreferrer"
+            className="block rounded-2xl overflow-hidden shadow-sm bg-white
+                       transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
+            style={{ border: "1px solid #e5e7eb" }}
+          >
+            {img ? (
+              <div className="w-full aspect-[1/1] relative overflow-hidden">
+                <img
+                  src={img}
+                  alt={it.caption || "Instagram post"}
+                  className="absolute inset-0 w-full h-full object-cover
+                             transition-transform duration-200 hover:scale-[1.03]"
+                />
               </div>
-              <div className="mt-3 line-clamp-2 text-sm text-emerald-900/80">
-                {p.caption?.replace(/\s+/g, ' ').trim() || '（キャプションなし）'}
+            ) : (
+              <div className="w-full aspect-[1/1] flex items-center justify-center bg-green-50 text-green-900">
+                画像なし
               </div>
-            </a>
-          );
-        })}
-      </div>
+            )}
+            <div className="p-3 text-sm text-gray-700 line-clamp-2">{it.caption || ""}</div>
+          </a>
+        );
+      })}
     </div>
   );
 }
