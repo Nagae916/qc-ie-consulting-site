@@ -1,41 +1,59 @@
 // /api/instagram.js
-// 以前の動きに合わせた、Node/Vercel の Serverless Function 形式（JS）
-
-module.exports = async (req, res) => {
+// IG_ACCESS_TOKEN / IG_USER_ID を使って Graph API から直近投稿を返す
+export default async function handler(req, res) {
   try {
+    const { limit = '3' } = req.query;
+
     const token = process.env.IG_ACCESS_TOKEN;
     const userId = process.env.IG_USER_ID;
 
     if (!token || !userId) {
-      res.status(500).json({ error: "Missing IG_ACCESS_TOKEN or IG_USER_ID" });
-      return;
+      return res.status(500).json({
+        error: 'Missing env: IG_ACCESS_TOKEN or IG_USER_ID',
+      });
     }
 
-    const limit = Math.max(1, Math.min(parseInt(req.query.limit || "3", 10), 12));
-    const fields = "id,caption,media_type,media_url,thumbnail_url,permalink,timestamp";
+    // 画像 URL を取得するために media_url / thumbnail_url も要求
+    const fields = [
+      'id',
+      'caption',
+      'permalink',
+      'media_type',
+      'media_url',
+      'thumbnail_url',
+      'timestamp',
+    ].join(',');
 
-    const api = `https://graph.instagram.com/${userId}/media?fields=${encodeURIComponent(
-      fields
+    const url = `https://graph.instagram.com/${userId}/media?fields=${encodeURIComponent(fields)}&limit=${encodeURIComponent(
+      String(limit)
     )}&access_token=${encodeURIComponent(token)}`;
 
-    const igRes = await fetch(api);
-    if (!igRes.ok) {
-      const txt = await igRes.text();
-      res.status(igRes.status).json({ error: "Instagram upstream error", upstream: txt });
-      return;
+    const resp = await fetch(url);
+    const json = await resp.json();
+
+    if (!resp.ok) {
+      return res.status(resp.status).json({
+        error: json?.error?.message || 'Upstream error',
+        upstream: json,
+      });
     }
 
-    const json = await igRes.json();
+    // サムネ用 URL を正規化
+    const data = (json.data || []).map((m) => ({
+      id: m.id,
+      caption: m.caption || '',
+      permalink: m.permalink,
+      media_type: m.media_type,
+      image:
+        m.media_type === 'VIDEO'
+          ? m.thumbnail_url || null
+          : m.media_url || null,
+      timestamp: m.timestamp,
+    }));
 
-    // 画像/サムネが無いものは除外し、上限数で切り出し
-    const data = (json.data || [])
-      .filter(x => x.media_url || x.thumbnail_url)
-      .slice(0, limit);
-
-    // 以前と同じ形に揃える
-    res.setHeader("Cache-Control", "public, s-maxage=1800, stale-while-revalidate=60");
-    res.status(200).json({ data });
-  } catch (err) {
-    res.status(500).json({ error: "Handler failed", detail: String(err) });
+    res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=300');
+    return res.status(200).json({ data });
+  } catch (e) {
+    return res.status(500).json({ error: e.message || 'Server error' });
   }
-};
+}
