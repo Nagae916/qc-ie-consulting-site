@@ -1,104 +1,41 @@
 // /api/instagram.js
-// ESM で export default。Node 18+ なら fetch はグローバルでOK
+// 以前の動きに合わせた、Node/Vercel の Serverless Function 形式（JS）
 
-export default async function handler(req, res) {
-  console.log("[instagram] invoked");
-
+module.exports = async (req, res) => {
   try {
-    const IG_TOKEN = process.env.IG_ACCESS_TOKEN;
-    const IG_USER  = process.env.IG_USER_ID;
+    const token = process.env.IG_ACCESS_TOKEN;
+    const userId = process.env.IG_USER_ID;
 
-    const limit = Math.min(Number(req.query.limit || 6), 12);
-
-    if (!IG_TOKEN || !IG_USER) {
-      console.error("[instagram] missing env", {
-        hasToken: !!IG_TOKEN,
-        hasUser: !!IG_USER,
-      });
+    if (!token || !userId) {
       res.status(500).json({ error: "Missing IG_ACCESS_TOKEN or IG_USER_ID" });
       return;
     }
 
-    const FIELDS =
-      "id,caption,media_type,media_url,thumbnail_url,permalink,timestamp";
+    const limit = Math.max(1, Math.min(parseInt(req.query.limit || "3", 10), 12));
+    const fields = "id,caption,media_type,media_url,thumbnail_url,permalink,timestamp";
 
-    const listUrl =
-      `https://graph.instagram.com/${IG_USER}/media` +
-      `?fields=${FIELDS}` +
-      `&limit=${limit}` +
-      `&access_token=${IG_TOKEN}`;
+    const api = `https://graph.instagram.com/${userId}/media?fields=${encodeURIComponent(
+      fields
+    )}&access_token=${encodeURIComponent(token)}`;
 
-    const listRes = await fetch(listUrl, { cache: "no-store" });
-    const listRaw = await listRes.text();
-
-    let listJson;
-    try {
-      listJson = JSON.parse(listRaw);
-    } catch {
-      console.error("[instagram] upstream non-JSON", listRaw.slice(0, 200));
-      res.status(502).json({
-        error: "Upstream is not JSON",
-        upstream: listRaw.slice(0, 200),
-      });
+    const igRes = await fetch(api);
+    if (!igRes.ok) {
+      const txt = await igRes.text();
+      res.status(igRes.status).json({ error: "Instagram upstream error", upstream: txt });
       return;
     }
 
-    if (!listRes.ok || listJson.error) {
-      console.error("[instagram] upstream error", listRes.status, listJson);
-      res
-        .status(listRes.status === 200 ? 502 : listRes.status)
-        .json({ error: listJson?.error || `HTTP ${listRes.status}`, upstream: listJson });
-      return;
-    }
+    const json = await igRes.json();
 
-    let items = Array.isArray(listJson.data) ? listJson.data : [];
+    // 画像/サムネが無いものは除外し、上限数で切り出し
+    const data = (json.data || [])
+      .filter(x => x.media_url || x.thumbnail_url)
+      .slice(0, limit);
 
-    // フォールバック（CAROUSEL → children から1枚拾う）
-    async function enrichOne(p) {
-      if (p.media_url || p.thumbnail_url) return p;
-
-      if (p.media_type === "CAROUSEL_ALBUM") {
-        const childUrl =
-          `https://graph.instagram.com/${p.id}/children?fields=media_type,media_url,thumbnail_url&access_token=${IG_TOKEN}`;
-        try {
-          const cRes = await fetch(childUrl, { cache: "no-store" });
-          const cRaw = await cRes.text();
-          let cJson;
-          try {
-            cJson = JSON.parse(cRaw);
-          } catch {
-            console.warn("[instagram] children non-JSON", cRaw.slice(0, 120));
-            return p;
-          }
-          if (cRes.ok && cJson.data && cJson.data.length > 0) {
-            const first =
-              cJson.data.find((x) => x.media_url || x.thumbnail_url) || cJson.data[0];
-            p.media_url = first.media_url || null;
-            p.thumbnail_url = first.thumbnail_url || p.thumbnail_url || null;
-          }
-        } catch (e) {
-          console.warn("[instagram] children fetch error", e?.message);
-        }
-      }
-      return p;
-    }
-
-    items = await Promise.all(items.map(enrichOne));
-
-    const normalized = items.map((p) => ({
-      id: p.id,
-      caption: p.caption || "",
-      media_type: p.media_type,
-      image_url: p.media_url || p.thumbnail_url || null,
-      thumbnail_url: p.thumbnail_url || null,
-      permalink: p.permalink,
-      timestamp: p.timestamp,
-    }));
-
-    res.setHeader("Cache-Control", "s-maxage=300, stale-while-revalidate=300");
-    res.status(200).json({ data: normalized });
-  } catch (e) {
-    console.error("[instagram] fatal", e);
-    res.status(500).json({ error: e?.message || "Internal Error", stack: e?.stack });
+    // 以前と同じ形に揃える
+    res.setHeader("Cache-Control", "public, s-maxage=1800, stale-while-revalidate=60");
+    res.status(200).json({ data });
+  } catch (err) {
+    res.status(500).json({ error: "Handler failed", detail: String(err) });
   }
-}
+};
