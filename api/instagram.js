@@ -1,32 +1,25 @@
-// app/api/instagram/route.ts
-import { NextResponse } from "next/server";
+import type { NextApiRequest, NextApiResponse } from "next";
 
-const TOKEN = process.env.INSTAGRAM_TOKEN; // .env.local に設定したトークン
-const USER_ID = process.env.INSTAGRAM_USER_ID; // .env.local に設定したユーザーID
-const LIMIT = 3;
-
-export async function GET() {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const url = `https://graph.instagram.com/${USER_ID}/media?fields=id,caption,media_type,media_url,thumbnail_url,permalink,timestamp&access_token=${TOKEN}&limit=${LIMIT}`;
-    const res = await fetch(url);
-    const data = await res.json();
+    const token = process.env.IG_ACCESS_TOKEN; // 前回と同じ環境変数名
+    const userId = process.env.IG_USER_ID;     // 前回と同じ環境変数名
+    const limit = req.query.limit || 3;
 
-    if (!res.ok) {
-      return NextResponse.json({ error: data.error?.message || "APIエラー" }, { status: 500 });
+    if (!token || !userId) {
+      return res.status(500).json({ error: "環境変数が設定されていません。" });
     }
 
-    // 必要な情報だけ返す
-    const posts = data.data.map((post: any) => ({
-      id: post.id,
-      caption: post.caption,
-      media_type: post.media_type,
-      media_url: post.media_url || post.thumbnail_url, // 画像 or サムネ
-      permalink: post.permalink,
-      timestamp: post.timestamp,
-    }));
+    const url = `https://graph.instagram.com/${userId}/media?fields=id,caption,media_type,media_url,thumbnail_url,permalink,timestamp&access_token=${token}&limit=${limit}`;
+    const response = await fetch(url);
+    const data = await response.json();
 
-    return NextResponse.json({ data: posts });
-  } catch (e: any) {
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    if (data.error) {
+      return res.status(500).json({ error: data.error.message });
+    }
+
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ error: "Instagram APIの取得に失敗しました。" });
   }
 }
