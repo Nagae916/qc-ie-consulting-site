@@ -1,25 +1,53 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+// pages/api/instagram.ts
+import type { NextApiRequest, NextApiResponse } from 'next';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+type IgChild = { media_type: string; media_url?: string; thumbnail_url?: string };
+type IgItem = {
+  id: string;
+  caption?: string;
+  media_type: string;
+  media_url?: string;
+  thumbnail_url?: string;
+  permalink: string;
+  timestamp?: string;
+  children?: { data: IgChild[] };
+};
+type ApiResponse =
+  | { data: IgItem[]; error?: undefined }
+  | { error: string };
+
+const TOKEN = process.env.IG_ACCESS_TOKEN;
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse>) {
   try {
-    const token = process.env.IG_ACCESS_TOKEN; // 前回と同じ環境変数名
-    const userId = process.env.IG_USER_ID;     // 前回と同じ環境変数名
-    const limit = req.query.limit || 3;
+    const limit = Number(req.query.limit ?? 3);
+    if (!TOKEN) return res.status(500).json({ error: 'IG_ACCESS_TOKEN が未設定です。' });
 
-    if (!token || !userId) {
-      return res.status(500).json({ error: "環境変数が設定されていません。" });
-    }
+    const url = new URL('https://graph.instagram.com/me/media');
+    url.searchParams.set(
+      'fields',
+      'id,caption,media_type,permalink,timestamp,media_url,thumbnail_url,children{media_type,media_url,thumbnail_url}'
+    );
+    url.searchParams.set('access_token', TOKEN);
+    url.searchParams.set('limit', String(limit));
 
-    const url = `https://graph.instagram.com/${userId}/media?fields=id,caption,media_type,media_url,thumbnail_url,permalink,timestamp&access_token=${token}&limit=${limit}`;
-    const response = await fetch(url);
-    const data = await response.json();
+    const igRes = await fetch(url.toString(), { next: { revalidate: 60 * 30 } });
+    const text = await igRes.text();
+    if (!igRes.ok) return res.status(igRes.status).json({ error: text || 'Instagram API エラー' });
 
-    if (data.error) {
-      return res.status(500).json({ error: data.error.message });
-    }
+    const parsed = JSON.parse(text) as { data?: IgItem[]; error?: any };
+    const filled = (parsed.data ?? []).map((p) => {
+      // アルバム/リール等で media_url が無い場合、子メディアから代表画像を補完
+      if (!p.media_url) {
+        const cand = p.children?.data?.find((c) => c.media_url || c.thumbnail_url);
+        if (cand?.media_url) p.media_url = cand.media_url;
+        if (!p.media_url && cand?.thumbnail_url) p.media_url = cand.thumbnail_url;
+      }
+      return p;
+    });
 
-    res.status(200).json(data);
-  } catch (error) {
-    res.status(500).json({ error: "Instagram APIの取得に失敗しました。" });
+    return res.status(200).json({ data: filled });
+  } catch (e: any) {
+    return res.status(500).json({ error: e?.message || 'Server error' });
   }
 }
