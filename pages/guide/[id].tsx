@@ -2,12 +2,8 @@ import Link from "next/link";
 import { GUIDES, getGuideById } from "@/components/learn/Guides";
 
 export async function getStaticPaths() {
-  return {
-    paths: GUIDES.map((g) => ({ params: { id: g.id } })),
-    fallback: false,
-  };
+  return { paths: GUIDES.map((g) => ({ params: { id: g.id } })), fallback: false };
 }
-
 export async function getStaticProps({ params }: { params: { id: string } }) {
   const guide = getGuideById(params.id);
   return { props: { id: params.id, exists: !!guide } };
