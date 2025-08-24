@@ -2,37 +2,73 @@
 import React from "react";
 import Link from "next/link";
 
-export const GUIDES = [
+export type Guide = {
+  id: string;
+  title: string;
+  description: string;
+  tags?: string[];
+};
+
+export const GUIDES: Guide[] = [
   {
     id: "regression-anova",
-    title: "回帰分析と分散分析",
-    description: "QC検定2級・統計検定で頻出。改善テーマの解析に役立ちます。",
+    title: "回帰分析・分散分析",
+    description: "関係のモデル化と平均差の検定。QC2級/統計検定頻出トピック。",
+    tags: ["統計", "QC", "ANOVA", "回帰"],
   },
   {
     id: "stat-tests",
-    title: "統計的検定の基礎",
-    description: "t検定・χ二乗検定など、品質管理の基本手法を体系的に学びます。",
+    title: "統計的検定の基礎（t / χ² / F）",
+    description: "平均差・独立性・分散の比較。p値と有意水準の正しい解釈。",
+    tags: ["検定", "品質管理"],
+  },
+  {
+    id: "qc7-tools",
+    title: "QC七つ道具（旧7つ道具）",
+    description: "現場データの可視化と要因絞り込みに効く基本ツールの活用法。",
+    tags: ["QC検定", "現場改善", "見える化"],
+  },
+  {
+    id: "new-qc7-tools",
+    title: "新QC七つ道具（新7つ道具）",
+    description: "合意形成・計画立案に強い“言語データ”系の管理技法。",
+    tags: ["QC検定", "計画立案", "合意形成"],
   },
 ];
 
-export const GuidesList: React.FC = () => {
+export function GuidesList({ items = GUIDES }: { items?: Guide[] }) {
   return (
-    <div className="space-y-4">
-      {GUIDES.map((guide) => (
-        <div
-          key={guide.id}
-          className="p-4 border rounded-xl bg-white/80 shadow hover:shadow-md transition"
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+      {items.map((g) => (
+        <article
+          key={g.id}
+          className="rounded-xl2 bg-white border border-brand-200 shadow-soft p-5"
         >
-          <h2 className="text-lg font-semibold">{guide.title}</h2>
-          <p className="text-gray-600 mb-2">{guide.description}</p>
-          <Link
-            href={`/guide/${guide.id}`}
-            className="text-emerald-700 hover:underline font-medium"
-          >
-            学習する →
-          </Link>
-        </div>
+          <h3 className="font-semibold text-brand-900">{g.title}</h3>
+          <p className="text-sm text-gray-700 mt-2">{g.description}</p>
+          {g.tags?.length ? (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {g.tags.map((t) => (
+                <span
+                  key={t}
+                  className="text-xs px-2 py-1 rounded bg-brand-100/70 border border-brand-200"
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+          ) : null}
+          <div className="mt-4">
+            <Link href={`/guide/${g.id}`} className="text-brand-800 hover:underline">
+              学習する →
+            </Link>
+          </div>
+        </article>
       ))}
     </div>
   );
-};
+}
+
+export default function Guides() {
+  return <GuidesList />;
+}
