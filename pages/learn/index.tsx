@@ -1,6 +1,6 @@
 // pages/learn/index.tsx
 import Link from "next/link";
-import { GUIDES, GuidesGrid } from "@/src/components/learn/Guides";
+import { GUIDES, GuidesGrid } from "@/components/learn/Guides";
 
 export default function LearningIndex() {
   return (
@@ -10,7 +10,6 @@ export default function LearningIndex() {
         <p className="text-gray-700 mt-2">テーマ別の学習ガイドを選んでください。</p>
       </header>
 
-      {/* 学習ガイドの一覧 */}
       <GuidesGrid items={GUIDES} />
 
       <div className="mt-8">
