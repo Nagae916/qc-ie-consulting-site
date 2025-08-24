@@ -1,7 +1,6 @@
 // pages/guide/[id].tsx
 import type { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import Link from "next/link";
-
 import { GUIDES } from "@/components/learn/Guides";
 import {
   StudyGuide_RegressionAnova,
@@ -12,24 +11,20 @@ import {
 
 const GUIDE_COMPONENTS: Record<string, () => JSX.Element> = {
   "regression-anova": StudyGuide_RegressionAnova,
-  "stat-tests": StudyGuide_StatTests,
-  "qc7-tools": StudyGuide_QC7Tools,
-  "new-qc7-tools": StudyGuide_NewQC7Tools,
+  "stat-tests":       StudyGuide_StatTests,
+  "qc7-tools":        StudyGuide_QC7Tools,
+  "new-qc7-tools":    StudyGuide_NewQC7Tools,
 };
 
 type Props = { id: string | null };
 
 const GuidePage: NextPage<Props> = ({ id }) => {
   const Comp = id ? GUIDE_COMPONENTS[id] : undefined;
-
   return (
     <main className="max-w-5xl mx-auto px-4 py-10">
       <div className="mb-6">
-        <Link href="/learn" className="text-sm text-emerald-700 hover:underline">
-          ← 学習コンテンツ一覧へ
-        </Link>
+        <Link href="/learn" className="text-sm text-emerald-700 hover:underline">← 学習コンテンツ一覧へ</Link>
       </div>
-
       {Comp ? (
         <Comp />
       ) : (
