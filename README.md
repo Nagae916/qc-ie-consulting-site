@@ -43,4 +43,4 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
 ## 置き換えポイント
 - `https://example.com/` や `og-image.jpg`、`logo.png` を実URLに差し替え
-- フッター文言、問い合わせ先メールも実運用値に
+- フッター文言、問い合わせ先メールも実運用値に　
