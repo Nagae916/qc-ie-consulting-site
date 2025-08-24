@@ -13,13 +13,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-
-    // ここを必ず入れる
     "baseUrl": ".",
-    "paths": {
-      "@/*": ["*"]
-    },
-
+    "paths": { "@/*": ["*"] },
     "incremental": true
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
