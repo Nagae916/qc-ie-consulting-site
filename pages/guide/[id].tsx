@@ -1,13 +1,13 @@
 // pages/guide/[id].tsx
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { GUIDES } from "@/src/components/learn/Guides";
+import { GUIDES } from "@/components/learn/Guides";
 import {
   StudyGuide_RegressionAnova,
   StudyGuide_StatTests,
-} from "@/src/components/learn/StudyGuide";
+} from "@/components/learn/StudyGuide";
 
-// id → 表示用コンポーネントの対応表
+// id → コンポーネント対応表
 const GUIDE_COMPONENTS: Record<string, () => JSX.Element> = {
   "regression-anova": StudyGuide_RegressionAnova,
   "stat-tests": StudyGuide_StatTests,
@@ -54,7 +54,6 @@ export default function GuidePage() {
           一覧へ戻る
         </Link>
       </div>
-
       <Cmp />
     </main>
   );
