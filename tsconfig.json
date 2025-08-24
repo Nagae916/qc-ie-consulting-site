@@ -5,7 +5,6 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "jsx": "preserve",
-
     "strict": true,
     "skipLibCheck": true,
     "noEmit": true,
@@ -14,17 +13,14 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-
     "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"],
-      "@/components/*": ["src/components/*"]
-    },
-
+    "paths": { "@/*": ["src/*"], "@/components/*": ["src/components/*"] },
     "plugins": [{ "name": "next" }]
   },
   "include": [
     "next-env.d.ts",
+    "pages/**/*.ts",
+    "pages/**/*.tsx",
     "src/**/*.ts",
     "src/**/*.tsx",
     ".next/types/**/*.ts"
