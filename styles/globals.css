@@ -1,11 +1,14 @@
+/* styles/globals.css */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* 画面全体のトーン（前と同じ淡いグリーン） */
+/* ここからはあなたの全体スタイル（任意） */
 :root {
   color-scheme: light;
 }
+
 body {
-  @apply bg-brand-50 text-gray-800;
+  @apply bg-brand-50 text-gray-800; /* 使っていなければ削除してOK */
 }
