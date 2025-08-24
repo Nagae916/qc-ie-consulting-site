@@ -1,168 +1,145 @@
-import Head from "next/head";
+// pages/index.tsx
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import Head from "next/head";
 
-type NewsItem = { title: string; link: string };
-
-function Card(props: { title?: string; children?: React.ReactNode; className?: string }) {
-  return (
-    <div className={`rounded-2xl shadow-card bg-white p-6 ${props.className ?? ""}`}>
-      {props.title && <h3 className="text-lg font-semibold mb-2">{props.title}</h3>}
-      <div>{props.children}</div>
-    </div>
-  );
-}
+// 既存のコンポーネントをそのまま利用します（src/components/learn/ 配下）
+import NewsFeed from "@/src/components/learn/NewsFeed";
+import NoteFeed from "@/src/components/learn/NoteFeed";
+import InstagramFeed from "@/src/components/learn/InstagramFeed";
+import XTimeline from "@/src/components/learn/XTimeline";
 
 export default function Home() {
-  const [news, setNews] = useState<NewsItem[]>([]);
-  const [newsErr, setNewsErr] = useState<string>("");
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const r = await fetch("/api/news?limit=6", { cache: "no-store" });
-        const json = await r.json();
-        if (json?.data?.length) {
-          setNews(
-            json.data.map((it: any) => ({
-              title: it.title || "",
-              link: it.link || "#",
-            }))
-          );
-        } else {
-          setNews([]);
-        }
-      } catch (e: any) {
-        setNewsErr(e?.message || "NEWS_FETCH_FAILED");
-      }
-    })();
-  }, []);
-
   return (
     <>
       <Head>
         <title>QC × IE LABO</title>
-        <meta name="description" content="見やすさと親しみやすさを大切に、淡いグリーン基調で設計しました。" />
+        <meta
+          name="description"
+          content="見やすさと親しみやすさを大切に、淡いグリーン基調で設計しました。"
+        />
       </Head>
 
-      <main className="mx-auto max-w-7xl px-4 py-8 space-y-10">
-        {/* ヘッダー */}
-        <header className="space-y-1">
-          <h1 className="text-3xl font-bold">QC × IE LABO</h1>
-          <p className="text-gray-600">見やすさと親しみやすさを大切に、淡いグリーン基調で設計しました。</p>
-        </header>
-
-        {/* 学習サポート */}
-        <section className="space-y-4">
-          <h2 className="text-2xl font-bold">学習サポート</h2>
-
-          {/* 3列カード */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <Card>
-              <div className="font-semibold mb-2">QC検定</div>
-              <p className="text-sm text-gray-600">統計の基礎〜管理図・検定・推定。現場データで演習。</p>
-            </Card>
-
-            <Card>
-              <div className="font-semibold mb-2">統計検定</div>
-              <p className="text-sm text-gray-600">記述・推測統計／多変量。理論と活用を両立。</p>
-            </Card>
-
-            <Card>
-              <div className="font-semibold mb-2">技術士（経営工学）</div>
-              <p className="text-sm text-gray-600">論文構成・キーワード整理・演習添削まで対応。</p>
-            </Card>
-          </div>
-
-          <div>
-            <Link
-              href="/learn"
-              className="inline-block rounded-full px-5 py-2 bg-emerald-600 text-white hover:bg-emerald-700 transition"
-            >
-              学習コンテンツを開く
-            </Link>
-          </div>
-        </section>
-
-        {/* 研修（カスタム前提） */}
-        <section className="space-y-4">
-          <h2 className="text-2xl font-bold">研修（カスタム前提）</h2>
-
-          {/* 2列カード */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <div className="font-semibold mb-2">SPC演習（演習付き）</div>
-              <p className="text-sm text-gray-600">
-                管理図・工程能力・異常検知を短期集中で。社内データ演習可。
-              </p>
-            </Card>
-
-            <Card>
-              <div className="font-semibold mb-2">IE基礎</div>
-              <p className="text-sm text-gray-600">
-                動作/時間研究・ラインバランス。改善テーマに応じて設計。
-              </p>
-            </Card>
-          </div>
-        </section>
-
-        {/* ニュース + IE基礎欄（右はプレースホルダー） */}
-        <section className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card title="ニュース（経営工学／品質管理）">
-              <p className="text-sm text-gray-500 mb-3">
-                GoogleニュースRSSから自動取得（30分キャッシュ）
-              </p>
-              {newsErr && (
-                <p className="text-sm text-red-600">ニュース取得でエラー: {newsErr}</p>
-              )}
-              {!newsErr && !news.length && (
-                <p className="text-sm text-gray-600">現在表示できるニュースはありません。</p>
-              )}
-              {!!news.length && (
-                <ul className="list-disc list-inside space-y-1">
-                  {news.map((n, i) => (
-                    <li key={i}>
-                      <a
-                        className="text-emerald-700 hover:underline"
-                        href={n.link}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        {n.title}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </Card>
-
-            <Card>
-              <p className="text-sm text-gray-600">表示できる記事がありません。</p>
-            </Card>
-          </div>
-        </section>
-
-        {/* SNS */}
-        <section className="space-y-4">
-          <h2 className="text-2xl font-bold">SNS</h2>
-
-          <Card title="X（Twitter）  @n_ieqlab">
-            {/* ここは従来の埋め込みウィジェットをそのまま入れる想定 */}
-            <div className="rounded-xl border border-gray-200 p-4 text-sm text-gray-600">
-              Timeline @n_ieqlab
-            </div>
-          </Card>
-
-          <Card title="Instagram 最新投稿">
-            <p className="text-sm text-gray-600">
-              Instagramの読み込みでエラーが出る場合は、環境変数
-              <code className="mx-1 bg-gray-100 px-1 rounded">IG_USER_ID</code> /
-              <code className="mx-1 bg-gray-100 px-1 rounded">IG_ACCESS_TOKEN</code>
-              の有効期限をご確認ください。
+      <main className="min-h-screen bg-brand-50 text-gray-800">
+        <div className="mx-auto w-full max-w-6xl px-4 py-8 md:px-6 md:py-12">
+          {/* Header */}
+          <header className="mb-6 md:mb-10">
+            <h1 className="text-2xl font-extrabold tracking-tight md:text-3xl">
+              QC × IE LABO
+            </h1>
+            <p className="mt-2 text-sm md:text-base">
+              見やすさと親しみやすさを大切に、淡いグリーン基調で設計しました。
             </p>
-          </Card>
-        </section>
+          </header>
+
+          {/* 学習サポート */}
+          <section className="mb-6 md:mb-10">
+            <h2 className="mb-4 text-lg font-bold md:mb-6 md:text-xl">
+              学習サポート
+            </h2>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <article className="rounded-2xl bg-white/70 p-5 shadow-sm ring-1 ring-black/5">
+                <h3 className="font-semibold">QC検定</h3>
+                <p className="mt-1 text-sm leading-6">
+                  統計の基礎〜管理図・検定・推定。現場データで演習。
+                </p>
+              </article>
+
+              <article className="rounded-2xl bg-white/70 p-5 shadow-sm ring-1 ring-black/5">
+                <h3 className="font-semibold">統計検定</h3>
+                <p className="mt-1 text-sm leading-6">
+                  記述・推測統計／多変量。理解と活用を両立。
+                </p>
+              </article>
+
+              <article className="rounded-2xl bg-white/70 p-5 shadow-sm ring-1 ring-black/5">
+                <h3 className="font-semibold">技術士（経営工学）</h3>
+                <p className="mt-1 text-sm leading-6">
+                  論文構成・キーワード整理・演習添削まで対応。
+                </p>
+              </article>
+            </div>
+
+            <div className="mt-4">
+              <Link
+                href="/learn"
+                className="inline-flex items-center rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700"
+              >
+                学習コンテンツを開く
+              </Link>
+            </div>
+          </section>
+
+          {/* 研修（カスタム前提） */}
+          <section className="mb-6 md:mb-10">
+            <h2 className="mb-4 text-lg font-bold md:mb-6 md:text-xl">
+              研修（カスタム前提）
+            </h2>
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <article className="rounded-2xl bg-white/70 p-5 shadow-sm ring-1 ring-black/5">
+                <h3 className="font-semibold">SPC演習（演習付き）</h3>
+                <p className="mt-1 text-sm leading-6">
+                  管理図・工程能力・異常検知を短期集中で。社内データ演習可。
+                </p>
+              </article>
+
+              <article className="rounded-2xl bg-white/70 p-5 shadow-sm ring-1 ring-black/5">
+                <h3 className="font-semibold">IE基礎</h3>
+                <p className="mt-1 text-sm leading-6">
+                  動作/時間研究・ラインバランス。改善テーマに応じて設計。
+                </p>
+              </article>
+            </div>
+          </section>
+
+          {/* ニュース & note */}
+          <section className="mb-6 md:mb-10">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <article className="rounded-2xl bg-white/70 p-5 shadow-sm ring-1 ring-black/5">
+                <h3 className="text-base font-semibold">
+                  ニュース（経営工学／品質管理）
+                </h3>
+                <p className="mt-1 text-xs text-gray-600">
+                  GoogleニュースRSSから自動取得（30分キャッシュ）
+                </p>
+                <div className="mt-3">
+                  {/* 既存の NewsFeed コンポーネント */}
+                  <NewsFeed limit={8} />
+                </div>
+              </article>
+
+              <article className="rounded-2xl bg-white/70 p-5 shadow-sm ring-1 ring-black/5">
+                <h3 className="text-base font-semibold">note 最新記事</h3>
+                <div className="mt-3">
+                  {/* 既存の NoteFeed コンポーネント */}
+                  <NoteFeed limit={6} />
+                </div>
+              </article>
+            </div>
+          </section>
+
+          {/* SNS */}
+          <section className="mb-14">
+            <h2 className="mb-4 text-lg font-bold md:mb-6 md:text-xl">SNS</h2>
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <article className="rounded-2xl bg-white/70 p-5 shadow-sm ring-1 ring-black/5">
+                <h3 className="text-base font-semibold">X（Twitter） @n_ieqlab</h3>
+                <div className="mt-3">
+                  <XTimeline />
+                </div>
+              </article>
+
+              <article className="rounded-2xl bg-white/70 p-5 shadow-sm ring-1 ring-black/5">
+                <h3 className="text-base font-semibold">Instagram 最新投稿</h3>
+                <div className="mt-3">
+                  {/* 既存の InstagramFeed（トークン無効時はエラーメッセージ表示） */}
+                  <InstagramFeed limit={3} />
+                </div>
+              </article>
+            </div>
+          </section>
+        </div>
       </main>
     </>
   );
