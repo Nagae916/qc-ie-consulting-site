@@ -1,80 +1,64 @@
-// src/components/InstagramFeed.tsx
-import React, { useEffect, useState } from "react";
+"use client";
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 
-type IgItem = {
+type Item = {
   id: string;
-  caption?: string;
-  media_type?: string;
-  media_url?: string;
-  thumbnail_url?: string;
-  permalink?: string;
-  timestamp?: string;
+  caption: string;
+  media_type: "IMAGE" | "VIDEO" | "CAROUSEL_ALBUM";
+  media_url: string;
+  thumbnail_url: string;
+  permalink: string;
+  timestamp: string;
 };
-
-type ApiResponse = {
-  data?: IgItem[];
-  error?: string;
-};
-
-const LIMIT = 3;
 
 export default function InstagramFeed() {
-  const [items, setItems] = useState<IgItem[]>([]);
-  const [err, setErr] = useState<string | null>(null);
+  const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
-    const load = async () => {
+    (async () => {
       try {
-        const res = await fetch(`/api/instagram?limit=${LIMIT}`, { cache: "no-store" });
-        const json: ApiResponse = await res.json();
-        if (!res.ok || json.error) throw new Error(json.error || `HTTP ${res.status}`);
-        setItems(json.data || []);
+        setLoading(true);
+        setErr(null);
+        const res = await fetch("/api/instagram", { cache: "no-store" });
+        if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+        const json = await res.json();
+        setItems(json.items ?? []);
       } catch (e: any) {
-        setErr(e.message || "Instagramの取得に失敗しました");
+        setErr(e?.message ?? "fetch failed");
       } finally {
         setLoading(false);
       }
-    };
-    load();
+    })();
   }, []);
 
-  if (loading) return <div>読み込み中…</div>;
-  if (err) return <div style={{ color: "#b91c1c" }}>Instagramの読み込みでエラー: {err}</div>;
-  if (!items.length) return <div>表示できる投稿がありません。</div>;
+  if (loading) return <p>読み込み中…</p>;
+  if (err) return <p style={{ color: "crimson" }}>取得に失敗しました: {err}</p>;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      {items.map((it) => {
-        const img = it.media_url || it.thumbnail_url;
-        return (
-          <a
-            key={it.id}
-            href={it.permalink}
-            target="_blank"
-            rel="noreferrer"
-            className="block rounded-2xl overflow-hidden shadow-sm bg-white
-                       transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
-            style={{ border: "1px solid #e5e7eb" }}
-          >
-            {img ? (
-              <div className="w-full aspect-[1/1] relative overflow-hidden">
-                <img
-                  src={img}
-                  alt={it.caption || "Instagram post"}
-                  className="absolute inset-0 w-full h-full object-cover
-                             transition-transform duration-200 hover:scale-[1.03]"
-                />
-              </div>
-            ) : (
-              <div className="w-full aspect-[1/1] flex items-center justify-center bg-green-50 text-green-900">
-                画像なし
-              </div>
-            )}
-            <div className="p-3 text-sm text-gray-700 line-clamp-2">{it.caption || ""}</div>
-          </a>
-        );
-      })}
-    </div>
+    <ul style={{ display: "grid", gap: 16, gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))" }}>
+      {items.map((it) => (
+        <li key={it.id} style={{ border: "1px solid #e5e7eb", borderRadius: 12, overflow: "hidden" }}>
+          <Link href={it.permalink} target="_blank">
+            <div style={{ position: "relative", width: "100%", aspectRatio: "1 / 1" }}>
+              <Image
+                src={it.thumbnail_url}
+                alt={it.caption || "Instagram post"}
+                fill
+                sizes="(max-width: 768px) 100vw, 33vw"
+                style={{ objectFit: "cover" }}
+                priority
+              />
+            </div>
+            <div style={{ padding: 12, fontSize: 14, lineHeight: 1.4 }}>
+              {it.caption ? it.caption.slice(0, 100) : "（キャプションなし）"}
+            </div>
+          </Link>
+        </li>
+      ))}
+    </ul>
   );
 }
