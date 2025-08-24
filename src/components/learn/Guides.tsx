@@ -25,7 +25,7 @@ export const GUIDES: Guide[] = [
   },
 ];
 
-/** グリッド表示 */
+/** グリッド表示（/learn で使用） */
 export function GuidesGrid({ items = GUIDES }: { items?: Guide[] }) {
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
