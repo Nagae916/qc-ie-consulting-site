@@ -24,11 +24,11 @@ export default function InstagramFeed() {
         setLoading(true);
         setErr(null);
         const res = await fetch("/api/instagram", { cache: "no-store" });
-        if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
         const json = await res.json();
+        if (!res.ok) throw new Error(json?.error || `${res.status} ${res.statusText}`);
         setItems(json.items ?? []);
       } catch (e: any) {
-        setErr(e?.message ?? "fetch failed");
+        setErr(e?.message ?? "取得に失敗しました");
       } finally {
         setLoading(false);
       }
@@ -36,7 +36,14 @@ export default function InstagramFeed() {
   }, []);
 
   if (loading) return <p>読み込み中…</p>;
-  if (err) return <p style={{ color: "crimson" }}>取得に失敗しました: {err}</p>;
+  if (err)
+    return (
+      <div style={{ border: "1px solid #fca5a5", background: "#fee2e2", color: "#7f1d1d", padding: 12, borderRadius: 8 }}>
+        Instagramの取得に失敗しました。<br />
+        <span style={{ fontSize: 12 }}>{err}</span>
+      </div>
+    );
+  if (!items.length) return <p>表示できる投稿がありません。</p>;
 
   return (
     <ul style={{ display: "grid", gap: 16, gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))" }}>
