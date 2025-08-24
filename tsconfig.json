@@ -1,22 +1,30 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "lib": ["ES2020", "DOM"],
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
-    "moduleResolution": "Node",
-    "jsx": "react-jsx",
-    "strict": true,
+    "moduleResolution": "Bundler",
+    "strict": false,
+
+    // ▼ Next.js 推奨・必須どちらも含む（重要）
+    "jsx": "preserve",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+
+    // ▼ 便利・ビルド高速化
+    "allowJs": true,
+    "incremental": true,
+
+    // 型補完まわり
+    "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "skipLibCheck": true,
-
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@/components/*": ["src/components/*"]
-    },
-
-    "typeRoots": ["./src/types", "./node_modules/@types"]
+      "@/*": ["*"]
+    }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules", ".next", "dist"]
+  "exclude": ["node_modules"]
 }
