@@ -1,7 +1,6 @@
-// src/components/learn/Guides.tsx
 import { useMemo, useState } from "react";
 
-/** 小物コンポーネント */
+/* 小物 */
 export function ToggleQA({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
   return (
@@ -18,57 +17,34 @@ export function ToggleQA({ q, a }: { q: string; a: string }) {
     </div>
   );
 }
-
 export function ResultCard({
-  color,
-  title,
-  body,
-  cheat,
-}: {
-  color: "emerald" | "teal" | "blue" | "purple" | "fuchsia" | "orange";
-  title: string;
-  body: string;
-  cheat: string[];
-}) {
+  color, title, body, cheat,
+}: { color: "emerald" | "teal" | "blue" | "purple" | "fuchsia" | "orange"; title: string; body: string; cheat: string[] }) {
   const [showCheat, setShowCheat] = useState(false);
   const colorMap: Record<string, string> = {
-    emerald: "text-emerald-700",
-    teal: "text-teal-700",
-    blue: "text-blue-700",
-    purple: "text-purple-700",
-    fuchsia: "text-fuchsia-700",
-    orange: "text-orange-700",
+    emerald: "text-emerald-700", teal: "text-teal-700", blue: "text-blue-700",
+    purple: "text-purple-700", fuchsia: "text-fuchsia-700", orange: "text-orange-700",
   };
   return (
     <div className="rounded-lg border border-brand-200 bg-brand-100/60 p-4">
       <h5 className={`text-lg font-semibold mb-1 ${colorMap[color]}`}>{title}</h5>
       <p className="text-gray-700">{body}</p>
       <div className="mt-4 flex gap-3">
-        <button
-          className="text-white text-sm px-3 py-2 rounded bg-brand-700 hover:bg-brand-800"
-          onClick={() => setShowCheat((v) => !v)}
-        >
-          💡検定手法解説
-        </button>
+        <button className="text-white text-sm px-3 py-2 rounded bg-brand-700 hover:bg-brand-800" onClick={() => setShowCheat((v) => !v)}>💡検定手法解説</button>
       </div>
       {showCheat && (
         <div className="mt-3 p-4 bg-white rounded border border-brand-200 text-sm">
-          <ul className="list-disc ml-5 space-y-1">
-            {cheat.map((c, i) => (
-              <li key={i}>{c}</li>
-            ))}
-          </ul>
+          <ul className="list-disc ml-5 space-y-1">{cheat.map((c, i) => (<li key={i}>{c}</li>))}</ul>
         </div>
       )}
     </div>
   );
 }
 
-/* ====== ガイドA：回帰分析・分散分析 ====== */
+/* ガイドA */
 export function StudyGuide_RegressionAnova() {
   const [goal, setGoal] = useState<"" | "predict" | "compare">("");
   const [groups, setGroups] = useState<"" | "2" | "3+">("");
-
   const active = useMemo(() => {
     if (!goal) return "default";
     if (goal === "predict") return "regression";
@@ -90,11 +66,7 @@ export function StudyGuide_RegressionAnova() {
             <label className="block text-sm font-medium text-gray-700 mb-2">1. 分析の目的は何ですか？</label>
             <select
               value={goal}
-              onChange={(e) => {
-                const v = e.target.value as typeof goal;
-                setGoal(v);
-                if (v !== "compare") setGroups("");
-              }}
+              onChange={(e) => { const v = e.target.value as typeof goal; setGoal(v); if (v !== "compare") setGroups(""); }}
               className="w-full p-3 pr-10 rounded-lg border border-brand-200 bg-white focus:outline-none focus:ring-2 focus:ring-brand-400"
             >
               <option value="">選択してください</option>
@@ -105,9 +77,7 @@ export function StudyGuide_RegressionAnova() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">2. 比較するグループの数は？</label>
             <select
-              value={groups}
-              onChange={(e) => setGroups(e.target.value as typeof groups)}
-              disabled={goal !== "compare"}
+              value={groups} onChange={(e) => setGroups(e.target.value as typeof groups)} disabled={goal !== "compare"}
               className="w-full p-3 pr-10 rounded-lg border border-brand-200 bg-white disabled:bg-gray-100 disabled:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400"
             >
               <option value="">選択してください</option>
@@ -149,7 +119,7 @@ export function StudyGuide_RegressionAnova() {
             { t: "平方和（Sum of Squares）", b: "ばらつきの大きさ。ANOVAでは全変動・要因間・要因内に分けて評価。" },
             { t: "自由度（Degrees of Freedom）", b: "独立に取りうる情報の数。" },
           ].map((x) => (
-            <div key={x.t} className="bg-white rounded-lg border border-brand-200 p-5">
+            <div key={x.t} className="bg白 rounded-lg border border-brand-200 p-5">
               <h6 className="font-semibold">{x.t}</h6>
               <p className="text-gray-700 mt-1">{x.b}</p>
             </div>
@@ -170,7 +140,7 @@ export function StudyGuide_RegressionAnova() {
   );
 }
 
-/* ====== ガイドB：統計手法 ====== */
+/* ガイドB */
 export function StudyGuide_StatTests() {
   const [goal, setGoal] = useState<"" | "mean" | "variance" | "category">("");
   const [groups, setGroups] = useState<"" | "1" | "2" | "3+">("");
@@ -210,11 +180,7 @@ export function StudyGuide_StatTests() {
             <label className="block text-sm font-medium text-gray-700 mb-2">1. 何を比較したい？</label>
             <select
               value={goal}
-              onChange={(e) => {
-                setGoal(e.target.value as any);
-                setGroups("");
-                setVariance("");
-              }}
+              onChange={(e) => { setGoal(e.target.value as any); setGroups(""); setVariance(""); }}
               className="w-full p-3 pr-10 rounded-lg border border-brand-200 bg-white focus:outline-none focus:ring-2 focus:ring-brand-400"
             >
               <option value="">選択してください</option>
@@ -226,9 +192,7 @@ export function StudyGuide_StatTests() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">2. グループ数は？</label>
             <select
-              value={groups}
-              onChange={(e) => setGroups(e.target.value as any)}
-              disabled={goal === "category" || !goal}
+              value={groups} onChange={(e) => setGroups(e.target.value as any)} disabled={goal === "category" || !goal}
               className="w-full p-3 pr-10 rounded-lg border border-brand-200 bg-white disabled:bg-gray-100 disabled:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400"
             >
               <option value="">選択してください</option>
@@ -240,9 +204,7 @@ export function StudyGuide_StatTests() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">3. 母分散は？</label>
             <select
-              value={variance}
-              onChange={(e) => setVariance(e.target.value as any)}
-              disabled={!(goal === "mean" || goal === "variance")}
+              value={variance} onChange={(e) => setVariance(e.target.value as any)} disabled={!(goal === "mean" || goal === "variance")}
               className="w-full p-3 pr-10 rounded-lg border border-brand-200 bg-white disabled:bg-gray-100 disabled:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400"
             >
               <option value="">選択してください</option>
@@ -256,48 +218,42 @@ export function StudyGuide_StatTests() {
           {active === "default" && <p className="text-center text-gray-500">上の質問に答えると、ここに最適な手法が表示されます。</p>}
           {active === "t" && (
             <ResultCard
-              color="emerald"
-              title="推奨手法: t検定"
+              color="emerald" title="推奨手法: t検定"
               body="1または2群の平均差を検定（母分散が未知のとき標準的）。対応の有無に注意。"
               cheat={["目的: 平均の差の検定", "データ: 連続量", "条件: 正規/中心極限定理, 等分散前提など", "応用: 工程前後の平均比較"]}
             />
           )}
           {active === "z" && (
             <ResultCard
-              color="teal"
-              title="推奨手法: Z検定"
+              color="teal" title="推奨手法: Z検定"
               body="平均差の検定で母分散が既知、かつ標本サイズが大きいときに用いる。実務では稀。"
               cheat={["目的: 平均の差の検定（母分散既知）", "データ: 連続量", "条件: 母分散既知/大標本", "応用: 理論教材・基礎理解向け"]}
             />
           )}
           {active === "f" && (
             <ResultCard
-              color="blue"
-              title="推奨手法: F検定"
+              color="blue" title="推奨手法: F検定"
               body="複数群の分散（ばらつき）の差を検定。分散分析の基礎。"
               cheat={["目的: 分散（ばらつき）の比較", "データ: 連続量", "条件: 正規性、独立性", "応用: サプライヤ間のばらつき比較"]}
             />
           )}
           {active === "chi" && (
             <ResultCard
-              color="purple"
-              title="推奨手法: χ²（カイ二乗）検定"
+              color="purple" title="推奨手法: χ²（カイ二乗）検定"
               body="カテゴリ×カテゴリの関連性を検定（独立性の検定）。"
               cheat={["目的: カテゴリの関連性", "データ: クロス集計（度数）", "条件: 期待度数の下限に注意", "応用: ライン×不良種の関連性"]}
             />
           )}
           {active === "chi_var" && (
             <ResultCard
-              color="fuchsia"
-              title="推奨手法: χ²（1標本の分散）"
+              color="fuchsia" title="推奨手法: χ²（1標本の分散）"
               body="1標本の分散が既知の母分散と異なるかを検定。"
               cheat={["目的: 分散が規格と一致か", "データ: 連続量", "条件: 正規性", "応用: 寸法ばらつきが仕様内か"]}
             />
           )}
           {active === "anova" && (
             <ResultCard
-              color="orange"
-              title="推奨手法: 分散分析（ANOVA）"
+              color="orange" title="推奨手法: 分散分析（ANOVA）"
               body="3群以上の平均差を検定。F統計量を用いる。"
               cheat={["目的: 3群以上の平均差", "データ: 連続量", "条件: 正規/等分散/独立", "応用: 製法A/B/Cの平均差比較"]}
             />
@@ -314,7 +270,7 @@ export function StudyGuide_StatTests() {
             { t: "母分散（既知/未知）", b: "母集団の分散が判っているかどうか。既知→Z、未知→tが基本。" },
             { t: "対応のある／ない", b: "同一対象の前後比較（対応あり）か、別群比較（対応なし）か。" },
           ].map((x) => (
-            <div key={x.t} className="bg-white rounded-lg border border-brand-200 p-5">
+            <div key={x.t} className="bg白 rounded-lg border border-brand-200 p-5">
               <h6 className="font-semibold">{x.t}</h6>
               <p className="text-gray-700 mt-1">{x.b}</p>
             </div>
@@ -335,32 +291,10 @@ export function StudyGuide_StatTests() {
   );
 }
 
-/** メタ情報 */
-export type GuideMeta = {
-  id: string;
-  title: string;
-  description: string;
-  tags?: string[];
-  component: () => JSX.Element;
-};
-
+/* レジストリ */
+export type GuideMeta = { id: string; title: string; description: string; tags?: string[]; component: () => JSX.Element };
 export const GUIDES: GuideMeta[] = [
-  {
-    id: "regression-anova",
-    title: "回帰分析・分散分析スタディガイド",
-    description: "目的に応じて手法を選べるナビ＋用語・理解度チェック付き",
-    tags: ["統計", "QC"],
-    component: StudyGuide_RegressionAnova,
-  },
-  {
-    id: "stat-tests",
-    title: "統計手法スタディガイド（t / Z / F / χ² / ANOVA）",
-    description: "平均・分散・カテゴリの観点から最適な検定をナビゲート",
-    tags: ["検定", "品質管理"],
-    component: StudyGuide_StatTests,
-  },
+  { id: "regression-anova", title: "回帰分析・分散分析スタディガイド", description: "目的に応じて手法を選べるナビ＋用語・理解度チェック付き", tags: ["統計", "QC"], component: StudyGuide_RegressionAnova },
+  { id: "stat-tests", title: "統計手法スタディガイド（t / Z / F / χ² / ANOVA）", description: "平均・分散・カテゴリの観点から最適な検定をナビゲート", tags: ["検定", "品質管理"], component: StudyGuide_StatTests },
 ];
-
-export function getGuideById(id: string) {
-  return GUIDES.find((g) => g.id === id);
-}
+export function getGuideById(id: string) { return GUIDES.find((g) => g.id === id); }
