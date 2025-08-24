@@ -1,17 +1,14 @@
+// pages/guide/[id].tsx
 import Link from "next/link";
-import { GUIDES, getGuideById } from "@/components/learn/Guides";
+import { useRouter } from "next/router";
+import { GUIDES } from "./_registry";
 
-export async function getStaticPaths() {
-  return { paths: GUIDES.map((g) => ({ params: { id: g.id } })), fallback: false };
-}
-export async function getStaticProps({ params }: { params: { id: string } }) {
-  const guide = getGuideById(params.id);
-  return { props: { id: params.id, exists: !!guide } };
-}
+export default function GuidePage() {
+  const router = useRouter();
+  const { id } = router.query as { id?: string };
+  const guide = GUIDES.find((g) => g.id === id);
 
-export default function GuidePage({ id, exists }: { id: string; exists: boolean }) {
-  const guide = getGuideById(id);
-  if (!exists || !guide) {
+  if (!guide) {
     return (
       <main className="mx-auto max-w-6xl px-4 py-10">
         <p className="text-gray-700">指定されたガイドは見つかりませんでした。</p>
@@ -19,6 +16,7 @@ export default function GuidePage({ id, exists }: { id: string; exists: boolean 
       </main>
     );
   }
+
   const Cmp = guide.component;
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
