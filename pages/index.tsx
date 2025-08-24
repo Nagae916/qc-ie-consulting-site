@@ -1,10 +1,48 @@
+import Link from "next/link";
 import InstagramFeed from "@/components/InstagramFeed";
 
 export default function Home() {
   return (
-    <main>
-      <h1>最新のInstagram投稿</h1>
-      <InstagramFeed />
+    <main className="mx-auto max-w-6xl px-4 py-10">
+      {/* ヒーロー */}
+      <header className="mb-10">
+        <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-brand-900">QC × IE LABO</h1>
+        <p className="mt-3 text-gray-700">見やすさと親しみやすさを大切に、淡いグリーン基調で設計しました。</p>
+      </header>
+
+      {/* 学習サポート（概要） */}
+      <section id="learning" className="mt-10">
+        <h2 className="text-2xl font-bold text-brand-900 mb-4">学習サポート</h2>
+        <div className="grid md:grid-cols-3 gap-6">
+          {[
+            { title: "QC検定", body: "統計の基礎～管理図・検定・推定。現場データで演習。" },
+            { title: "統計検定", body: "記述・推測統計／多変量。理解と活用を両立。" },
+            { title: "技術士（経営工学）", body: "論文構成・キーワード整理・演習添削まで対応。" },
+          ].map((c) => (
+            <div key={c.title} className="rounded-xl2 bg-white border border-brand-200 shadow-soft p-6">
+              <h3 className="font-semibold text-brand-900">{c.title}</h3>
+              <p className="text-sm text-gray-700 mt-2">{c.body}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-6">
+          <Link
+            href="/learn"
+            className="inline-flex items-center rounded-xl bg-brand-700 hover:bg-brand-800 text-white px-5 py-3"
+          >
+            学習コンテンツを開く
+          </Link>
+        </div>
+      </section>
+
+      {/* SNS（Instagramのみ抜粋） */}
+      <section id="sns" className="mt-12">
+        <h2 className="text-2xl font-bold text-brand-900 mb-4">SNS</h2>
+        <div className="rounded-xl2 bg-white border border-brand-200 shadow-soft p-4">
+          <h3 className="font-semibold text-brand-900 mb-2">Instagram 最新投稿</h3>
+          <InstagramFeed />
+        </div>
+      </section>
     </main>
   );
 }
