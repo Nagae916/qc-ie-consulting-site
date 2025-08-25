@@ -1,14 +1,10 @@
 // src/components/learn/StudyGuide.tsx
-
 import { useMemo, useState } from "react";
 
-/* =========================================================================
-   A) 回帰分析・分散分析（既存の要約バージョン）
-   ========================================================================= */
+/* ========== A) 回帰分析・分散分析 ========== */
 export function StudyGuide_RegressionAnova() {
   const [goal, setGoal] = useState<"" | "predict" | "compare">("");
   const [groups, setGroups] = useState<"" | "2" | "3+">("");
-
   const active = useMemo(() => {
     if (!goal) return "default";
     if (goal === "predict") return "regression";
@@ -19,7 +15,6 @@ export function StudyGuide_RegressionAnova() {
   return (
     <section className="mt-2">
       <h2 className="text-2xl font-bold text-brand-900 mb-4">回帰分析・分散分析スタディガイド</h2>
-
       <div className="bg-white rounded-xl2 border border-brand-200 shadow-soft p-6">
         <div className="grid md:grid-cols-2 gap-6 mb-6">
           <div>
@@ -60,7 +55,7 @@ export function StudyGuide_RegressionAnova() {
               color="emerald"
               title="推奨手法: 回帰分析"
               body="説明変数が目的変数に与える影響をモデル化。予測・要因分析に有効。"
-              cheat={["連続量×連続量", "線形/非線形の当てはめ", "残差診断が重要"]}
+              cheat={["連続量×連続量", "残差診断", "線形/非線形"]}
             />
           )}
           {active === "ttest" && (
@@ -68,7 +63,7 @@ export function StudyGuide_RegressionAnova() {
               color="purple"
               title="推奨手法: t検定"
               body="2群の平均差を検定。対応の有無、等分散性に注意。"
-              cheat={["正規性・独立性", "対応あり/なしの選択", "等分散の確認（F検定など）"]}
+              cheat={["対応あり/なし", "等分散確認", "正規性・独立性"]}
             />
           )}
           {active === "anova" && (
@@ -76,7 +71,7 @@ export function StudyGuide_RegressionAnova() {
               color="blue"
               title="推奨手法: 分散分析（ANOVA）"
               body="3群以上の平均差を検定。F統計量を用いる。"
-              cheat={["正規/等分散/独立", "多重比較の実施", "効果量の把握"]}
+              cheat={["多重比較", "効果量", "等分散性の検討"]}
             />
           )}
         </div>
@@ -85,9 +80,7 @@ export function StudyGuide_RegressionAnova() {
   );
 }
 
-/* =========================================================================
-   B) 統計手法スタディガイド（t / Z / F / χ² / ANOVA）
-   ========================================================================= */
+/* ========== B) t / Z / F / χ² / ANOVA ========== */
 export function StudyGuide_StatTests() {
   const [goal, setGoal] = useState<"" | "mean" | "variance" | "category">("");
   const [groups, setGroups] = useState<"" | "1" | "2" | "3+">("");
@@ -115,8 +108,8 @@ export function StudyGuide_StatTests() {
   return (
     <section className="mt-2">
       <h2 className="text-2xl font-bold text-brand-900 mb-4">統計手法スタディガイド</h2>
-
       <div className="bg-white rounded-xl2 border border-brand-200 shadow-soft p-6">
+        {/* 選択UI */}
         <div className="grid md:grid-cols-3 gap-6 mb-6">
           <div>
             <label className="block text-sm font-medium">1. 何を比較？</label>
@@ -164,6 +157,7 @@ export function StudyGuide_StatTests() {
           </div>
         </div>
 
+        {/* 結果 */}
         <div className="space-y-3">
           {active === "default" && <p className="text-gray-600">上の質問に答えると推奨手法が表示されます。</p>}
           {active === "t" && (
@@ -195,15 +189,15 @@ export function StudyGuide_StatTests() {
               color="purple"
               title="推奨手法: χ²（独立性の検定）"
               body="カテゴリ×カテゴリの関連性を検定。"
-              cheat={["期待度数に注意", "自由度 = (r-1)(c-1)", "残差分析"]}
+              cheat={["期待度数に注意", "自由度=(r-1)(c-1)", "残差分析"]}
             />
           )}
           {active === "chi_var" && (
             <ResultCard
               color="fuchsia"
               title="推奨手法: χ²（1標本の分散）"
-              body="1標本の分散が既知の母分散と異なるかを検定。"
-              cheat={["正規性", "σ^2 の仮説検定", "工程ばらつきと規格"]}
+              body="1標本の分散が既知の母分散と異なるかの検定。"
+              cheat={["正規性", "σ^2 の仮説検定", "規格適合性"]}
             />
           )}
           {active === "anova" && (
@@ -220,9 +214,7 @@ export function StudyGuide_StatTests() {
   );
 }
 
-/* =========================================================================
-   C) QC七つ道具（ヒストグラム・パレート・特性要因図…）
-   ========================================================================= */
+/* ========== C) QC七つ道具 ========== */
 export function StudyGuide_QC7Tools() {
   const items = [
     { t: "パレート図", p: "主要因の特定（ABC分析）。改善の優先度付け。" },
@@ -236,9 +228,6 @@ export function StudyGuide_QC7Tools() {
   return (
     <section className="mt-2">
       <h2 className="text-2xl font-bold text-brand-900 mb-4">QC七つ道具（現場のデータ解析）</h2>
-      <p className="text-gray-700 mb-4">
-        現場データの整理・可視化から要因仮説づくり、安定化の監視までの定番ツール群です。
-      </p>
       <ul className="space-y-2">
         {items.map((x) => (
           <li key={x.t} className="bg-white border rounded p-3">
@@ -251,25 +240,20 @@ export function StudyGuide_QC7Tools() {
   );
 }
 
-/* =========================================================================
-   D) 新QC七つ道具（親和図・連関図・系統図…）
-   ========================================================================= */
+/* ========== D) 新QC七つ道具 ========== */
 export function StudyGuide_NewQC7Tools() {
   const items = [
     { t: "親和図法", p: "KJ法。アイデア/事実をグルーピングして本質を抽出。" },
     { t: "連関図法", p: "要因間の因果・論理の強結合を見える化。" },
     { t: "系統図法", p: "目的→手段のブレイクダウンで具体策を展開。" },
     { t: "マトリックス図法", p: "要素間の関係性を行列で整理（強/中/弱）。" },
-    { t: "マトリックスデータ解析法", p: "数値データの重回帰/主成分等の土台に。" },
+    { t: "マトリックスデータ解析法", p: "数値データの多変量解析の土台に。" },
     { t: "PDPC法", p: "過程決定計画図。手段とリスク/対策を網羅。" },
     { t: "アローダイアグラム法", p: "PERT/CPM。工程の順序・クリティカルパス管理。" },
   ];
   return (
     <section className="mt-2">
       <h2 className="text-2xl font-bold text-brand-900 mb-4">新QC七つ道具（企画・設計の問題解決）</h2>
-      <p className="text-gray-700 mb-4">
-        定性的情報や計画立案に強い 7 手法。改善テーマの具体化やリスク対策に有効です。
-      </p>
       <ul className="space-y-2">
         {items.map((x) => (
           <li key={x.t} className="bg-white border rounded p-3">
@@ -282,9 +266,7 @@ export function StudyGuide_NewQC7Tools() {
   );
 }
 
-/* =========================================================================
-   小物：結果カード
-   ========================================================================= */
+/* ========== 小物カード ========== */
 function ResultCard({
   color,
   title,
