@@ -3,10 +3,10 @@ import Link from "next/link";
 import Head from "next/head";
 
 // 既存のコンポーネントをそのまま利用します（src/components/learn/ 配下）
-import NewsFeed from "@/src/components/learn/NewsFeed";
-import NoteFeed from "@/src/components/learn/NoteFeed";
-import InstagramFeed from "@/src/components/learn/InstagramFeed";
-import XTimeline from "@/src/components/learn/XTimeline";
+import NewsFeed from "@/components/learn/NewsFeed";
+import NoteFeed from "@/components/learn/NoteFeed";
+import InstagramFeed from "@/components/learn/InstagramFeed";
+import XTimeline from "@/components/learn/XTimeline";
 
 export default function Home() {
   return (
