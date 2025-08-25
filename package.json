@@ -6,13 +6,18 @@
     "dev": "next dev -p 3000",
     "build": "next build",
     "start": "next start -p 3000",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "contentlayer build"
   },
   "dependencies": {
     "next": "14.2.5",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "rss-parser": "3.12.0"
+    "rss-parser": "3.12.0",
+    "chart.js": "^4.4.3",
+    "contentlayer": "^0.3.4",
+    "next-contentlayer": "^0.3.4",
+    "react-chartjs-2": "^5.2.0"
   },
   "devDependencies": {
     "@types/node": "20.14.12",
@@ -21,14 +26,4 @@
     "autoprefixer": "10.4.20",
     "eslint": "8.57.0",
     "eslint-config-next": "14.2.5",
-    "postcss": "8.4.41",
-    "tailwindcss": "3.4.10",
-    "typescript": "5.5.4"
-  },
-  "overrides": {
-    "eslint": "8.57.0"
-  },
-  "engines": {
-    "node": ">=18 <21"
-  }
-}
+    "postcss":
