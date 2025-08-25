@@ -5,30 +5,19 @@ import { allGuides } from "contentlayer/generated";
 
 export const getStaticProps: GetStaticProps = async () => ({ props: {}, revalidate: 60 });
 
-const EXAM_LABEL: Record<string, string> = {
-  qc: "QC検定",
-  stats: "統計検定",
-  pe: "技術士試験",
-};
-
 export default function GuidesHome() {
-  const groups = Object.groupBy(
-    allGuides.filter((g) => g.status !== "draft"),
-    (g) => g.exam as keyof typeof EXAM_LABEL
-  );
+  const count = allGuides.filter(g => g.status !== "draft").length;
   return (
     <section className="space-y-6">
-      <h1 className="text-2xl font-semibold">Guides Library</h1>
-      <div className="grid gap-6 md:grid-cols-3">
-        {Object.entries(EXAM_LABEL).map(([key, label]) => {
-          const cnt = (groups[key as keyof typeof EXAM_LABEL] || []).length;
-          return (
-            <Link key={key} href={`/guides/${key}`} className="block rounded-lg border p-5 hover:shadow">
-              <h2 className="font-semibold">{label}</h2>
-              <div className="text-sm text-gray-500 mt-1">{cnt} 本</div>
-            </Link>
-          );
-        })}
+      <h1 className="text-2xl font-semibold">ガイド</h1>
+      <p className="text-gray-600">まずは QC検定ガイドから始めましょう。</p>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        <Link href="/guides/qc" className="block rounded-lg border p-5 hover:shadow">
+          <h2 className="font-semibold">QC検定</h2>
+          <div className="text-sm text-gray-500 mt-1">{count} 本</div>
+          <p className="text-sm mt-2 text-gray-600">はじめての人でも少しずつ進められます。</p>
+        </Link>
       </div>
     </section>
   );
