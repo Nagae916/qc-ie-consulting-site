@@ -1,9 +1,8 @@
 // next.config.js
 const path = require("path");
-const { withContentlayer } = require("next-contentlayer");
+const { withContentlayer } = require("next-contentlayer2");
 
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+module.exports = withContentlayer({
   reactStrictMode: true,
   webpack: (config) => {
     config.resolve.alias["@"] = path.resolve(__dirname, "src");
@@ -14,17 +13,14 @@ const nextConfig = {
       "regression-anova": "/guides/qc/regression-anova",
       "stat-tests": "/guides/qc/stat-tests",
       "qc-seven-tools": "/guides/qc/qc-seven-tools",
-      "new-qc-seven-tools": "/guides/qc/new-qc-seven-tools",
+      "new-qc-seven-tools": "/guides/qc/new-qc-seven-tools"
     };
     const items = Object.entries(map).map(([id, dest]) => ({
       source: `/guide/${id}`,
       destination: dest,
-      permanent: true,
+      permanent: true
     }));
-    // 未登録IDは QCトップへ退避
     items.push({ source: "/guide/:id", destination: "/guides/qc", permanent: false });
     return items;
-  },
-};
-
-module.exports = withContentlayer(nextConfig);
+  }
+});
