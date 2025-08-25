@@ -7,19 +7,16 @@ export const Guide = defineDocumentType(() => ({
   contentType: "mdx",
   fields: {
     title: { type: "string", required: true },
-    slug:  { type: "string", required: true }, // URL末尾（例: "oc-curve-simulator"）
-    exam:  { type: "string", required: true, description: "qc | stats | pe" },
-    section: { type: "string", required: false, description: "分野/章など任意（例: 管理図, 推定）" },
+    slug:  { type: "string", required: true },         // URL末尾
+    exam:  { type: "string", required: true },          // "qc" | "stats" | "pe"
+    section: { type: "string", required: false },       // 分野/章
     tags:  { type: "list", of: { type: "string" } },
     version: { type: "string", default: "1.0.0" },
-    status:  { type: "string", default: "draft" }, // draft/published
+    status:  { type: "string", default: "published" },  // draft/published
     updatedAt: { type: "string" },
   },
   computedFields: {
-    url: {
-      type: "string",
-      resolve: (doc) => `/guides/${doc.exam}/${doc.slug}`,
-    },
+    url: { type: "string", resolve: (doc) => `/guides/${doc.exam}/${doc.slug}` },
   },
 }));
 
