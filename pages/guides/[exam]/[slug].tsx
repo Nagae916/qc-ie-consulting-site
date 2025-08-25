@@ -1,7 +1,7 @@
 // pages/guides/[exam]/[slug].tsx
 import type { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
 import { allGuides, type Guide } from "contentlayer/generated";
-import { useMDXComponent } from "next-contentlayer/hooks";
+import { useMDXComponent } from "next-contentlayer2/hooks";
 import Link from "next/link";
 
 const EXAM_LABEL: Record<string, string> = {
