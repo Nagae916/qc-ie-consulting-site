@@ -1,10 +1,12 @@
 {
-  "extends": ["next/core-web-vitals"],
+  "extends": "next/core-web-vitals",
   "rules": {
-    "no-restricted-imports": [
+    // 旧URL /guide/* は使用禁止。必ず src/lib/routes.ts のヘルパーを使うこと
+    "no-restricted-syntax": [
       "error",
       {
-        "patterns": ["@/src/*"]
+        "selector": "Literal[value=/^\\/guide\\//]",
+        "message": "旧URL /guide/* は使用禁止です。guideUrl() または guidesQcTop を使ってください。"
       }
     ]
   }
