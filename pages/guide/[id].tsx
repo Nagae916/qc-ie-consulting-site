@@ -1,8 +1,6 @@
 // pages/guide/[id].tsx
 import Link from "next/link";
 import { useRouter } from "next/router";
-
-// ★ alias（@）で統一
 import { GUIDES } from "@/components/learn/Guides";
 import {
   StudyGuide_RegressionAnova,
@@ -11,7 +9,7 @@ import {
   StudyGuide_NewQC7Tools,
 } from "@/components/learn/StudyGuide";
 
-// id → 表示用コンポーネントの対応表（GUIDES の id と揃える）
+// id → 表示コンポーネントの対応
 const GUIDE_COMPONENTS: Record<string, () => JSX.Element> = {
   "regression-anova": StudyGuide_RegressionAnova,
   "stat-tests": StudyGuide_StatTests,
@@ -22,7 +20,6 @@ const GUIDE_COMPONENTS: Record<string, () => JSX.Element> = {
 export default function GuidePage() {
   const router = useRouter();
   const id = (router.query.id as string) || "";
-
   const meta = GUIDES.find((g) => g.id === id);
   const Cmp = GUIDE_COMPONENTS[id];
 
