@@ -3,6 +3,7 @@ import Link from "next/link";
 
 // ★ alias（@）で統一
 import { GUIDES } from "@/components/learn/Guides";
+import { guideUrl } from "@/lib/routes"; // ← 追加
 
 export default function LearningIndex() {
   return (
@@ -16,7 +17,7 @@ export default function LearningIndex() {
         {GUIDES.map((g) => (
           <Link
             key={g.id}
-            href={`/guide/${g.id}`}
+            href={guideUrl(g.id)} // ← ここを統一
             className="block rounded-xl2 bg-white border border-brand-200 shadow-soft p-5 hover:shadow-lg transition"
           >
             <h3 className="font-semibold text-brand-900">{g.title}</h3>
