@@ -1,10 +1,8 @@
 // src/components/home/Feeds.tsx
-// ※ フィード系の配置が `src/components/Feeds/`（先頭大文字）ならこの import のままでOK。
-//   もし小文字 `feeds/` や `learn/` にある場合は、ここのパスだけ読み替えてください。
-import NewsFeed from "@/components/Feeds/NewsFeed";
-import NoteFeed from "@/components/Feeds/NoteFeed";
-import InstagramFeed from "@/components/Feeds/InstagramFeed";
-import XTimeline from "@/components/Feeds/XTimeline";
+import NewsFeed from "@/components/feeds/NewsFeed";
+import NoteFeed from "@/components/feeds/NoteFeed";
+import InstagramFeed from "@/components/feeds/InstagramFeed";
+import XTimeline from "@/components/feeds/XTimeline";
 
 export default function HomeFeeds() {
   return (
@@ -24,7 +22,6 @@ export default function HomeFeeds() {
 
         <div className="rounded-xl bg-white p-5 shadow-sm">
           <h3 className="font-semibold mb-3">X（Twitter）@n_ieqclab</h3>
-          {/* ← 必須の username を指定 */}
           <XTimeline username="n_ieqclab" height={600} theme="light" />
         </div>
 
