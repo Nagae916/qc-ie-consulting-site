@@ -1,13 +1,14 @@
+// next.config.js
+const path = require("path");
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  images: {
-    remotePatterns: [
-      { protocol: 'https', hostname: '**.fbcdn.net' },
-      { protocol: 'https', hostname: '**.cdninstagram.com' }
-    ]
+  webpack: (config) => {
+    // ここでランタイム解決も固定（TS だけに依存しない）
+    config.resolve.alias["@"] = path.resolve(__dirname, "src");
+    return config;
   },
-  eslint: { ignoreDuringBuilds: true },
-  typescript: { ignoreBuildErrors: false }
 };
+
 module.exports = nextConfig;
