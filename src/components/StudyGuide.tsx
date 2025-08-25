@@ -1,191 +1,322 @@
-// src/components/StudyGuide.tsx
+// src/components/learn/StudyGuide.tsx
+
 import { useMemo, useState } from "react";
 
-export default function StudyGuide() {
-  // ナビゲーターの状態
+/* =========================================================================
+   A) 回帰分析・分散分析（既存の要約バージョン）
+   ========================================================================= */
+export function StudyGuide_RegressionAnova() {
   const [goal, setGoal] = useState<"" | "predict" | "compare">("");
   const [groups, setGroups] = useState<"" | "2" | "3+">("");
 
-  // 結果の決定
   const active = useMemo(() => {
     if (!goal) return "default";
     if (goal === "predict") return "regression";
-    if (goal === "compare") {
-      if (groups === "2") return "ttest";
-      if (groups === "3+") return "anova";
-      return "default";
-    }
+    if (goal === "compare") return groups === "2" ? "ttest" : groups === "3+" ? "anova" : "default";
     return "default";
   }, [goal, groups]);
 
-  // FAQトグル
-  const [open, setOpen] = useState<{ [k: string]: boolean }>({});
+  return (
+    <section className="mt-2">
+      <h2 className="text-2xl font-bold text-brand-900 mb-4">回帰分析・分散分析スタディガイド</h2>
+
+      <div className="bg-white rounded-xl2 border border-brand-200 shadow-soft p-6">
+        <div className="grid md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <label className="block text-sm font-medium">1. 分析目的</label>
+            <select
+              className="w-full p-3 rounded-lg border mt-2"
+              value={goal}
+              onChange={(e) => {
+                const v = e.target.value as typeof goal;
+                setGoal(v);
+                if (v !== "compare") setGroups("");
+              }}
+            >
+              <option value="">選択してください</option>
+              <option value="predict">関係性を調べ予測したい（回帰）</option>
+              <option value="compare">平均の差を検定したい（t/ANOVA）</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium">2. グループ数</label>
+            <select
+              className="w-full p-3 rounded-lg border mt-2"
+              disabled={goal !== "compare"}
+              value={groups}
+              onChange={(e) => setGroups(e.target.value as typeof groups)}
+            >
+              <option value="">選択してください</option>
+              <option value="2">2つ</option>
+              <option value="3+">3つ以上</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="mt-2 space-y-3">
+          {active === "default" && <p className="text-gray-600">上の質問に答えると推奨手法が表示されます。</p>}
+          {active === "regression" && (
+            <ResultCard
+              color="emerald"
+              title="推奨手法: 回帰分析"
+              body="説明変数が目的変数に与える影響をモデル化。予測・要因分析に有効。"
+              cheat={["連続量×連続量", "線形/非線形の当てはめ", "残差診断が重要"]}
+            />
+          )}
+          {active === "ttest" && (
+            <ResultCard
+              color="purple"
+              title="推奨手法: t検定"
+              body="2群の平均差を検定。対応の有無、等分散性に注意。"
+              cheat={["正規性・独立性", "対応あり/なしの選択", "等分散の確認（F検定など）"]}
+            />
+          )}
+          {active === "anova" && (
+            <ResultCard
+              color="blue"
+              title="推奨手法: 分散分析（ANOVA）"
+              body="3群以上の平均差を検定。F統計量を用いる。"
+              cheat={["正規/等分散/独立", "多重比較の実施", "効果量の把握"]}
+            />
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* =========================================================================
+   B) 統計手法スタディガイド（t / Z / F / χ² / ANOVA）
+   ========================================================================= */
+export function StudyGuide_StatTests() {
+  const [goal, setGoal] = useState<"" | "mean" | "variance" | "category">("");
+  const [groups, setGroups] = useState<"" | "1" | "2" | "3+">("");
+  const [variance, setVariance] = useState<"" | "known" | "unknown">("");
+
+  const active = useMemo(() => {
+    if (!goal) return "default";
+    if (goal === "mean") {
+      if (groups === "3+") return "anova";
+      if (groups === "1" || groups === "2") {
+        if (variance === "known") return "z";
+        if (variance === "unknown") return "t";
+      }
+      return "default";
+    }
+    if (goal === "variance") {
+      if (groups === "1") return "chi_var";
+      if (groups === "2" || groups === "3+") return "f";
+      return "default";
+    }
+    if (goal === "category") return "chi";
+    return "default";
+  }, [goal, groups, variance]);
 
   return (
-    <section className="mt-8">
-      <div className="mb-8">
-        <h3 className="text-2xl font-bold text-brand-900">回帰分析・分散分析スタディガイド</h3>
-        <p className="mt-2 text-gray-700">
-          目的に応じて適切な手法（回帰／t検定／分散分析）を選べるナビゲーターと、用語・確認質問のセットです。
-        </p>
-      </div>
+    <section className="mt-2">
+      <h2 className="text-2xl font-bold text-brand-900 mb-4">統計手法スタディガイド</h2>
 
-      {/* ナビゲーター */}
       <div className="bg-white rounded-xl2 border border-brand-200 shadow-soft p-6">
-        <h4 className="text-xl font-semibold text-brand-900 text-center mb-6">統計手法ナビゲーター</h4>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div className="grid md:grid-cols-3 gap-6 mb-6">
           <div>
-            <label htmlFor="goal" className="block text-sm font-medium text-gray-700 mb-2">
-              1. 分析の目的は何ですか？
-            </label>
-            <div className="relative">
-              <select
-                id="goal"
-                value={goal}
-                onChange={(e) => {
-                  const v = e.target.value as typeof goal;
-                  setGoal(v);
-                  if (v !== "compare") setGroups("");
-                }}
-                className="w-full p-3 pr-10 rounded-lg border border-brand-200 bg-white focus:outline-none focus:ring-2 focus:ring-brand-400"
-              >
-                <option value="">選択してください</option>
-                <option value="predict">変数の関係性を調べて予測したい</option>
-                <option value="compare">グループ間の平均値に差があるか調べたい</option>
-              </select>
-            </div>
+            <label className="block text-sm font-medium">1. 何を比較？</label>
+            <select
+              className="w-full p-3 rounded-lg border mt-2"
+              value={goal}
+              onChange={(e) => {
+                setGoal(e.target.value as any);
+                setGroups("");
+                setVariance("");
+              }}
+            >
+              <option value="">選択してください</option>
+              <option value="mean">平均の差</option>
+              <option value="variance">分散（ばらつき）の差</option>
+              <option value="category">カテゴリの関連性</option>
+            </select>
           </div>
-
           <div>
-            <label htmlFor="groups" className="block text-sm font-medium text-gray-700 mb-2">
-              2. 比較するグループの数は？
-            </label>
-            <div className="relative">
-              <select
-                id="groups"
-                value={groups}
-                onChange={(e) => setGroups(e.target.value as typeof groups)}
-                disabled={goal !== "compare"}
-                className="w-full p-3 pr-10 rounded-lg border border-brand-200 bg-white disabled:bg-gray-100 disabled:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-400"
-              >
-                <option value="">選択してください</option>
-                <option value="2">2つ</option>
-                <option value="3+">3つ以上</option>
-              </select>
-            </div>
+            <label className="block text-sm font-medium">2. グループ数</label>
+            <select
+              className="w-full p-3 rounded-lg border mt-2"
+              value={groups}
+              onChange={(e) => setGroups(e.target.value as any)}
+              disabled={goal === "category" || !goal}
+            >
+              <option value="">選択してください</option>
+              <option value="1">1つ</option>
+              <option value="2">2つ</option>
+              <option value="3+">3つ以上</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium">3. 母分散</label>
+            <select
+              className="w-full p-3 rounded-lg border mt-2"
+              value={variance}
+              onChange={(e) => setVariance(e.target.value as any)}
+              disabled={!(goal === "mean" || goal === "variance")}
+            >
+              <option value="">選択してください</option>
+              <option value="known">既知</option>
+              <option value="unknown">未知</option>
+            </select>
           </div>
         </div>
 
-        {/* 結果パネル */}
-        <div className="mt-2">
-          {active === "default" && (
-            <p className="text-center text-gray-500">上の質問に答えると、ここに最適な手法が表示されます。</p>
+        <div className="space-y-3">
+          {active === "default" && <p className="text-gray-600">上の質問に答えると推奨手法が表示されます。</p>}
+          {active === "t" && (
+            <ResultCard
+              color="emerald"
+              title="推奨手法: t検定"
+              body="1または2群の平均差を検定（母分散未知）。"
+              cheat={["対応の有無", "等分散の確認", "正規性・独立性"]}
+            />
           )}
-
-          {active === "regression" && (
-            <div className="rounded-lg border border-brand-200 bg-brand-100/60 p-4">
-              <h5 className="text-lg font-semibold text-emerald-700 mb-1">推奨手法: 回帰分析</h5>
-              <p className="text-gray-700">
-                説明変数が目的変数に与える影響をモデル化し、予測や要因分析に用いる手法です（主に数値×数値）。
-              </p>
-            </div>
+          {active === "z" && (
+            <ResultCard
+              color="teal"
+              title="推奨手法: Z検定"
+              body="平均差で母分散既知、かつ大標本のときに使用（実務では稀）。"
+              cheat={["母分散既知", "大標本", "理論教材向け"]}
+            />
           )}
-
+          {active === "f" && (
+            <ResultCard
+              color="blue"
+              title="推奨手法: F検定"
+              body="複数群の分散（ばらつき）の差を検定。"
+              cheat={["正規性・独立性", "分散比の解釈", "ANOVAと関連"]}
+            />
+          )}
+          {active === "chi" && (
+            <ResultCard
+              color="purple"
+              title="推奨手法: χ²（独立性の検定）"
+              body="カテゴリ×カテゴリの関連性を検定。"
+              cheat={["期待度数に注意", "自由度 = (r-1)(c-1)", "残差分析"]}
+            />
+          )}
+          {active === "chi_var" && (
+            <ResultCard
+              color="fuchsia"
+              title="推奨手法: χ²（1標本の分散）"
+              body="1標本の分散が既知の母分散と異なるかを検定。"
+              cheat={["正規性", "σ^2 の仮説検定", "工程ばらつきと規格"]}
+            />
+          )}
           {active === "anova" && (
-            <div className="rounded-lg border border-brand-200 bg-brand-100/60 p-4">
-              <h5 className="text-lg font-semibold text-sky-700 mb-1">推奨手法: 分散分析（ANOVA）</h5>
-              <p className="text-gray-700">
-                3つ以上のグループの平均値に統計的な差があるかを検定します。要因による変動と誤差を分解して評価します。
-              </p>
-            </div>
-          )}
-
-          {active === "ttest" && (
-            <div className="rounded-lg border border-brand-200 bg-brand-100/60 p-4">
-              <h5 className="text-lg font-semibold text-purple-700 mb-1">推奨手法: t検定</h5>
-              <p className="text-gray-700">
-                2群の平均の差を検定する基本手法です。ANOVAはその多群拡張と考えられます。
-              </p>
-            </div>
+            <ResultCard
+              color="orange"
+              title="推奨手法: 分散分析（ANOVA）"
+              body="3群以上の平均差を検定。F統計量を用いる。"
+              cheat={["多重比較", "効果量 η²", "Bartlett/Levene"]}
+            />
           )}
         </div>
       </div>
-
-      {/* 用語 */}
-      <div className="mt-10">
-        <h4 className="text-xl font-semibold text-brand-900 text-center mb-6">重要用語リスト</h4>
-        <div className="max-w-3xl mx-auto space-y-4">
-          {[
-            {
-              t: "説明変数（Independent Variable）",
-              b: "結果に影響を与えると考えられている原因側の変数。",
-            },
-            {
-              t: "目的変数（Dependent Variable）",
-              b: "説明変数によって変動する結果側の変数。",
-            },
-            {
-              t: "平方和（Sum of Squares）",
-              b: "データのばらつきの大きさ。ANOVAでは全変動・要因間・要因内に分けて評価します。",
-            },
-            {
-              t: "自由度（Degrees of Freedom）",
-              b: "独立に取りうる情報の数のこと。",
-            },
-          ].map((x) => (
-            <div key={x.t} className="bg-white rounded-lg border border-brand-200 p-5">
-              <h6 className="font-semibold">{x.t}</h6>
-              <p className="text-gray-700 mt-1">{x.b}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* 確認質問（FAQ風トグル） */}
-      <div className="mt-10">
-        <h4 className="text-xl font-semibold text-brand-900 text-center mb-6">キー質問で理解度チェック</h4>
-        <div className="max-w-3xl mx-auto space-y-6">
-          {[
-            {
-              id: "q1",
-              q: "Q1: 気温とアイスの売上の関係をモデル化し、将来の売上を予測したい場合の手法は？",
-              a: "回帰分析。気温を説明変数、売上を目的変数として関係式を構築します。",
-            },
-            {
-              id: "q2",
-              q: "Q2: 4つの製造方法で生産した部品の平均耐久性に差があるかを調べたい場合の手法は？",
-              a: "分散分析（ANOVA）。3群以上の平均差の検定に用います。",
-            },
-            {
-              id: "q3",
-              q: "Q3: 回帰分析や分散分析が因果関係の証明にならないのはなぜ？",
-              a: "相関・関連を示す手法であり、因果の証明には統制実験や介入・設計（DOEなど）が必要だからです。",
-            },
-          ].map((x) => (
-            <div key={x.id} className="bg-white rounded-lg border border-brand-200 p-5">
-              <p className="font-medium mb-3">{x.q}</p>
-              <button
-                className="inline-flex items-center rounded-lg bg-brand-700 hover:bg-brand-800 text-white text-sm px-4 py-2"
-                onClick={() => setOpen((s) => ({ ...s, [x.id]: !s[x.id] }))}
-                aria-expanded={!!open[x.id]}
-              >
-                {open[x.id] ? "答えを隠す" : "答えを見る"}
-              </button>
-              {open[x.id] && (
-                <div className="mt-3 p-4 bg-brand-50 rounded border border-brand-200 text-gray-800">
-                  {x.a}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* 注意書き */}
-      <p className="text-xs text-gray-500 mt-6">
-        ※本ガイドは学習用途です。実データの前提（独立性・分布・等分散性など）を満たすかを確認し、目的に応じて適切な検証・設計（DOE等）を行ってください。
-      </p>
     </section>
+  );
+}
+
+/* =========================================================================
+   C) QC七つ道具（ヒストグラム・パレート・特性要因図…）
+   ========================================================================= */
+export function StudyGuide_QC7Tools() {
+  const items = [
+    { t: "パレート図", p: "主要因の特定（ABC分析）。改善の優先度付け。" },
+    { t: "特性要因図（魚の骨）", p: "要因の洗い出しと構造化（4M/4M1E/6M）。" },
+    { t: "グラフ（折れ線/棒…）", p: "傾向・水準の把握、異常の可視化。" },
+    { t: "チェックシート", p: "現場で簡便にデータ収集（数え落とし防止）。" },
+    { t: "ヒストグラム", p: "分布形状の把握（偏り/歪度/多峰性）。" },
+    { t: "散布図", p: "2変数の関係性（相関・外れ値）。" },
+    { t: "管理図", p: "統計的な異常検知（特別原因と偶然原因）。" },
+  ];
+  return (
+    <section className="mt-2">
+      <h2 className="text-2xl font-bold text-brand-900 mb-4">QC七つ道具（現場のデータ解析）</h2>
+      <p className="text-gray-700 mb-4">
+        現場データの整理・可視化から要因仮説づくり、安定化の監視までの定番ツール群です。
+      </p>
+      <ul className="space-y-2">
+        {items.map((x) => (
+          <li key={x.t} className="bg-white border rounded p-3">
+            <span className="font-semibold">{x.t}</span>
+            <span className="text-gray-700 ml-2">{x.p}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+/* =========================================================================
+   D) 新QC七つ道具（親和図・連関図・系統図…）
+   ========================================================================= */
+export function StudyGuide_NewQC7Tools() {
+  const items = [
+    { t: "親和図法", p: "KJ法。アイデア/事実をグルーピングして本質を抽出。" },
+    { t: "連関図法", p: "要因間の因果・論理の強結合を見える化。" },
+    { t: "系統図法", p: "目的→手段のブレイクダウンで具体策を展開。" },
+    { t: "マトリックス図法", p: "要素間の関係性を行列で整理（強/中/弱）。" },
+    { t: "マトリックスデータ解析法", p: "数値データの重回帰/主成分等の土台に。" },
+    { t: "PDPC法", p: "過程決定計画図。手段とリスク/対策を網羅。" },
+    { t: "アローダイアグラム法", p: "PERT/CPM。工程の順序・クリティカルパス管理。" },
+  ];
+  return (
+    <section className="mt-2">
+      <h2 className="text-2xl font-bold text-brand-900 mb-4">新QC七つ道具（企画・設計の問題解決）</h2>
+      <p className="text-gray-700 mb-4">
+        定性的情報や計画立案に強い 7 手法。改善テーマの具体化やリスク対策に有効です。
+      </p>
+      <ul className="space-y-2">
+        {items.map((x) => (
+          <li key={x.t} className="bg-white border rounded p-3">
+            <span className="font-semibold">{x.t}</span>
+            <span className="text-gray-700 ml-2">{x.p}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+/* =========================================================================
+   小物：結果カード
+   ========================================================================= */
+function ResultCard({
+  color,
+  title,
+  body,
+  cheat,
+}: {
+  color: "emerald" | "teal" | "blue" | "purple" | "fuchsia" | "orange";
+  title: string;
+  body: string;
+  cheat: string[];
+}) {
+  const colorMap: Record<string, string> = {
+    emerald: "text-emerald-700",
+    teal: "text-teal-700",
+    blue: "text-blue-700",
+    purple: "text-purple-700",
+    fuchsia: "text-fuchsia-700",
+    orange: "text-orange-700",
+  };
+  return (
+    <div className="rounded-lg border border-brand-200 bg-brand-100/60 p-4">
+      <h5 className={`text-lg font-semibold mb-1 ${colorMap[color]}`}>{title}</h5>
+      <p className="text-gray-700">{body}</p>
+      {cheat?.length ? (
+        <div className="mt-3 p-3 bg-white rounded border">
+          <ul className="list-disc ml-5 space-y-1">
+            {cheat.map((c, i) => (
+              <li key={i}>{c}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+    </div>
   );
 }
