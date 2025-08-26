@@ -1,7 +1,7 @@
 // pages/guides/qc/[slug].tsx
 import type { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
 import { allGuides, type Guide } from "contentlayer/generated";
-import { useMDXComponent } from "next-contentlayer/hooks";
+import { useMDXComponent } from "next-contentlayer2/hooks";
 import Link from "next/link";
 
 export const getStaticPaths: GetStaticPaths = async () => {
