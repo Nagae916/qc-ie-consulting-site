@@ -1,17 +1,57 @@
----
-title: "回帰と分散分析：関係を見つける入口"
-slug: "regression-anova"
-exam: "qc"
-section: "関係を調べる"
-tags: ["回帰", "分散分析"]
-version: "1.0.0"
-status: "published"
-updatedAt: "2025-08-25"
----
+import dynamic from 'next/dynamic';
+import { GuideLayout, Glossary, QA } from '../../../src/components/guide/GuideLayout';
+const MethodNavigator = dynamic(() => import('../../../src/components/guide/MethodNavigator'), { ssr: false });
 
-## どんなときに使う？
-- **回帰**：身長が高いほど、体重は重くなる？ → 関係を式で表す。
-- **分散分析**：3つ以上のグループで、平均にちがいがある？ → まとめて比べる。
+export const title = '回帰分析・分散分析スタディガイド';
+export const description = '目的に応じて手法をナビゲートし、用語と理解度チェックで基礎を固める';
+export const tags = ['統計', '回帰分析', '分散分析', 't検定'];
 
-> はじめは言葉だけ知っていればOK。  
-> あとで図や例題で、ゆっくり理解を深めます。
+<GuideLayout
+  title={title}
+  intro="回帰分析と分散分析の基本概念と選び方を学びます。以下のナビゲーターに回答すると、あなたの目的に合う手法を提示します。"
+>
+
+<section style={{ marginBottom: 24 }}>
+  <MethodNavigator />
+</section>
+
+<section style={{ marginBottom: 24 }}>
+  <h2 style={{ textAlign:'center', fontSize: 22, fontWeight: 800, margin:'0 0 12px' }}>重要用語リスト</h2>
+  <div style={{ maxWidth: 760, margin:'0 auto', display:'grid', gap:12 }}>
+    <div style={{ background:'#fff', border:'1px solid #e5e7eb', borderRadius:16, padding:16 }}>
+      <h3 style={{ fontSize: 18, fontWeight: 800, margin:0 }}>説明変数 (Independent Variable)</h3>
+      <p style={{ color:'#64748b', margin:'8px 0 0' }}>結果に影響を与えると考えられる原因側の変数。</p>
+    </div>
+    <div style={{ background:'#fff', border:'1px solid #e5e7eb', borderRadius:16, padding:16 }}>
+      <h3 style={{ fontSize: 18, fontWeight: 800, margin:0 }}>目的変数 (Dependent Variable)</h3>
+      <p style={{ color:'#64748b', margin:'8px 0 0' }}>説明変数の影響を受けて変動する、知りたい結果の変数。</p>
+    </div>
+    <div style={{ background:'#fff', border:'1px solid #e5e7eb', borderRadius:16, padding:16 }}>
+      <h3 style={{ fontSize: 18, fontWeight: 800, margin:0 }}>平方和 (Sum of Squares)</h3>
+      <p style={{ color:'#64748b', margin:'8px 0 0' }}>ばらつきの大きさ。ANOVAでは全変動・要因間・要因内に分解。</p>
+    </div>
+    <div style={{ background:'#fff', border:'1px solid #e5e7eb', borderRadius:16, padding:16 }}>
+      <h3 style={{ fontSize: 18, fontWeight: 800, margin:0 }}>自由度 (Degrees of Freedom)</h3>
+      <p style={{ color:'#64748b', margin:'8px 0 0' }}>独立に値を取りうる数。検定統計量の分布形に関わる。</p>
+    </div>
+  </div>
+</section>
+
+<section style={{ maxWidth: 760, margin:'0 auto', display:'grid', gap:12 }}>
+  <h2 style={{ textAlign:'center', fontSize: 22, fontWeight: 800, margin:'0 0 12px' }}>キー質問で理解度チェック</h2>
+
+  <QA
+    q="気温とアイスの売上の関係をモデル化し将来の売上を予測したい。適切な手法は？"
+    a={<div><b>回帰分析</b>が適切。気温（説明）と売上（目的）の関係を数式で表す。</div>}
+  />
+  <QA
+    q="4つの製造方法で作った部品の平均耐久性に差があるか？"
+    a={<div><b>分散分析 (ANOVA)</b>が適切。3群以上の平均の差を検定。</div>}
+  />
+  <QA
+    q="回帰やANOVAが因果関係を証明しないのはなぜ？"
+    a={<div>どちらも<strong>関連</strong>や<strong>相関</strong>の検定・推定であり、因果の証明には管理実験等が必要。共通原因の存在に注意。</div>}
+  />
+</section>
+
+</GuideLayout>
