@@ -1,4 +1,4 @@
-// next.config.js
+// next.config.js（全置換OK）
 const path = require("path");
 const { withContentlayer } = require("next-contentlayer2");
 
@@ -6,15 +6,11 @@ const { withContentlayer } = require("next-contentlayer2");
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-
-  // MD/MDX をページ拡張に含める（任意だが推奨）
   pageExtensions: ["tsx", "ts", "jsx", "js", "md", "mdx"],
-
   webpack: (config) => {
     config.resolve.alias["@"] = path.resolve(__dirname, "src");
     return config;
   },
-
   async redirects() {
     const map = {
       "regression-anova": "/guides/qc/regression-anova",
