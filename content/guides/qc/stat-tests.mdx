@@ -1,22 +1,79 @@
----
-title: "検定ってなに？：偶然か、ちがいがあるのか"
-slug: "stat-tests"
-exam: "qc"
-section: "検定のはじめ"
-tags: ["t検定", "カイ二乗"]
-version: "1.0.0"
-status: "published"
-updatedAt: "2025-08-25"
----
+import dynamic from 'next/dynamic';
+import { GuideLayout, Glossary, QA } from '../../../src/components/guide/GuideLayout';
+// ※ エイリアス(@/components/...)が使える場合はパスを置き換えてOK
+const ControlChart = dynamic(() => import('../../../src/components/guide/ControlChart'), { ssr: false });
 
-## ざっくり言うと
-2つのグループに**本当のちがい**があるのか、  
-それとも**たまたま**そう見えただけなのかを、数字で確かめるやり方です。
+export const title = '管理図スタディガイド';
+export const description = '代表的な管理図（X̄R / np / p / u）の見方と選び方を学ぶ';
+export const tags = ['QC','統計','管理図'];
 
-## 例
-同じ方法で作ったA工場とB工場の製品。  
-「Bのほうが少しだけ軽い気がする…」  
-→ **たまたま？ 本当に軽い？** を、検定でチェックします。
+<GuideLayout
+  title={title}
+  intro="管理図は工程が安定状態かを判断する重要ツール。このガイドでは代表的な管理図の目的と、データに応じた選び方を学びます。"
+>
 
-> むずかしそうに見えるけど、考え方はシンプル。  
-> 「偶然かどうか」を数字で判断する道具、がポイント。
+<section style={{ marginBottom: 24 }}>
+  <h3 style={{ fontSize: 20, fontWeight: 800, textAlign: 'center', margin: '0 0 12px' }}>
+    管理図の種類と特徴
+  </h3>
+  <p style={{ maxWidth: 760, margin: '0 auto 12px', color: '#64748b' }}>
+    代表的な4種類（X̄-R / np / p / u）を並べて比較します。
+  </p>
+
+  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 16 }}>
+    <div>
+      <div style={{ fontWeight: 700, marginBottom: 6 }}>X̄-R 管理図（計量値）</div>
+      <div style={{ color: '#64748b', marginBottom: 8 }}>寸法・重さなど連続値の平均とばらつきを監視。</div>
+      <ControlChart
+        title="X値"
+        type="x"
+        data={[10.1,10.2,9.9,10.3,9.8,10.0,10.4,10.1,9.9,10.2,10.5,9.7,10.0,10.3,9.9,10.1,10.6,9.8,10.2,10.0]}
+      />
+    </div>
+
+    <div>
+      <div style={{ fontWeight: 700, marginBottom: 6 }}>np 管理図（個数）</div>
+      <div style={{ color: '#64748b', marginBottom: 8 }}>サンプルサイズ一定時の不適合品 <b>個数</b>。</div>
+      <ControlChart
+        title="不適合品数 (np)"
+        type="np"
+        data={[8,10,7,11,9,12,8,10,9,11,14,8,10,12,9,11,13,8,10,11]}
+      />
+    </div>
+
+    <div>
+      <div style={{ fontWeight: 700, marginBottom: 6 }}>p 管理図（割合）</div>
+      <div style={{ color: '#64748b', marginBottom: 8 }}>検査数が変動する時の不適合品 <b>率</b>。</div>
+      <ControlChart
+        title="不適合品率 (p)"
+        type="p"
+        data={[0.08,0.10,0.07,0.11,0.09,0.12,0.08,0.10,0.09,0.11,0.14,0.08,0.10,0.12,0.09,0.11,0.13,0.08,0.10,0.11]}
+        sampleSizes={[100,105,98,110,95,120,103,100,99,108,125,97,100,115,95,105,112,98,101,104]}
+      />
+    </div>
+
+    <div>
+      <div style={{ fontWeight: 700, marginBottom: 6 }}>u 管理図（単位当たり欠点数）</div>
+      <div style={{ color: '#64748b', marginBottom: 8 }}>一定単位中の欠点数。</div>
+      <ControlChart
+        title="欠点数 (u)"
+        type="u"
+        data={[2,3,1,4,0,2,5,3,1,2,8,1,3,4,2,3,5,1,2,3]}
+      />
+    </div>
+  </div>
+</section>
+
+<Glossary items={[
+  { term: '管理図の目的', desc: '工程が統計的に安定（管理状態）かを監視し、異常変動を早期検知する。' },
+  { term: '管理限界線（UCL/LCL）', desc: '通常 CL±3σ（約99.7%）。' },
+  { term: '管理外れ', desc: '限界外や異常パターン出現時は原因究明が必要。' },
+]} />
+
+<section style={{ maxWidth: 760, margin: '0 auto', display: 'grid', gap: 12 }}>
+  <QA q="点が管理限界外に出たら正常？異常？" a="異常（特殊原因の可能性が高い）。" />
+  <QA q="検査数が一定／変動で使う図は？" a={<div>一定：np、変動：p</div>} />
+  <QA q="X̄-Rが向くのは？" a="寸法・重さなどの連続値の平均とばらつき。" />
+</section>
+
+</GuideLayout>
