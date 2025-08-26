@@ -3,7 +3,6 @@ import Link from "next/link";
 import { GUIDES } from "@/components/learn/Guides";
 import { guideHref } from "@/lib/routes";
 
-// GUIDES の要素に exam/slug が無い場合のフォールバック（従来4件をQC扱い）
 const FALLBACK_QC_SLUGS = new Set([
   "qc-seven-tools",
   "new-qc-seven-tools",
@@ -15,31 +14,21 @@ type MaybeGuide = {
   id?: string;
   title?: string;
   description?: string;
-  tags?: unknown; // 文字列/配列/未定義どれでも受ける
+  tags?: unknown;
   exam?: string;
   slug?: string;
 };
 
 function toExamSlug(g: MaybeGuide): { exam: string; slug: string } | null {
-  // 1) 推奨：exam/slug を持つ
   if (g.exam && g.slug) return { exam: String(g.exam), slug: String(g.slug) };
-
-  // 2) 旧データ：id のみ → 既知IDはQC配下へ
   if (g.id && FALLBACK_QC_SLUGS.has(g.id)) return { exam: "qc", slug: g.id };
-
-  // 3) どれにも当てはまらない
   return null;
 }
 
-// 文字列/配列/未定義を「配列<string>」に正規化
 function normalizeTags(input: unknown): string[] {
   if (Array.isArray(input)) return input.filter(Boolean).map(String);
-  if (typeof input === "string") {
-    return input
-      .split(/[,\s]+/)
-      .map((s) => s.trim())
-      .filter(Boolean);
-  }
+  if (typeof input === "string")
+    return input.split(/[,\s]+/).map((s) => s.trim()).filter(Boolean);
   return [];
 }
 
@@ -55,7 +44,7 @@ export default function LearningIndex() {
         {GUIDES.map((raw) => {
           const g = raw as MaybeGuide;
           const es = toExamSlug(g);
-          if (!es) return null; // 形が不十分な要素は無視（実行時例外防止）
+          if (!es) return null;
 
           const tags = normalizeTags(g.tags);
 
@@ -82,9 +71,7 @@ export default function LearningIndex() {
       </div>
 
       <div className="mt-8">
-        <Link href="/" className="text-brand-800 hover:underline">
-          ← トップへ戻る
-        </Link>
+        <Link href="/" className="text-brand-800 hover:underline">← トップへ戻る</Link>
       </div>
     </main>
   );
