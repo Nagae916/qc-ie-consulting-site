@@ -6,7 +6,7 @@ import { allGuides } from "contentlayer/generated";
 const EXAM_LABEL: Record<string, string> = {
   qc: "QC検定",
   stats: "統計検定",
-  pe: "技術士試験",
+  pe: "技術士試験"
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
@@ -22,7 +22,6 @@ export const getStaticProps: GetStaticProps<{ exam: keyof typeof EXAM_LABEL }> =
   return { props: { exam }, revalidate: 60 };
 };
 
-// 文字列/配列/未定義を「配列<string>」に統一
 function normalizeTags(input: unknown): string[] {
   if (Array.isArray(input)) return input.filter(Boolean).map(String);
   if (typeof input === "string") {
@@ -39,9 +38,7 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
     .filter((g) => g.exam === exam && g.status !== "draft")
     .sort(
       (a, b) =>
-        // 1) セクション名で昇順
         (a.section ?? "").localeCompare(b.section ?? "") ||
-        // 2) 更新日で降順（ISO/日付文字列を安全に比較）
         new Date(b.updatedAt ?? 0).getTime() - new Date(a.updatedAt ?? 0).getTime()
     );
 
@@ -55,14 +52,39 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
   return (
     <section className="space-y-6">
       <div className="text-sm text-gray-500">
-        <Link href="/guides" className="underline">
-          ガイド
-        </Link>{" "}
-        / {EXAM_LABEL[exam]}
+        <Link href="/guides" className="underline">ガイド</Link> / {EXAM_LABEL[exam]}
       </div>
 
       <h1 className="text-2xl font-semibold">{EXAM_LABEL[exam]} 一覧</h1>
 
       {[...bySection.entries()].map(([sec, items]) => (
         <div key={sec} className="space-y-2">
-          <h2 className="text-lg
+          <h2 className="text-lg font-semibold">{sec}</h2>
+          <ul className="divide-y rounded-lg border">
+            {items.map((g) => {
+              const href =
+                typeof g.url === "string" && g.url.startsWith("/guides/")
+                  ? g.url
+                  : `/guides/${g.exam}/${g.slug}`;
+              const tags = normalizeTags(g.tags);
+
+              return (
+                <li key={g.slug} className="p-3">
+                  <Link href={href} className="font-medium hover:underline">
+                    {g.title}
+                  </Link>
+                  <div className="text-sm text-gray-500">
+                    v{g.version ?? "1.0.0"} ・ 更新日 {g.updatedAt ?? "—"}
+                  </div>
+                  {tags.length > 0 ? (
+                    <div className="mt-1 text-xs text-gray-500">#{tags.join(" #")}</div>
+                  ) : null}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ))}
+    </section>
+  );
+}
