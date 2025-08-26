@@ -3,8 +3,9 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "dev": "next dev -p 3000",
-    "build": "next build",
+    "gen": "contentlayer2 build",
+    "dev": "npm run gen && next dev -p 3000",
+    "build": "npm run gen && next build",
     "start": "next start -p 3000",
     "lint": "next lint",
     "check:routes": "node ./scripts/check-routes.js",
@@ -29,20 +30,12 @@
     "eslint-config-next": "14.2.5",
     "postcss": "8.4.41",
     "tailwindcss": "3.4.10",
-    "typescript": "5.5.4",
-    "husky": "^9.1.6",
-    "lint-staged": "^15.2.9"
+    "typescript": "5.5.4"
   },
   "overrides": {
     "eslint": "8.57.0"
   },
   "engines": {
     "node": ">=18 <21"
-  },
-  "lint-staged": {
-    "*.{ts,tsx,js,jsx,json,md,mdx}": [
-      "npm run lint -- --fix",
-      "git add"
-    ]
   }
 }
