@@ -1,6 +1,6 @@
 // pages/guides/[exam]/[slug].tsx
 import type { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
-import { allGuides, type Guide } from "contentlayer/generated";
+import { allGuides, type Guide } from "contentlayer2/generated"; // ← ここを contentlayer2 に
 import { useMDXComponent } from "next-contentlayer2/hooks";
 import Link from "next/link";
 
@@ -28,22 +28,25 @@ export const getStaticProps: GetStaticProps<{ guide: Guide }> = async ({ params 
 export default function GuidePage({ guide }: InferGetStaticPropsType<typeof getStaticProps>) {
   const MDX = useMDXComponent(guide.body.code);
   return (
-    <article className="prose max-w-none">
-      <div className="text-sm text-gray-500">
-        <Link href="/guides" className="underline">Guides</Link> /{" "}
+    <main className="mx-auto max-w-4xl px-4 py-10">
+      <div className="text-sm text-gray-500 mb-4">
+        <Link href="/guides" className="underline">ガイド</Link> /{" "}
         <Link href={`/guides/${guide.exam}`} className="underline">{EXAM_LABEL[guide.exam]}</Link>
       </div>
-      <h1>{guide.title}</h1>
-      <p className="text-sm text-gray-500">
-        セクション：{guide.section ?? "未分類"} ・ v{guide.version} ・ 更新日 {guide.updatedAt} ・{" "}
-        <Link
-          href={`https://github.com/your-org/your-repo/edit/main/content/guides/${guide._raw.flattenedPath}.mdx`}
-          className="underline"
-        >
-          編集する
-        </Link>
-      </p>
-      <MDX />
-    </article>
+
+      <article className="prose max-w-none">
+        <h1>{guide.title}</h1>
+        <p className="text-sm text-gray-500">
+          セクション：{guide.section ?? "未分類"} ・ v{guide.version} ・ 更新日 {guide.updatedAt} ・{" "}
+          <Link
+            href={`https://github.com/Nagae916/qc-ie-consulting-site/edit/main/content/guides/${guide._raw.flattenedPath}.mdx`}
+            className="underline"
+          >
+            編集する
+          </Link>
+        </p>
+        <MDX />
+      </article>
+    </main>
   );
 }
