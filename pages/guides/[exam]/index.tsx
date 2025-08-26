@@ -1,7 +1,7 @@
 // pages/guides/[exam]/index.tsx
 import Link from "next/link";
 import type { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
-import { allGuides } from "contentlayer2/generated"; // ← 修正済み
+import { allGuides } from "contentlayer/generated"; // ← 修正済み
 
 const EXAM_LABEL: Record<string, string> = {
   qc: "QC検定",
