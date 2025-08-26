@@ -13,7 +13,7 @@ export function guideHref(exam: string, slug: string): string {
   return `/guides/${exam}/${slug}`;
 }
 
-// 互換：QC固定
+// 互換：QC固定（既存コード向け）
 export function guideUrl(slug: GuideSlug): `/guides/qc/${GuideSlug}` {
   return `/guides/qc/${slug}`;
 }
