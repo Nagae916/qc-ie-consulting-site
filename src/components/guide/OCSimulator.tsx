@@ -109,4 +109,89 @@ export default function OCSimulator({
               title: (items: any) => {
                 const it = items[0];
                 const x = it?.raw?.x ?? it?.parsed?.x ?? 0;
-                return `不良率: ${Number(x
+                return `不良率: ${Number(x).toFixed(1)}%`;
+              },
+              label: (ctx: any) => {
+                // リスク点はラベルをそのまま表示
+                if (ctx.datasetIndex === 1 && ctx.raw?.label) {
+                  return `${ctx.raw.label}: ${(ctx.raw.y * 100).toFixed(1)}%`;
+                }
+                return `合格確率: ${(ctx.parsed.y * 100).toFixed(1)}%`;
+              },
+            },
+          },
+          annotation: {
+            annotations: showRisk
+              ? {
+                  aqlLine: {
+                    type: 'line',
+                    xMin: aql, xMax: aql,
+                    borderColor: 'rgba(59,130,246,0.5)',
+                    borderWidth: 1,
+                    borderDash: [6, 6],
+                  },
+                  rqlLine: {
+                    type: 'line',
+                    xMin: rql, xMax: rql,
+                    borderColor: 'rgba(239,68,68,0.5)',
+                    borderWidth: 1,
+                    borderDash: [6, 6],
+                  },
+                }
+              : {},
+          },
+        },
+        scales: {
+          x: {
+            type: 'linear' as const,
+            title: { display: true, text: 'ロットの不良率 (p)' },
+            min: 0,
+            max: pMaxPercent,
+            ticks: {
+              callback: (v: any) => `${v}%`,
+            },
+          },
+          y: {
+            title: { display: true, text: 'ロットの合格確率 (Pa)' },
+            min: 0,
+            max: 1,
+            ticks: {
+              stepSize: 0.1,
+              callback: (v: any) => Number(v).toFixed(1),
+            },
+          },
+        },
+      } as const,
+    };
+  }, [n, c, aql, rql, pMaxPercent, stepPercent, showRisk]);
+
+  // 簡易スタイル
+  const card: React.CSSProperties = { background: '#fff', border: '1px solid #e5e7eb', borderRadius: 16, padding: 16, boxShadow: '0 2px 8px rgba(0,0,0,.04)' };
+  const label: React.CSSProperties = { fontWeight: 600, marginBottom: 6 };
+  const input: React.CSSProperties = { width: 72, padding: 6, textAlign: 'center', border: '1px solid #cbd5e1', borderRadius: 8 };
+
+  return (
+    <div style={card}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16, marginBottom: 12 }}>
+        <div>
+          <div style={label}>n（サンプルサイズ）</div>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+            <input type="range" min={minN} max={maxN} value={n} onChange={e => onNChange(Number(e.target.value))} style={{ flex: 1 }} />
+            <input type="number" min={minN} max={maxN} value={n} onChange={e => onNChange(Number(e.target.value))} style={input} />
+          </div>
+        </div>
+        <div>
+          <div style={label}>c（合格判定個数）</div>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+            <input type="range" min={minC} max={Math.min(maxC, n)} value={c} onChange={e => onCChange(Number(e.target.value))} style={{ flex: 1 }} />
+            <input type="number" min={minC} max={Math.min(maxC, n)} value={c} onChange={e => onCChange(Number(e.target.value))} style={input} />
+          </div>
+        </div>
+      </div>
+
+      <div style={{ height: 380 }}>
+        <Line data={data as any} options={options as any} />
+      </div>
+    </div>
+  );
+}
