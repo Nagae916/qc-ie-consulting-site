@@ -1,6 +1,6 @@
 // pages/guides/[exam]/[slug].tsx
 import type { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
-import { allGuides, type Guide } from "contentlayer2/generated"; // ← ここを contentlayer2 に
+import { allGuides, type Guide } from "contentlayer2/generated"; // ← 修正済み
 import { useMDXComponent } from "next-contentlayer2/hooks";
 import Link from "next/link";
 
@@ -27,6 +27,7 @@ export const getStaticProps: GetStaticProps<{ guide: Guide }> = async ({ params 
 
 export default function GuidePage({ guide }: InferGetStaticPropsType<typeof getStaticProps>) {
   const MDX = useMDXComponent(guide.body.code);
+
   return (
     <main className="mx-auto max-w-4xl px-4 py-10">
       <div className="text-sm text-gray-500 mb-4">
