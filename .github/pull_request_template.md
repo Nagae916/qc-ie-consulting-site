@@ -1,0 +1,3 @@
+- [ ] /guide/ 直書きしていない（routes.ts 利用）
+- [ ] ローカルで `npm run check` 通過
+- [ ] 必要に応じて vercel.json の ignoreCommand を見直した
