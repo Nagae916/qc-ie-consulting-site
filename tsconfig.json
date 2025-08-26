@@ -9,11 +9,12 @@
     "strict": true,
     "noEmit": true,
     "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
       "contentlayer/generated": ["./.contentlayer/generated"]
     },
-    "types": ["node"]
+    "types": ["node", "contentlayer/generated"]
   },
   "include": [
     "next-env.d.ts",
