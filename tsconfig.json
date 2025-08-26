@@ -15,7 +15,7 @@
       "@/*": ["src/*"],
       "contentlayer/generated": ["./.contentlayer/generated"]
     },
-    "types": ["node", "contentlayer/generated"]
+    "types": ["node"]
   },
   "include": [
     "next-env.d.ts",
