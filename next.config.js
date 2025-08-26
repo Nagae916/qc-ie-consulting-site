@@ -1,4 +1,4 @@
-// next.config.js（全置換OK）
+// next.config.js
 const path = require("path");
 const { withContentlayer } = require("next-contentlayer2");
 
@@ -6,6 +6,7 @@ const { withContentlayer } = require("next-contentlayer2");
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
+  productionBrowserSourceMaps: true, // ← 追加：本番でも元ソースでスタックが出る
   pageExtensions: ["tsx", "ts", "jsx", "js", "md", "mdx"],
   webpack: (config) => {
     config.resolve.alias["@"] = path.resolve(__dirname, "src");
