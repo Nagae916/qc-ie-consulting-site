@@ -1,12 +1,11 @@
 // pages/guides/index.tsx
 import Link from "next/link";
 import type { GetStaticProps } from "next";
-import { allGuides } from "contentlayer2/generated"; // ← ここを contentlayer2 に
+import { allGuides } from "contentlayer2/generated"; // ← 修正済み
 
 export const getStaticProps: GetStaticProps = async () => ({ props: {}, revalidate: 60 });
 
 export default function GuidesHome() {
-  // いまはQCのみ公開想定
   const qcCount = allGuides.filter(g => g.status !== "draft" && g.exam === "qc").length;
 
   return (
