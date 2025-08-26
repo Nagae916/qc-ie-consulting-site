@@ -2,19 +2,20 @@
 import Link from "next/link";
 import { GUIDES } from "@/components/learn/Guides";
 import { guideHref } from "@/lib/routes";
+import { normalizeStringArray, toArray } from "@/lib/safe";
 
 const FALLBACK_QC_SLUGS = new Set([
   "qc-seven-tools",
   "new-qc-seven-tools",
   "stat-tests",
-  "regression-anova"
+  "regression-anova",
 ]);
 
 type MaybeGuide = {
   id?: string;
   title?: string;
   description?: string;
-  tags?: unknown; // 文字列/配列/未定義どれでも受ける
+  tags?: unknown;
   exam?: string;
   slug?: string;
 };
@@ -24,14 +25,9 @@ function toExamSlug(g: MaybeGuide): { exam: string; slug: string } | null {
   if (g.id && FALLBACK_QC_SLUGS.has(g.id)) return { exam: "qc", slug: g.id };
   return null;
 }
-function normalizeTags(input: unknown): string[] {
-  if (Array.isArray(input)) return input.filter(Boolean).map(String);
-  if (typeof input === "string") return input.split(/[,\s]+/).map((s) => s.trim()).filter(Boolean);
-  return [];
-}
 
 export default function LearningIndex() {
-  const list = Array.isArray(GUIDES) ? GUIDES : [];
+  const list = toArray<MaybeGuide>(GUIDES);
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
@@ -41,12 +37,11 @@ export default function LearningIndex() {
       </header>
 
       <div className="grid md:grid-cols-3 gap-6">
-        {list.map((raw: unknown) => {
-          const g = raw as MaybeGuide;
+        {list.map((g) => {
           const es = toExamSlug(g);
           if (!es) return null;
 
-          const tags = normalizeTags(g.tags);
+          const tags = normalizeStringArray(g.tags);
 
           return (
             <Link
