@@ -1,7 +1,7 @@
 // pages/guides/[exam]/index.tsx
 import Link from "next/link";
 import type { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
-import { allGuides } from "contentlayer/generated";
+import { allGuides } from "contentlayer2/generated"; // ← ここを contentlayer2 に
 
 const EXAM_LABEL: Record<string, string> = {
   qc: "QC検定",
@@ -16,8 +16,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
   return { paths: exams.map((exam) => ({ params: { exam } })), fallback: false };
 };
 
-export const getStaticProps: GetStaticProps<{ exam: string }> = async ({ params }) => {
-  const exam = String(params?.exam);
+export const getStaticProps: GetStaticProps<{ exam: keyof typeof EXAM_LABEL }> = async ({ params }) => {
+  const exam = String(params?.exam) as keyof typeof EXAM_LABEL;
   if (!EXAM_LABEL[exam]) return { notFound: true };
   return { props: { exam }, revalidate: 60 };
 };
@@ -41,7 +41,7 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
   return (
     <section className="space-y-6">
       <div className="text-sm text-gray-500">
-        <Link href="/guides" className="underline">Guides</Link> / {EXAM_LABEL[exam]}
+        <Link href="/guides" className="underline">ガイド</Link> / {EXAM_LABEL[exam]}
       </div>
       <h1 className="text-2xl font-semibold">{EXAM_LABEL[exam]} 一覧</h1>
 
