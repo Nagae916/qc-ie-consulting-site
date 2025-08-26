@@ -1,7 +1,7 @@
 // pages/guides/index.tsx
 import Link from "next/link";
 import type { GetStaticProps } from "next";
-import { allGuides } from "contentlayer2/generated"; // ← 修正済み
+import { allGuides } from "contentlayer/generated"; // ← 修正済み
 
 export const getStaticProps: GetStaticProps = async () => ({ props: {}, revalidate: 60 });
 
