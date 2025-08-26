@@ -2,11 +2,12 @@
 import Link from "next/link";
 import type { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
 import { allGuides } from "contentlayer/generated";
+import { normalizeStringArray } from "@/lib/safe";
 
 const EXAM_LABEL: Record<string, string> = {
   qc: "QC検定",
   stats: "統計検定",
-  pe: "技術士試験"
+  pe: "技術士試験",
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
@@ -49,19 +50,27 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
         <div key={sec} className="space-y-2">
           <h2 className="text-lg font-semibold">{sec}</h2>
           <ul className="divide-y rounded-lg border">
-            {items.map((g) => (
-              <li key={g.slug} className="p-3">
-                <Link href={g.url} className="font-medium hover:underline">
-                  {g.title}
-                </Link>
-                <div className="text-sm text-gray-500">
-                  v{g.version ?? "1.0.0"} ・ 更新日 {g.updatedAt ?? "—"}
-                </div>
-                {g.tags.length > 0 ? (
-                  <div className="mt-1 text-xs text-gray-500">#{g.tags.join(" #")}</div>
-                ) : null}
-              </li>
-            ))}
+            {items.map((g) => {
+              const href =
+                typeof g.url === "string" && g.url.startsWith("/guides/")
+                  ? g.url
+                  : `/guides/${g.exam}/${g.slug}`;
+              const tags = normalizeStringArray((g as any).tags);
+
+              return (
+                <li key={g.slug} className="p-3">
+                  <Link href={href} className="font-medium hover:underline">
+                    {g.title}
+                  </Link>
+                  <div className="text-sm text-gray-500">
+                    v{g.version ?? "1.0.0"} ・ 更新日 {g.updatedAt ?? "—"}
+                  </div>
+                  {tags.length > 0 ? (
+                    <div className="mt-1 text-xs text-gray-500">#{tags.join(" #")}</div>
+                  ) : null}
+                </li>
+              );
+            })}
           </ul>
         </div>
       ))}
