@@ -55,6 +55,7 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
                 typeof g.url === "string" && g.url.startsWith("/guides/")
                   ? g.url
                   : `/guides/${g.exam}/${g.slug}`;
+
               const tags = normalizeStringArray((g as any).tags);
 
               return (
