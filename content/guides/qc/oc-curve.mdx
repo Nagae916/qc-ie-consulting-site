@@ -1,0 +1,43 @@
+import dynamic from 'next/dynamic';
+import { GuideLayout, Glossary, QA } from '../../../src/components/guide/GuideLayout';
+const OCSimulator = dynamic(() => import('../../../src/components/guide/OCSimulator'), { ssr: false });
+
+export const title = '計数基準型抜取検査（OC曲線）ガイド';
+export const description = 'n と c を動かして OC 曲線と α・β を体感する';
+export const tags = ['QC','統計','OC曲線','抜取検査'];
+
+<GuideLayout
+  title={title}
+  intro="抜取検査の性能をOC曲線で可視化します。n と c を動かし、AQL/RQL 点での α・β を確認しましょう。"
+>
+
+<section style={{ marginBottom: 24 }}>
+  <h3 style={{ fontSize: 20, fontWeight: 800, textAlign: 'center', margin: '0 0 12px' }}>
+    OC曲線シミュレーター
+  </h3>
+  <p style={{ textAlign: 'center', color: '#64748b', margin: '0 0 12px' }}>
+    パラメータ（サンプルサイズ n、合格判定個数 c）を変更して、曲線の変化を確認してください。
+  </p>
+  <OCSimulator
+    defaultN={30} minN={10} maxN={200}
+    defaultC={3}  minC={0}  maxC={10}
+    aql={1.0} rql={6.5}
+    pMaxPercent={40} stepPercent={1}
+    showRisk
+  />
+</section>
+
+<Glossary items={[
+  { term: '抜取検査', desc: '全数ではなく一部サンプルでロット合否を判定する手法。' },
+  { term: 'OC曲線', desc: '不良率 p（横軸）と合格確率 Pa（縦軸）の関係。' },
+  { term: '生産者危険 (α)', desc: '良いロットを不合格にしてしまう確率。' },
+  { term: '消費者危険 (β)', desc: '悪いロットを合格にしてしまう確率。' },
+]} />
+
+<section style={{ maxWidth: 760, margin: '0 auto', display: 'grid', gap: 12 }}>
+  <QA q="OC曲線の軸は？" a="横軸＝ロットの不良率（%）、縦軸＝ロットが合格する確率（%）。" />
+  <QA q="n を大きくするとどうなる？" a="判定がより明確になり、曲線は急峻になります（合格判定は厳しめに）。" />
+  <QA q="c を小さくするとどうなる？" a="判定が厳しくなり、曲線は左にシフトします（合格しにくく）。" />
+</section>
+
+</GuideLayout>
