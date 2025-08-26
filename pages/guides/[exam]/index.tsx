@@ -6,7 +6,7 @@ import { allGuides } from "contentlayer/generated";
 const EXAM_LABEL: Record<string, string> = {
   qc: "QC検定",
   stats: "統計検定",
-  pe: "技術士試験",
+  pe: "技術士試験"
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
