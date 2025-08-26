@@ -15,22 +15,32 @@ type MaybeGuide = {
   id?: string;
   title?: string;
   description?: string;
-  tags?: string[];
+  tags?: unknown; // 文字列/配列/未定義どれでも受ける
   exam?: string;
   slug?: string;
 };
 
 function toExamSlug(g: MaybeGuide): { exam: string; slug: string } | null {
-  // 1) 正式に exam/slug を持っている場合（推奨形）
+  // 1) 推奨：exam/slug を持つ
   if (g.exam && g.slug) return { exam: String(g.exam), slug: String(g.slug) };
 
-  // 2) 旧データ：id のみ → 既知IDはQC配下にマップ
-  if (g.id && FALLBACK_QC_SLUGS.has(g.id)) {
-    return { exam: "qc", slug: g.id };
-  }
+  // 2) 旧データ：id のみ → 既知IDはQC配下へ
+  if (g.id && FALLBACK_QC_SLUGS.has(g.id)) return { exam: "qc", slug: g.id };
 
-  // 3) どれでもない場合は無効
+  // 3) どれにも当てはまらない
   return null;
+}
+
+// 文字列/配列/未定義を「配列<string>」に正規化
+function normalizeTags(input: unknown): string[] {
+  if (Array.isArray(input)) return input.filter(Boolean).map(String);
+  if (typeof input === "string") {
+    return input
+      .split(/[,\s]+/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }
+  return [];
 }
 
 export default function LearningIndex() {
@@ -45,7 +55,9 @@ export default function LearningIndex() {
         {GUIDES.map((raw) => {
           const g = raw as MaybeGuide;
           const es = toExamSlug(g);
-          if (!es) return null; // 形が不十分な要素は無視（ビルドを止めない）
+          if (!es) return null; // 形が不十分な要素は無視（実行時例外防止）
+
+          const tags = normalizeTags(g.tags);
 
           return (
             <Link
@@ -55,9 +67,9 @@ export default function LearningIndex() {
             >
               <h3 className="font-semibold text-brand-900">{g.title ?? es.slug}</h3>
               {g.description ? <p className="text-sm text-gray-700 mt-2">{g.description}</p> : null}
-              {g.tags?.length ? (
+              {tags.length > 0 ? (
                 <div className="mt-3 flex flex-wrap gap-2">
-                  {g.tags.map((t) => (
+                  {tags.map((t) => (
                     <span key={t} className="text-xs px-2 py-1 rounded bg-brand-100/70 border border-brand-200">
                       {t}
                     </span>
