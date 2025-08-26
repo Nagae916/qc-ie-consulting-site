@@ -1,0 +1,56 @@
+import dynamic from 'next/dynamic';
+import { GuideLayout, Glossary, QA } from '../../../src/components/guide/GuideLayout';
+const TestNavigator = dynamic(() => import('../../../src/components/guide/TestNavigator'), { ssr: false });
+
+export const title = '統計手法スタディガイド';
+export const description = '目的・群数・分散既知/未知から最適な検定をナビゲート。用語とQAで基礎固め。';
+export const tags = ['統計', 't検定', 'Z検定', 'F検定', 'χ²検定', 'ANOVA'];
+
+<GuideLayout
+  title={title}
+  intro="品質管理やR&Dで頻出の統計手法を、目的ベースで素早く選べるようにしました。ページ内だけで完結するナビ＋チートシート付きです。"
+>
+
+<section style={{ marginBottom: 24 }}>
+  <TestNavigator />
+</section>
+
+<section style={{ marginBottom: 24 }}>
+  <h2 style={{ textAlign:'center', fontSize: 22, fontWeight: 800, margin:'0 0 12px' }}>重要用語リスト</h2>
+  <div style={{ maxWidth: 760, margin:'0 auto', display:'grid', gap:12 }}>
+    <div style={{ background:'#fff', border:'1px solid #e5e7eb', borderRadius:16, padding:16 }}>
+      <h3 style={{ fontSize: 18, fontWeight: 800, margin:0 }}>正規分布</h3>
+      <p style={{ color:'#64748b', margin:'8px 0 0' }}>平均を中心に左右対称の分布。多くの検定の理論基盤。</p>
+    </div>
+    <div style={{ background:'#fff', border:'1px solid #e5e7eb', borderRadius:16, padding:16 }}>
+      <h3 style={{ fontSize: 18, fontWeight: 800, margin:0 }}>カテゴリ変数</h3>
+      <p style={{ color:'#64748b', margin:'8px 0 0' }}>数値ではなく分類で表す変数（例：合否、性別、ライン）。</p>
+    </div>
+    <div style={{ background:'#fff', border:'1px solid #e5e7eb', borderRadius:16, padding:16 }}>
+      <h3 style={{ fontSize: 18, fontWeight: 800, margin:0 }}>母分散（既知／未知）</h3>
+      <p style={{ color:'#64748b', margin:'8px 0 0' }}>母集団の分散が既知ならZ、未知ならtが基本（実務では多くが未知）。</p>
+    </div>
+    <div style={{ background:'#fff', border:'1px solid #e5e7eb', borderRadius:16, padding:16 }}>
+      <h3 style={{ fontSize: 18, fontWeight: 800, margin:0 }}>対応の有無</h3>
+      <p style={{ color:'#64748b', margin:'8px 0 0' }}>同一対象の前後比較＝対応あり、別群比較＝対応なし（t検定で分岐）。</p>
+    </div>
+  </div>
+</section>
+
+<section style={{ maxWidth: 760, margin:'0 auto', display:'grid', gap:12 }}>
+  <h2 style={{ textAlign:'center', fontSize: 22, fontWeight: 800, margin:'0 0 12px' }}>キー質問で理解度チェック</h2>
+  <QA
+    q="母分散が既知の2群の平均の差を検定したい。適切な手法は？"
+    a={<div>Z検定。実務では母分散既知ケースは稀だが、理論上はZで平均差を検定。</div>}
+  />
+  <QA
+    q="3つの製造ラインの寸法ばらつきに差があるか？"
+    a={<div>F検定（分散比較）。平均値の差を見たい場合はANOVA。</div>}
+  />
+  <QA
+    q="性別と満足/不満足に関連はあるか？"
+    a={<div>χ²（カイ二乗）検定（独立性）。クロス集計の期待度数に注意。</div>}
+  />
+</section>
+
+</GuideLayout>
