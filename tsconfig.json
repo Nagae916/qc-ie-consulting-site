@@ -38,7 +38,8 @@
     "**/*.tsx",
     "**/*.mdx",
     ".next/types/**/*.ts",
-    ".contentlayer/generated"
+    ".contentlayer/generated",
+    "src/types" // ← 追加：手元の d.ts を拾う
   ],
   "exclude": ["node_modules"]
 }
