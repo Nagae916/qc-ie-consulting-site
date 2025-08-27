@@ -12,7 +12,7 @@ type Sheet = {
   examples: string[];
 };
 
-const SHEETS: Record<string, Sheet> = {
+const SHEETS = {
   't-test': {
     purpose: '1群または2群の平均の差を検定（母分散が未知のとき）',
     data: '連続量（正規性が望ましい）。対応あり/なしで手続きが異なる',
@@ -49,14 +49,17 @@ const SHEETS: Record<string, Sheet> = {
     cond: '各群の正規性、等分散性（等分散でない場合はWelch-ANOVA等）',
     examples: ['3種類以上の治具で平均加工時間に差があるか'],
   },
-};
+} as const;
+
+type SheetKey = keyof typeof SHEETS;
+type ResultKey = SheetKey | 'default';
 
 export default function TestNavigator() {
   const [goal, setGoal] = useState<Goal>('');
   const [groups, setGroups] = useState<Groups>('');
   const [varKnown, setVarKnown] = useState<VarKnown>('');
 
-  const resultKey = useMemo(() => {
+  const resultKey: ResultKey = useMemo(() => {
     if (!goal) return 'default';
     if (goal === 'category') return 'chi2-ind';
     if (goal === 'variance') {
@@ -76,43 +79,7 @@ export default function TestNavigator() {
 
   const card: React.CSSProperties = { background:'#fff', border:'1px solid #e5e7eb', borderRadius:16, padding:16, boxShadow:'0 2px 8px rgba(0,0,0,.04)' };
   const select: React.CSSProperties = { width:'100%', padding:'12px', border:'1px solid #cbd5e1', borderRadius:12, background:'#fff' };
-  const btn: React.CSSProperties = { padding:'8px 12px', borderRadius:8, border:'1px solid #334155', background:'#334155', color:'#fff', fontSize:12 };
-
-  const SheetView = ({ kind, title, color }:{ kind: keyof typeof SHEETS; title: string; color: string }) => {
-    const s = SHEETS[kind];
-    const [open1, setOpen1] = useState(false);
-    const [open2, setOpen2] = useState(false);
-    return (
-      <div style={{ ...card, borderColor:'#e5e7eb' }}>
-        <h4 style={{ margin:0, fontWeight:800, color }}>{title}</h4>
-        <p style={{ color:'#475569', margin:'8px 0 12px' }}>{s.purpose}</p>
-
-        <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
-          <button style={btn} onClick={() => setOpen1(v => !v)}>💡 検定手法解説</button>
-          <button style={btn} onClick={() => setOpen2(v => !v)}>📝 応用ケース</button>
-        </div>
-
-        {open1 && (
-          <div style={{ marginTop:12, background:'#f8fafc', border:'1px solid #e5e7eb', borderRadius:12, padding:12 }}>
-            <ul style={{ margin:0, paddingLeft:18 }}>
-              <li><b>目的</b>：{s.purpose}</li>
-              <li><b>データタイプ</b>：{s.data}</li>
-              <li><b>条件</b>：{s.cond}</li>
-            </ul>
-          </div>
-        )}
-
-        {open2 && (
-          <div style={{ marginTop:12, background:'#f1f5f9', border:'1px solid #e2e8f0', borderRadius:12, padding:12 }}>
-            <div style={{ fontWeight:700, marginBottom:6 }}>製造・QCでの例</div>
-            <ul style={{ margin:0, paddingLeft:18 }}>
-              {s.examples.map((e,i) => <li key={i}>{e}</li>)}
-            </ul>
-          </div>
-        )}
-      </div>
-    );
-  };
+  const btnBase: React.CSSProperties = { padding:'8px 12px', borderRadius:8, border:'1px solid #334155', background:'#334155', color:'#fff', fontSize:12, cursor:'pointer' };
 
   return (
     <div style={{ ...card, maxWidth: 920, margin:'0 auto' }}>
@@ -121,7 +88,11 @@ export default function TestNavigator() {
       <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))', gap:16, marginBottom:16 }}>
         <div>
           <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#334155', marginBottom:6 }}>1. 何を比較したいですか？</label>
-          <select value={goal} onChange={e => { setGoal(e.target.value as Goal); setGroups(''); setVarKnown(''); }} style={select}>
+          <select
+            value={goal}
+            onChange={e => { setGoal(e.target.value as Goal); setGroups(''); setVarKnown(''); }}
+            style={select}
+          >
             <option value="">選択してください</option>
             <option value="mean">平均値の差</option>
             <option value="variance">ばらつき（分散）の差</option>
@@ -135,7 +106,7 @@ export default function TestNavigator() {
             value={groups}
             onChange={e => setGroups(e.target.value as Groups)}
             disabled={goal === '' || goal === 'category'}
-            style={{ ...select, color: goal === 'category' || goal === '' ? '#94a3b8' : undefined, background: goal === 'category' || goal === '' ? '#f8fafc' : '#fff' }}
+            style={{ ...select, color: (goal === 'category' || goal === '') ? '#94a3b8' : undefined, background: (goal === 'category' || goal === '') ? '#f8fafc' : '#fff' }}
           >
             <option value="">選択してください</option>
             <option value="1">1つ</option>
@@ -150,8 +121,10 @@ export default function TestNavigator() {
             value={varKnown}
             onChange={e => setVarKnown(e.target.value as VarKnown)}
             disabled={goal !== 'mean' || (groups !== '1' && groups !== '2')}
-            style={{ ...select, color: goal === 'mean' && (groups === '1' || groups === '2') ? undefined : '#94a3b8',
-                     background: goal === 'mean' && (groups === '1' || groups === '2') ? '#fff' : '#f8fafc' }}
+            style={{ ...select,
+              color: (goal === 'mean' && (groups === '1' || groups === '2')) ? undefined : '#94a3b8',
+              background: (goal === 'mean' && (groups === '1' || groups === '2')) ? '#fff' : '#f8fafc'
+            }}
           >
             <option value="">選択してください</option>
             <option value="known">既知</option>
@@ -166,12 +139,88 @@ export default function TestNavigator() {
           上の質問に答えると、ここに最適な手法が表示されます。
         </div>
       )}
-      {resultKey === 't-test'   && <SheetView kind="t-test"   title="推奨手法：t検定" color="#166534" />}
-      {resultKey === 'z-test'   && <SheetView kind="z-test"   title="推奨手法：Z検定" color="#0f766e" />}
-      {resultKey === 'f-test'   && <SheetView kind="f-test"   title="推奨手法：F検定" color="#1d4ed8" />}
-      {resultKey === 'chi2-ind' && <SheetView kind="chi2-ind" title="推奨手法：χ²（カイ二乗）検定（独立性）" color="#6d28d9" />}
-      {resultKey === 'chi2-var' && <SheetView kind="chi2-var" title="推奨手法：χ²（カイ二乗）検定（1標本の分散）" color="#a21caf" />}
-      {resultKey === 'anova'    && <SheetView kind="anova"    title="推奨手法：分散分析（ANOVA）" color="#c2410c" />}
+
+      {resultKey !== 'default' && (
+        <SheetView
+          kind={resultKey}
+          title={titleFromKey(resultKey as SheetKey)}
+          btnStyle={btnBase}
+          cardStyle={card}
+        />
+      )}
+    </div>
+  );
+}
+
+function titleFromKey(key: SheetKey): string {
+  switch (key) {
+    case 't-test':   return '推奨手法：t検定';
+    case 'z-test':   return '推奨手法：Z検定';
+    case 'f-test':   return '推奨手法：F検定';
+    case 'chi2-ind': return '推奨手法：χ²（カイ二乗）検定（独立性）';
+    case 'chi2-var': return '推奨手法：χ²（カイ二乗）検定（1標本の分散）';
+    case 'anova':    return '推奨手法：分散分析（ANOVA）';
+    default:         return '推奨手法';
+  }
+}
+
+function SheetView({
+  kind,
+  title,
+  btnStyle,
+  cardStyle,
+}: {
+  kind: SheetKey;
+  title: string;
+  btnStyle: React.CSSProperties;
+  cardStyle: React.CSSProperties;
+}) {
+  // 万一キー不一致があっても落ちないよう最終ガード
+  const s: Sheet | undefined = SHEETS[kind];
+
+  const [open1, setOpen1] = useState(false);
+  const [open2, setOpen2] = useState(false);
+
+  return (
+    <div style={{ ...cardStyle, borderColor:'#e5e7eb' }}>
+      <h4 style={{ margin:0, fontWeight:800 }}>{title}</h4>
+      <p style={{ color:'#475569', margin:'8px 0 12px' }}>{s?.purpose ?? ''}</p>
+
+      <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
+        <button
+          style={{ ...btnStyle, opacity: s ? 1 : 0.6, cursor: s ? 'pointer' : 'not-allowed' }}
+          onClick={() => s && setOpen1(v => !v)}
+          disabled={!s}
+        >
+          💡 検定手法解説
+        </button>
+        <button
+          style={{ ...btnStyle, opacity: s ? 1 : 0.6, cursor: s ? 'pointer' : 'not-allowed' }}
+          onClick={() => s && setOpen2(v => !v)}
+          disabled={!s}
+        >
+          📝 応用ケース
+        </button>
+      </div>
+
+      {open1 && s ? (
+        <div style={{ marginTop:12, background:'#f8fafc', border:'1px solid #e5e7eb', borderRadius:12, padding:12 }}>
+          <ul style={{ margin:0, paddingLeft:18 }}>
+            <li><b>目的</b>：{s.purpose}</li>
+            <li><b>データタイプ</b>：{s.data}</li>
+            <li><b>条件</b>：{s.cond}</li>
+          </ul>
+        </div>
+      ) : null}
+
+      {open2 && s ? (
+        <div style={{ marginTop:12, background:'#f1f5f9', border:'1px solid #e2e8f0', borderRadius:12, padding:12 }}>
+          <div style={{ fontWeight:700, marginBottom:6 }}>製造・QCでの例</div>
+          <ul style={{ margin:0, paddingLeft:18 }}>
+            {(s.examples ?? []).map((e, i) => <li key={i}>{e}</li>)}
+          </ul>
+        </div>
+      ) : null}
     </div>
   );
 }
