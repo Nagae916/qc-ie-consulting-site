@@ -1,26 +1,39 @@
 ---
-title: "新QC七つ道具：考えをまとめる道具"
-slug: "new-qc-seven-tools"
+title: "新QC七つ道具"
+description: "定性情報の整理や計画立案に強い7手法"
+tags: ["IE", "企画設計"]
 exam: "qc"
-section: "入門"
-tags: ["新QC七つ道具"]
-version: "1.0.0"
 status: "published"
-updatedAt: "2025-08-25"
 ---
 
-## これはなに？
-数字のグラフではなく、**考えやアイデア** を整理する道具です。  
-話し合いでつかうことが多いです。
+import { GuideLayout, Glossary, QA } from '../../../src/components/guide/GuideLayout';
 
-## 道具の例
-- 親和図法（似た意見をまとめる）
-- 連関図法（原因と結果のつながり）
-- 系統図法（手順や分解）
-- マトリックス図法（表で整理）
-- PDPC法（もしもに備える手順）
-- アローダイアグラム法（作業の順番と時間）
-- マトリックスデータ解析法（数字の表を深く見る）
+<GuideLayout
+  title={title}
+  intro="新QC七つ道具は、定性情報を整理し、計画や合意形成を助ける手法群です。企画設計や品質改善活動に活用されます。"
+>
 
-> **アイデアを形に** したいときに使います。  
-> 次は、よく出てくるグラフ「管理図」をやさしく見ます。
+<section style={{ marginBottom: 24 }}>
+  <h3 style={{ fontSize: 20, fontWeight: 800, margin: '0 0 12px' }}>代表的な7つの手法</h3>
+  <ul style={{ marginLeft: 20, color:'#475569' }}>
+    <li>親和図法</li>
+    <li>連関図法</li>
+    <li>系統図法</li>
+    <li>マトリックス図法</li>
+    <li>アローダイアグラム法</li>
+    <li>PDPC法</li>
+    <li>マトリックスデータ解析法</li>
+  </ul>
+</section>
+
+<Glossary items={[
+  { term: '親和図法', desc: '発想や意見をグループ化し、構造を明確化する。' },
+  { term: 'アローダイアグラム法', desc: '工程や計画を矢印でつなぎ、順序や所要時間を明らかにする。' },
+]} />
+
+<section style={{ maxWidth: 760, margin:'0 auto', display:'grid', gap:12 }}>
+  <QA q="新QC七つ道具はどんな場面で有効？" a="定性情報を扱う場面、企画設計や方針展開に有効。" />
+  <QA q="旧QC七つ道具との違いは？" a="旧はデータ解析中心、新は計画や意思決定を支援する点が特徴。" />
+</section>
+
+</GuideLayout>
