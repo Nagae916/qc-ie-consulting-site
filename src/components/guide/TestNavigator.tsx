@@ -5,12 +5,13 @@ type Goal = '' | 'mean' | 'variance' | 'category';
 type Groups = '' | '1' | '2' | '3+';
 type VarKnown = '' | 'known' | 'unknown';
 
-type Sheet = {
+// ★ SHEETS を as const で保持するため、読み取り専用型にする
+type Sheet = Readonly<{
   purpose: string;
   data: string;
   cond: string;
-  examples: string[];
-};
+  examples: readonly string[];
+}>;
 
 const SHEETS = {
   't-test': {
@@ -142,7 +143,7 @@ export default function TestNavigator() {
 
       {resultKey !== 'default' && (
         <SheetView
-          kind={resultKey}
+          kind={resultKey as SheetKey}
           title={titleFromKey(resultKey as SheetKey)}
           btnStyle={btnBase}
           cardStyle={card}
