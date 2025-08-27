@@ -1,9 +1,13 @@
+---
+title: "（タイトル）"
+description: "（概要）"
+tags: ["タグ1", "タグ2"]
+exam: "qc"
+status: "draft"   # ← 最初は draft にしておくと安心
+---
+
 import dynamic from 'next/dynamic';
 import { GuideLayout, Glossary, QA } from '../../src/components/guide/GuideLayout';
-
-export const title = '（タイトル）';
-export const description = '（概要）';
-export const tags = ['タグ1', 'タグ2'];
 
 <GuideLayout title={title} intro="（ここに導入文）">
 
