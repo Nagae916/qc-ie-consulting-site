@@ -1,26 +1,42 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "jsx": "preserve",
+
+    // JS は禁止
     "allowJs": false,
+
+    // 型安全を最大化
     "strict": true,
+    "noImplicitAny": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+
+    // 出力は Next.js がやるので不要
     "noEmit": true,
+
+    // 型チェックの安定性
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+
+    // パスエイリアス
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
       "contentlayer/generated": ["./.contentlayer/generated"]
     },
+
+    // Node 型の利用
     "types": ["node"]
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
+    "**/*.mdx",
     ".next/types/**/*.ts",
     ".contentlayer/generated"
   ],
