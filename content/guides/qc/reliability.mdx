@@ -1,6 +1,10 @@
 import dynamic from 'next/dynamic';
 import { GuideLayout, Glossary, QA } from '../../../src/components/guide/GuideLayout';
-const AvailabilitySimulator = dynamic(() => import('../../../src/components/guide/AvailabilitySimulator'), { ssr: false });
+
+const AvailabilitySimulator = dynamic(
+  () => import('../../../src/components/guide/AvailabilitySimulator').then(m => m.default),
+  { ssr: false }
+);
 
 export const title = '信頼性工学スタディガイド';
 export const description = 'MTBF・MTTR・MTTF・アベイラビリティの基礎と、可用性シミュレーターでの体感';
@@ -39,7 +43,10 @@ export const tags = ['信頼性', 'MTBF', 'MTTR', 'MTTF', '可用性'];
 <section style={{ marginBottom: 24 }}>
   <h2 style={{ textAlign:'center', fontSize: 22, fontWeight: 800, margin:'0 0 12px' }}>アベイラビリティ・シミュレーター</h2>
   <p style={{ textAlign:'center', color:'#64748b', margin:'0 0 12px' }}>スライダーまたは数値入力で MTBF/MTTR を変更すると、稼働率が即時更新されます。</p>
-  <AvailabilitySimulator defaultMTBF={500} minMTBF={10} maxMTBF={1000} defaultMTTR={10} minMTTR={1} maxMTTR={100} />
+  <AvailabilitySimulator
+    defaultMTBF={500} minMTBF={10} maxMTBF={1000}
+    defaultMTTR={10} minMTTR={1} maxMTTR={100}
+  />
 </section>
 
 <Glossary items={[
