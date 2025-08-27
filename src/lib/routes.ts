@@ -1,4 +1,4 @@
-// src/lib/routes.ts  ← このファイルを丸ごと置き換え
+// src/lib/routes.ts
 
 // ====== 既存APIを維持しつつ拡張 ======
 export type GuideSlug =
@@ -62,7 +62,7 @@ export const GUIDE_CARDS: GuideCard[] = [
     tags: ["IE", "企画設計"],
     published: true,
   },
-  // ★ ここから新規ガイド
+  // ★ 新規ガイド
   {
     slug: "oc-curve",
     title: "計数基準型抜取検査（OC曲線）ガイド",
