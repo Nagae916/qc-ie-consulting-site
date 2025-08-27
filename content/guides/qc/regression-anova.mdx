@@ -1,10 +1,14 @@
+---
+title: "回帰分析・分散分析スタディガイド"
+description: "目的に応じて回帰分析・分散分析・t検定を選び、用語と理解度チェックで基礎を固める"
+tags: ["統計", "回帰分析", "分散分析", "t検定"]
+exam: "qc"
+status: "published"
+---
+
 import dynamic from 'next/dynamic';
 import { GuideLayout, Glossary, QA } from '../../../src/components/guide/GuideLayout';
 const MethodNavigator = dynamic(() => import('../../../src/components/guide/MethodNavigator'), { ssr: false });
-
-export const title = '回帰分析・分散分析スタディガイド';
-export const description = '目的に応じて回帰分析・分散分析・t検定を選び、用語と理解度チェックで基礎を固める';
-export const tags = ['統計', '回帰分析', '分散分析', 't検定'];
 
 <GuideLayout
   title={title}
