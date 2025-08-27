@@ -85,3 +85,6 @@ export function uLimits(uData: number[]) {
     lcl: Array(len).fill(Math.max(0, uBar - 3 * sigma)),
   };
 }
+
+/** 互換エクスポート（旧名が残っていてもビルドを落とさない） */
+export const xbarLimitsScalar = xbarLimits;
