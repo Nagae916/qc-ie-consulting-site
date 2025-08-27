@@ -1,26 +1,39 @@
 ---
-title: "QC七つ道具：まずは名前を覚えよう"
-slug: "qc-seven-tools"
+title: "QC七つ道具"
+description: "現場のデータ整理・可視化・安定化の定番ツール群"
+tags: ["QC", "現場改善"]
 exam: "qc"
-section: "入門"
-tags: ["QC七つ道具"]
-version: "1.0.0"
 status: "published"
-updatedAt: "2025-08-25"
 ---
 
-## これはなに？
-工場や仕事の中で「問題を見つけて、なおす」ための**道具セット**です。  
-どれも **かんたんな図** を使います。
+import { GuideLayout, Glossary, QA } from '../../../src/components/guide/GuideLayout';
 
-## 7つの名前
-- チェックシート（点検表）
-- パレート図（大事な順に並べる棒グラフ）
-- ヒストグラム（ばらつきの形を見るグラフ）
-- 散布図（2つの関係を見る）
-- 管理図（調子がわるくないか見張る）
-- 層別（グループ分けして考える）
-- 特性要因図（原因のアイデア出し）
+<GuideLayout
+  title={title}
+  intro="QC七つ道具は、現場で得られるデータを整理し、工程の安定化や改善につなげる基本ツールです。"
+>
 
-> まずは **名前と役割** をざっくり知ればOK。  
-> 次のページで、1つずつゆっくり見ていこう。
+<section style={{ marginBottom: 24 }}>
+  <h3 style={{ fontSize: 20, fontWeight: 800, margin: '0 0 12px' }}>代表的な7つのツール</h3>
+  <ul style={{ marginLeft: 20, color:'#475569' }}>
+    <li>パレート図</li>
+    <li>ヒストグラム</li>
+    <li>管理図</li>
+    <li>散布図</li>
+    <li>特性要因図（魚の骨図）</li>
+    <li>チェックシート</li>
+    <li>層別</li>
+  </ul>
+</section>
+
+<Glossary items={[
+  { term: 'QC七つ道具', desc: '品質管理活動を支える基本の7ツール。' },
+  { term: '層別', desc: 'データを属性ごとに分けて分析する。' },
+]} />
+
+<section style={{ maxWidth: 760, margin:'0 auto', display:'grid', gap:12 }}>
+  <QA q="QC七つ道具の目的は？" a="データに基づき問題を可視化し、再現性ある改善を進めるため。" />
+  <QA q="パレート図でわかることは？" a="重要度の高い問題（多数を占める少数の要因）を把握できる。" />
+</section>
+
+</GuideLayout>
