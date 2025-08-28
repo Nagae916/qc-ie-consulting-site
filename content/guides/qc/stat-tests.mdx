@@ -6,17 +6,11 @@ exam: "qc"
 status: "published"
 ---
 
-import dynamic from 'next/dynamic';
-import { GuideLayout, Glossary, QA } from '../../../src/components/guide/GuideLayout';
-// ※ エイリアス(@/components/...)が使える場合はパスを置き換えてOK
-const ControlChart = dynamic(() => import('../../../src/components/guide/ControlChart'), { ssr: false });
-
-export const title = '管理図スタディガイド';
-export const description = '代表的な管理図（X̄R / np / p / u）の見方と選び方を学ぶ';
-export const tags = ['QC','統計','管理図'];
+import { GuideLayout, Glossary, QA } from '../../../src/components/guide/GuideLayout'
+import ControlChart from '../../../src/components/guide/ControlChart'
 
 <GuideLayout
-  title={title}
+  title="管理図スタディガイド"
   intro="管理図は工程が安定状態かを判断する重要ツール。このガイドでは代表的な管理図の目的と、データに応じた選び方を学びます。"
 >
 
