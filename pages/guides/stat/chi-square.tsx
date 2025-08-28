@@ -14,7 +14,7 @@ function isMatrix(a: unknown): a is Matrix {
 }
 
 export default function ChiSquareGuidePage() {
-  // 観測度数（2×2例）
+  // 観測度数（2×2の例）
   const [obs] = useState<Matrix>([
     [30, 20],
     [20, 30],
@@ -26,13 +26,13 @@ export default function ChiSquareGuidePage() {
     [obs]
   );
 
-  // 列合計（未定義ガード & 可変サイズ対応）
+  // 列合計（安全ガード & 可変列数対応）
   const colTotals = useMemo<number[]>(() => {
     if (!isMatrix(obs) || obs.length === 0) return [];
     const cols = Math.max(0, ...obs.map(r => r.length));
     const sums: number[] = Array.from({ length: cols }, () => 0);
     for (let i = 0; i < obs.length; i++) {
-      const row: number[] = (obs[i] ?? []) as number[]; // ← ここで確実に number[] 化
+      const row = obs[i] ?? [];
       for (let j = 0; j < cols; j++) {
         const prev = sums[j] ?? 0;
         const add = Number(row[j] ?? 0);
@@ -57,7 +57,7 @@ export default function ChiSquareGuidePage() {
     );
   }, [obs, rowTotals, colTotals, grandTotal]);
 
-  // 各セルのカイ二乗成分
+  // 各セル χ² 成分
   const chiEach = useMemo<Matrix>(() => {
     if (!isMatrix(obs) || expected.length === 0) return [];
     return obs.map((row, i) =>
