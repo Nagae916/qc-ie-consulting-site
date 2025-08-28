@@ -1,0 +1,24 @@
+---
+title: "（統計ガイドのタイトル）"
+description: "（概要）"
+tags: ["統計", "ANOVA" ]
+exam: "stat"
+status: "published"
+---
+
+import { GuideLayout, Glossary, QA } from '../../../src/components/guide/GuideLayout';
+
+<GuideLayout title={title} intro="（導入文）">
+  <section style={{ marginBottom: 24 }}>
+    {/* 本文 or 動的コンポーネント */}
+    <p>ここに本文</p>
+  </section>
+
+  <Glossary items={[
+    { term: '用語A', desc: '説明A' },
+  ]} />
+
+  <section style={{ maxWidth: 760, margin:'0 auto', display:'grid', gap:12 }}>
+    <QA q="質問？" a={<div>答え</div>} />
+  </section>
+</GuideLayout>
