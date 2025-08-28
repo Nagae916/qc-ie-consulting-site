@@ -6,27 +6,17 @@ import {
   CategoryScale, LinearScale, PointElement, LineElement,
   Title, Tooltip, Legend
 } from 'chart.js';
-// 型安全に annotation plugin を読み込む
-import annotationPlugin from 'chartjs-plugin-annotation';
 
-C.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  annotationPlugin
-);
+// ※ プラグインは使わない（Vercel で依存解決不要）
+C.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-// ======== ここから下は現行コードをそのまま維持 ========
 type Props = {
+  /** 初期値などの設定（%は 0–100 で指定） */
   defaultN?: number; minN?: number; maxN?: number;
   defaultC?: number; minC?: number; maxC?: number;
-  aql?: number; rql?: number;
-  pMaxPercent?: number;
-  stepPercent?: number;
+  aql?: number; rql?: number;     // %（x 軸）
+  pMaxPercent?: number;           // x 軸の最大（%）
+  stepPercent?: number;           // p の刻み（%）
   showRisk?: boolean;
 };
 
@@ -35,7 +25,7 @@ function binomCDF(n: number, c: number, p: number): number {
   if (p <= 0) return 1;
   if (p >= 1) return c >= n ? 1 : 0;
   const q = 1 - p;
-  let prob = Math.pow(q, n);
+  let prob = Math.pow(q, n); // x=0 の確率
   let sum = prob;
   for (let x = 1; x <= c; x++) {
     prob = prob * ((n - (x - 1)) / x) * (p / q);
@@ -49,7 +39,7 @@ function calcOCSeries(n: number, c: number, pMax: number, step: number) {
   const pts: { x: number; y: number }[] = [];
   for (let pp = 0; pp <= pMax + 1e-12; pp += step) {
     const pa = binomCDF(n, c, pp);
-    pts.push({ x: pp * 100, y: pa });
+    pts.push({ x: pp * 100, y: pa }); // x は %
   }
   return pts;
 }
@@ -65,22 +55,34 @@ export default function OCSimulator({
   const [n, setN] = useState<number>(defaultN);
   const [c, setC] = useState<number>(defaultC);
 
+  // 入力ガード
   const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, Math.round(v)));
   const onNChange = (v: number) => setN(clamp(v, minN, maxN));
-  const onCChange = (v: number) => setC(clamp(v, minC, Math.min(maxC, n)));
+  const onCChange = (v: number) => setC(clamp(v, minC, Math.min(maxC, n))); // c<=n にも抑制
 
   const { data, options } = useMemo(() => {
     const pMax = pMaxPercent / 100;
     const step = stepPercent / 100;
 
     const line = calcOCSeries(n, c, pMax, step);
+
     const alphaPa = binomCDF(n, c, aql / 100);
     const betaPa  = binomCDF(n, c, rql / 100);
 
-    const riskPts = showRisk ? [
-      { x: aql, y: alphaPa, label: '生産者危険 (α)', color: 'rgba(59,130,246,1)', pointStyle: 'circle', r: 8 },
-      { x: rql, y: betaPa,  label: '消費者危険 (β)', color: 'rgba(239,68,68,1)', pointStyle: 'triangle', r: 8 },
-    ] : [];
+    const riskPts = showRisk
+      ? [
+          { x: aql, y: alphaPa, label: '生産者危険 (α)', color: 'rgba(59,130,246,1)', pointStyle: 'circle', r: 8 },
+          { x: rql, y: betaPa,  label: '消費者危険 (β)', color: 'rgba(239,68,68,1)', pointStyle: 'triangle', r: 8 },
+        ]
+      : [];
+
+    // 注釈プラグインの代わりに、縦ラインを「2点の直線データセット」で描画
+    const aqlLine = showRisk
+      ? [{ x: aql, y: 0 }, { x: aql, y: 1 }]
+      : [];
+    const rqlLine = showRisk
+      ? [{ x: rql, y: 0 }, { x: rql, y: 1 }]
+      : [];
 
     return {
       data: {
@@ -92,6 +94,26 @@ export default function OCSimulator({
             tension: 0.35,
             pointRadius: 0,
           },
+          // 縦ライン（AQL/RQL）
+          {
+            label: 'AQL',
+            data: aqlLine as any,
+            showLine: true,
+            pointRadius: 0,
+            borderWidth: 1,
+            borderColor: 'rgba(59,130,246,0.5)',
+            borderDash: [6, 6],
+          },
+          {
+            label: 'RQL',
+            data: rqlLine as any,
+            showLine: true,
+            pointRadius: 0,
+            borderWidth: 1,
+            borderColor: 'rgba(239,68,68,0.5)',
+            borderDash: [6, 6],
+          },
+          // リスク点
           {
             label: 'リスクポイント',
             data: riskPts as any,
@@ -117,18 +139,15 @@ export default function OCSimulator({
                 return `不良率: ${Number(x).toFixed(1)}%`;
               },
               label: (ctx: any) => {
-                if (ctx.datasetIndex === 1 && ctx.raw?.label) {
+                // リスク点はラベルをそのまま表示
+                if (ctx.datasetIndex === 3 && ctx.raw?.label) {
                   return `${ctx.raw.label}: ${(ctx.raw.y * 100).toFixed(1)}%`;
                 }
+                if (ctx.datasetIndex === 1) return 'AQL 線';
+                if (ctx.datasetIndex === 2) return 'RQL 線';
                 return `合格確率: ${(ctx.parsed.y * 100).toFixed(1)}%`;
               },
             },
-          },
-          annotation: {
-            annotations: showRisk ? {
-              aqlLine: { type: 'line', xMin: aql, xMax: aql, borderColor: 'rgba(59,130,246,0.5)', borderWidth: 1, borderDash: [6, 6] },
-              rqlLine: { type: 'line', xMin: rql, xMax: rql, borderColor: 'rgba(239,68,68,0.5)', borderWidth: 1, borderDash: [6, 6] },
-            } : {},
           },
         },
         scales: {
@@ -137,19 +156,25 @@ export default function OCSimulator({
             title: { display: true, text: 'ロットの不良率 (p)' },
             min: 0,
             max: pMaxPercent,
-            ticks: { callback: (v: any) => `${v}%` },
+            ticks: {
+              callback: (v: any) => `${v}%`,
+            },
           },
           y: {
             title: { display: true, text: 'ロットの合格確率 (Pa)' },
             min: 0,
             max: 1,
-            ticks: { stepSize: 0.1, callback: (v: any) => Number(v).toFixed(1) },
+            ticks: {
+              stepSize: 0.1,
+              callback: (v: any) => Number(v).toFixed(1),
+            },
           },
         },
       } as const,
     };
   }, [n, c, aql, rql, pMaxPercent, stepPercent, showRisk]);
 
+  // 簡易スタイル
   const card: React.CSSProperties = { background: '#fff', border: '1px solid #e5e7eb', borderRadius: 16, padding: 16, boxShadow: '0 2px 8px rgba(0,0,0,.04)' };
   const label: React.CSSProperties = { fontWeight: 600, marginBottom: 6 };
   const input: React.CSSProperties = { width: 72, padding: 6, textAlign: 'center', border: '1px solid #cbd5e1', borderRadius: 8 };
@@ -172,6 +197,7 @@ export default function OCSimulator({
           </div>
         </div>
       </div>
+
       <div style={{ height: 380 }}>
         <Line data={data as any} options={options as any} />
       </div>
