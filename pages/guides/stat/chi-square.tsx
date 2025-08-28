@@ -8,7 +8,6 @@ type Matrix = Row[];
 
 /** ===== 安全ユーティリティ ===== */
 function normalizeMatrix(m: unknown): Matrix {
-  // 想定外の形でも「number[][]」に正規化（欠損は 0）
   if (!Array.isArray(m)) return [];
   return m.map((r) =>
     Array.isArray(r)
@@ -55,10 +54,16 @@ function expectedFrom(obs: Matrix): Matrix {
   if (grand <= 0) return exp;
 
   for (let i = 0; i < r; i++) {
+    const ri = Number.isFinite(rows[i]) ? rows[i] : 0;
+    // 行バッファを安全に確保
+    let row = exp[i];
+    if (!row) {
+      row = Array.from({ length: c }, () => 0);
+      exp[i] = row;
+    }
     for (let j = 0; j < c; j++) {
-      const ri = Number.isFinite(rows[i]) ? rows[i] : 0;
       const cj = Number.isFinite(cols[j]) ? cols[j] : 0;
-      exp[i][j] = (ri * cj) / grand;
+      row[j] = (ri * cj) / grand; // row は常に定義済み
     }
   }
   return exp;
@@ -104,7 +109,6 @@ function sumMatrix(m: Matrix): number {
 
 /** ===== メインページ ===== */
 export default function ChiSquareGuidePage() {
-  // 初期 2x2（性別×商品）
   const [obs, setObs] = useState<Matrix>([
     [30, 20],
     [20, 30],
@@ -118,7 +122,6 @@ export default function ChiSquareGuidePage() {
   const chiM = useMemo(() => chiMatrixOf(obs, exp), [obs, exp]);
   const chiTotal = useMemo(() => sumMatrix(chiM), [chiM]);
 
-  // 2x2 の自由度は (r-1)*(c-1)
   const df = useMemo(
     () => Math.max(0, (obs.length - 1) * (cols.length - 1)),
     [obs.length, cols.length]
@@ -202,9 +205,7 @@ export default function ChiSquareGuidePage() {
                       {cols[j] ?? 0}
                     </td>
                   ))}
-                  <td className="border p-2 text-right font-bold">
-                    {grand}
-                  </td>
+                  <td className="border p-2 text-right font-bold">{grand}</td>
                 </tr>
               </tbody>
             </table>
