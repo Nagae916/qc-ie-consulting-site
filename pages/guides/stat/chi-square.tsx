@@ -54,7 +54,9 @@ function expectedFrom(obs: Matrix): Matrix {
   if (grand <= 0) return exp;
 
   for (let i = 0; i < r; i++) {
-    const ri = Number.isFinite(rows[i]) ? rows[i] : 0;
+    // number に確定させたローカルを使う
+    const ri: number = Number.isFinite(rows[i]) ? (rows[i] as number) : 0;
+
     // 行バッファを安全に確保
     let row = exp[i];
     if (!row) {
@@ -62,7 +64,7 @@ function expectedFrom(obs: Matrix): Matrix {
       exp[i] = row;
     }
     for (let j = 0; j < c; j++) {
-      const cj = Number.isFinite(cols[j]) ? cols[j] : 0;
+      const cj: number = Number.isFinite(cols[j]) ? (cols[j] as number) : 0;
       row[j] = (ri * cj) / grand; // row は常に定義済み
     }
   }
@@ -71,7 +73,7 @@ function expectedFrom(obs: Matrix): Matrix {
 
 function chiTerm(o: number, e: number): number {
   const E = e > 0 ? e : 0;
-  const O = Number.isFinite(o) ? o : 0;
+  const O = Number.isFinite(o) ? (o as number) : 0;
   if (E === 0) return 0;
   const diff = O - E;
   return (diff * diff) / E;
@@ -90,8 +92,8 @@ function chiMatrixOf(obs: Matrix, exp: Matrix): Matrix {
     const ro = obs[i] ?? [];
     const re = exp[i] ?? [];
     for (let j = 0; j < c; j++) {
-      const o = Number.isFinite(ro[j]) ? (ro[j] as number) : 0;
-      const e = Number.isFinite(re[j]) ? (re[j] as number) : 0;
+      const o: number = Number.isFinite(ro[j]) ? (ro[j] as number) : 0;
+      const e: number = Number.isFinite(re[j]) ? (re[j] as number) : 0;
       chi[i][j] = chiTerm(o, e);
     }
   }
