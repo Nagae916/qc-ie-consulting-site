@@ -6,16 +6,11 @@ exam: "qc"
 status: "published"
 ---
 
-import dynamic from 'next/dynamic';
-import { GuideLayout, Glossary, QA } from '../../../src/components/guide/GuideLayout';
-const TestNavigator = dynamic(() => import('../../../src/components/guide/TestNavigator'), { ssr: false });
-
-export const title = '統計手法スタディガイド';
-export const description = '目的・群数・分散既知/未知から最適な検定をナビゲート。用語とQAで基礎固め。';
-export const tags = ['統計', 't検定', 'Z検定', 'F検定', 'χ²検定', 'ANOVA'];
+import { GuideLayout, Glossary, QA } from '../../../src/components/guide/GuideLayout'
+import TestNavigator from '../../../src/components/guide/TestNavigator'
 
 <GuideLayout
-  title={title}
+  title="統計手法スタディガイド"
   intro="品質管理やR&Dで頻出の統計手法を、目的ベースで素早く選べるようにしました。ページ内だけで完結するナビ＋チートシート付きです。"
 >
 
