@@ -5,20 +5,12 @@ tags: ["QC", "統計", "OC曲線", "抜取検査"]
 exam: "qc"
 status: "published"
 ---
-import dynamic from 'next/dynamic';
-import { GuideLayout, Glossary, QA } from '../../../src/components/guide/GuideLayout';
 
-const OCSimulator = dynamic(
-  () => import('../../../src/components/guide/OCSimulator').then(m => m.default),
-  { ssr: false }
-);
-
-export const title = '計数基準型抜取検査（OC曲線）ガイド';
-export const description = 'n と c を動かして OC 曲線と α・β を体感する';
-export const tags = ['QC', '統計', 'OC曲線', '抜取検査'];
+import { GuideLayout, Glossary, QA } from '../../../src/components/guide/GuideLayout'
+import OCSimulator from '../../../src/components/guide/OCSimulator'
 
 <GuideLayout
-  title={title}
+  title="計数基準型抜取検査（OC曲線）ガイド"
   intro="抜取検査の性能をOC曲線で可視化します。n と c を動かし、AQL/RQL 点での α・β を確認しましょう。"
 >
 
