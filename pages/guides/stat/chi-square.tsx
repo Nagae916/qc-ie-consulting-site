@@ -1,7 +1,6 @@
 'use client';
 import React, { useMemo, useState } from 'react';
 
-/** 型：任意サイズの二次元配列（行列） */
 type Row = number[];
 type Matrix = Row[];
 
@@ -16,7 +15,7 @@ function calcColTotals(m: Matrix): number[] {
   const cols = Math.max(...m.map(r => r?.length ?? 0));
   const sums: number[] = Array.from({ length: cols }, () => 0);
   for (let i = 0; i < m.length; i++) {
-    const row: Row = Array.isArray(m[i]) ? m[i] as Row : [];
+    const row: Row = Array.isArray(m[i]) ? (m[i] as Row) : [];
     for (let j = 0; j < cols; j++) {
       const add = Number.isFinite(row[j]) ? (row[j] as number) : 0;
       sums[j] = (sums[j] ?? 0) + add;
@@ -25,7 +24,7 @@ function calcColTotals(m: Matrix): number[] {
   return sums;
 }
 
-/** 期待度数（独立仮定） */
+/** 期待度数（独立仮定）— push で安全に構築 */
 function calcExpected(obs: Matrix): Matrix {
   const rowTotals = calcRowTotals(obs);
   const colTotals = calcColTotals(obs);
@@ -33,34 +32,45 @@ function calcExpected(obs: Matrix): Matrix {
   const rows = obs.length;
   const cols = colTotals.length;
 
-  const exp: Matrix = Array.from({ length: rows }, () => Array.from({ length: cols }, () => 0));
-  if (grand <= 0) return exp;
+  const exp: Matrix = [];
+  if (grand <= 0) {
+    for (let i = 0; i < rows; i++) {
+      exp.push(Array.from({ length: cols }, () => 0));
+    }
+    return exp;
+  }
 
   for (let i = 0; i < rows; i++) {
+    const rowArr: number[] = [];
+    const rt = rowTotals[i] ?? 0;
     for (let j = 0; j < cols; j++) {
-      exp[i][j] = (rowTotals[i] * colTotals[j]) / grand;
+      const ct = colTotals[j] ?? 0;
+      rowArr.push((rt * ct) / grand);
     }
+    exp.push(rowArr);
   }
   return exp;
 }
 
-/** χ² の各セル値と合計 */
+/** χ² の各セル値と合計 — push で安全に構築 */
 function calcChiSquare(obs: Matrix, exp: Matrix) {
   const rows = obs.length;
   const cols = Math.max(...[...obs, ...exp].map(r => r?.length ?? 0));
   let total = 0;
-  const cells: Matrix = Array.from({ length: rows }, () => Array.from({ length: cols }, () => 0));
+  const cells: Matrix = [];
 
   for (let i = 0; i < rows; i++) {
     const orow: Row = obs[i] ?? [];
     const erow: Row = exp[i] ?? [];
+    const chiRow: number[] = [];
     for (let j = 0; j < cols; j++) {
       const O = Number.isFinite(orow[j]) ? (orow[j] as number) : 0;
       const E = Number.isFinite(erow[j]) ? (erow[j] as number) : 0;
       const chi = E > 0 ? Math.pow(O - E, 2) / E : 0;
-      cells[i][j] = chi;
+      chiRow.push(chi);
       total += chi;
     }
+    cells.push(chiRow);
   }
   return { cells, total };
 }
@@ -72,7 +82,6 @@ function dfOf(m: Matrix): number {
   return Math.max(0, (r - 1) * (c - 1));
 }
 
-/** 表示用セル */
 function Cell({ children }: { children: React.ReactNode }) {
   return <td className="border p-3 text-center align-top">{children}</td>;
 }
@@ -110,14 +119,13 @@ export default function ChiSquarePage() {
     setExpected(null);
     setChi(null);
     setObs(prev => {
-      const next = prev.map(r => [...r]);
+      const next: Matrix = prev.map(r => [...(r ?? [])]);
       if (!Array.isArray(next[i])) next[i] = [];
       next[i][j] = Number.isFinite(v) ? v : 0;
       return next;
     });
   };
 
-  // ビジュアル（Tailwind）
   return (
     <main className="container mx-auto px-4 py-10 space-y-8">
       <h1 className="text-2xl font-bold">クロス集計表とカイ二乗検定（安全ガード版）</h1>
@@ -197,7 +205,7 @@ export default function ChiSquarePage() {
       {expected && (
         <div className="rounded border p-4">
           <h2 className="font-semibold mb-2">期待度数</h2>
-          <p className="text-sm text-gray-600">自由度: {(dfOf(obs))}（(行−1)×(列−1)）</p>
+          <p className="text-sm text-gray-600">自由度: {dfOf(obs)}（(行−1)×(列−1)）</p>
         </div>
       )}
 
