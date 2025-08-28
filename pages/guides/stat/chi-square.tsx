@@ -14,7 +14,7 @@ function isMatrix(a: unknown): a is Matrix {
 }
 
 export default function ChiSquareGuidePage() {
-  // 観測度数（自由に差し替え可：2×2以外でもOK）
+  // 観測度数（2×2以外に拡張してもOK）
   const [obs] = useState<Matrix>([
     [30, 20],
     [20, 30],
@@ -26,15 +26,17 @@ export default function ChiSquareGuidePage() {
     [obs]
   );
 
-  // ★ 修正ポイント：列合計（未定義ガード & 可変サイズ対応）
+  // 列合計（未定義ガード & 可変サイズ対応）
   const colTotals = useMemo<number[]>(() => {
     if (!isMatrix(obs) || obs.length === 0) return [];
     const cols = Math.max(...obs.map(r => (Array.isArray(r) ? r.length : 0)));
-    const sums = Array.from({ length: cols }, () => 0);
+    const sums: number[] = Array.from({ length: cols }, () => 0);
     for (let i = 0; i < obs.length; i++) {
-      const row = Array.isArray(obs[i]) ? obs[i] : [];
+      const row: number[] = Array.isArray(obs[i]) ? obs[i] : [];
       for (let j = 0; j < cols; j++) {
-        sums[j] += Number(row[j] ?? 0);
+        const prev = (sums[j] ?? 0);
+        const add = Number(row[j] ?? 0);
+        sums[j] = prev + add; // ★ 未定義ガードで noUncheckedIndexedAccess を回避
       }
     }
     return sums;
@@ -46,10 +48,10 @@ export default function ChiSquareGuidePage() {
   // 期待度数
   const expected = useMemo<Matrix>(() => {
     if (!isMatrix(obs) || obs.length === 0 || grandTotal <= 0) return [];
-    return obs.map((row, i) => row.map((_, j) => (rowTotals[i] * colTotals[j]) / grandTotal));
+    return obs.map((row, i) => row.map((_, j) => (rowTotals[i] * (colTotals[j] ?? 0)) / grandTotal));
   }, [obs, rowTotals, colTotals, grandTotal]);
 
-  // 各セルのカイ二乗成分 & 合計
+  // 各セルのカイ二乗成分
   const chiEach = useMemo<Matrix>(() => {
     if (!isMatrix(obs) || expected.length === 0) return [];
     return obs.map((row, i) =>
@@ -60,6 +62,7 @@ export default function ChiSquareGuidePage() {
     );
   }, [obs, expected]);
 
+  // 合計 χ²
   const chiTotal = useMemo<number>(() => {
     if (!isMatrix(chiEach) || chiEach.length === 0) return 0;
     return chiEach.reduce((s, row) => s + row.reduce((ss, v) => ss + v, 0), 0);
