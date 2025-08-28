@@ -1,0 +1,23 @@
+---
+title: "（技術士ガイドのタイトル）"
+description: "（概要）"
+tags: ["技術士"]
+exam: "engineer"
+status: "published"
+---
+
+import { GuideLayout, Glossary, QA } from '../../../src/components/guide/GuideLayout';
+
+<GuideLayout title={title} intro="（導入文）">
+  <section style={{ marginBottom: 24 }}>
+    <p>ここに本文</p>
+  </section>
+
+  <Glossary items={[
+    { term: '用語A', desc: '説明A' },
+  ]} />
+
+  <section style={{ maxWidth: 760, margin:'0 auto', display:'grid', gap:12 }}>
+    <QA q="質問？" a={<div>答え</div>} />
+  </section>
+</GuideLayout>
