@@ -6,20 +6,11 @@ exam: "qc"
 status: "published"
 ---
 
-import dynamic from 'next/dynamic';
-import { GuideLayout, Glossary, QA } from '../../../src/components/guide/GuideLayout';
-
-const AvailabilitySimulator = dynamic(
-  () => import('../../../src/components/guide/AvailabilitySimulator').then(m => m.default),
-  { ssr: false }
-);
-
-export const title = '信頼性工学スタディガイド';
-export const description = 'MTBF・MTTR・MTTF・アベイラビリティの基礎と、可用性シミュレーターでの体感';
-export const tags = ['信頼性', 'MTBF', 'MTTR', 'MTTF', '可用性'];
+import { GuideLayout, Glossary, QA } from '../../../src/components/guide/GuideLayout'
+import AvailabilitySimulator from '../../../src/components/guide/AvailabilitySimulator'
 
 <GuideLayout
-  title={title}
+  title="信頼性工学スタディガイド"
   intro="製品やシステムの信頼性・可用性を評価する代表指標を学び、MTBFとMTTRから可用性を直感的に理解します。"
 >
 
