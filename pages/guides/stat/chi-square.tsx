@@ -18,12 +18,12 @@ function rowSums(m: Matrix): number[] {
   );
 }
 
-/** 列合計 */
+/** 列合計（strict 安全版） */
 function colSums(m: Matrix): number[] {
   const cols = Math.max(0, ...m.map((r: Row) => r.length));
   const sums: number[] = Array.from({ length: cols }, () => 0);
   for (let i = 0; i < m.length; i++) {
-    const row: Row = Array.isArray(m[i]) ? m[i] : [];
+    const row: Row = (m[i] ?? []) as Row; // ← undefined を空配列にフォールバックしつつ Row に確定
     for (let j = 0; j < cols; j++) {
       const add = Number.isFinite(row[j]) ? (row[j] as number) : 0;
       sums[j] = (sums[j] ?? 0) + add;
@@ -104,7 +104,7 @@ export default function ChiSquareGuide(): JSX.Element {
   const crit      = useMemo(() => crit5pct(df), [df]);
   const significant = crit !== undefined ? chi2 > crit : undefined;
 
-  // 入力編集（任意：将来のために安全ガード付きで用意）
+  // 入力編集（将来編集用に安全ガード）
   const onChangeCell = (i: number, j: number, v: string) => {
     const n = Number(v);
     const val = Number.isFinite(n) && n >= 0 ? Math.floor(n) : 0;
