@@ -14,7 +14,7 @@ function isMatrix(a: unknown): a is Matrix {
 }
 
 export default function ChiSquareGuidePage() {
-  // 観測度数（2×2以外に拡張してもOK）
+  // 観測度数（2×2例）
   const [obs] = useState<Matrix>([
     [30, 20],
     [20, 30],
@@ -29,14 +29,14 @@ export default function ChiSquareGuidePage() {
   // 列合計（未定義ガード & 可変サイズ対応）
   const colTotals = useMemo<number[]>(() => {
     if (!isMatrix(obs) || obs.length === 0) return [];
-    const cols = Math.max(...obs.map(r => (Array.isArray(r) ? r.length : 0)));
+    const cols = Math.max(0, ...obs.map(r => r.length));
     const sums: number[] = Array.from({ length: cols }, () => 0);
     for (let i = 0; i < obs.length; i++) {
-      const row: number[] = Array.isArray(obs[i]) ? obs[i] : [];
+      const row: number[] = (obs[i] ?? []) as number[]; // ← ここで確実に number[] 化
       for (let j = 0; j < cols; j++) {
-        const prev = (sums[j] ?? 0);
+        const prev = sums[j] ?? 0;
         const add = Number(row[j] ?? 0);
-        sums[j] = prev + add; // ★ 未定義ガードで noUncheckedIndexedAccess を回避
+        sums[j] = prev + add;
       }
     }
     return sums;
@@ -48,7 +48,13 @@ export default function ChiSquareGuidePage() {
   // 期待度数
   const expected = useMemo<Matrix>(() => {
     if (!isMatrix(obs) || obs.length === 0 || grandTotal <= 0) return [];
-    return obs.map((row, i) => row.map((_, j) => (rowTotals[i] * (colTotals[j] ?? 0)) / grandTotal));
+    return obs.map((row, i) =>
+      row.map((_, j) => {
+        const ri = rowTotals[i] ?? 0;
+        const cj = colTotals[j] ?? 0;
+        return (ri * cj) / Math.max(1, grandTotal);
+      })
+    );
   }, [obs, rowTotals, colTotals, grandTotal]);
 
   // 各セルのカイ二乗成分
@@ -71,7 +77,7 @@ export default function ChiSquareGuidePage() {
   // 自由度 (行-1)*(列-1)
   const df = useMemo<number>(() => {
     const r = obs.length;
-    const c = Math.max(...obs.map(row => row.length));
+    const c = Math.max(0, ...obs.map(row => row.length));
     return (r - 1) * (c - 1);
   }, [obs]);
 
@@ -171,9 +177,7 @@ export default function ChiSquareGuidePage() {
             <div className="mt-4 text-center">
               <div className="text-sm text-gray-600">自由度: {df}</div>
               {showChi && (
-                <div className="mt-1 font-bold">
-                  合計 χ² = {chiTotal.toFixed(3)}（df={df}）
-                </div>
+                <div className="mt-1 font-bold">合計 χ² = {chiTotal.toFixed(3)}（df={df}）</div>
               )}
             </div>
           )}
@@ -194,21 +198,14 @@ export default function ChiSquareGuidePage() {
           <h2 style={{ textAlign: 'center', fontSize: 22, fontWeight: 800, margin: '0 0 12px' }}>
             理解度チェック
           </h2>
-          <QA
-            q="カイ二乗検定が扱うデータは？"
-            a={<div>カテゴリ（質的）データ。例：性別×購入商品、ライン×不良モード。</div>}
-          />
+          <QA q="カイ二乗検定が扱うデータは？" a={<div>カテゴリ（質的）データ。例：性別×購入商品、ライン×不良モード。</div>} />
           <QA
             q="期待度数の計算式は？"
             a={<div>E = (行合計 × 列合計) / 総計。独立（関連なし）を仮定した場合の基準です。</div>}
           />
           <QA
             q="χ²が大きいほどどう解釈する？"
-            a={
-              <div>
-                独立からのズレが大きい（＝関連ありの可能性）。ただし<strong>因果</strong>は示しません。
-              </div>
-            }
+            a={<div>独立からのズレが大きい（＝関連ありの可能性）。ただし<strong>因果</strong>は示しません。</div>}
           />
         </section>
       </GuideLayout>
