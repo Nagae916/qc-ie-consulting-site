@@ -6,12 +6,11 @@ exam: "qc"
 status: "published"
 ---
 
-import dynamic from 'next/dynamic';
-import { GuideLayout, Glossary, QA } from '../../../src/components/guide/GuideLayout';
-const MethodNavigator = dynamic(() => import('../../../src/components/guide/MethodNavigator'), { ssr: false });
+import { GuideLayout, Glossary, QA } from '../../../src/components/guide/GuideLayout'
+import MethodNavigator from '../../../src/components/guide/MethodNavigator'
 
 <GuideLayout
-  title={title}
+  title="回帰分析・分散分析スタディガイド"
   intro="回帰分析と分散分析の基本概念と選び方を学びます。以下のナビゲーターに回答すると、あなたの目的に合う手法を提示します。"
 >
 
