@@ -2,11 +2,10 @@
 'use client';
 import React, { useMemo, useState } from 'react';
 
-/** 2×2 の行列を number[][] で持つ（インデックスアクセスは安全関数経由で行う） */
-type Row = number[];
-type Matrix = Row[];
+/** 2×2 をタプルで厳密に表現（noUncheckedIndexedAccess 対策） */
+type Matrix2 = [[number, number], [number, number]];
 
-// UI 用の軽いスタイル
+// UI用の軽いスタイル
 const card: React.CSSProperties = {
   background: '#fff',
   border: '1px solid #e5e7eb',
@@ -16,34 +15,38 @@ const card: React.CSSProperties = {
 };
 const sub: React.CSSProperties = { color: '#64748b' };
 
-/** 安全にセルを取得（未定義なら 0） */
-function get(m: Matrix, i: number, j: number): number {
-  const v = m[i]?.[j];
-  return Number.isFinite(v) ? (v as number) : 0;
+/** 安全にセルを取得（念のため Number 化） */
+function get(m: Matrix2, i: 0 | 1, j: 0 | 1): number {
+  const v = m[i][j];
+  return Number.isFinite(v) ? v : 0;
 }
 
-/** 安全に行合計を 2 要素で返す */
-function rowTotalsOf(m: Matrix): [number, number] {
-  const r0 = (m[0]?.reduce?.((s, v) => s + (Number.isFinite(v) ? (v as number) : 0), 0) ?? 0);
-  const r1 = (m[1]?.reduce?.((s, v) => s + (Number.isFinite(v) ? (v as number) : 0), 0) ?? 0);
+/** 行合計 */
+function rowTotalsOf(m: Matrix2): [number, number] {
+  const r0 = (m[0][0] ?? 0) + (m[0][1] ?? 0);
+  const r1 = (m[1][0] ?? 0) + (m[1][1] ?? 0);
   return [r0, r1];
 }
 
-/** 安全に列合計を 2 要素で返す */
-function colTotalsOf(m: Matrix): [number, number] {
-  const c0 = get(m, 0, 0) + get(m, 1, 0);
-  const c1 = get(m, 0, 1) + get(m, 1, 1);
+/** 列合計 */
+function colTotalsOf(m: Matrix2): [number, number] {
+  const c0 = (m[0][0] ?? 0) + (m[1][0] ?? 0);
+  const c1 = (m[0][1] ?? 0) + (m[1][1] ?? 0);
   return [c0, c1];
 }
 
 /** 総和 */
-function grandTotalOf(m: Matrix): number {
+function grandTotalOf(m: Matrix2): number {
   const [r0, r1] = rowTotalsOf(m);
   return r0 + r1;
 }
 
 /** 期待度数（2×2 専用） */
-function expectedFrom(rows: [number, number], cols: [number, number], grand: number): [[number, number], [number, number]] {
+function expectedFrom(
+  rows: [number, number],
+  cols: [number, number],
+  grand: number
+): Matrix2 {
   const g = grand > 0 ? grand : 1; // 0割保護
   return [
     [(rows[0] * cols[0]) / g, (rows[0] * cols[1]) / g],
@@ -52,44 +55,51 @@ function expectedFrom(rows: [number, number], cols: [number, number], grand: num
 }
 
 /** χ² 各セル寄与（2×2 専用） */
-function chi2Breakdown(obs: Matrix, exp: [[number, number], [number, number]]): [[number, number], [number, number]] {
+function chi2Breakdown(obs: Matrix2, exp: Matrix2): Matrix2 {
   const f = (o: number, e: number) => (e > 0 ? ((o - e) ** 2) / e : 0);
   return [
-    [f(get(obs, 0, 0), exp[0][0]), f(get(obs, 0, 1), exp[0][1])],
-    [f(get(obs, 1, 0), exp[1][0]), f(get(obs, 1, 1), exp[1][1])],
+    [f(obs[0][0], exp[0][0]), f(obs[0][1], exp[0][1])],
+    [f(obs[1][0], exp[1][0]), f(obs[1][1], exp[1][1])],
   ];
+}
+
+/** 不変・安全に 1 セルだけ更新する */
+function setCell(m: Matrix2, i: 0 | 1, j: 0 | 1, v: number): Matrix2 {
+  const next: Matrix2 = [
+    [m[0][0], m[0][1]],
+    [m[1][0], m[1][1]],
+  ];
+  next[i][j] = v;
+  return next;
 }
 
 export default function ChiSquareGuide() {
   // 観測度数（任意に編集可能）
-  const [obs, setObs] = useState<Matrix>([
+  const [obs, setObs] = useState<Matrix2>([
     [30, 20],
     [20, 30],
   ]);
   const [showExpected, setShowExpected] = useState(false);
   const [showChi, setShowChi] = useState(false);
 
-  // 合計群（すべて安全アクセス経由）
-  const rows = useMemo(() => rowTotalsOf(obs), [obs]);                // [50,50]
-  const cols = useMemo(() => colTotalsOf(obs), [obs]);                // [50,50]
-  const grand = useMemo(() => grandTotalOf(obs), [obs]);              // 100
+  // 合計群
+  const rows = useMemo(() => rowTotalsOf(obs), [obs]);   // [50,50]
+  const cols = useMemo(() => colTotalsOf(obs), [obs]);   // [50,50]
+  const grand = useMemo(() => grandTotalOf(obs), [obs]); // 100
 
   // 期待度数・χ²
   const exp = useMemo(() => expectedFrom(rows, cols, grand), [rows, cols, grand]);
   const chi = useMemo(() => chi2Breakdown(obs, exp), [obs, exp]);
-  const chiTotal = useMemo(() => chi[0][0] + chi[0][1] + chi[1][0] + chi[1][1], [chi]);
+  const chiTotal = useMemo(
+    () => chi[0][0] + chi[0][1] + chi[1][0] + chi[1][1],
+    [chi]
+  );
 
   // 入力ハンドラ（整数・非負・NaN防止）
   const onChangeCell = (r: 0 | 1, c: 0 | 1, v: string) => {
-    const n = Math.max(0, Math.floor(Number(v)));
-    setObs(prev => {
-      const next: Matrix = [
-        [get(prev, 0, 0), get(prev, 0, 1)],
-        [get(prev, 1, 0), get(prev, 1, 1)],
-      ];
-      next[r][c] = Number.isFinite(n) ? n : 0;
-      return next;
-    });
+    const nRaw = Number(v);
+    const n = Number.isFinite(nRaw) ? Math.max(0, Math.floor(nRaw)) : 0;
+    setObs(prev => setCell(prev, r, c, n));
     setShowExpected(false);
     setShowChi(false);
   };
