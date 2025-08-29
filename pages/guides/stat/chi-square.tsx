@@ -2,10 +2,11 @@
 'use client';
 import React, { useMemo, useState } from 'react';
 
-/** 2×2 専用の厳密タプル型（undefined を許さない） */
-type Row = [number, number];
-type Matrix2 = [Row, Row];
+/** 2×2 の行列を number[][] で持つ（インデックスアクセスは安全関数経由で行う） */
+type Row = number[];
+type Matrix = Row[];
 
+// UI 用の軽いスタイル
 const card: React.CSSProperties = {
   background: '#fff',
   border: '1px solid #e5e7eb',
@@ -13,66 +14,78 @@ const card: React.CSSProperties = {
   padding: 16,
   boxShadow: '0 2px 8px rgba(0,0,0,.04)',
 };
-
-const label: React.CSSProperties = { fontWeight: 700, marginBottom: 6 };
 const sub: React.CSSProperties = { color: '#64748b' };
 
-/** 行合計 [r1, r2] */
-function rowTotalsOf(m: Matrix2): Row {
-  return [m[0][0] + m[0][1], m[1][0] + m[1][1]];
+/** 安全にセルを取得（未定義なら 0） */
+function get(m: Matrix, i: number, j: number): number {
+  const v = m[i]?.[j];
+  return Number.isFinite(v) ? (v as number) : 0;
 }
-/** 列合計 [c1, c2] */
-function colTotalsOf(m: Matrix2): Row {
-  return [m[0][0] + m[1][0], m[0][1] + m[1][1]];
+
+/** 安全に行合計を 2 要素で返す */
+function rowTotalsOf(m: Matrix): [number, number] {
+  const r0 = (m[0]?.reduce?.((s, v) => s + (Number.isFinite(v) ? (v as number) : 0), 0) ?? 0);
+  const r1 = (m[1]?.reduce?.((s, v) => s + (Number.isFinite(v) ? (v as number) : 0), 0) ?? 0);
+  return [r0, r1];
 }
+
+/** 安全に列合計を 2 要素で返す */
+function colTotalsOf(m: Matrix): [number, number] {
+  const c0 = get(m, 0, 0) + get(m, 1, 0);
+  const c1 = get(m, 0, 1) + get(m, 1, 1);
+  return [c0, c1];
+}
+
 /** 総和 */
-function grandTotalOf(m: Matrix2): number {
-  const rows = rowTotalsOf(m);
-  return rows[0] + rows[1];
+function grandTotalOf(m: Matrix): number {
+  const [r0, r1] = rowTotalsOf(m);
+  return r0 + r1;
 }
+
 /** 期待度数（2×2 専用） */
-function expectedFrom(rows: Row, cols: Row, grand: number): Matrix2 {
+function expectedFrom(rows: [number, number], cols: [number, number], grand: number): [[number, number], [number, number]] {
   const g = grand > 0 ? grand : 1; // 0割保護
   return [
     [(rows[0] * cols[0]) / g, (rows[0] * cols[1]) / g],
     [(rows[1] * cols[0]) / g, (rows[1] * cols[1]) / g],
   ];
 }
-/** χ² 各セル寄与分（2×2 専用） */
-function chi2Breakdown(obs: Matrix2, exp: Matrix2): Matrix2 {
+
+/** χ² 各セル寄与（2×2 専用） */
+function chi2Breakdown(obs: Matrix, exp: [[number, number], [number, number]]): [[number, number], [number, number]] {
   const f = (o: number, e: number) => (e > 0 ? ((o - e) ** 2) / e : 0);
   return [
-    [f(obs[0][0], exp[0][0]), f(obs[0][1], exp[0][1])],
-    [f(obs[1][0], exp[1][0]), f(obs[1][1], exp[1][1])],
+    [f(get(obs, 0, 0), exp[0][0]), f(get(obs, 0, 1), exp[0][1])],
+    [f(get(obs, 1, 0), exp[1][0]), f(get(obs, 1, 1), exp[1][1])],
   ];
 }
 
 export default function ChiSquareGuide() {
-  // 初期観測度数
-  const [obs, setObs] = useState<Matrix2>([
+  // 観測度数（任意に編集可能）
+  const [obs, setObs] = useState<Matrix>([
     [30, 20],
     [20, 30],
   ]);
   const [showExpected, setShowExpected] = useState(false);
   const [showChi, setShowChi] = useState(false);
 
-  // 合計類
-  const rows = useMemo(() => rowTotalsOf(obs), [obs]);
-  const cols = useMemo(() => colTotalsOf(obs), [obs]);
-  const grand = useMemo(() => grandTotalOf(obs), [obs]);
+  // 合計群（すべて安全アクセス経由）
+  const rows = useMemo(() => rowTotalsOf(obs), [obs]);                // [50,50]
+  const cols = useMemo(() => colTotalsOf(obs), [obs]);                // [50,50]
+  const grand = useMemo(() => grandTotalOf(obs), [obs]);              // 100
 
   // 期待度数・χ²
   const exp = useMemo(() => expectedFrom(rows, cols, grand), [rows, cols, grand]);
   const chi = useMemo(() => chi2Breakdown(obs, exp), [obs, exp]);
   const chiTotal = useMemo(() => chi[0][0] + chi[0][1] + chi[1][0] + chi[1][1], [chi]);
 
-  // 入力ハンドラ（整数・非負にクリーニング）
+  // 入力ハンドラ（整数・非負・NaN防止）
   const onChangeCell = (r: 0 | 1, c: 0 | 1, v: string) => {
     const n = Math.max(0, Math.floor(Number(v)));
     setObs(prev => {
-      const next: Matrix2 = [
-        [prev[0][0], prev[0][1]],
-        [prev[1][0], prev[1][1]],
+      const next: Matrix = [
+        [get(prev, 0, 0), get(prev, 0, 1)],
+        [get(prev, 1, 0), get(prev, 1, 1)],
       ];
       next[r][c] = Number.isFinite(n) ? n : 0;
       return next;
@@ -107,7 +120,7 @@ export default function ChiSquareGuide() {
                   <input
                     type="number"
                     min={0}
-                    value={obs[0][0]}
+                    value={get(obs, 0, 0)}
                     onChange={e => onChangeCell(0, 0, e.target.value)}
                     className="w-24 border rounded px-2 py-1"
                   />
@@ -122,7 +135,7 @@ export default function ChiSquareGuide() {
                   <input
                     type="number"
                     min={0}
-                    value={obs[0][1]}
+                    value={get(obs, 0, 1)}
                     onChange={e => onChangeCell(0, 1, e.target.value)}
                     className="w-24 border rounded px-2 py-1"
                   />
@@ -142,7 +155,7 @@ export default function ChiSquareGuide() {
                   <input
                     type="number"
                     min={0}
-                    value={obs[1][0]}
+                    value={get(obs, 1, 0)}
                     onChange={e => onChangeCell(1, 0, e.target.value)}
                     className="w-24 border rounded px-2 py-1"
                   />
@@ -157,7 +170,7 @@ export default function ChiSquareGuide() {
                   <input
                     type="number"
                     min={0}
-                    value={obs[1][1]}
+                    value={get(obs, 1, 1)}
                     onChange={e => onChangeCell(1, 1, e.target.value)}
                     className="w-24 border rounded px-2 py-1"
                   />
@@ -181,7 +194,7 @@ export default function ChiSquareGuide() {
           </table>
         </div>
 
-        {/* 操作ボタン */}
+        {/* 操作 */}
         <div className="flex gap-3 flex-wrap mb-4">
           <button
             type="button"
@@ -206,32 +219,32 @@ export default function ChiSquareGuide() {
           </button>
         </div>
 
-        {/* 結果表示 */}
+        {/* 結果 */}
         <div className="grid gap-2">
           {showExpected && (
             <div>
-              <div style={label}>期待度数</div>
+              <div className="font-bold mb-1">期待度数</div>
               <div style={sub} className="text-sm">
-                E<sub>11</sub>={(rows[0])}×{cols[0]}/{grand}={exp[0][0].toFixed(2)}、&nbsp;
-                E<sub>12</sub>={(rows[0])}×{cols[1]}/{grand}={exp[0][1].toFixed(2)}、&nbsp;
-                E<sub>21</sub>={(rows[1])}×{cols[0]}/{grand}={exp[1][0].toFixed(2)}、&nbsp;
-                E<sub>22</sub>={(rows[1])}×{cols[1]}/{grand}={exp[1][1].toFixed(2)}
+                E<sub>11</sub>={rows[0]}×{cols[0]}/{grand}={exp[0][0].toFixed(2)}、&nbsp;
+                E<sub>12</sub>={rows[0]}×{cols[1]}/{grand}={exp[0][1].toFixed(2)}、&nbsp;
+                E<sub>21</sub>={rows[1]}×{cols[0]}/{grand}={exp[1][0].toFixed(2)}、&nbsp;
+                E<sub>22</sub>={rows[1]}×{cols[1]}/{grand}={exp[1][1].toFixed(2)}
               </div>
             </div>
           )}
 
           {showChi && (
             <div>
-              <div style={label}>χ² の各セル寄与と合計（自由度 1）</div>
+              <div className="font-bold mb-1">χ² の各セル寄与と合計（自由度 1）</div>
               <div style={sub} className="text-sm">
-                {( (obs[0][0]-exp[0][0])**2/exp[0][0] ).toFixed(3)}、&nbsp;
-                {( (obs[0][1]-exp[0][1])**2/exp[0][1] ).toFixed(3)}、&nbsp;
-                {( (obs[1][0]-exp[1][0])**2/exp[1][0] ).toFixed(3)}、&nbsp;
-                {( (obs[1][1]-exp[1][1])**2/exp[1][1] ).toFixed(3)}
+                {( ((get(obs,0,0)-exp[0][0])**2) / exp[0][0] ).toFixed(3)}、&nbsp;
+                {( ((get(obs,0,1)-exp[0][1])**2) / exp[0][1] ).toFixed(3)}、&nbsp;
+                {( ((get(obs,1,0)-exp[1][0])**2) / exp[1][0] ).toFixed(3)}、&nbsp;
+                {( ((get(obs,1,1)-exp[1][1])**2) / exp[1][1] ).toFixed(3)}
               </div>
               <div className="mt-1 font-bold">χ² 合計 = {chiTotal.toFixed(3)}</div>
               <div style={sub} className="text-sm mt-1">
-                5%水準での臨界値（自由度1）は 3.841。χ² がこれを上回れば「統計的に有意な関連あり」と判断。
+                5%水準・自由度1の臨界値は 3.841。χ² がこれを上回れば「統計的に有意な関連あり」。
               </div>
             </div>
           )}
