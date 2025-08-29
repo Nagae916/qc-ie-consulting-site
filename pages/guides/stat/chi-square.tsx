@@ -81,7 +81,7 @@ export default function ChiSquareGuide() {
   const [showExpected, setShowExpected] = useState(false);
   const [showChi, setShowChi] = useState(false);
 
-  // 合計類
+  // 合計類（動的インデックスを避ける実装で型安全）
   const rows = useMemo(() => rowTotalsOf(obs), [obs]);
   const cols = useMemo(() => colTotalsOf(obs), [obs]);
   const grand = useMemo(() => grandTotalOf(obs), [obs]);
@@ -245,10 +245,10 @@ export default function ChiSquareGuide() {
           <div>
             <div className="font-bold mb-1">χ² の各セル寄与と合計（自由度 1）</div>
             <div style={sub} className="text-sm">
-              {( ((get(obs,0,0)-exp[0][0])**2) / exp[0][0] ).toFixed(3)}、&nbsp;
-              {( ((get(obs,0,1)-exp[0][1])**2) / exp[0][1] ).toFixed(3)}、&nbsp;
-              {( ((get(obs,1,0)-exp[1][0])**2) / exp[1][0] ).toFixed(3)}、&nbsp;
-              {( ((get(obs,1,1)-exp[1][1])**2) / exp[1][1] ).toFixed(3)}
+              {(((get(obs,0,0)-exp[0][0])**2) / exp[0][0]).toFixed(3)}、&nbsp;
+              {(((get(obs,0,1)-exp[0][1])**2) / exp[0][1]).toFixed(3)}、&nbsp;
+              {(((get(obs,1,0)-exp[1][0])**2) / exp[1][0]).toFixed(3)}、&nbsp;
+              {(((get(obs,1,1)-exp[1][1])**2) / exp[1][1]).toFixed(3)}
             </div>
             <div className="mt-1 font-bold">χ² 合計 = {chiTotal.toFixed(3)}</div>
             <div style={sub} className="text-sm mt-1">
