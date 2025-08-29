@@ -9,8 +9,6 @@ import { Bar } from 'react-chartjs-2';
 
 C.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-type Cell = { r: number; c: number };
-
 export default function ChiSquareGuide() {
   // 観測度数（固定サンプル）: 2×2
   const [obs] = useState<number[][]>([[30, 20], [20, 30]]);
@@ -32,7 +30,7 @@ export default function ChiSquareGuide() {
 
   const grandTotal = useMemo<number>(() => rowTotals[0] + rowTotals[1], [rowTotals]);
 
-  // 期待度数・χ^2 関連
+  // 期待度数・χ^2 関連（固定長タプルで型を確定）
   const [expected, setExpected] = useState<[[number, number], [number, number]]>([[0, 0], [0, 0]]);
   const [chiValues, setChiValues] = useState<[[number, number], [number, number]]>([[0, 0], [0, 0]]);
   const [chiTotal, setChiTotal] = useState<number | null>(null);
@@ -66,9 +64,10 @@ export default function ChiSquareGuide() {
 
     for (const i of I) {
       for (const j of I) {
-        const diff = (obs[i]?.[j] ?? 0) - (expected[i]?.[j] ?? 0);
-        const denom = (expected[i]?.[j] ?? 0) || 1; // 0割回避
-        const v = (diff * diff) / denom;
+        const o = (obs[i]?.[j] ?? 0);
+        const e = expected[i][j] || 1; // 0割回避
+        const diff = o - e;
+        const v = (diff * diff) / e;
         chi[i][j] = v;
         total += v;
       }
@@ -89,7 +88,7 @@ export default function ChiSquareGuide() {
         },
         {
           label: '期待度数',
-          data: [expected[0]?.[0] ?? 0, expected[0]?.[1] ?? 0, expected[1]?.[0] ?? 0, expected[1]?.[1] ?? 0],
+          data: [expected[0][0], expected[0][1], expected[1][0], expected[1][1]],
           borderWidth: 1,
         },
       ],
@@ -157,7 +156,12 @@ export default function ChiSquareGuide() {
               body: '自由度 = (行数-1)×(列数-1)。セルの度数ではなく「行・列の数」から決まります。'
             },
           ].map((card, i) => (
-            <div key={i} style={cardStyle} className="cursor-pointer" onClick={() => setShowConcept(v => ({ ...v, [i]: !v[i] }))}>
+            <div
+              key={i}
+              style={cardStyle}
+              className="cursor-pointer"
+              onClick={() => setShowConcept(v => ({ ...v, [i]: !v[i] }))}
+            >
               <h3 className="text-xl font-bold mb-2 flex items-center">{card.title}</h3>
               {showConcept[i] && <p className="text-stone-700">{card.body}</p>}
             </div>
@@ -195,17 +199,17 @@ export default function ChiSquareGuide() {
               </tr>
             </thead>
             <tbody>
-              {[0, 1].map(i => (
+              {([0, 1] as const).map(i => (
                 <tr key={i}>
                   <td className="border p-3 font-bold">{i === 0 ? '商品A' : '商品B'}</td>
-                  {[0, 1].map(j => (
+                  {([0, 1] as const).map(j => (
                     <td key={j} className="border p-3 text-center text-lg">
                       <div>{obs[i]?.[j] ?? 0}</div>
-                      {expected[i]?.[j] > 0 && (
-                        <div className="text-sm text-red-600">(期待: {(expected[i]?.[j] ?? 0).toFixed(2)})</div>
+                      {expected[i][j] > 0 && (
+                        <div className="text-sm text-red-600">(期待: {expected[i][j].toFixed(2)})</div>
                       )}
-                      {chiValues[i]?.[j] > 0 && (
-                        <div className="text-xs text-blue-600">(χ²={(chiValues[i]?.[j] ?? 0).toFixed(2)})</div>
+                      {chiValues[i][j] > 0 && (
+                        <div className="text-xs text-blue-600">(χ²={chiValues[i][j].toFixed(2)})</div>
                       )}
                     </td>
                   ))}
@@ -224,17 +228,17 @@ export default function ChiSquareGuide() {
 
         {/* ボタン */}
         <div className="text-center mb-6 flex gap-3 justify-center">
-          <button style={btn} onClick={handleCalcExpected} disabled={(expected[0]?.[0] ?? 0) > 0}>
+          <button style={btn} onClick={handleCalcExpected} disabled={expected[0][0] > 0}>
             1. 期待度数を計算
           </button>
-          <button style={btn2} onClick={handleCalcChi} disabled={(expected[0]?.[0] ?? 0) === 0 || chiTotal !== null}>
+          <button style={btn2} onClick={handleCalcChi} disabled={expected[0][0] === 0 || chiTotal !== null}>
             2. カイ二乗値を計算
           </button>
         </div>
 
         {/* 計算結果 */}
         <div className="text-center space-y-2">
-          {(expected[0]?.[0] ?? 0) > 0 && (
+          {expected[0][0] > 0 && (
             <div className="text-lg">
               <strong>期待度数を計算しました。</strong> 各セル下に (期待: …) を表示しています。
             </div>
