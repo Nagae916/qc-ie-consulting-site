@@ -15,7 +15,7 @@ export default function ChiSquareGuide() {
   // 観測度数（固定サンプル）: 2×2
   const [obs] = useState<number[][]>([[30, 20], [20, 30]]);
 
-  // ==== ここから3定義のみ修正（動的のまま型安全 / noUncheckedIndexedAccess対応） ====
+  // 合計類（動的 + 型安全／noUncheckedIndexedAccess対応）
   const rowTotals = useMemo<[number, number]>(() => {
     const I = [0, 1] as const; // i: 0|1
     return I.map(i =>
@@ -31,23 +31,25 @@ export default function ChiSquareGuide() {
   }, [obs]);
 
   const grandTotal = useMemo<number>(() => rowTotals[0] + rowTotals[1], [rowTotals]);
-  // ==== 修正ここまで ====
 
   // 期待度数・χ^2 関連
-  const [expected, setExpected] = useState<number[][]>([[0, 0], [0, 0]]);
-  const [chiValues, setChiValues] = useState<number[][]>([[0, 0], [0, 0]]);
+  const [expected, setExpected] = useState<[[number, number], [number, number]]>([[0, 0], [0, 0]]);
+  const [chiValues, setChiValues] = useState<[[number, number], [number, number]]>([[0, 0], [0, 0]]);
   const [chiTotal, setChiTotal] = useState<number | null>(null);
 
   // UI トグル
   const [showConcept, setShowConcept] = useState<Record<number, boolean>>({});
   const [openQA, setOpenQA] = useState<Record<number, boolean>>({});
 
-  // 期待度数の計算
+  // 期待度数の計算（添字を 0|1 に固定して型安全）
   const handleCalcExpected = () => {
-    const e = [[0, 0], [0, 0]];
-    for (let i = 0; i < 2; i++) {
-      for (let j = 0; j < 2; j++) {
-        e[i][j] = (rowTotals[i] * colTotals[j]) / (grandTotal > 0 ? grandTotal : 1);
+    const I = [0, 1] as const;
+    const e: [[number, number], [number, number]] = [[0, 0], [0, 0]];
+    const denom = grandTotal > 0 ? grandTotal : 1; // 0割回避
+
+    for (const i of I) {
+      for (const j of I) {
+        e[i][j] = (rowTotals[i] * colTotals[j]) / denom;
       }
     }
     setExpected(e);
@@ -55,15 +57,18 @@ export default function ChiSquareGuide() {
     setChiTotal(null);
   };
 
-  // χ^2 の計算
+  // χ^2 の計算（添字を 0|1 に固定して型安全）
   const handleCalcChi = () => {
     if (expected[0][0] === 0) return; // 先に期待度数
-    const chi = [[0, 0], [0, 0]];
+    const I = [0, 1] as const;
+    const chi: [[number, number], [number, number]] = [[0, 0], [0, 0]];
     let total = 0;
-    for (let i = 0; i < 2; i++) {
-      for (let j = 0; j < 2; j++) {
-        const diff = obs[i][j] - expected[i][j];
-        const v = (diff * diff) / expected[i][j];
+
+    for (const i of I) {
+      for (const j of I) {
+        const diff = (obs[i]?.[j] ?? 0) - (expected[i]?.[j] ?? 0);
+        const denom = (expected[i]?.[j] ?? 0) || 1; // 0割回避
+        const v = (diff * diff) / denom;
         chi[i][j] = v;
         total += v;
       }
@@ -79,12 +84,12 @@ export default function ChiSquareGuide() {
       datasets: [
         {
           label: '観測度数',
-          data: [obs[0][0], obs[0][1], obs[1][0], obs[1][1]],
+          data: [obs[0]?.[0] ?? 0, obs[0]?.[1] ?? 0, obs[1]?.[0] ?? 0, obs[1]?.[1] ?? 0],
           borderWidth: 1,
         },
         {
           label: '期待度数',
-          data: [expected[0][0], expected[0][1], expected[1][0], expected[1][1]],
+          data: [expected[0]?.[0] ?? 0, expected[0]?.[1] ?? 0, expected[1]?.[0] ?? 0, expected[1]?.[1] ?? 0],
           borderWidth: 1,
         },
       ],
@@ -195,12 +200,12 @@ export default function ChiSquareGuide() {
                   <td className="border p-3 font-bold">{i === 0 ? '商品A' : '商品B'}</td>
                   {[0, 1].map(j => (
                     <td key={j} className="border p-3 text-center text-lg">
-                      <div>{obs[i][j]}</div>
-                      {expected[i][j] > 0 && (
-                        <div className="text-sm text-red-600">(期待: {expected[i][j].toFixed(2)})</div>
+                      <div>{obs[i]?.[j] ?? 0}</div>
+                      {expected[i]?.[j] > 0 && (
+                        <div className="text-sm text-red-600">(期待: {(expected[i]?.[j] ?? 0).toFixed(2)})</div>
                       )}
-                      {chiValues[i][j] > 0 && (
-                        <div className="text-xs text-blue-600">(χ²={chiValues[i][j].toFixed(2)})</div>
+                      {chiValues[i]?.[j] > 0 && (
+                        <div className="text-xs text-blue-600">(χ²={(chiValues[i]?.[j] ?? 0).toFixed(2)})</div>
                       )}
                     </td>
                   ))}
@@ -219,17 +224,17 @@ export default function ChiSquareGuide() {
 
         {/* ボタン */}
         <div className="text-center mb-6 flex gap-3 justify-center">
-          <button style={btn} onClick={handleCalcExpected} disabled={expected[0][0] > 0}>
+          <button style={btn} onClick={handleCalcExpected} disabled={(expected[0]?.[0] ?? 0) > 0}>
             1. 期待度数を計算
           </button>
-          <button style={btn2} onClick={handleCalcChi} disabled={expected[0][0] === 0 || chiTotal !== null}>
+          <button style={btn2} onClick={handleCalcChi} disabled={(expected[0]?.[0] ?? 0) === 0 || chiTotal !== null}>
             2. カイ二乗値を計算
           </button>
         </div>
 
         {/* 計算結果 */}
         <div className="text-center space-y-2">
-          {expected[0][0] > 0 && (
+          {(expected[0]?.[0] ?? 0) > 0 && (
             <div className="text-lg">
               <strong>期待度数を計算しました。</strong> 各セル下に (期待: …) を表示しています。
             </div>
