@@ -1,297 +1,242 @@
 // pages/guides/stat/chi-square.tsx
-import Head from "next/head";
-import React, { useMemo, useState, ChangeEvent } from "react";
+'use client';
+import React, { useMemo, useState } from 'react';
 
-/** ===== 型定義 ===== */
-type Row = number[];
-type Matrix = Row[];
+/** 2×2 専用の厳密タプル型（undefined を許さない） */
+type Row = [number, number];
+type Matrix2 = [Row, Row];
 
-/** ===== 安全ユーティリティ ===== */
-function normalizeMatrix(m: unknown): Matrix {
-  if (!Array.isArray(m)) return [];
-  return m.map((r) =>
-    Array.isArray(r)
-      ? r.map((v) => (Number.isFinite(v) ? (v as number) : 0))
-      : []
-  );
+const card: React.CSSProperties = {
+  background: '#fff',
+  border: '1px solid #e5e7eb',
+  borderRadius: 16,
+  padding: 16,
+  boxShadow: '0 2px 8px rgba(0,0,0,.04)',
+};
+
+const label: React.CSSProperties = { fontWeight: 700, marginBottom: 6 };
+const sub: React.CSSProperties = { color: '#64748b' };
+
+/** 行合計 [r1, r2] */
+function rowTotalsOf(m: Matrix2): Row {
+  return [m[0][0] + m[0][1], m[1][0] + m[1][1]];
+}
+/** 列合計 [c1, c2] */
+function colTotalsOf(m: Matrix2): Row {
+  return [m[0][0] + m[1][0], m[0][1] + m[1][1]];
+}
+/** 総和 */
+function grandTotalOf(m: Matrix2): number {
+  const rows = rowTotalsOf(m);
+  return rows[0] + rows[1];
+}
+/** 期待度数（2×2 専用） */
+function expectedFrom(rows: Row, cols: Row, grand: number): Matrix2 {
+  const g = grand > 0 ? grand : 1; // 0割保護
+  return [
+    [(rows[0] * cols[0]) / g, (rows[0] * cols[1]) / g],
+    [(rows[1] * cols[0]) / g, (rows[1] * cols[1]) / g],
+  ];
+}
+/** χ² 各セル寄与分（2×2 専用） */
+function chi2Breakdown(obs: Matrix2, exp: Matrix2): Matrix2 {
+  const f = (o: number, e: number) => (e > 0 ? ((o - e) ** 2) / e : 0);
+  return [
+    [f(obs[0][0], exp[0][0]), f(obs[0][1], exp[0][1])],
+    [f(obs[1][0], exp[1][0]), f(obs[1][1], exp[1][1])],
+  ];
 }
 
-function rowTotalsOf(m: Matrix): number[] {
-  return m.map((row) =>
-    (row ?? []).reduce((s, v) => s + (Number.isFinite(v) ? (v as number) : 0), 0)
-  );
-}
-
-function colTotalsOf(m: Matrix): number[] {
-  if (!m.length) return [];
-  const cols = Math.max(...m.map((r) => (r ?? []).length), 0);
-  const sums: number[] = Array.from({ length: cols }, () => 0);
-  for (let i = 0; i < m.length; i++) {
-    const row = m[i] ?? [];
-    for (let j = 0; j < cols; j++) {
-      const val = Number.isFinite(row[j]) ? (row[j] as number) : 0;
-      sums[j] = (sums[j] ?? 0) + val;
-    }
-  }
-  return sums;
-}
-
-function grandTotalOf(rows: number[]): number {
-  return rows.reduce((s, v) => s + v, 0);
-}
-
-function expectedFrom(obs: Matrix): Matrix {
-  const rows = rowTotalsOf(obs);
-  const cols = colTotalsOf(obs);
-  const grand = grandTotalOf(rows);
-  const r = obs.length;
-  const c = cols.length;
-
-  const exp: Matrix = Array.from({ length: r }, () =>
-    Array.from({ length: c }, () => 0)
-  );
-
-  if (grand <= 0) return exp;
-
-  for (let i = 0; i < r; i++) {
-    // number に確定させたローカルを使う
-    const ri: number = Number.isFinite(rows[i]) ? (rows[i] as number) : 0;
-
-    // 行バッファを安全に確保
-    let row = exp[i];
-    if (!row) {
-      row = Array.from({ length: c }, () => 0);
-      exp[i] = row;
-    }
-    for (let j = 0; j < c; j++) {
-      const cj: number = Number.isFinite(cols[j]) ? (cols[j] as number) : 0;
-      row[j] = (ri * cj) / grand; // row は常に定義済み
-    }
-  }
-  return exp;
-}
-
-function chiTerm(o: number, e: number): number {
-  const E = e > 0 ? e : 0;
-  const O = Number.isFinite(o) ? (o as number) : 0;
-  if (E === 0) return 0;
-  const diff = O - E;
-  return (diff * diff) / E;
-}
-
-function chiMatrixOf(obs: Matrix, exp: Matrix): Matrix {
-  const r = Math.max(obs.length, exp.length);
-  const c = Math.max(
-    ...[obs, exp].map((m) => Math.max(...m.map((row) => row.length), 0)),
-    0
-  );
-  const chi: Matrix = Array.from({ length: r }, () =>
-    Array.from({ length: c }, () => 0)
-  );
-  for (let i = 0; i < r; i++) {
-    const ro = obs[i] ?? [];
-    const re = exp[i] ?? [];
-    for (let j = 0; j < c; j++) {
-      const o: number = Number.isFinite(ro[j]) ? (ro[j] as number) : 0;
-      const e: number = Number.isFinite(re[j]) ? (re[j] as number) : 0;
-      chi[i][j] = chiTerm(o, e);
-    }
-  }
-  return chi;
-}
-
-function sumMatrix(m: Matrix): number {
-  return m.reduce(
-    (acc, row) =>
-      acc +
-      row.reduce((s, v) => s + (Number.isFinite(v) ? (v as number) : 0), 0),
-    0
-  );
-}
-
-/** ===== メインページ ===== */
-export default function ChiSquareGuidePage() {
-  const [obs, setObs] = useState<Matrix>([
+export default function ChiSquareGuide() {
+  // 初期観測度数
+  const [obs, setObs] = useState<Matrix2>([
     [30, 20],
     [20, 30],
   ]);
+  const [showExpected, setShowExpected] = useState(false);
+  const [showChi, setShowChi] = useState(false);
 
+  // 合計類
   const rows = useMemo(() => rowTotalsOf(obs), [obs]);
   const cols = useMemo(() => colTotalsOf(obs), [obs]);
-  const grand = useMemo(() => grandTotalOf(rows), [rows]);
+  const grand = useMemo(() => grandTotalOf(obs), [obs]);
 
-  const exp = useMemo(() => expectedFrom(obs), [obs]);
-  const chiM = useMemo(() => chiMatrixOf(obs, exp), [obs, exp]);
-  const chiTotal = useMemo(() => sumMatrix(chiM), [chiM]);
+  // 期待度数・χ²
+  const exp = useMemo(() => expectedFrom(rows, cols, grand), [rows, cols, grand]);
+  const chi = useMemo(() => chi2Breakdown(obs, exp), [obs, exp]);
+  const chiTotal = useMemo(() => chi[0][0] + chi[0][1] + chi[1][0] + chi[1][1], [chi]);
 
-  const df = useMemo(
-    () => Math.max(0, (obs.length - 1) * (cols.length - 1)),
-    [obs.length, cols.length]
-  );
-
-  const onChangeCell =
-    (i: number, j: number) =>
-    (e: ChangeEvent<HTMLInputElement>): void => {
-      const next = normalizeMatrix(obs).map((row) => [...row]);
-      const v = Number(e.target.value);
-      next[i] = next[i] ?? [];
-      next[i][j] = Number.isFinite(v) && v >= 0 ? Math.round(v) : 0;
-      setObs(next);
-    };
+  // 入力ハンドラ（整数・非負にクリーニング）
+  const onChangeCell = (r: 0 | 1, c: 0 | 1, v: string) => {
+    const n = Math.max(0, Math.floor(Number(v)));
+    setObs(prev => {
+      const next: Matrix2 = [
+        [prev[0][0], prev[0][1]],
+        [prev[1][0], prev[1][1]],
+      ];
+      next[r][c] = Number.isFinite(n) ? n : 0;
+      return next;
+    });
+    setShowExpected(false);
+    setShowChi(false);
+  };
 
   return (
-    <>
-      <Head>
-        <title>クロス集計とカイ二乗検定（インタラクティブ）</title>
-        <meta
-          name="description"
-          content="観測度数を入力すると期待度数とカイ二乗値（χ²）を自動計算。自由度や検定の要点も確認できます。"
-        />
-      </Head>
-
-      <main className="container mx-auto px-4 py-10 space-y-8">
-        <header className="space-y-2">
-          <h1 className="text-2xl font-bold">
-            クロス集計とカイ二乗（χ²）検定：インタラクティブ
-          </h1>
-          <p className="text-gray-600">
-            観測度数を編集すると、期待度数と χ² が即時計算されます。自由度は
-            (行数−1)×(列数−1)。
-          </p>
-        </header>
+    <main className="container mx-auto px-4 py-8">
+      <section style={card}>
+        <h1 className="text-xl font-bold mb-1">クロス集計表とカイ二乗（χ²）検定</h1>
+        <p style={sub} className="mb-3">
+          2×2 のクロス集計表で、期待度数と χ² を段階的に確認できます（自由度は (2-1)×(2-1)=1）。
+        </p>
 
         {/* 観測度数テーブル */}
-        <section className="space-y-3">
-          <h2 className="text-lg font-semibold">① 観測度数（編集可）</h2>
-          <div className="overflow-x-auto">
-            <table className="min-w-[520px] border border-gray-200">
-              <thead>
-                <tr className="bg-gray-50">
-                  <th className="border p-2 text-right"> </th>
-                  {cols.map((_, j) => (
-                    <th key={`h-${j}`} className="border p-2 text-center">
-                      列{j + 1}
-                    </th>
-                  ))}
-                  <th className="border p-2 text-center font-bold">行合計</th>
-                </tr>
-              </thead>
-              <tbody>
-                {obs.map((row, i) => (
-                  <tr key={`r-${i}`}>
-                    <td className="border p-2 font-semibold text-right">
-                      行{i + 1}
-                    </td>
-                    {cols.map((_, j) => (
-                      <td key={`c-${i}-${j}`} className="border p-1">
-                        <input
-                          type="number"
-                          min={0}
-                          className="w-24 rounded border px-2 py-1 text-right"
-                          value={
-                            Number.isFinite(row?.[j]) ? (row?.[j] as number) : 0
-                          }
-                          onChange={onChangeCell(i, j)}
-                        />
-                      </td>
-                    ))}
-                    <td className="border p-2 text-right font-semibold">
-                      {rows[i] ?? 0}
-                    </td>
-                  </tr>
-                ))}
-                <tr className="bg-gray-50">
-                  <td className="border p-2 font-bold text-right">列合計</td>
-                  {cols.map((_, j) => (
-                    <td key={`sumc-${j}`} className="border p-2 text-right">
-                      {cols[j] ?? 0}
-                    </td>
-                  ))}
-                  <td className="border p-2 text-right font-bold">{grand}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
+        <div className="overflow-x-auto mb-4">
+          <table className="min-w-[520px] border-collapse">
+            <thead>
+              <tr className="bg-gray-50">
+                <th className="border p-2"></th>
+                <th className="border p-2">列1</th>
+                <th className="border p-2">列2</th>
+                <th className="border p-2 font-bold">行合計</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="border p-2 font-bold">行1</td>
+                <td className="border p-2">
+                  <input
+                    type="number"
+                    min={0}
+                    value={obs[0][0]}
+                    onChange={e => onChangeCell(0, 0, e.target.value)}
+                    className="w-24 border rounded px-2 py-1"
+                  />
+                  {showExpected && (
+                    <div className="text-xs text-rose-600 mt-1">(期待 {exp[0][0].toFixed(2)})</div>
+                  )}
+                  {showChi && (
+                    <div className="text-xs text-blue-600">(χ² {chi[0][0].toFixed(3)})</div>
+                  )}
+                </td>
+                <td className="border p-2">
+                  <input
+                    type="number"
+                    min={0}
+                    value={obs[0][1]}
+                    onChange={e => onChangeCell(0, 1, e.target.value)}
+                    className="w-24 border rounded px-2 py-1"
+                  />
+                  {showExpected && (
+                    <div className="text-xs text-rose-600 mt-1">(期待 {exp[0][1].toFixed(2)})</div>
+                  )}
+                  {showChi && (
+                    <div className="text-xs text-blue-600">(χ² {chi[0][1].toFixed(3)})</div>
+                  )}
+                </td>
+                <td className="border p-2 font-bold text-center">{rows[0]}</td>
+              </tr>
 
-        {/* 期待度数 */}
-        <section className="space-y-3">
-          <h2 className="text-lg font-semibold">
-            ② 期待度数（独立を仮定： (行合計×列合計) / 総計 ）
-          </h2>
-          <div className="overflow-x-auto">
-            <table className="min-w-[520px] border border-gray-200">
-              <thead>
-                <tr className="bg-gray-50">
-                  <th className="border p-2 text-right"> </th>
-                  {cols.map((_, j) => (
-                    <th key={`eh-${j}`} className="border p-2 text-center">
-                      列{j + 1}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {exp.map((row, i) => (
-                  <tr key={`er-${i}`}>
-                    <td className="border p-2 font-semibold text-right">
-                      行{i + 1}
-                    </td>
-                    {row.map((v, j) => (
-                      <td key={`ec-${i}-${j}`} className="border p-2 text-right">
-                        {v.toFixed(2)}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
+              <tr>
+                <td className="border p-2 font-bold">行2</td>
+                <td className="border p-2">
+                  <input
+                    type="number"
+                    min={0}
+                    value={obs[1][0]}
+                    onChange={e => onChangeCell(1, 0, e.target.value)}
+                    className="w-24 border rounded px-2 py-1"
+                  />
+                  {showExpected && (
+                    <div className="text-xs text-rose-600 mt-1">(期待 {exp[1][0].toFixed(2)})</div>
+                  )}
+                  {showChi && (
+                    <div className="text-xs text-blue-600">(χ² {chi[1][0].toFixed(3)})</div>
+                  )}
+                </td>
+                <td className="border p-2">
+                  <input
+                    type="number"
+                    min={0}
+                    value={obs[1][1]}
+                    onChange={e => onChangeCell(1, 1, e.target.value)}
+                    className="w-24 border rounded px-2 py-1"
+                  />
+                  {showExpected && (
+                    <div className="text-xs text-rose-600 mt-1">(期待 {exp[1][1].toFixed(2)})</div>
+                  )}
+                  {showChi && (
+                    <div className="text-xs text-blue-600">(χ² {chi[1][1].toFixed(3)})</div>
+                  )}
+                </td>
+                <td className="border p-2 font-bold text-center">{rows[1]}</td>
+              </tr>
 
-        {/* カイ二乗値 */}
-        <section className="space-y-3">
-          <h2 className="text-lg font-semibold">③ 各セルの寄与と χ² 合計</h2>
-          <div className="overflow-x-auto">
-            <table className="min-w-[520px] border border-gray-200">
-              <thead>
-                <tr className="bg-gray-50">
-                  <th className="border p-2 text-right"> </th>
-                  {cols.map((_, j) => (
-                    <th key={`ch-${j}`} className="border p-2 text-center">
-                      列{j + 1}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {chiM.map((row, i) => (
-                  <tr key={`cr-${i}`}>
-                    <td className="border p-2 font-semibold text-right">
-                      行{i + 1}
-                    </td>
-                    {row.map((v, j) => (
-                      <td key={`cc-${i}-${j}`} className="border p-2 text-right">
-                        {v.toFixed(3)}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              <tr className="bg-gray-50">
+                <td className="border p-2 font-bold">列合計</td>
+                <td className="border p-2 font-bold text-center">{cols[0]}</td>
+                <td className="border p-2 font-bold text-center">{cols[1]}</td>
+                <td className="border p-2 font-bold text-center">{grand}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-          <div className="rounded border p-4 bg-gray-50">
-            <div className="text-sm text-gray-700">
-              自由度 <b>{df}</b>、χ² 合計 <b>{chiTotal.toFixed(3)}</b>
+        {/* 操作ボタン */}
+        <div className="flex gap-3 flex-wrap mb-4">
+          <button
+            type="button"
+            onClick={() => { setShowExpected(true); setShowChi(false); }}
+            className="rounded-md border px-3 py-1.5 text-sm hover:bg-gray-50"
+          >
+            1. 期待度数を表示
+          </button>
+          <button
+            type="button"
+            onClick={() => { setShowExpected(true); setShowChi(true); }}
+            className="rounded-md border px-3 py-1.5 text-sm hover:bg-gray-50"
+          >
+            2. χ² を計算して表示
+          </button>
+          <button
+            type="button"
+            onClick={() => { setShowExpected(false); setShowChi(false); }}
+            className="rounded-md border px-3 py-1.5 text-sm hover:bg-gray-50"
+          >
+            クリア
+          </button>
+        </div>
+
+        {/* 結果表示 */}
+        <div className="grid gap-2">
+          {showExpected && (
+            <div>
+              <div style={label}>期待度数</div>
+              <div style={sub} className="text-sm">
+                E<sub>11</sub>={(rows[0])}×{cols[0]}/{grand}={exp[0][0].toFixed(2)}、&nbsp;
+                E<sub>12</sub>={(rows[0])}×{cols[1]}/{grand}={exp[0][1].toFixed(2)}、&nbsp;
+                E<sub>21</sub>={(rows[1])}×{cols[0]}/{grand}={exp[1][0].toFixed(2)}、&nbsp;
+                E<sub>22</sub>={(rows[1])}×{cols[1]}/{grand}={exp[1][1].toFixed(2)}
+              </div>
             </div>
-            <p className="mt-2 text-sm text-gray-600">
-              判定には、自由度に応じたカイ二乗分布表（臨界値）や P 値を参照してください。
-              例：自由度 1・有意水準 5% の臨界値はおよそ 3.841。
-            </p>
-          </div>
-        </section>
-      </main>
-    </>
+          )}
+
+          {showChi && (
+            <div>
+              <div style={label}>χ² の各セル寄与と合計（自由度 1）</div>
+              <div style={sub} className="text-sm">
+                {( (obs[0][0]-exp[0][0])**2/exp[0][0] ).toFixed(3)}、&nbsp;
+                {( (obs[0][1]-exp[0][1])**2/exp[0][1] ).toFixed(3)}、&nbsp;
+                {( (obs[1][0]-exp[1][0])**2/exp[1][0] ).toFixed(3)}、&nbsp;
+                {( (obs[1][1]-exp[1][1])**2/exp[1][1] ).toFixed(3)}
+              </div>
+              <div className="mt-1 font-bold">χ² 合計 = {chiTotal.toFixed(3)}</div>
+              <div style={sub} className="text-sm mt-1">
+                5%水準での臨界値（自由度1）は 3.841。χ² がこれを上回れば「統計的に有意な関連あり」と判断。
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+    </main>
   );
 }
