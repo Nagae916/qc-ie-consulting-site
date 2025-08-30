@@ -1,34 +1,49 @@
 // pages/guides/index.tsx
 import Link from "next/link";
-import type { GetStaticProps } from "next";
 import { allGuides } from "contentlayer/generated";
 
-export const getStaticProps: GetStaticProps = async () => ({ props: {}, revalidate: 60 });
+const EXAM_LABEL = {
+  qc: "QC検定",
+  stat: "統計検定",
+  engineer: "技術士試験",
+} as const;
 
-export default function GuidesHome() {
-  const count = (exam: string) =>
-    allGuides.filter(g => g.status !== "draft" && g.exam === exam).length;
+type ExamKey = keyof typeof EXAM_LABEL;
 
-  const cards = [
-    { exam: "qc",       title: "品質管理", href: "/guides/qc",       desc: "QC七つ道具 / 新QC七つ道具 / 管理図 / OC曲線 など" },
-    { exam: "stat",     title: "統計",     href: "/guides/stat",     desc: "t / Z / F / χ² / ANOVA / 回帰 など" },
-    { exam: "engineer", title: "技術士",   href: "/guides/engineer", desc: "学習ロードマップや要点整理、事例解説" },
-  ];
+export default function GuidesIndex() {
+  // draft を除外し、exam ごとにグループ化
+  const guides = allGuides.filter(g => g.status !== "draft");
+
+  const byExam: Record<string, typeof guides> = { qc: [], stat: [], engineer: [] };
+  for (const g of guides) {
+    const key = (g.exam as ExamKey) in EXAM_LABEL ? (g.exam as ExamKey) : "qc";
+    byExam[key].push(g);
+  }
+
+  const Section = ({ exam }: { exam: ExamKey }) => (
+    <section className="mb-8">
+      <h2 className="text-xl font-bold mb-2">
+        <Link href={`/guides/${exam}`} className="underline">{EXAM_LABEL[exam]}</Link>
+      </h2>
+      <ul className="list-disc pl-6 space-y-1">
+        {byExam[exam].map(g => (
+          <li key={`${g.exam}/${g.slug}`}>
+            <Link href={`/guides/${g.exam}/${g.slug}`} className="text-blue-700 underline">
+              {g.title}
+            </Link>
+          </li>
+        ))}
+        {byExam[exam].length === 0 && <li className="text-gray-500">準備中</li>}
+      </ul>
+    </section>
+  );
 
   return (
-    <section className="space-y-6">
-      <h1 className="text-2xl font-semibold">ガイド</h1>
-      <p className="text-gray-600">カテゴリを選んで学習を始めましょう。</p>
-
-      <div className="grid gap-6 md:grid-cols-3">
-        {cards.map(c => (
-          <Link key={c.exam} href={c.href} className="block rounded-lg border p-5 hover:shadow">
-            <h2 className="font-semibold">{c.title}</h2>
-            <div className="text-sm text-gray-500 mt-1">{count(c.exam)} 本</div>
-            <p className="text-sm mt-2 text-gray-600">{c.desc}</p>
-          </Link>
-        ))}
-      </div>
-    </section>
+    <main className="mx-auto max-w-4xl px-4 py-10">
+      <h1 className="text-2xl font-extrabold mb-6">ガイド一覧</h1>
+      <Section exam="qc" />
+      <Section exam="stat" />
+      <Section exam="engineer" />
+    </main>
   );
 }
