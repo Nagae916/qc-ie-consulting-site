@@ -10,14 +10,17 @@ import { Bar } from 'react-chartjs-2';
 
 import {
   safeNum, get2D, makeZero, dimsOf,
-  rowTotalsOf, colTotalsOf, grandTotalOf,
-  expectedOf, chi2Of,
+  rowSums as rowTotalsOf,
+  colSums as colTotalsOf,
+  grandTotal as grandTotalOf,
+  expectedMatrix as expectedOf,
+  chiEach, chiTotal as chiTotalOf,
 } from '@/lib/safe-matrix';
 
 CJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 export default function ChiSquareGuide() {
-  // 観測度数（サイズは可変運用）
+  // 観測度数（サイズ可変運用）
   const [obs, setObs] = useState<number[][]>([
     [30, 20],
     [20, 30],
@@ -25,12 +28,12 @@ export default function ChiSquareGuide() {
 
   const { R, C } = useMemo(() => dimsOf(obs), [obs]);
 
-  // 合計類（安全集計）
+  // 合計類
   const rowTotals = useMemo(() => rowTotalsOf(obs), [obs]);
   const colTotals = useMemo(() => colTotalsOf(obs), [obs]);
-  const grandTotal = useMemo(() => grandTotalOf(rowTotals), [rowTotals]);
+  const grandTotal = useMemo(() => grandTotalOf(obs), [obs]);
 
-  // 派生状態（R×C へ追随）
+  // 派生状態（R×C 追随）
   const [expected, setExpected] = useState<number[][]>(makeZero(R, C));
   const [chiValues, setChiValues] = useState<number[][]>(makeZero(R, C));
   const [chiTotal, setChiTotal] = useState<number | null>(null);
@@ -43,7 +46,7 @@ export default function ChiSquareGuide() {
 
   // 期待度数
   const handleCalcExpected = () => {
-    const e = expectedOf(rowTotals, colTotals, grandTotal);
+    const e = expectedOf(obs); // 内部で row/col/grand 計算 & 0割回避
     setExpected(e);
     setChiValues(makeZero(R, C));
     setChiTotal(null);
@@ -53,12 +56,12 @@ export default function ChiSquareGuide() {
   const handleCalcChi = () => {
     const hasExpected = expected.some(r => r.some(v => v > 0));
     if (!hasExpected) return;
-    const { chi, total } = chi2Of(obs, expected);
-    setChiValues(chi);
-    setChiTotal(total);
+    const ce = chiEach(obs, expected);
+    setChiValues(ce);
+    setChiTotal(chiTotalOf(obs, expected));
   };
 
-  // セル入力（0 以上の整数へ整形）
+  // セル入力（0 以上の整数に正規化）
   const onChangeCell = (i: number, j: number, v: string) => {
     const nRaw = Number(v);
     const n = Number.isFinite(nRaw) ? Math.max(0, Math.floor(nRaw)) : 0;
@@ -73,7 +76,7 @@ export default function ChiSquareGuide() {
     setChiTotal(null);
   };
 
-  // グラフ（R×C をフラット化）
+  // グラフ
   const chartData = useMemo(() => {
     const labels: string[] = [];
     const obsVals: number[] = [];
@@ -123,7 +126,7 @@ export default function ChiSquareGuide() {
     <section style={card}>
       <h1 className="text-xl font-bold mb-1">クロス集計表とカイ二乗（χ²）検定（動的・堅牢版）</h1>
       <p style={sub} className="mb-3">
-        配列サイズ可変（{R}×{C}）。未定義アクセス・0割・NaN を共通ヘルパで全面ガードします。
+        配列サイズ可変（{R}×{C}）。未定義アクセス・0割・NaN を共通ヘルパでガード。
       </p>
 
       {/* 表 */}
@@ -170,13 +173,11 @@ export default function ChiSquareGuide() {
             <tr className="bg-gray-50">
               <td className="border p-2 font-bold">列合計</td>
               {Array.from({ length: C }, (_, j) => (
-                <td key={j} className="border p-2 font-bold text-center">
-                  {safeNum(colTotals[j], 0)}
-                </td>
+                <td key={j} className="border p-2 font-bold text-center">{safeNum(colTotals[j], 0)}</td>
               ))}
               <td className="border p-2 font-bold text-center">{grandTotal}</td>
             </tr>
-          </thead>
+          </tbody>
         </table>
       </div>
 
@@ -215,7 +216,7 @@ export default function ChiSquareGuide() {
       <div className="grid gap-2">
         {expectedFilled && (
           <div style={sub} className="text-sm">
-            各セル E<sub>ij</sub> = (行i合計 × 列j合計) / 全体（0割・NaN は自動回避）
+            各セル E<sub>ij</sub> = (行i合計 × 列j合計) / 全体（0割・NaN 自動回避）
           </div>
         )}
         {chiTotal !== null && (
