@@ -1,57 +1,35 @@
 // contentlayer.config.ts
 import { defineDocumentType, makeSource } from "contentlayer2/source-files";
 
-// 正規化後に使う “正解” キー
-const CANON_EXAMS = ["qc", "stat", "engineer"] as const;
-type Exam = (typeof CANON_EXAMS)[number];
+// ここを正規化：qc / stat / engineer に統一
+const ALLOWED_EXAMS = ["qc", "stat", "engineer"] as const;
+type Exam = (typeof ALLOWED_EXAMS)[number];
 
-// 表記ゆれ→正規キー のエイリアス表
-const EXAM_ALIAS: Record<string, Exam> = {
-  // 品質管理
-  qc: "qc",
-  quality: "qc",
+const toStr = (v: unknown) => String(v ?? "").trim().toLowerCase();
 
-  // 統計
-  stat: "stat",
-  stats: "stat",
-  statistics: "stat",
-
-  // 技術士
-  engineer: "engineer",
-  pe: "engineer",
-  eng: "engineer",
-};
-
-function safeString(v: unknown, fallback = ""): string {
-  const s = typeof v === "string" ? v.trim() : String(v ?? "").trim();
-  return s || fallback;
-}
-
-// content/guides/<exam>/<slug>.mdx などのパスから候補を取る
 function fromPath(parts: string[]) {
   const p = parts[0] === "guides" ? parts.slice(1) : parts;
-  return { exam: safeString(p[0]), slug: safeString(p[p.length - 1]) };
+  const exam = toStr(p[0]);
+  const slug = toStr(p[p.length - 1]);
+  return { exam, slug };
 }
 
-// exam の最終決定ロジック：frontmatter → パス → 既知不明時は qc
-function normalizeExam(front: unknown, pathExam: string): Exam {
-  const f = EXAM_ALIAS[safeString(front)] as Exam | undefined;
-  if (f) return f;
-
-  const p = EXAM_ALIAS[safeString(pathExam)] as Exam | undefined;
-  if (p) return p;
-
-  // ここまで来たら未知。安全側で qc（※ここを変えたいなら "throw" でも可）
-  return "qc";
+function normalizeExam(v: unknown, pathExam: string): Exam {
+  const s = toStr(v) || toStr(pathExam);
+  // 表記ゆれ吸収
+  if (s === "qc") return "qc";
+  if (s === "stat" || s === "stats" || s === "statistics") return "stat";
+  if (s === "engineer" || s === "pe" || s === "eng") return "engineer";
+  return "qc"; // フォールバック
 }
 
 function normalizeSlug(v: unknown, pathSlug: string) {
-  return safeString(v, pathSlug);
+  return toStr(v) || toStr(pathSlug);
 }
 
 function normalizeTags(v: unknown): string[] {
-  if (Array.isArray(v)) return v.filter(Boolean).map((x) => safeString(x)).filter(Boolean);
-  if (typeof v === "string") return v.split(/[,\s]+/).map((s) => s.trim()).filter(Boolean);
+  if (Array.isArray(v)) return v.map(toStr).filter(Boolean);
+  if (typeof v === "string") return v.split(/[,\s]+/).map(toStr).filter(Boolean);
   return [];
 }
 
