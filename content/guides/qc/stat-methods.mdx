@@ -10,7 +10,7 @@ import { GuideLayout, Glossary, QA } from '../../../src/components/guide/GuideLa
 import TestNavigator from '../../../src/components/guide/TestNavigator'
 
 <GuideLayout
-  title="統計手法スタディガイド"
+  /* title は渡さない（frontmatter の title をページ側で <h1> 表示） */
   intro="品質管理やR&Dで頻出の統計手法を、目的ベースで素早く選べるようにしました。ページ内だけで完結するナビ＋チートシート付きです。"
 >
 
@@ -33,7 +33,7 @@ import TestNavigator from '../../../src/components/guide/TestNavigator'
       <h3 style={{ fontSize: 18, fontWeight: 800, margin:0 }}>母分散（既知／未知）</h3>
       <p style={{ color:'#64748b', margin:'8px 0 0' }}>母集団の分散が既知ならZ、未知ならtが基本（実務では多くが未知）。</p>
     </div>
-    <div style={{ background:'#fff', border:'1px solid #e5e7eb', borderRadius:16, padding:16 }}>
+    <div style={{ background:'#fff', border:'1px solid '#e5e7eb', borderRadius:16, padding:16 }}>
       <h3 style={{ fontSize: 18, fontWeight: 800, margin:0 }}>対応の有無</h3>
       <p style={{ color:'#64748b', margin:'8px 0 0' }}>同一対象の前後比較＝対応あり、別群比較＝対応なし（t検定で分岐）。</p>
     </div>
