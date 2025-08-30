@@ -4,11 +4,11 @@ import { allGuides, type Guide } from "contentlayer/generated";
 import { useMDXComponent } from "next-contentlayer2/hooks";
 import Link from "next/link";
 
-// 対応試験の表記を定義（ここにない exam はビルド対象外に）
+// 対応試験の表記（※ "stat" を正しく受ける / "engineer" に統一）
 const EXAM_LABEL = {
   qc: "QC検定",
-  stats: "統計検定",
-  pe: "技術士試験",
+  stat: "統計検定",
+  engineer: "技術士試験",
 } as const;
 
 type ExamKey = keyof typeof EXAM_LABEL;
@@ -16,7 +16,12 @@ type PageProps = { guide: Guide };
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const paths = allGuides
-    .filter((g) => g.status !== "draft" && !!EXAM_LABEL[g.exam as ExamKey] && !!g.slug)
+    .filter(
+      (g) =>
+        g.status !== "draft" &&
+        !!EXAM_LABEL[g.exam as ExamKey] && // 未対応の exam は除外
+        !!g.slug
+    )
     .map((g) => ({ params: { exam: String(g.exam), slug: String(g.slug) } }));
 
   return { paths, fallback: false };
@@ -26,23 +31,18 @@ export const getStaticProps: GetStaticProps<PageProps> = async ({ params }) => {
   const exam = String(params?.exam ?? "");
   const slug = String(params?.slug ?? "");
 
-  // exam/slug が一致、かつドラフト以外のみ
   const guide = allGuides.find(
     (g) => g.status !== "draft" && String(g.exam) === exam && String(g.slug) === slug
   );
 
-  // 未対応 exam も 404
   if (!guide || !EXAM_LABEL[exam as ExamKey]) return { notFound: true };
 
-  // ISR（必要に応じて値を調整）
   return { props: { guide }, revalidate: 60 };
 };
 
 export default function GuidePage({ guide }: InferGetStaticPropsType<typeof getStaticProps>) {
   const MDX = useMDXComponent(guide.body.code);
 
-  // GitHub 編集リンクは Contentlayer の生ファイルパスを使うと安全
-  // _raw.sourceFilePath 例: "guides/qc/pareto.mdx"
   const sourcePath = guide._raw?.sourceFilePath ?? `${guide._raw.flattenedPath}.mdx`;
   const editUrl = `https://github.com/Nagae916/qc-ie-consulting-site/edit/main/content/${sourcePath}`;
 
