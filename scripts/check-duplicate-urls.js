@@ -1,5 +1,5 @@
 // scripts/check-duplicate-urls.js
-// 修正点: 参照パスを "../.contentlayer/generated" に
+// URL重複（/guides/<exam>/<slug>）を検出して失敗させる
 const { allGuides } = require("../.contentlayer/generated");
 
 const map = new Map();
@@ -17,5 +17,10 @@ for (const [u, files] of map.entries()) {
     console.log("[DUP:url]", u, "=>", files);
   }
 }
-if (dup === 0) console.log("No duplicate guide urls ✅");
-process.exit(dup ? 1 : 0);
+
+if (dup === 0) {
+  console.log("No duplicate guide urls ✅");
+  process.exit(0);
+} else {
+  process.exit(1);
+}
