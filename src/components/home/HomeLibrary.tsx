@@ -2,12 +2,19 @@
 import Link from "next/link";
 import { allGuides, type Guide } from "contentlayer/generated";
 
-// exam を正規化
-function normalizeExam(exam: string | undefined): "qc" | "stat" | "engineer" | "other" {
-  const x = String(exam ?? "").toLowerCase();
-  if (x === "qc") return "qc";
-  if (x === "stat" || x === "stats") return "stat";
-  if (x === "engineer" || x === "pe") return "engineer";
+/** まずは「パス」からカテゴリを判定。ダメなら exam の値でフォールバック。 */
+function detectCategory(g: Guide): "qc" | "stat" | "engineer" | "other" {
+  const p = String(g._raw?.sourceFilePath ?? g._raw?.flattenedPath ?? "").toLowerCase();
+  if (p.includes("/guides/qc/")) return "qc";
+  if (p.includes("/guides/stat/")) return "stat";
+  if (p.includes("/guides/engineer/")) return "engineer";
+
+  // フォールバック：exam の表記ゆれを吸収
+  const e = String((g as any).exam ?? "").trim().toLowerCase();
+  if (["qc"].includes(e)) return "qc";
+  if (["stat", "stats", "statistics"].includes(e)) return "stat";
+  if (["engineer", "pe", "eng"].includes(e)) return "engineer";
+
   return "other";
 }
 
@@ -69,9 +76,10 @@ function UpdateList({
 
 export default function HomeLibrary() {
   const guides = allGuides.filter((g) => g.status !== "draft");
-  const qc = guides.filter((g) => normalizeExam(g.exam) === "qc");
-  const stat = guides.filter((g) => normalizeExam(g.exam) === "stat");
-  const eng = guides.filter((g) => normalizeExam(g.exam) === "engineer");
+
+  const qc = guides.filter((g) => detectCategory(g) === "qc");
+  const stat = guides.filter((g) => detectCategory(g) === "stat");
+  const eng = guides.filter((g) => detectCategory(g) === "engineer");
 
   const latest2 = (arr: Guide[]) => [...arr].sort((a, b) => parseDate(b) - parseDate(a)).slice(0, 2);
   const qc2 = latest2(qc);
