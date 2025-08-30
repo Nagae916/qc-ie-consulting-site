@@ -10,25 +10,27 @@ status: "draft"
  * - このファイルはテンプレートです（直接ビルド対象にしない想定）。
  * - コピー先の場所に応じて import パスを調整してください。
  *   - QC配下: content/guides/qc/slug.mdx → '../../../src/components/...'
- *   - もっと浅い階層: content/guides/slug.mdx → '../../src/components/...'
+ *   - 浅い階層: content/guides/slug.mdx → '../../src/components/...'
  */
 import { GuideLayout, Glossary, QA } from '../../src/components/guide/GuideLayout';
-/** 使うときは必要なコンポーネントだけ有効化
+/** 必要なコンポーネントだけ有効化
 import OCSimulator from '../../src/components/guide/OCSimulator';
 import AvailabilitySimulator from '../../src/components/guide/AvailabilitySimulator';
 import ControlChart from '../../src/components/guide/ControlChart';
 import TestNavigator from '../../src/components/guide/TestNavigator';
 import MethodNavigator from '../../src/components/guide/MethodNavigator';
+import ChiSquareGuide from '../../src/components/guide/ChiSquareGuide';
 */
 
-<GuideLayout title={title} intro="（ここに導入文）">
+{/* ★ GuideLayout に title を渡さない（optional） */}
+<GuideLayout intro="（ここに導入文）">
 
 <section style={{ marginBottom: 24 }}>
-  {/* ここに本文 or インタラクティブコンポーネント */}
+  {/* 本文やインタラクティブ */}
   {/* 例:
   <AvailabilitySimulator
     defaultMTBF={500} minMTBF={10} maxMTBF={1000}
-    defaultMTTR={10}  minMTTR={1} maxMTTR={100}
+    defaultMTTR={10}  minMTTR={1}  maxMTTR={100}
   />
   */}
 </section>
