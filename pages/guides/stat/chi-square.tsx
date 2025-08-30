@@ -1,44 +1,48 @@
+// pages/guides/stat/chi-square.tsx
 'use client';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
-  Chart as C,
+  Chart as CJS,
   CategoryScale, LinearScale, BarElement,
   Title, Tooltip, Legend,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 
-C.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+CJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 /**
- * 運用トラブル＆再発防止の方針（number[][] を維持）
- * - 配列サイズは可変（行数・列数ともに動的）
- * - すべての 2 次元アクセスは get2D() 経由で安全化（範囲外/NaN を 0 にフォールバック）
- * - 合計/期待度数/χ² は 0 割・NaN を徹底ガード
- * - JSX 内では直接 m[i][j] に触れず、必ず get2D() or ローカル変数で未定義を除去
+ * 運用トラブル防止・再発防止ポリシー（number[][] を維持）
+ * - 行/列サイズは動的（R×C）。欠損・NaN・0割を全面ガード
+ * - 2次元アクセスは get2D()、書き込みは ensureRow() + 直接代入で安全化
+ * - TS の noUncheckedIndexedAccess 前提で「未定義」をすべて吸収
  */
-
-// ========= 安全ヘルパ =========
 const safeNum = (x: unknown, fallback = 0): number =>
   Number.isFinite(x as number) ? (x as number) : fallback;
 
 const get2D = (m: number[][], i: number, j: number): number =>
   safeNum(m?.[i]?.[j], 0);
 
-// ========= コンポーネント =========
+const ensureRow = (m: number[][], i: number, cols: number): number[] => {
+  if (!m[i]) m[i] = Array(cols).fill(0);
+  // 行はあるが長さ不足の場合は埋める
+  if (m[i].length < cols) m[i] = [...m[i], ...Array(cols - m[i].length).fill(0)];
+  return m[i];
+};
+
 export default function ChiSquareGuide() {
-  // 観測度数（固定サンプルだが、サイズは動的に扱う）
+  // 観測度数（例：2×2。将来的にサイズ可変で運用）
   const [obs] = useState<number[][]>([
     [30, 20],
     [20, 30],
   ]);
 
-  // 行数・列数（列数は「最長行の長さ」）
+  // 現在の行数・列数（列数は「最長行」の長さ）
   const R = useMemo(() => obs.length, [obs]);
   const C = useMemo(() => Math.max(0, ...obs.map(r => r.length)), [obs]);
 
-  // 合計類（動的 + 型安全／noUncheckedIndexedAccess対応）
+  // 合計類（行・列・全体）
   const rowTotals = useMemo<number[]>(() => {
-    const out: number[] = new Array(R).fill(0);
+    const out = Array.from({ length: R }, () => 0);
     for (let i = 0; i < R; i++) {
       let s = 0;
       for (let j = 0; j < C; j++) s += get2D(obs, i, j);
@@ -48,7 +52,7 @@ export default function ChiSquareGuide() {
   }, [obs, R, C]);
 
   const colTotals = useMemo<number[]>(() => {
-    const out: number[] = new Array(C).fill(0);
+    const out = Array.from({ length: C }, () => 0);
     for (let j = 0; j < C; j++) {
       let s = 0;
       for (let i = 0; i < R; i++) s += get2D(obs, i, j);
@@ -57,12 +61,12 @@ export default function ChiSquareGuide() {
     return out;
   }, [obs, R, C]);
 
-  const grandTotal = useMemo<number>(
+  const grandTotal = useMemo(
     () => rowTotals.reduce((s, v) => s + safeNum(v, 0), 0),
     [rowTotals]
   );
 
-  // 期待度数・χ^2 関連（number[][] のまま、サイズは都度 R×C で揃える）
+  // 期待度数・χ²（number[][] のまま。R×C に合わせて維持）
   const [expected, setExpected] = useState<number[][]>(
     Array.from({ length: R }, () => Array(C).fill(0))
   );
@@ -71,15 +75,23 @@ export default function ChiSquareGuide() {
   );
   const [chiTotal, setChiTotal] = useState<number | null>(null);
 
-  // 期待度数の計算（0割/不定長に配慮）
+  // R/C 変化時に配列を再初期化（運用事故防止）
+  useEffect(() => {
+    setExpected(Array.from({ length: R }, () => Array(C).fill(0)));
+    setChiValues(Array.from({ length: R }, () => Array(C).fill(0)));
+    setChiTotal(null);
+  }, [R, C]);
+
+  // 期待度数の計算（0割回避・未定義吸収）
   const handleCalcExpected = () => {
-    const denom = grandTotal > 0 ? grandTotal : 1; // 0割回避
+    const denom = grandTotal > 0 ? grandTotal : 1;
     const e: number[][] = Array.from({ length: R }, () => Array(C).fill(0));
     for (let i = 0; i < R; i++) {
       const ri = safeNum(rowTotals[i], 0);
+      const rowRef = ensureRow(e, i, C);
       for (let j = 0; j < C; j++) {
         const cj = safeNum(colTotals[j], 0);
-        e[i][j] = (ri * cj) / denom;
+        rowRef[j] = (ri * cj) / denom;
       }
     }
     setExpected(e);
@@ -87,25 +99,25 @@ export default function ChiSquareGuide() {
     setChiTotal(null);
   };
 
-  // χ^2 の計算（E=0 をガード）
+  // χ² の計算（E=0 は寄与 0）
   const handleCalcChi = () => {
-    // 期待度数が未計算なら何もしない
-    const expectedFilled = expected.some(row => row.some(v => v > 0));
-    if (!expectedFilled) return;
+    const hasExpected = expected.some(row => row.some(v => v > 0));
+    if (!hasExpected) return;
 
     const chi: number[][] = Array.from({ length: R }, () => Array(C).fill(0));
     let total = 0;
     for (let i = 0; i < R; i++) {
+      const rowRef = ensureRow(chi, i, C);
       for (let j = 0; j < C; j++) {
         const o = get2D(obs, i, j);
         const e = safeNum(expected?.[i]?.[j], 0);
         if (e > 0) {
           const diff = o - e;
           const v = (diff * diff) / e;
-          chi[i][j] = v;
+          rowRef[j] = v;
           total += v;
         } else {
-          chi[i][j] = 0; // 期待度数が 0 のセルは寄与 0（あるいはスキップ）
+          rowRef[j] = 0;
         }
       }
     }
@@ -113,7 +125,7 @@ export default function ChiSquareGuide() {
     setChiTotal(total);
   };
 
-  // グラフ（Bar）：R×C をフラットに並べる
+  // グラフ（R×C をフラット化）
   const chartData = useMemo(() => {
     const labels: string[] = [];
     const obsVals: number[] = [];
@@ -134,28 +146,26 @@ export default function ChiSquareGuide() {
     };
   }, [obs, expected, R, C]);
 
-  const chartOptions = useMemo(
-    () => ({
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: true },
-        title: { display: true, text: '観測度数と期待度数の比較' },
-        tooltip: {
-          callbacks: {
-            label: (ctx: any) => {
-              const v = ctx.parsed.y;
-              return `${ctx.dataset.label}: ${typeof v === 'number' ? v.toFixed(2) : v}`;
-            },
+  const chartOptions = useMemo(() => ({
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: true },
+      title: { display: true, text: '観測度数と期待度数の比較' },
+      tooltip: {
+        callbacks: {
+          label: (ctx: any) => {
+            const v = ctx.parsed.y;
+            return `${ctx.dataset.label}: ${typeof v === 'number' ? v.toFixed(2) : v}`;
           },
         },
       },
-      scales: {
-        y: { beginAtZero: true, title: { display: true, text: '度数' } },
-      },
-    }),
-    []
-  );
+    },
+    scales: {
+      y: { beginAtZero: true, title: { display: true, text: '度数' } },
+    },
+  }), []);
 
+  // 簡易スタイル
   const card: React.CSSProperties = {
     background: '#fff',
     border: '1px solid #e5e7eb',
@@ -164,22 +174,12 @@ export default function ChiSquareGuide() {
     boxShadow: '0 2px 8px rgba(0,0,0,.04)',
   };
   const btn: React.CSSProperties = {
-    background: '#0f766e',
-    color: '#fff',
-    fontWeight: 700,
-    padding: '10px 16px',
-    borderRadius: 10,
-    border: 0,
-    cursor: 'pointer',
+    background: '#0f766e', color: '#fff', fontWeight: 700,
+    padding: '10px 16px', borderRadius: 10, border: 0, cursor: 'pointer',
   };
   const btn2: React.CSSProperties = {
-    background: '#115e59',
-    color: '#fff',
-    fontWeight: 700,
-    padding: '10px 16px',
-    borderRadius: 10,
-    border: 0,
-    cursor: 'pointer',
+    background: '#115e59', color: '#fff', fontWeight: 700,
+    padding: '10px 16px', borderRadius: 10, border: 0, cursor: 'pointer',
   };
 
   const expectedFilled = useMemo(
@@ -188,36 +188,30 @@ export default function ChiSquareGuide() {
   );
 
   return (
-    <div className="space-y-16">
+    <div className="space-y-12">
       {/* 概要 */}
       <section>
-        <h2 className="text-3xl font-bold text-teal-700 mb-4">クロス集計表（動的サイズ対応）</h2>
-        <p className="text-lg text-stone-700 leading-relaxed">
-          このガイドでは、クロス集計表とカイ二乗検定の基礎をインタラクティブに学びます。<br />
-          <strong>number[][]</strong> のままサイズ可変に対応し、未定義・0割・NaN をすべてガードしています。
+        <h2 className="text-3xl font-bold text-teal-700 mb-3">クロス集計表（動的サイズ対応）</h2>
+        <p className="text-stone-700">
+          配列サイズ可変（{R}×{C}）で、未定義アクセス・0割・NaN を全面ガードしています。
+          入力が不揃いでも安全に計算・表示できます。
         </p>
       </section>
 
       {/* 手順 */}
       <section style={card}>
-        <h2 className="text-2xl font-bold text-teal-700 mb-4 text-center">カイ二乗 (χ²) 検定の手順</h2>
-        <ol className="list-decimal ml-6 space-y-2 text-stone-700">
-          <li>帰無仮説 H<sub>0</sub>：2変数は独立（関連なし）</li>
-          <li>期待度数 E の計算： (行合計 × 列合計) ÷ 全体</li>
-          <li>χ² = Σ (O−E)² / E を計算</li>
-          <li>自由度と有意水準から判定（P値 or 臨界値）</li>
+        <h3 className="text-2xl font-bold text-teal-700 mb-3 text-center">カイ二乗 (χ²) 検定の手順</h3>
+        <ol className="list-decimal ml-6 space-y-1 text-stone-700">
+          <li>期待度数 E を計算： (行合計 × 列合計) ÷ 全体</li>
+          <li>χ² = Σ (O−E)² / E を計算（E=0 は寄与 0 として扱う）</li>
+          <li>自由度 (R−1)×(C−1)、有意水準から判定（P値/臨界値）</li>
         </ol>
       </section>
 
-      {/* 実践 */}
+      {/* 表 */}
       <section style={card}>
-        <h2 className="text-2xl font-bold text-teal-700 mb-4 text-center">実践：カイ二乗検定を体験</h2>
-        <p className="text-center text-stone-600 mb-6">
-          下表は動的サイズ（{R}×{C}）でレンダリングされます。
-        </p>
-
-        {/* 表 */}
-        <div className="overflow-x-auto mb-6">
+        <h3 className="text-xl font-bold mb-3">表（観測・期待・χ² 寄与）</h3>
+        <div className="overflow-x-auto">
           <table className="min-w-[560px] border-collapse">
             <thead>
               <tr className="bg-stone-100">
@@ -260,16 +254,14 @@ export default function ChiSquareGuide() {
                     {safeNum(colTotals?.[j], 0)}
                   </td>
                 ))}
-                <td className="border p-3 text-center text-lg font-bold">
-                  {grandTotal}
-                </td>
+                <td className="border p-3 text-center text-lg font-bold">{grandTotal}</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        {/* ボタン */}
-        <div className="text-center mb-6 flex gap-3 justify-center">
+        {/* 操作 */}
+        <div className="mt-4 flex gap-3 justify-center">
           <button style={btn} onClick={handleCalcExpected} disabled={expectedFilled}>
             1. 期待度数を計算
           </button>
@@ -278,18 +270,18 @@ export default function ChiSquareGuide() {
           </button>
         </div>
 
-        {/* 計算結果 */}
-        <div className="text-center space-y-2">
+        {/* 結果 */}
+        <div className="text-center mt-4 space-y-2">
           {expectedFilled && (
-            <div className="text-lg">
+            <div className="text-stone-700">
               <strong>期待度数を計算しました。</strong> 各セル下に (期待: …) を表示しています。
             </div>
           )}
           {chiTotal !== null && (
             <>
               <div className="text-xl font-bold">合計カイ二乗値: χ² = {chiTotal.toFixed(3)}</div>
-              <div className="text-base">
-                自由度 {(R - 1) * (C - 1)}、有意水準5%の臨界値は表に依存します（R×C によって異なる）。<br />
+              <div className="text-stone-700">
+                自由度 {(R - 1) * (C - 1)}。有意水準5%の臨界値は R×C に依存します。<br />
                 計算値が臨界値を上回れば「関連あり（独立を棄却）」、下回れば「有意差なし（独立を棄却しない）」。
               </div>
             </>
@@ -304,11 +296,3 @@ export default function ChiSquareGuide() {
     </div>
   );
 }
-
-const cardStyle: React.CSSProperties = {
-  background: '#fff',
-  border: '1px solid #e5e7eb',
-  borderRadius: 16,
-  padding: 16,
-  boxShadow: '0 2px 8px rgba(0,0,0,.04)',
-};
