@@ -50,16 +50,29 @@ export function get2D(
 
 /**
  * 2次元配列の安全な不変更新（必要なら自動で行/列を拡張）
+ * - ダブル添字の直接代入を排し、UI側の書き込み事故を防止
  * - 例: set2DImmutable(m, 3, 5, 42) // 行4・列6まで 0 埋め拡張してから代入
  */
 export const set2DImmutable = (m: Matrix, i: number, j: number, value: number): Matrix => {
   const next: Matrix = m.map(row => [...row]);
-  // 行拡張
+
+  // 行を必要数まで拡張し、必ず行を取得
   while (next.length <= i) next.push([]);
-  // 列拡張（0埋め）
-  const C = Math.max(j + 1, next[i].length);
-  if (next[i].length < C) next[i] = [...next[i], ...Array(C - next[i].length).fill(0)];
-  next[i][j] = safeNum(value, 0);
+  const current = next[i] ?? [];
+
+  // 列を j まで拡張（0埋め）、かつ新しい配列を作る
+  const needed = j + 1;
+  let row = current;
+  if (row.length < needed) {
+    row = [...row, ...Array(needed - row.length).fill(0)];
+  } else {
+    row = [...row];
+  }
+
+  // 値を安全に代入して反映
+  row[j] = safeNum(value, 0);
+  next[i] = row;
+
   return next;
 };
 
@@ -115,7 +128,7 @@ export function grandTotal(m: Matrix): number {
 export function expectedMatrix(m: Matrix): Matrix {
   const rs = rowSums(m);
   const cs = colSums(m);
-  const gt = Math.max(1, rs.reduce((s, v) => s + safeNum(v, 0), 0));
+  const gt = Math.max(1, rs.reduce((s, v) => s + safeNum(v, 0), 0)); // 0割回避
   const R = rs.length;
   const C = cs.length;
 
