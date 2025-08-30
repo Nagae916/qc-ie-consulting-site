@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "gen": "contentlayer2 build",
+    "gen": "npx -y contentlayer2 build",
     "dev": "npm run gen && next dev -p 3000",
     "build": "npm run gen && next build",
     "start": "next start -p 3000",
@@ -11,7 +11,6 @@
 
     "lint": "next lint",
     "check:routes": "node ./scripts/check-routes.js",
-    "check": "npm run check:fast",
-    "postinstall": "contentlayer2 build"
+    "check": "npm run check:fast"
   }
 }
