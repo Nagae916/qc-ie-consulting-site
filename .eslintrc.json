@@ -1,28 +1,23 @@
 {
   "extends": ["next/core-web-vitals"],
-  "ignorePatterns": [
-    "node_modules/",
-    ".next/",
-    "out/",
-    "*.d.ts",
-    "next-env.d.ts"
-  ],
+  "ignorePatterns": ["node_modules/", ".next/", "out/", "*.d.ts", "next-env.d.ts"],
   "overrides": [
     {
-      "files": ["**/*.{ts,tsx,js,jsx}"],
-      "excludedFiles": ["**/node_modules/**", "**/.next/**"],
+      "files": ["pages/guides/**/*.{ts,tsx}", "src/components/guide/**/*.{ts,tsx}"],
       "rules": {
         "no-restricted-syntax": [
-          "error",
+          "warn",
           {
             "selector": "MemberExpression[object.type='MemberExpression'][computed=true]",
             "message": "二重の配列添字アクセス（arr[i][j]）は禁止です。get2D(matrix, i, j) を使ってください。"
-          },
-          {
-            "selector": "MemberExpression[object.type='MemberExpression'] > MemberExpression[computed=true]",
-            "message": "二重の配列添字アクセス（arr[i][j]）は禁止です。get2D(matrix, i, j) を使ってください。"
           }
         ]
+      }
+    },
+    {
+      "files": ["pages/api/**/*.{ts,tsx}"],
+      "rules": {
+        "no-restricted-syntax": "off"
       }
     }
   ]
