@@ -12,34 +12,51 @@ export const safeNum = (x: unknown, fallback = 0): number =>
   Number.isFinite(x as number) ? (x as number) : fallback;
 
 /**
- * 2次元配列の安全読取（範囲外/未定義/NaN → 0）
- * strict=true で欠損を検知したい場合は throw。
+ * 2次元配列の安全読取
+ * - 第4引数に number を渡すと fallback 値として扱う（例: get2D(m,i,j,0)）
+ * - 第4引数に { strict, label } を渡すと欠損検知オプションとして扱う
  */
-export const get2D = (
+export function get2D(m: Matrix, i: number, j: number): number;
+export function get2D(m: Matrix, i: number, j: number, fallback: number): number;
+export function get2D(
   m: Matrix,
   i: number,
   j: number,
-  opts?: { strict?: boolean; label?: string }
-): number => {
+  opts: { strict?: boolean; label?: string }
+): number;
+export function get2D(
+  m: Matrix,
+  i: number,
+  j: number,
+  fourth?: number | { strict?: boolean; label?: string }
+): number {
+  let fallback = 0;
+  let opts: { strict?: boolean; label?: string } | undefined;
+
+  if (typeof fourth === 'number') {
+    fallback = fourth;
+  } else if (fourth && typeof fourth === 'object') {
+    opts = fourth;
+  }
+
   const ri = m?.[i];
   const v = ri?.[j];
   if (opts?.strict && (ri === undefined || v === undefined || !Number.isFinite(v))) {
     const name = opts?.label ?? 'matrix';
     throw new Error(`[get2D(strict)] ${name}[${i}][${j}] is missing or not finite`);
   }
-  return safeNum(v, 0);
-};
+  return safeNum(v, fallback);
+}
 
 /**
  * 2次元配列の安全な不変更新（必要なら自動で行/列を拡張）
- * - ダブル添字の直接代入を排し、UI側の書き込み事故を防止
- * - 例: set2DImmutable(m, 3, 5, 42) // 行4・列6まで足りなければ 0 埋め拡張してから代入
+ * - 例: set2DImmutable(m, 3, 5, 42) // 行4・列6まで 0 埋め拡張してから代入
  */
 export const set2DImmutable = (m: Matrix, i: number, j: number, value: number): Matrix => {
   const next: Matrix = m.map(row => [...row]);
-  // 行を必要数まで拡張
+  // 行拡張
   while (next.length <= i) next.push([]);
-  // 列を必要数まで拡張（0で埋める）
+  // 列拡張（0埋め）
   const C = Math.max(j + 1, next[i].length);
   if (next[i].length < C) next[i] = [...next[i], ...Array(C - next[i].length).fill(0)];
   next[i][j] = safeNum(value, 0);
@@ -98,7 +115,7 @@ export function grandTotal(m: Matrix): number {
 export function expectedMatrix(m: Matrix): Matrix {
   const rs = rowSums(m);
   const cs = colSums(m);
-  const gt = Math.max(1, rs.reduce((s, v) => s + safeNum(v, 0), 0)); // 0割回避
+  const gt = Math.max(1, rs.reduce((s, v) => s + safeNum(v, 0), 0));
   const R = rs.length;
   const C = cs.length;
 
@@ -144,7 +161,6 @@ export function chiDf(m: Matrix): number {
 }
 
 // ===== 追加の別名（呼び出し側の命名統一を助けるオプション） =====
-// ※ 既存APIはそのまま、必要ならこちらの名前で import してもOK。
 
 /** 別名: grandTotalOf(rows) の行列版 */
 export const grandTotalOf = (rows: number[]): number =>
