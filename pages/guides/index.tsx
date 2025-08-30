@@ -11,22 +11,30 @@ const EXAM_LABEL = {
 type ExamKey = keyof typeof EXAM_LABEL;
 
 export default function GuidesIndex() {
-  // draft を除外し、exam ごとにグループ化
-  const guides = allGuides.filter(g => g.status !== "draft");
+  // draft を除外
+  const guides = allGuides.filter((g) => g.status !== "draft");
 
-  const byExam: Record<string, typeof guides> = { qc: [], stat: [], engineer: [] };
+  // 初期化時点で必ずキーを持たせる
+  const byExam: Record<ExamKey, typeof guides> = {
+    qc: [],
+    stat: [],
+    engineer: [],
+  };
+
   for (const g of guides) {
-    const key = (g.exam as ExamKey) in EXAM_LABEL ? (g.exam as ExamKey) : "qc";
-    byExam[key].push(g);
+    const key: ExamKey = (g.exam as ExamKey) in EXAM_LABEL ? (g.exam as ExamKey) : "qc";
+    byExam[key].push(g); // ← undefined の可能性がなくなる
   }
 
   const Section = ({ exam }: { exam: ExamKey }) => (
     <section className="mb-8">
       <h2 className="text-xl font-bold mb-2">
-        <Link href={`/guides/${exam}`} className="underline">{EXAM_LABEL[exam]}</Link>
+        <Link href={`/guides/${exam}`} className="underline">
+          {EXAM_LABEL[exam]}
+        </Link>
       </h2>
       <ul className="list-disc pl-6 space-y-1">
-        {byExam[exam].map(g => (
+        {byExam[exam].map((g) => (
           <li key={`${g.exam}/${g.slug}`}>
             <Link href={`/guides/${g.exam}/${g.slug}`} className="text-blue-700 underline">
               {g.title}
