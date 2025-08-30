@@ -30,6 +30,22 @@ export const get2D = (
   return safeNum(v, 0);
 };
 
+/**
+ * 2次元配列の安全な不変更新（必要なら自動で行/列を拡張）
+ * - ダブル添字の直接代入を排し、UI側の書き込み事故を防止
+ * - 例: set2DImmutable(m, 3, 5, 42) // 行4・列6まで足りなければ 0 埋め拡張してから代入
+ */
+export const set2DImmutable = (m: Matrix, i: number, j: number, value: number): Matrix => {
+  const next: Matrix = m.map(row => [...row]);
+  // 行を必要数まで拡張
+  while (next.length <= i) next.push([]);
+  // 列を必要数まで拡張（0で埋める）
+  const C = Math.max(j + 1, next[i].length);
+  if (next[i].length < C) next[i] = [...next[i], ...Array(C - next[i].length).fill(0)];
+  next[i][j] = safeNum(value, 0);
+  return next;
+};
+
 /** R×C の 0 行列を生成（状態の初期化/再初期化に） */
 export const makeZero = (R: number, C: number): Matrix =>
   Array.from({ length: R }, () => Array(C).fill(0));
