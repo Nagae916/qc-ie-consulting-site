@@ -1,5 +1,6 @@
 // scripts/check-duplicate-urls.js
-const { allGuides } = require(".contentlayer/generated");
+// 修正点: 参照パスを "../.contentlayer/generated" に
+const { allGuides } = require("../.contentlayer/generated");
 
 const map = new Map();
 for (const g of allGuides) {
@@ -13,7 +14,7 @@ let dup = 0;
 for (const [u, files] of map.entries()) {
   if (files.length > 1) {
     dup++;
-    console.log("[DUP]", u, "=>", files);
+    console.log("[DUP:url]", u, "=>", files);
   }
 }
 if (dup === 0) console.log("No duplicate guide urls ✅");
