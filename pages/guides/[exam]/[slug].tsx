@@ -1,28 +1,31 @@
-// pages/guides/[exam]/[slug].tsx
 import type { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
 import { allGuides, type Guide } from "contentlayer/generated";
 import { useMDXComponent } from "next-contentlayer2/hooks";
 import Link from "next/link";
 
-// 対応試験の表記（※ "stat" を正しく受ける / "engineer" に統一）
+// 表示ラベル（正規キー）
 const EXAM_LABEL = {
-  qc: "QC検定",
-  stat: "統計検定",
-  engineer: "技術士試験",
+  qc: "品質管理",
+  stat: "統計",
+  engineer: "技術士",
 } as const;
 
 type ExamKey = keyof typeof EXAM_LABEL;
 type PageProps = { guide: Guide };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const paths = allGuides
-    .filter(
-      (g) =>
-        g.status !== "draft" &&
-        !!EXAM_LABEL[g.exam as ExamKey] && // 未対応の exam は除外
-        !!g.slug
-    )
-    .map((g) => ({ params: { exam: String(g.exam), slug: String(g.slug) } }));
+  // Contentlayer が計算した url を信頼し、一意化してから paths 化
+  const urls = new Set(
+    allGuides
+      .filter((g) => g.status !== "draft" && typeof g.url === "string" && g.url.startsWith("/guides/"))
+      .map((g) => g.url!)
+  );
+
+  const paths = Array.from(urls).map((u) => {
+    // /guides/:exam/:slug → ["", "guides", exam, slug]
+    const [, , exam, slug] = u.split("/");
+    return { params: { exam, slug } };
+  });
 
   return { paths, fallback: false };
 };
@@ -30,12 +33,13 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps: GetStaticProps<PageProps> = async ({ params }) => {
   const exam = String(params?.exam ?? "");
   const slug = String(params?.slug ?? "");
+  const targetUrl = `/guides/${exam}/${slug}`;
 
-  const guide = allGuides.find(
-    (g) => g.status !== "draft" && String(g.exam) === exam && String(g.slug) === slug
-  );
+  // URL で一意に特定（ドラフト除外）
+  const guide = allGuides.find((g) => g.status !== "draft" && g.url === targetUrl);
 
-  if (!guide || !EXAM_LABEL[exam as ExamKey]) return { notFound: true };
+  // exam のラベルが未定義、または該当ガイドなしなら 404
+  if (!guide || !(exam in EXAM_LABEL)) return { notFound: true };
 
   return { props: { guide }, revalidate: 60 };
 };
