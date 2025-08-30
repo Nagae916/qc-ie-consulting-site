@@ -1,20 +1,20 @@
+// pages/guides/[exam]/[slug].tsx
 import type { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
 import { allGuides, type Guide } from "contentlayer/generated";
 import { useMDXComponent } from "next-contentlayer2/hooks";
 import Link from "next/link";
 
-// 表示ラベル（正規キー）
 const EXAM_LABEL = {
   qc: "品質管理",
   stat: "統計",
   engineer: "技術士",
 } as const;
-
 type ExamKey = keyof typeof EXAM_LABEL;
+
 type PageProps = { guide: Guide };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  // Contentlayer が計算した url を信頼し、一意化してから paths 化
+  // Contentlayer が計算した URL を唯一の真実として使い、Set で重複排除
   const urls = new Set(
     allGuides
       .filter((g) => g.status !== "draft" && typeof g.url === "string" && g.url.startsWith("/guides/"))
@@ -22,7 +22,6 @@ export const getStaticPaths: GetStaticPaths = async () => {
   );
 
   const paths = Array.from(urls).map((u) => {
-    // /guides/:exam/:slug → ["", "guides", exam, slug]
     const [, , exam, slug] = u.split("/");
     return { params: { exam, slug } };
   });
@@ -35,18 +34,14 @@ export const getStaticProps: GetStaticProps<PageProps> = async ({ params }) => {
   const slug = String(params?.slug ?? "");
   const targetUrl = `/guides/${exam}/${slug}`;
 
-  // URL で一意に特定（ドラフト除外）
   const guide = allGuides.find((g) => g.status !== "draft" && g.url === targetUrl);
-
-  // exam のラベルが未定義、または該当ガイドなしなら 404
-  if (!guide || !(exam in EXAM_LABEL)) return { notFound: true };
+  if (!guide || !(guide.exam in EXAM_LABEL)) return { notFound: true };
 
   return { props: { guide }, revalidate: 60 };
 };
 
 export default function GuidePage({ guide }: InferGetStaticPropsType<typeof getStaticProps>) {
   const MDX = useMDXComponent(guide.body.code);
-
   const sourcePath = guide._raw?.sourceFilePath ?? `${guide._raw.flattenedPath}.mdx`;
   const editUrl = `https://github.com/Nagae916/qc-ie-consulting-site/edit/main/content/${sourcePath}`;
 
