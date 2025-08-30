@@ -10,11 +10,15 @@
     "start": "next start -p 3000",
 
     "lint:fast": "next lint --cache --max-warnings=0",
-    "check:fast": "npm run lint:fast && node ./scripts/check-routes.js",
+    "check:routes": "node ./scripts/check-routes.js",
+
+    "check:dup": "node ./scripts/check-duplicate-urls.js",
+    "check:audit": "node ./scripts/audit-guides.js",
+
+    "check:fast": "npm run lint:fast && npm run check:routes && npm run check:dup && npm run check:audit",
     "check:ci": "npm run gen && npm run check:fast && next build",
 
     "lint": "next lint",
-    "check:routes": "node ./scripts/check-routes.js",
     "check": "npm run check:fast"
   },
   "dependencies": {
