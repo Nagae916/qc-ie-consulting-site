@@ -7,22 +7,9 @@ import {
   expectedMatrix as libExpected,
   chiEach as libChiEach,
   chiTotal as libChiTotal,
+  get2D,
+  set2DImmutable,
 } from '../../lib/safe-matrix';
-
-/** ── UI用の2Dアクセス補助（読み/書き）だけローカルに保持 ── */
-function get2D<T>(m: T[][], i: number, j: number, fallback: T): T {
-  const r = m[i];
-  if (!Array.isArray(r)) return fallback;
-  const v = r[j];
-  return (v ?? fallback) as T;
-}
-function set2DImmutable<T>(m: T[][], i: number, j: number, value: T): T[][] {
-  const next = m.map(row => [...row]);
-  while (next.length <= i) next.push([] as T[]);
-  while (next[i].length <= j) next[i].push(undefined as T);
-  next[i][j] = value;
-  return next;
-}
 
 export default function ChiSquareGuide() {
   // 観測度数（動的サイズに耐える：初期値は 2×2）
@@ -33,12 +20,12 @@ export default function ChiSquareGuide() {
   const [showExpected, setShowExpected] = useState(false);
   const [showChi, setShowChi] = useState(false);
 
-  // 合計類（共通ライブラリに委譲）
+  // 合計類（共通ライブラリ）
   const rows = useMemo(() => libRowSums(obs), [obs]);
   const cols = useMemo(() => libColSums(obs), [obs]);
   const grand = useMemo(() => libGrandTotal(obs), [obs]);
 
-  // 期待度数・χ²（共通ライブラリに委譲）
+  // 期待度数・χ²（共通ライブラリ）
   const exp = useMemo(() => libExpected(obs), [obs, rows, cols, grand]);
   const chi = useMemo(() => libChiEach(obs, exp), [obs, exp]);
   const chiVal = useMemo(() => libChiTotal(obs, exp), [chi, exp]);
