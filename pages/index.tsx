@@ -33,17 +33,11 @@ const NoteFeed = dynamic(() => import("@/components/feeds/NoteFeed"), { ssr: fal
 const XTimeline = dynamic(() => import("@/components/feeds/XTimeline"), { ssr: false });
 const InstagramFeed = dynamic(() => import("@/components/feeds/InstagramFeed"), { ssr: false });
 
-/** ========= フィード設定 ========= */
-const FEED_CONFIG = {
-  // .env に NEXT_PUBLIC_X_USERNAME があれば優先、なければ @n_ieqclab
-  xUsername: (process.env.NEXT_PUBLIC_X_USERNAME ?? "@n_ieqclab").replace(/^@/, ""),
-};
-
 /** ========= ユーティリティ ========= */
 const asExamKey = (v: Guide["exam"]): ExamKey | null =>
   v === "qc" || v === "stat" || v === "engineer" ? v : null;
 
-// 並べ替えキー（updatedAt → date）
+// 並び替えキー（updatedAt → date）
 const sortKey = (g: Guide) =>
   Date.parse(String((g as any).updatedAt ?? "")) ||
   Date.parse(String((g as any).date ?? "")) ||
@@ -87,131 +81,4 @@ export default function Home({ latestByExam, latestAll }: Props) {
         {/* 各カテゴリ 更新履歴（最新2件） */}
         <div className="px-6 py-5">
           <div className="rounded-xl border border-black/10 bg-white">
-            <div className="border-b border-black/10 px-4 py-2 text-sm text-black/70">更新履歴（最新2件）</div>
-            <div className="p-4 text-sm">
-              {items.length === 0 ? (
-                <p className="text-black/50">更新情報はまだありません。</p>
-              ) : (
-                <ul className="space-y-2">
-                  {items.map((g) => (
-                    <li key={g._id} className="leading-relaxed">
-                      <Link href={g.url} className="text-blue-700 hover:underline">
-                        {g.title}
-                      </Link>
-                      {sortKey(g) > 0 && (
-                        <span className="ml-2 text-black/40">{new Date(sortKey(g)).toLocaleDateString("ja-JP")}</span>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  };
-
-  return (
-    <main className="mx-auto max-w-6xl px-4 py-10">
-      {/* ヒーロー */}
-      <section className="rounded-3xl bg-emerald-50 px-8 py-8">
-        <h1 className="text-3xl font-extrabold tracking-tight">QC × IE LABO</h1>
-        <p className="mt-2 text-black/70">見やすさと親しみやすさを大切に、淡いグリーン基調で設計しました。</p>
-      </section>
-
-      {/* 学習ガイドライブラリ（3カテゴリ） */}
-      <h2 className="mt-10 text-center text-2xl font-bold">学習ガイドライブラリ</h2>
-      <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-3">
-        <CategoryCard exam="qc" />
-        <CategoryCard exam="stat" />
-        <CategoryCard exam="engineer" />
-      </div>
-
-      {/* ====== フィード群（すべて掲載） ====== */}
-      <section className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
-        {/* お知らせ / X タイムライン */}
-        <div className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm">
-          <h3 className="text-xl font-bold mb-3">お知らせ</h3>
-          <NewsFeed />
-        </div>
-
-        <div className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm">
-          <h3 className="text-xl font-bold mb-3">X（旧Twitter）タイムライン</h3>
-          <XTimeline username={FEED_CONFIG.xUsername} />
-        </div>
-      </section>
-
-      <section className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
-        {/* ブログ / Note */}
-        <div className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm">
-          <h3 className="text-xl font-bold mb-3">ブログ最新投稿</h3>
-          <Bloglist />
-        </div>
-
-        <div className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm">
-          <h3 className="text-xl font-bold mb-3">Note フィード</h3>
-          <NoteFeed />
-        </div>
-      </section>
-
-      <section className="mt-6">
-        {/* Instagram は横幅活かして 1 カラムで */}
-        <div className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm">
-          <h3 className="text-xl font-bold mb-3">Instagram</h3>
-          <InstagramFeed />
-        </div>
-      </section>
-
-      {/* ====== サイト全体の更新フィード（Guide 横断） ====== */}
-      <section className="mt-12">
-        <div className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm">
-          <h3 className="text-xl font-bold mb-3">最新の更新フィード</h3>
-          {latestAll.length === 0 ? (
-            <p className="text-sm text-black/50">更新はまだありません。</p>
-          ) : (
-            <ul className="space-y-2 text-sm">
-              {latestAll.map((g) => (
-                <li key={g._id}>
-                  <Link href={g.url} className="text-blue-700 hover:underline">
-                    [{EXAM_LABEL[g.exam as ExamKey]}] {g.title}
-                  </Link>
-                  {sortKey(g) > 0 && (
-                    <span className="ml-2 text-black/40">{new Date(sortKey(g)).toLocaleDateString("ja-JP")}</span>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </section>
-    </main>
-  );
-}
-
-/** ========= SSG ========= */
-export const getStaticProps: GetStaticProps<Props> = async () => {
-  // 下書き除外
-  const guides = allGuides.filter((g) => g.status !== "draft");
-
-  // カテゴリで振り分け
-  const byExam: Record<ExamKey, Guide[]> = { qc: [], stat: [], engineer: [] };
-  for (const g of guides) {
-    const ek = asExamKey(g.exam);
-    if (ek) byExam[ek].push(g);
-  }
-
-  // 各カテゴリの最新2件
-  const pickN = (arr: Guide[], n: number) => [...arr].sort((a, b) => sortKey(b) - sortKey(a)).slice(0, n);
-
-  const latestByExam = {
-    qc: pickN(byExam.qc, 2),
-    stat: pickN(byExam.stat, 2),
-    engineer: pickN(byExam.engineer, 2),
-  };
-
-  // 全体更新：最新10件
-  const latestAll = [...guides].sort((a, b) => sortKey(b) - sortKey(a)).slice(0, 10);
-
-  return { props: { latestByExam, latestAll } };
-};
+            <div className="border-b border-blac
