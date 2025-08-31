@@ -4,28 +4,30 @@ const { withContentlayer } = require('next-contentlayer2');
 
 const isDev = process.env.NODE_ENV !== 'production';
 
-// --- CSP: Twitter埋め込みに必要な最小限を許可 ---
 const makeCSP = () => {
   const TW_WIDGET = 'https://platform.twitter.com';
-  const TW_SYND   = 'https://syndication.twitter.com';
-  const TW_IMGS   = ['https://pbs.twimg.com', 'https://abs.twimg.com'];
+  const TW_SYND = 'https://syndication.twitter.com';
+  const TW_SYND_CDN = 'https://cdn.syndication.twimg.com';
+  const TW_IMG = ['https://pbs.twimg.com', 'https://abs.twimg.com', 'https://ton.twimg.com'];
+  const IG_FRAME = 'https://www.instagram.com'; // Instagram埋め込みを使う場合
 
   return [
     "default-src 'self'",
     "base-uri 'self'",
     "object-src 'none'",
-    // widgets.js とインラインstyleを許可（devは Next の都合で 'unsafe-eval' も）
-    `script-src 'self' 'unsafe-inline' ${isDev ? "'unsafe-eval' " : ''}${TW_WIDGET}`,
-    `style-src 'self' 'unsafe-inline' ${TW_WIDGET}`,
-    // 画像（Twitterの画像CDNを許可）
-    `img-src 'self' data: blob: ${TW_IMGS.join(' ')}`,
-    // API/XHR
-    "connect-src 'self'",
-    // 埋め込み<iframe>
-    `frame-src 'self' ${TW_WIDGET} ${TW_SYND}`,
-    // クリックジャッキング対策
+    // widgets.js + 必要に応じて dev の eval
+    `script-src 'self' 'unsafe-inline' ${isDev ? "'unsafe-eval' " : ''}${TW_WIDGET} ${TW_SYND_CDN}`,
+    // ウィジェット内インラインstyle と twitter の ton.twimg.com を許可
+    `style-src 'self' 'unsafe-inline' ${TW_WIDGET} https://ton.twimg.com`,
+    // 画像（twitter系CDNと data/blob）
+    `img-src 'self' data: blob: ${TW_IMG.join(' ')}`,
+    // fetch/XHR（ウィジェットが syndication / platform / cdn に接続）
+    `connect-src 'self' ${TW_WIDGET} ${TW_SYND} ${TW_SYND_CDN}`,
+    // iframe 埋め込み先
+    `frame-src 'self' ${TW_WIDGET} ${TW_SYND} https://twitter.com ${IG_FRAME}`,
+    // フォント（ton にフォント有）
+    `font-src 'self' https://ton.twimg.com data:`,
     "frame-ancestors 'self'",
-    // フォーム送信先制限
     "form-action 'self'",
   ].join('; ');
 };
@@ -40,16 +42,12 @@ const nextConfig = {
     config.resolve.alias['@'] = path.resolve(__dirname, 'src');
     return config;
   },
-
-  // ▼ ここが追加：CSPほかセキュリティヘッダ
   async headers() {
     const csp = makeCSP();
     return [
       {
         source: '/(.*)',
         headers: [
-          // まずはレポートオンリーで試す場合は下行を有効化＆本番CSPはコメントアウト
-          // { key: 'Content-Security-Policy-Report-Only', value: csp },
           { key: 'Content-Security-Policy', value: csp },
           { key: 'Referrer-Policy', value: 'no-referrer-when-downgrade' },
           { key: 'X-Content-Type-Options', value: 'nosniff' },
@@ -59,7 +57,6 @@ const nextConfig = {
       },
     ];
   },
-
   async redirects() {
     const map = {
       'regression-anova': '/guides/qc/regression-anova',
