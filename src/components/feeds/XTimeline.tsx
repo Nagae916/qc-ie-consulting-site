@@ -1,25 +1,24 @@
-// src/components/feeds/XTimeline.tsx
 import { useEffect, useRef, useState } from 'react';
 
-declare global {
-  interface Window { twttr?: any }
-}
+declare global { interface Window { twttr?: any } }
 
 type ChromeOption = 'noheader' | 'nofooter' | 'noborders' | 'transparent' | 'noscrollbar';
+type FallbackItem = { title: string; link: string; pubDate: string | null };
 
 type Props = {
-  username: string;                // '@' あり/なしOK
-  limit?: number;                  // 既定 5
-  height?: number | string;        // 例: 600
+  username: string;                       // '@' あり/なしOK
+  limit?: number;                         // 既定 5
+  height?: number | string;
   width?: number | string;
   theme?: 'light' | 'dark';
   chrome?: ChromeOption[] | string;
   className?: string;
-  fallbackEnabled?: boolean;       // 既定 true
-  minHeight?: number;              // 既定 600（見た目安定用）
+  minHeight?: number;                     // 既定 600（見た目安定）
+  /** 表示モード：auto=まずwidget,失敗時fallback / widget=常にウィジェット / fallback=常に軽量表示 */
+  mode?: 'auto' | 'widget' | 'fallback';
+  /** 任意：デバッグログ */
+  debug?: boolean;
 };
-
-type FallbackItem = { title: string; link: string; pubDate: string | null };
 
 export default function XTimeline({
   username,
@@ -29,13 +28,16 @@ export default function XTimeline({
   theme = 'light',
   chrome,
   className,
-  fallbackEnabled = true,
   minHeight = 600,
+  mode = 'auto',
+  debug = false,
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const [fallback, setFallback] = useState<FallbackItem[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [nonce, setNonce] = useState(0); // 再試行用
+
+  const log = (...a: any[]) => { if (debug) console.log('[XTimeline]', ...a); };
 
   const loadFallback = async () => {
     try {
@@ -43,8 +45,10 @@ export default function XTimeline({
       const r = await fetch(`/api/x-rss?user=${encodeURIComponent(u)}&limit=${limit}&_=${Date.now()}`, { cache: 'no-store' });
       const data: FallbackItem[] = await r.json();
       setFallback(data);
+      log('fallback items:', data.length);
     } catch {
       setFallback([]);
+      log('fallback failed');
     } finally {
       setLoading(false);
     }
@@ -54,6 +58,14 @@ export default function XTimeline({
     let cancelled = false;
     let timer: number | undefined;
 
+    // 常に軽量表示
+    if (mode === 'fallback') {
+      log('mode=fallback → always fallback');
+      loadFallback();
+      return;
+    }
+
+    // ウィジェット読み込み
     const ensureWidgets = async () => {
       const src = 'https://platform.twitter.com/widgets.js';
       if (window.twttr?.widgets?.createTimeline) return;
@@ -77,10 +89,13 @@ export default function XTimeline({
       try {
         await ensureWidgets();
 
-        // タイムアウトでフォールバック
-        if (fallbackEnabled) {
+        // auto のときは4秒でタイムアウト → フォールバック
+        if (mode === 'auto') {
           timer = window.setTimeout(() => {
-            if (!cancelled && loading) loadFallback();
+            if (!cancelled && loading) {
+              log('widget timeout → fallback');
+              loadFallback();
+            }
           }, 4000);
         }
 
@@ -95,6 +110,7 @@ export default function XTimeline({
         if (width != null) opts.width = width;
         if (chromeOpt) opts.chrome = chromeOpt;
 
+        log('createTimeline', { mode, opts });
         await window.twttr.widgets.createTimeline(
           { sourceType: 'profile', screenName },
           ref.current,
@@ -105,35 +121,37 @@ export default function XTimeline({
           if (timer) clearTimeout(timer);
           setLoading(false);
           setFallback(null);
+          log('widget rendered');
         }
-      } catch {
-        if (!cancelled && fallbackEnabled) {
-          if (timer) clearTimeout(timer);
-          loadFallback();
+      } catch (e) {
+        log('widget error', e);
+        if (mode === 'auto') {
+          if (!cancelled) {
+            if (timer) clearTimeout(timer);
+            loadFallback();
+          }
         } else {
-          setLoading(false);
+          setLoading(false); // mode=widget の場合は何もしない
         }
       }
     };
 
     renderWidget();
-    return () => {
-      cancelled = true;
-      if (timer) clearTimeout(timer);
-    };
+    return () => { cancelled = true; if (timer) clearTimeout(timer); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [username, limit, height, width, theme, Array.isArray(chrome) ? chrome.join(' ') : chrome, fallbackEnabled, nonce]);
+  }, [username, limit, height, width, theme, Array.isArray(chrome) ? chrome.join(' ') : chrome, mode, nonce]);
 
+  // フォールバック表示
   if (fallback) {
     const profileUrl = `https://twitter.com/${username.replace(/^@/, '')}`;
     return (
       <div className={className} style={{ minHeight }}>
         {fallback.length === 0 ? (
           <div className="text-sm text-gray-600 p-3">
-            <p>Xの埋め込みを表示できませんでした（ネットワーク / CSP / ブロッカーの可能性）。</p>
+            <p>Xの埋め込みが利用できない環境のため、軽量表示に切り替えています。</p>
             <div className="mt-2 flex items-center gap-3">
               <a href={profileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">
-                プロフィールをXで開く
+                プロフィールを開く
               </a>
               <button
                 type="button"
@@ -160,17 +178,10 @@ export default function XTimeline({
                 </li>
               ))}
             </ul>
-            <div className="mt-3 flex items-center gap-3">
+            <div className="mt-3">
               <a href={profileUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-700 underline">
-                もっと見る（Xを開く）
+                もっと見る（Xで開く）
               </a>
-              <button
-                type="button"
-                onClick={() => setNonce(v => v + 1)}
-                className="rounded-md border px-2 py-1 text-xs hover:bg-gray-50"
-              >
-                再試行
-              </button>
             </div>
           </div>
         )}
@@ -178,5 +189,6 @@ export default function XTimeline({
     );
   }
 
+  // 公式ウィジェット表示領域
   return <div ref={ref} className={className} style={{ minHeight }} />;
 }
