@@ -1,5 +1,7 @@
 // pages/index.tsx
 import Link from "next/link";
+import dynamic from "next/dynamic";
+import type { GetStaticProps } from "next";
 import { allGuides, type Guide } from "contentlayer/generated";
 
 /** ========= 基本設定 ========= */
@@ -17,7 +19,7 @@ const EXAM_DESC: Record<ExamKey, string> = {
   engineer: "学習計画や要点整理を中心に、効率よく得点力を高めるナレッジ。",
 };
 
-// カラールール統一（QC=薄いオレンジ / 統計=青 / 技術士=緑）
+// カラールール（QC=薄いオレンジ / 統計=青 / 技術士=緑）
 const COLORS = {
   qc: {
     badgeDot: "text-[#D26B00]",
@@ -36,50 +38,42 @@ const COLORS = {
   },
 } as const;
 
-/** ========= ユーティリティ ========= */
+// 各フィード（クライアント依存があっても安全なように SSR 無効化）
+const NewsFeed = dynamic(() => import("@/components/feeds/NewsFeed"), { ssr: false });
+const Bloglist = dynamic(() => import("@/components/feeds/Bloglist"), { ssr: false });
+const NoteFeed = dynamic(() => import("@/components/feeds/NoteFeed"), { ssr: false });
+const XTimeline = dynamic(() => import("@/components/feeds/XTimeline"), { ssr: false });
+const InstagramFeed = dynamic(() => import("@/components/feeds/InstagramFeed"), { ssr: false });
 
-// Contentlayer 側の正規化後 exam は信頼できるのでそのまま ExamKey に落とす
+/** ========= ユーティリティ ========= */
 const asExamKey = (v: Guide["exam"]): ExamKey | null =>
   v === "qc" || v === "stat" || v === "engineer" ? v : null;
 
-// 並べ替えキー（updatedAt → date）
-const sortKey = (g: Guide) => {
-  const t =
-    Date.parse(String((g as any).updatedAt ?? "")) ||
-    Date.parse(String((g as any).date ?? "")) ||
-    0;
-  return t;
+// 並び替えキー（updatedAt → date）
+const sortKey = (g: Guide) =>
+  Date.parse(String((g as any).updatedAt ?? "")) ||
+  Date.parse(String((g as any).date ?? "")) ||
+  0;
+
+/** ========= Props ========= */
+type Props = {
+  latestByExam: {
+    qc: Guide[];
+    stat: Guide[];
+    engineer: Guide[];
+  };
+  latestAll: Guide[]; // 全体更新：最新10件
 };
 
-/** ========= ページ本体 ========= */
-
-export default function Home() {
-  // 下書きは除外
-  const docs = allGuides.filter((g) => g.status !== "draft");
-
-  // カテゴリで振り分け
-  const byExam: Record<ExamKey, Guide[]> = { qc: [], stat: [], engineer: [] };
-  for (const g of docs) {
-    const ek = asExamKey(g.exam);
-    if (ek) byExam[ek].push(g);
-  }
-
-  // 各カテゴリの最新2件
-  const pick2 = (arr: Guide[]) => [...arr].sort((a, b) => sortKey(b) - sortKey(a)).slice(0, 2);
-  const latest = {
-    qc: pick2(byExam.qc),
-    stat: pick2(byExam.stat),
-    engineer: pick2(byExam.engineer),
-  };
-
-  // カテゴリカード（更新履歴付き）
+export default function Home({ latestByExam, latestAll }: Props) {
+  /** ========== ライブラリ：カテゴリカード（各カテゴリの更新2件付き） ========== */
   const CategoryCard = ({ exam }: { exam: ExamKey }) => {
     const color = COLORS[exam];
-    const items = latest[exam];
+    const items = latestByExam[exam];
 
     return (
       <section className="rounded-2xl border border-black/5 bg-white shadow-sm overflow-hidden">
-        {/* ヘッダー（色帯） */}
+        {/* ヘッダー色帯 */}
         <div className={`${color.headerBg} px-6 py-4`}>
           <div className="flex items-center gap-2 text-sm text-black/70">
             <span className={`${color.badgeDot}`}>●</span>
@@ -99,7 +93,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* 更新履歴（各カテゴリの最新2件） */}
+        {/* 各カテゴリ 更新履歴（最新2件） */}
         <div className="px-6 py-5">
           <div className="rounded-xl border border-black/10 bg-white">
             <div className="border-b border-black/10 px-4 py-2 text-sm text-black/70">
@@ -131,6 +125,7 @@ export default function Home() {
     );
   };
 
+  /** ========== 表示 ========== */
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
       {/* ヒーロー */}
@@ -139,13 +134,98 @@ export default function Home() {
         <p className="mt-2 text-black/70">見やすさと親しみやすさを大切に、淡いグリーン基調で設計しました。</p>
       </section>
 
-      {/* 学習ガイドライブラリ：カテゴリカード3つ（各カテゴリの更新履歴を下に表示） */}
+      {/* 学習ガイドライブラリ（3カテゴリ） */}
       <h2 className="mt-10 text-center text-2xl font-bold">学習ガイドライブラリ</h2>
       <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-3">
         <CategoryCard exam="qc" />
         <CategoryCard exam="stat" />
         <CategoryCard exam="engineer" />
       </div>
+
+      {/* ====== フィード群（すべて掲載） ====== */}
+      <section className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
+        {/* お知らせ / X タイムライン */}
+        <div className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm">
+          <h3 className="text-xl font-bold mb-3">お知らせ</h3>
+          <NewsFeed />
+        </div>
+
+        <div className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm">
+          <h3 className="text-xl font-bold mb-3">X（旧Twitter）タイムライン</h3>
+          <XTimeline />
+        </div>
+      </section>
+
+      <section className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+        {/* ブログ / Note */}
+        <div className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm">
+          <h3 className="text-xl font-bold mb-3">ブログ最新投稿</h3>
+          <Bloglist />
+        </div>
+
+        <div className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm">
+          <h3 className="text-xl font-bold mb-3">Note フィード</h3>
+          <NoteFeed />
+        </div>
+      </section>
+
+      <section className="mt-6">
+        {/* Instagram は横幅活かして 1 カラムで */}
+        <div className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm">
+          <h3 className="text-xl font-bold mb-3">Instagram</h3>
+          <InstagramFeed />
+        </div>
+      </section>
+
+      {/* ====== サイト全体の更新フィード（Guide 横断） ====== */}
+      <section className="mt-12">
+        <div className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm">
+          <h3 className="text-xl font-bold mb-3">最新の更新フィード</h3>
+          {latestAll.length === 0 ? (
+            <p className="text-sm text-black/50">更新はまだありません。</p>
+          ) : (
+            <ul className="space-y-2 text-sm">
+              {latestAll.map((g) => (
+                <li key={g._id}>
+                  <Link href={g.url} className="text-blue-700 hover:underline">
+                    [{EXAM_LABEL[g.exam as ExamKey]}] {g.title}
+                  </Link>
+                  {sortKey(g) > 0 && (
+                    <span className="ml-2 text-black/40">
+                      {new Date(sortKey(g)).toLocaleDateString("ja-JP")}
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </section>
     </main>
   );
 }
+
+/** ========= SSG ========= */
+export const getStaticProps: GetStaticProps<Props> = async () => {
+  // 下書き除外
+  const guides = allGuides.filter((g) => g.status !== "draft");
+
+  // カテゴリで振り分け
+  const byExam: Record<ExamKey, Guide[]> = { qc: [], stat: [], engineer: [] };
+  for (const g of guides) {
+    const ek = asExamKey(g.exam);
+    if (ek) byExam[ek].push(g);
+  }
+
+  const pickN = (arr: Guide[], n: number) => [...arr].sort((a, b) => sortKey(b) - sortKey(a)).slice(0, n);
+
+  const latestByExam = {
+    qc: pickN(byExam.qc, 2),
+    stat: pickN(byExam.stat, 2),
+    engineer: pickN(byExam.engineer, 2),
+  };
+
+  const latestAll = [...guides].sort((a, b) => sortKey(b) - sortKey(a)).slice(0, 10);
+
+  return { props: { latestByExam, latestAll } };
+};
