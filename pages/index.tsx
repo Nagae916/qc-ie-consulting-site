@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { allGuides, type Guide } from "contentlayer/generated";
 
-/** ===== 基本設定 ===== */
+/** ========= 基本設定 ========= */
 type ExamKey = "qc" | "stat" | "engineer";
 
 const EXAM_LABEL: Record<ExamKey, string> = {
@@ -17,7 +17,7 @@ const EXAM_DESC: Record<ExamKey, string> = {
   engineer: "学習計画や要点整理を中心に、効率よく得点力を高めるナレッジ。",
 };
 
-// トーン統一（QC=薄いオレンジ / 統計=青 / 技術士=緑）
+// カラールール統一（QC=薄いオレンジ / 統計=青 / 技術士=緑）
 const COLORS = {
   qc: {
     badgeDot: "text-[#D26B00]",
@@ -36,64 +36,40 @@ const COLORS = {
   },
 } as const;
 
-/** ===== 共通ユーティリティ（既存 guides/index.tsx に準拠） ===== */
+/** ========= ユーティリティ ========= */
 
-// frontmatter の exam 値を正規化
-function normalizeExamValue(v: unknown): ExamKey | null {
-  const s = String(v ?? "").toLowerCase().trim();
-  if (s === "qc") return "qc";
-  if (s === "stat" || s === "stats" || s === "statistics") return "stat";
-  if (s === "engineer" || s === "pe" || s === "eng") return "engineer";
-  return null;
-}
+// Contentlayer 側の正規化後 exam は信頼できるのでそのまま ExamKey に落とす
+const asExamKey = (v: Guide["exam"]): ExamKey | null =>
+  v === "qc" || v === "stat" || v === "engineer" ? v : null;
 
-// パス優先のカテゴリ検出（最優先）→ だめなら frontmatter を使用
-function detectCategory(g: Guide): ExamKey | null {
-  const p = String(g._raw?.sourceFilePath ?? g._raw?.flattenedPath ?? "").toLowerCase();
-  if (p.includes("/guides/qc/")) return "qc";
-  if (p.includes("/guides/stat/")) return "stat";
-  if (p.includes("/guides/engineer/")) return "engineer";
-  return normalizeExamValue((g as any).exam);
-}
-
-// 並び替えキー（更新日優先）
-function getSortKey(g: Guide) {
-  // updatedAt が無いケースもあるため冗長に吸収
+// 並べ替えキー（updatedAt → date）
+const sortKey = (g: Guide) => {
   const t =
-    Date.parse(String((g as any).updated ?? "")) ||
     Date.parse(String((g as any).updatedAt ?? "")) ||
     Date.parse(String((g as any).date ?? "")) ||
-    Date.parse(String((g as any).publishedAt ?? "")) ||
     0;
   return t;
-}
+};
 
-/** ===== ページ本体 ===== */
+/** ========= ページ本体 ========= */
 
 export default function Home() {
-  // 下書き除外
-  const guides = allGuides.filter((g) => g.status !== "draft");
+  // 下書きは除外
+  const docs = allGuides.filter((g) => g.status !== "draft");
 
-  // カテゴリごとに振り分け
+  // カテゴリで振り分け
   const byExam: Record<ExamKey, Guide[]> = { qc: [], stat: [], engineer: [] };
-  for (const g of guides) {
-    const cat = detectCategory(g);
-    if (cat) byExam[cat].push(g);
+  for (const g of docs) {
+    const ek = asExamKey(g.exam);
+    if (ek) byExam[ek].push(g);
   }
 
-  // 各カテゴリで最新2件を抽出
-  const latest2 = (arr: Guide[]) => [...arr].sort((a, b) => getSortKey(b) - getSortKey(a)).slice(0, 2);
-
+  // 各カテゴリの最新2件
+  const pick2 = (arr: Guide[]) => [...arr].sort((a, b) => sortKey(b) - sortKey(a)).slice(0, 2);
   const latest = {
-    qc: latest2(byExam.qc),
-    stat: latest2(byExam.stat),
-    engineer: latest2(byExam.engineer),
-  };
-
-  // ガイドへのリンク生成
-  const guideHref = (exam: ExamKey, g: Guide) => {
-    const slug = g.slug || g._raw.flattenedPath.split("/").pop();
-    return `/guides/${exam}/${slug}`;
+    qc: pick2(byExam.qc),
+    stat: pick2(byExam.stat),
+    engineer: pick2(byExam.engineer),
   };
 
   // カテゴリカード（更新履歴付き）
@@ -123,7 +99,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* 更新履歴（最新2件） */}
+        {/* 更新履歴（各カテゴリの最新2件） */}
         <div className="px-6 py-5">
           <div className="rounded-xl border border-black/10 bg-white">
             <div className="border-b border-black/10 px-4 py-2 text-sm text-black/70">
@@ -136,12 +112,12 @@ export default function Home() {
                 <ul className="space-y-2">
                   {items.map((g) => (
                     <li key={g._id} className="leading-relaxed">
-                      <Link href={guideHref(exam, g)} className="text-blue-700 hover:underline">
+                      <Link href={g.url} className="text-blue-700 hover:underline">
                         {g.title}
                       </Link>
-                      {getSortKey(g) > 0 && (
+                      {sortKey(g) > 0 && (
                         <span className="ml-2 text-black/40">
-                          {new Date(getSortKey(g)).toLocaleDateString("ja-JP")}
+                          {new Date(sortKey(g)).toLocaleDateString("ja-JP")}
                         </span>
                       )}
                     </li>
@@ -163,7 +139,7 @@ export default function Home() {
         <p className="mt-2 text-black/70">見やすさと親しみやすさを大切に、淡いグリーン基調で設計しました。</p>
       </section>
 
-      {/* ライブラリ：3カテゴリ（各カテゴリ配色＋更新履歴2件） */}
+      {/* 学習ガイドライブラリ：カテゴリカード3つ（各カテゴリの更新履歴を下に表示） */}
       <h2 className="mt-10 text-center text-2xl font-bold">学習ガイドライブラリ</h2>
       <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-3">
         <CategoryCard exam="qc" />
