@@ -10,7 +10,10 @@ const parser = new Parser({
 
 const ORIGIN = process.env.NITTER_ORIGIN || 'https://nitter.net';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse<TweetItem[]>) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<TweetItem[]>
+) {
   if (req.method !== 'GET') {
     res.setHeader('Allow', 'GET');
     return res.status(405).json([]);
@@ -32,14 +35,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       .map((it: any) => ({
         title: String(it.title || '').replace(/\s+/g, ' ').trim(),
         link: String(it.link || ''),
-        pubDate: it.isoDate ? new Date(it.isoDate).toISOString() : (it.pubDate ? new Date(it.pubDate).toISOString() : null),
+        pubDate: it.isoDate
+          ? new Date(it.isoDate).toISOString()
+          : it.pubDate
+          ? new Date(it.pubDate).toISOString()
+          : null,
       }))
-      .filter((x) => x.title && x.link);
+      // ★ noImplicitAny対策：型注釈を明示
+      .filter((x: TweetItem) => x.title && x.link);
 
     res.setHeader('Cache-Control', 's-maxage=1800, stale-while-revalidate=3600');
     return res.status(200).json(items);
-  } catch (e) {
-    // フォールバックも失敗したら空配列（画面側はメッセージ表示）
+  } catch (_e) {
     res.setHeader('Cache-Control', 'no-store');
     return res.status(200).json([]);
   }
