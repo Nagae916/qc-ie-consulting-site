@@ -4,6 +4,10 @@ import NoteFeed from "@/components/feeds/NoteFeed";
 import InstagramFeed from "@/components/feeds/InstagramFeed";
 import XTimeline from "@/components/feeds/XTimeline";
 
+// .env の NEXT_PUBLIC_X_EMBED_MODE を読んで表示モードを決める
+const embedMode =
+  (process.env.NEXT_PUBLIC_X_EMBED_MODE as "auto" | "widget" | "fallback" | undefined) ?? "auto";
+
 export default function HomeFeeds() {
   return (
     <section className="space-y-4">
@@ -26,10 +30,9 @@ export default function HomeFeeds() {
           </div>
         </div>
 
-        {/* X（Twitter）：最新3件 */}
+        {/* X（Twitter）：環境変数でモード切替／最新3件 */}
         <div className="rounded-xl bg-white p-5 shadow-sm flex flex-col min-h-[640px]">
           <h3 className="font-semibold mb-3">X（Twitter）@n_ieqclab</h3>
-          {/* 埋め込みの読み込み中でも高さを確保してガタつきを防止 */}
           <div className="flex-1 min-h-[600px]">
             <XTimeline
               username="n_ieqclab"
@@ -37,6 +40,7 @@ export default function HomeFeeds() {
               height={600}
               theme="light"
               chrome={["noheader", "nofooter"]}
+              mode={embedMode}  // ← ここで .env の値を適用
             />
           </div>
         </div>
