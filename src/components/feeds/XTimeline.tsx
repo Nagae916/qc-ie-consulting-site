@@ -9,14 +9,14 @@ type ChromeOption = 'noheader' | 'nofooter' | 'noborders' | 'transparent' | 'nos
 
 type Props = {
   username: string;                // '@' あり/なしOK
-  limit?: number;                  // 最新N件（既定 5）
+  limit?: number;                  // 既定 5
   height?: number | string;        // 例: 600
   width?: number | string;
   theme?: 'light' | 'dark';
   chrome?: ChromeOption[] | string;
   className?: string;
-  // フォールバック有効/無効（既定 true）
-  fallbackEnabled?: boolean;
+  fallbackEnabled?: boolean;       // 既定 true
+  minHeight?: number;              // 既定 600（見た目安定用）
 };
 
 type FallbackItem = { title: string; link: string; pubDate: string | null };
@@ -30,12 +30,13 @@ export default function XTimeline({
   chrome,
   className,
   fallbackEnabled = true,
+  minHeight = 600,
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const [fallback, setFallback] = useState<FallbackItem[] | null>(null);
   const [loading, setLoading] = useState(true);
+  const [nonce, setNonce] = useState(0); // 再試行用
 
-  // Nitter RSS フォールバック取得
   const loadFallback = async () => {
     try {
       const u = username.replace(/^@/, '');
@@ -100,7 +101,6 @@ export default function XTimeline({
           opts
         );
 
-        // ここまで来たら埋め込み成功
         if (!cancelled) {
           if (timer) clearTimeout(timer);
           setLoading(false);
@@ -122,36 +122,61 @@ export default function XTimeline({
       if (timer) clearTimeout(timer);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [username, limit, height, width, theme, Array.isArray(chrome) ? chrome.join(' ') : chrome, fallbackEnabled]);
+  }, [username, limit, height, width, theme, Array.isArray(chrome) ? chrome.join(' ') : chrome, fallbackEnabled, nonce]);
 
-  // フォールバック表示
   if (fallback) {
+    const profileUrl = `https://twitter.com/${username.replace(/^@/, '')}`;
     return (
-      <div className={className}>
+      <div className={className} style={{ minHeight }}>
         {fallback.length === 0 ? (
-          <div className="text-sm text-gray-500 p-3">
-            Xの埋め込みを表示できませんでした。ネットワーク/CSP/ブロッカー設定をご確認ください。
+          <div className="text-sm text-gray-600 p-3">
+            <p>Xの埋め込みを表示できませんでした（ネットワーク / CSP / ブロッカーの可能性）。</p>
+            <div className="mt-2 flex items-center gap-3">
+              <a href={profileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">
+                プロフィールをXで開く
+              </a>
+              <button
+                type="button"
+                onClick={() => setNonce(v => v + 1)}
+                className="rounded-md border px-2 py-1 text-xs hover:bg-gray-50"
+              >
+                再試行
+              </button>
+            </div>
           </div>
         ) : (
-          <ul className="space-y-2">
-            {fallback.map((t) => (
-              <li key={t.link}>
-                <a href={t.link} target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline">
-                  {t.title}
-                </a>
-                {t.pubDate && (
-                  <span className="ml-2 text-xs text-gray-500">
-                    {new Date(t.pubDate).toLocaleString('ja-JP')}
-                  </span>
-                )}
-              </li>
-            ))}
-          </ul>
+          <div className="p-3">
+            <ul className="space-y-2">
+              {fallback.map((t) => (
+                <li key={t.link}>
+                  <a href={t.link} target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline">
+                    {t.title}
+                  </a>
+                  {t.pubDate && (
+                    <span className="ml-2 text-xs text-gray-500">
+                      {new Date(t.pubDate).toLocaleString('ja-JP')}
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+            <div className="mt-3 flex items-center gap-3">
+              <a href={profileUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-700 underline">
+                もっと見る（Xを開く）
+              </a>
+              <button
+                type="button"
+                onClick={() => setNonce(v => v + 1)}
+                className="rounded-md border px-2 py-1 text-xs hover:bg-gray-50"
+              >
+                再試行
+              </button>
+            </div>
+          </div>
         )}
       </div>
     );
   }
 
-  // 公式ウィジェットが描画される場所
-  return <div ref={ref} className={className} />;
+  return <div ref={ref} className={className} style={{ minHeight }} />;
 }
