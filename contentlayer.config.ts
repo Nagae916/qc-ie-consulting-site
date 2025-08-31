@@ -1,35 +1,32 @@
 // contentlayer.config.ts
 import { defineDocumentType, makeSource } from "contentlayer2/source-files";
 
-// ここを正規化：qc / stat / engineer に統一
-const ALLOWED_EXAMS = ["qc", "stat", "engineer"] as const;
-type Exam = (typeof ALLOWED_EXAMS)[number];
+const CANONICAL_EXAMS = ["qc", "stat", "engineer"] as const;
+type Exam = (typeof CANONICAL_EXAMS)[number];
 
-const toStr = (v: unknown) => String(v ?? "").trim().toLowerCase();
-
+function safeString(v: unknown, fb = ""): string {
+  const s = typeof v === "string" ? v.trim() : String(v ?? "").trim();
+  return s || fb;
+}
 function fromPath(parts: string[]) {
   const p = parts[0] === "guides" ? parts.slice(1) : parts;
-  const exam = toStr(p[0]);
-  const slug = toStr(p[p.length - 1]);
-  return { exam, slug };
+  return { exam: safeString(p[0]), slug: safeString(p[p.length - 1]) };
 }
-
 function normalizeExam(v: unknown, pathExam: string): Exam {
-  const s = toStr(v) || toStr(pathExam);
-  // 表記ゆれ吸収
-  if (s === "qc") return "qc";
-  if (s === "stat" || s === "stats" || s === "statistics") return "stat";
-  if (s === "engineer" || s === "pe" || s === "eng") return "engineer";
-  return "qc"; // フォールバック
+  const raw = safeString(v, pathExam).toLowerCase();
+  const e =
+    raw === "qc" ? "qc" :
+    raw === "stat" || raw === "stats" || raw === "statistics" ? "stat" :
+    raw === "engineer" || raw === "pe" || raw === "eng" ? "engineer" :
+    "qc";
+  return e as Exam;
 }
-
 function normalizeSlug(v: unknown, pathSlug: string) {
-  return toStr(v) || toStr(pathSlug);
+  return safeString(v, pathSlug);
 }
-
 function normalizeTags(v: unknown): string[] {
-  if (Array.isArray(v)) return v.map(toStr).filter(Boolean);
-  if (typeof v === "string") return v.split(/[,\s]+/).map(toStr).filter(Boolean);
+  if (Array.isArray(v)) return v.filter(Boolean).map((x) => safeString(x)).filter(Boolean);
+  if (typeof v === "string") return v.split(/[,\s]+/).map((s) => s.trim()).filter(Boolean);
   return [];
 }
 
