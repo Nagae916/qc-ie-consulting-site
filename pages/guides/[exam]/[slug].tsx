@@ -4,7 +4,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { allGuides, type Guide } from "contentlayer/generated";
 
-// MDXをビルド/SSGでHTML化（クライアントeval不要）
+// ▼ MDXをビルド/SSGでHTML化（クライアントeval不要）
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkMdx from "remark-mdx";
@@ -27,7 +27,7 @@ const toExamKey = (v: unknown): ExamKey | null => {
   return null;
 };
 
-// guides/qc/new-qc-seven-tools → exam/slug を復元
+// guides/qc/new-qc-seven-tools → exam/slug/url を安定復元
 function stablePath(g: Guide): { exam: ExamKey; slug: string; url: string } {
   const raw = String(g._raw?.flattenedPath ?? ""); // 例: guides/qc/new-qc-seven-tools
   const parts = raw.split("/");
@@ -38,7 +38,7 @@ function stablePath(g: Guide): { exam: ExamKey; slug: string; url: string } {
   return { exam, slug, url: `/guides/${exam}/${slug}` };
 }
 
-// ロケール差が出ない YYYY-MM-DD（UTC）
+// UTC固定の YYYY-MM-DD（SSR/CSR差の再発防止）
 function formatYMD(v1?: unknown, v2?: unknown): string {
   const s = String(v1 ?? v2 ?? "").trim();
   if (!s) return "";
@@ -60,10 +60,10 @@ const THEME: Record<ExamKey, { accent: string; link: string; title: string }> = 
 async function mdxToHtml(mdxRaw: string): Promise<string> {
   const file = await unified()
     .use(remarkParse)
-    .use(remarkMdx) // JSXはテキストとして素通し（JSXを使っていない前提）
+    .use(remarkMdx) // JSXはテキストとして素通し（本文にJSXなし前提）
     .use(remarkGfm)
     .use(remarkRehype, { allowDangerousHtml: true })
-    .use(rehypeSanitize) // ← 再発防止（生HTMLの安全化）
+    .use(rehypeSanitize) // 生HTMLの安全化（再発防止）
     .use(rehypeSlug)
     .use(rehypeAutolinkHeadings, { behavior: "wrap" })
     .use(rehypeStringify, { allowDangerousHtml: true })
@@ -99,7 +99,9 @@ export const getStaticProps: GetStaticProps<{ guide: Guide; exam: ExamKey; html:
 
     // ここでMDX→HTML（CSPの unsafe-eval 不要）
     const html = await mdxToHtml(guide.body.raw);
-    const updatedYmd = formatYMD((guide as any).updatedAt, (guide as any).date);
+
+    // ★ updatedAtAuto を最優先で表示用に整形（fallback: updatedAt → date）
+    const updatedYmd = formatYMD((guide as any).updatedAtAuto ?? (guide as any).updatedAt, (guide as any).date);
 
     return { props: { guide, exam: examParam, html, updatedYmd }, revalidate: 60 };
   };
