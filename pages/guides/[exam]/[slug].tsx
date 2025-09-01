@@ -3,16 +3,21 @@ import type { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "ne
 import Head from "next/head";
 import Link from "next/link";
 import { allGuides, type Guide } from "contentlayer/generated";
-import { useMDXComponent } from "next-contentlayer2/hooks";
+
+// MDXをビルド/SSGでHTML化（クライアントeval不要）
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import remarkMdx from "remark-mdx";
+import remarkGfm from "remark-gfm";
+import remarkRehype from "remark-rehype";
+import rehypeSanitize from "rehype-sanitize";
+import rehypeSlug from "rehype-slug";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import rehypeStringify from "rehype-stringify";
 
 /* ========= 基本 ========= */
-
 type ExamKey = "qc" | "stat" | "engineer";
-const EXAM_LABEL: Record<ExamKey, string> = {
-  qc: "品質管理",
-  stat: "統計",
-  engineer: "技術士",
-};
+const EXAM_LABEL: Record<ExamKey, string> = { qc: "品質管理", stat: "統計", engineer: "技術士" };
 
 const toExamKey = (v: unknown): ExamKey | null => {
   const s = String(v ?? "").toLowerCase().trim();
@@ -24,7 +29,7 @@ const toExamKey = (v: unknown): ExamKey | null => {
 
 // guides/qc/new-qc-seven-tools → exam/slug を復元
 function stablePath(g: Guide): { exam: ExamKey; slug: string; url: string } {
-  const raw = String(g._raw?.flattenedPath ?? "");
+  const raw = String(g._raw?.flattenedPath ?? ""); // 例: guides/qc/new-qc-seven-tools
   const parts = raw.split("/");
   const rawExam = parts[1] ?? "";
   const rawSlug = parts[parts.length - 1] ?? "";
@@ -33,20 +38,16 @@ function stablePath(g: Guide): { exam: ExamKey; slug: string; url: string } {
   return { exam, slug, url: `/guides/${exam}/${slug}` };
 }
 
-// タイムゾーン差の出ない YYYY-MM-DD を返す（なければ ""）
+// ロケール差が出ない YYYY-MM-DD（UTC）
 function formatYMD(v1?: unknown, v2?: unknown): string {
   const s = String(v1 ?? v2 ?? "").trim();
   if (!s) return "";
-  // 既に YYYY-MM-DD ならそのまま
   const m = s.match(/^(\d{4})[-/](\d{2})[-/](\d{2})/);
   if (m) return `${m[1]}-${m[2]}-${m[3]}`;
   const t = Date.parse(s);
   if (!Number.isFinite(t)) return "";
   const d = new Date(t);
-  const y = d.getUTCFullYear();
-  const mm = String(d.getUTCMonth() + 1).padStart(2, "0");
-  const dd = String(d.getUTCDate()).padStart(2, "0");
-  return `${y}-${mm}-${dd}`;
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
 }
 
 const THEME: Record<ExamKey, { accent: string; link: string; title: string }> = {
@@ -55,8 +56,22 @@ const THEME: Record<ExamKey, { accent: string; link: string; title: string }> = 
   engineer: { accent: "bg-emerald-300/70", link: "text-emerald-700 hover:text-emerald-800", title: "text-emerald-800" },
 };
 
-/* ========= SSG ========= */
+// MDX（Markdown+拡張）→ HTML（SSR/SSGで実施）
+async function mdxToHtml(mdxRaw: string): Promise<string> {
+  const file = await unified()
+    .use(remarkParse)
+    .use(remarkMdx) // JSXはテキストとして素通し（JSXを使っていない前提）
+    .use(remarkGfm)
+    .use(remarkRehype, { allowDangerousHtml: true })
+    .use(rehypeSanitize) // ← 再発防止（生HTMLの安全化）
+    .use(rehypeSlug)
+    .use(rehypeAutolinkHeadings, { behavior: "wrap" })
+    .use(rehypeStringify, { allowDangerousHtml: true })
+    .process(mdxRaw);
+  return String(file);
+}
 
+/* ========= SSG ========= */
 export const getStaticPaths: GetStaticPaths = async () => {
   const seen = new Set<string>();
   const paths = allGuides
@@ -64,35 +79,40 @@ export const getStaticPaths: GetStaticPaths = async () => {
     .map((g) => stablePath(g))
     .filter(({ exam, slug }) => !!exam && !!slug && !seen.has(`${exam}/${slug}`) && seen.add(`${exam}/${slug}`))
     .map(({ exam, slug }) => ({ params: { exam, slug } }));
-
   return { paths, fallback: false };
 };
 
-export const getStaticProps: GetStaticProps<{ guide: Guide; exam: ExamKey }> = async ({ params }) => {
-  const examParam = toExamKey(params?.exam);
-  const slugParam = String(params?.slug ?? "").trim().toLowerCase();
-  if (!examParam || !slugParam) return { notFound: true };
+export const getStaticProps: GetStaticProps<{ guide: Guide; exam: ExamKey; html: string; updatedYmd: string }> =
+  async ({ params }) => {
+    const examParam = toExamKey(params?.exam);
+    const slugParam = String(params?.slug ?? "").trim().toLowerCase();
+    if (!examParam || !slugParam) return { notFound: true };
 
-  const guide =
-    allGuides.find((g) => {
-      if ((g as any).status === "draft") return false;
-      const { exam, slug } = stablePath(g);
-      return exam === examParam && slug.toLowerCase() === slugParam;
-    }) ?? null;
+    const guide =
+      allGuides.find((g) => {
+        if ((g as any).status === "draft") return false;
+        const { exam, slug } = stablePath(g);
+        return exam === examParam && slug.toLowerCase() === slugParam;
+      }) ?? null;
 
-  if (!guide) return { notFound: true };
-  return { props: { guide, exam: examParam }, revalidate: 60 };
-};
+    if (!guide) return { notFound: true };
+
+    // ここでMDX→HTML（CSPの unsafe-eval 不要）
+    const html = await mdxToHtml(guide.body.raw);
+    const updatedYmd = formatYMD((guide as any).updatedAt, (guide as any).date);
+
+    return { props: { guide, exam: examParam, html, updatedYmd }, revalidate: 60 };
+  };
 
 /* ========= Page ========= */
-
-export default function GuidePage({ guide, exam }: InferGetStaticPropsType<typeof getStaticProps>) {
-  const MDX = useMDXComponent(guide.body.code);
+export default function GuidePage({
+  guide,
+  exam,
+  html,
+  updatedYmd,
+}: InferGetStaticPropsType<typeof getStaticProps>) {
   const theme = THEME[exam];
   const { url } = stablePath(guide);
-
-  // ← ここをロケール依存しない書式に修正
-  const updatedYmd = formatYMD((guide as any).updatedAt, (guide as any).date);
 
   const sourcePath =
     (guide._raw?.sourceFilePath as string | undefined) ??
@@ -120,17 +140,13 @@ export default function GuidePage({ guide, exam }: InferGetStaticPropsType<typeo
       <h1 className={`text-2xl md:text-3xl font-extrabold ${theme.title}`}>{guide.title}</h1>
 
       <div className="mt-2 text-xs text-gray-500">
-        {/* SSR/CSRの差分警告を抑止（念のため） */}
-        <span suppressHydrationWarning>
-          {updatedYmd ? `更新: ${updatedYmd}` : ""}
-        </span>
+        <span suppressHydrationWarning>{updatedYmd ? `更新: ${updatedYmd}` : ""}</span>
         {guide.version ? <span className="ml-2">v{guide.version}</span> : null}
         <a href={editUrl} target="_blank" rel="noreferrer" className="ml-3 underline">編集する</a>
       </div>
 
-      <article className="prose prose-neutral max-w-none mt-6">
-        <MDX />
-      </article>
+      {/* 変換済みHTMLを直描画（CSPフレンドリー） */}
+      <article className="prose prose-neutral max-w-none mt-6" dangerouslySetInnerHTML={{ __html: html }} />
     </main>
   );
 }
