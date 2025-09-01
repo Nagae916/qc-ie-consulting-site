@@ -1,0 +1,188 @@
+---
+title: "品質管理と日常管理（TQM）"
+description: "日常管理の2本柱とPDCAをインタラクティブに学ぶガイド"
+tags: ["TQM", "日常管理", "PDCA"]
+exam: "qc"
+status: "published"
+---
+
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インタラクティブ学習ガイド：品質管理と日常管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <!-- CONFIRMATION: NO SVG/Mermaid used -->
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; background-color: #f8fafc; }
+        .pdca-item { transition: all .3s ease; cursor: pointer; }
+        .pdca-item.active { background-color:#0284c7; color:#fff; transform: scale(1.1); }
+        .pdca-details-card { display:none; transition: all .5s ease-in-out; }
+        .pdca-details-card.active { display:block; }
+        .quiz-feedback { display:none; padding:.75rem; margin-top:1rem; border-radius:.5rem; font-weight:bold; }
+        .quiz-feedback.correct { background:#dcfce7; color:#166534; }
+        .quiz-feedback.incorrect { background:#fee2e2; color:#991b1b; }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <header class="bg-white/90 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold text-sky-600">品質管理 学習ガイド</h1>
+            <div class="hidden md:flex space-x-6">
+                <a href="#pillars" class="text-slate-600 hover:text-sky-600">日常管理の柱</a>
+                <a href="#pdca" class="text-slate-600 hover:text-sky-600">PDCAサイクル</a>
+                <a href="#quiz" class="text-slate-600 hover:text-sky-600">理解度チェック</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+        <section id="intro" class="text-center mb-20">
+            <h2 class="text-4xl font-bold text-slate-900 mb-4">TQMの核となる「日常管理」</h2>
+            <p class="text-lg text-slate-600 max-w-3xl mx-auto">
+                日常管理とは、組織の全員が日々の業務を通じて品質を維持し、改善していく継続的な活動です。このガイドで、その基本概念と実践方法を学びましょう。
+            </p>
+        </section>
+
+        <section id="pillars" class="mb-20">
+            <h2 class="text-3xl font-bold text-slate-900 mb-12 text-center">日常管理を支える「2つの柱」</h2>
+            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div class="bg-white p-8 rounded-lg shadow-lg border-t-4 border-sky-500 transform hover:-translate-y-2 transition-transform duration-300">
+                    <h3 class="text-2xl font-bold mb-3">1. 維持 (Maintain)</h3>
+                    <p class="text-slate-600">定められた標準（SOPなど）を確実に守り、現状の品質レベルを安定的に保つ活動です。品質のバラつきを防ぎ、安定した基盤を築きます。</p>
+                </div>
+                <div class="bg-white p-8 rounded-lg shadow-lg border-t-4 border-sky-500 transform hover:-translate-y-2 transition-transform duration-300">
+                    <h3 class="text-2xl font-bold mb-3">2. 改善 (Improve)</h3>
+                    <p class="text-slate-600">維持された品質レベルを、さらに高める活動です。日々の業務から課題を見つけ、PDCAサイクルを通じて継続的にレベルアップを図ります。</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="pdca" class="mb-20 bg-slate-50 py-16 rounded-lg">
+            <h2 class="text-3xl font-bold text-slate-900 mb-4 text-center">改善のエンジン：PDCAサイクル</h2>
+            <p class="text-center text-slate-600 mb-12 max-w-3xl mx-auto">
+                日常管理における「改善」は、PDCAサイクルを回すことで推進されます。下の各ステップをクリックして、具体的な活動内容を確認しましょう。
+            </p>
+            <div class="flex flex-col md:flex-row items-center justify-center gap-8">
+                <div class="flex flex-wrap justify-center items-center gap-4 md:gap-0 md:grid md:grid-cols-2 w-80 h-80">
+                    <div class="pdca-item flex justify-center items-center w-36 h-36 rounded-tl-full bg-sky-500 text-white font-bold text-2xl active" data-target="pdca-p">P</div>
+                    <div class="pdca-item flex justify-center items-center w-36 h-36 rounded-tr-full bg-slate-200 font-bold text-2xl" data-target="pdca-d">D</div>
+                    <div class="pdca-item flex justify-center items-center w-36 h-36 rounded-bl-full bg-slate-200 font-bold text-2xl" data-target="pdca-a">A</div>
+                    <div class="pdca-item flex justify-center items-center w-36 h-36 rounded-br-full bg-slate-200 font-bold text-2xl" data-target="pdca-c">C</div>
+                </div>
+                <div class="md:w-1/2">
+                    <div id="pdca-p" class="pdca-details-card bg-white p-6 rounded-lg shadow-md active">
+                        <h3 class="font-bold text-xl mb-2 text-sky-700">Plan (計画)</h3>
+                        <p>目標を設定し（例：不良率1%削減）、それを達成するための具体的な計画を立てます。QCストーリーや管理図などのツールがここで活用されます。</p>
+                    </div>
+                    <div id="pdca-d" class="pdca-details-card bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="font-bold text-xl mb-2 text-sky-700">Do (実施)</h3>
+                        <p>立てた計画に従って、日々の業務を遂行します。標準作業手順書（SOP）などのルールを遵守することが重要です。</p>
+                    </div>
+                    <div id="pdca-c" class="pdca-details-card bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="font-bold text-xl mb-2 text-sky-700">Check (確認・評価)</h3>
+                        <p>業務の結果が目標通りか、計画通りに実行できたかを確認します。品質データなどを用いて客観的に評価します。</p>
+                    </div>
+                    <div id="pdca-a" class="pdca-details-card bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="font-bold text-xl mb-2 text-sky-700">Act (処置・是正)</h3>
+                        <p>評価結果に基づき、改善策を講じます。目標達成なら成功要因を標準化し、未達成なら原因を究明して次の計画に活かします。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="quiz">
+            <h2 class="text-3xl font-bold text-slate-900 mb-8 text-center">理解度チェック</h2>
+            <div class="space-y-6 max-w-3xl mx-auto">
+                <div class="quiz-item bg-white p-6 rounded-lg shadow-md">
+                    <p class="font-bold mb-4">1. 品質保証やTQMにおける日常管理の目的として、最も適切なものを1つ選択してください。</p>
+                    <div class="space-y-2" data-quiz-id="q1" data-correct="A">
+                        <label class="block p-3 rounded-md border border-slate-200 hover:bg-slate-50 cursor-pointer"><input type="radio" name="q1" value="A" class="mr-2">現状の品質レベルを維持し、さらに改善するための活動を継続的に行うこと。</label>
+                        <label class="block p-3 rounded-md border border-slate-200 hover:bg-slate-50 cursor-pointer"><input type="radio" name="q1" value="B" class="mr-2">不良品が出たときのみ、根本原因を究明すること。</label>
+                        <label class="block p-3 rounded-md border border-slate-200 hover:bg-slate-50 cursor-pointer"><input type="radio" name="q1" value="C" class="mr-2">製品の設計段階でのみ品質目標を設定すること。</label>
+                        <label class="block p-3 rounded-md border border-slate-200 hover:bg-slate-50 cursor-pointer"><input type="radio" name="q1" value="D" class="mr-2">品質管理部門の専門家が、特別なプロジェクトとして実施すること。</label>
+                    </div>
+                    <div id="feedback-q1" class="quiz-feedback"></div>
+                </div>
+                <div class="quiz-item bg-white p-6 rounded-lg shadow-md">
+                    <p class="font-bold mb-4">2. 日常管理とTQM（Total Quality Management）の関係性に関する記述として、最も適切なものを1つ選択してください。</p>
+                    <div class="space-y-2" data-quiz-id="q2" data-correct="C">
+                        <label class="block p-3 rounded-md border border-slate-200 hover:bg-slate-50 cursor-pointer"><input type="radio" name="q2" value="A" class="mr-2">日常管理とTQMは互いに独立した概念であり、関連性はない。</label>
+                        <label class="block p-3 rounded-md border border-slate-200 hover:bg-slate-50 cursor-pointer"><input type="radio" name="q2" value="B" class="mr-2">日常管理は、TQMを特定のプロジェクトとして実施する際に適用される。</label>
+                        <label class="block p-3 rounded-md border border-slate-200 hover:bg-slate-50 cursor-pointer"><input type="radio" name="q2" value="C" class="mr-2">日常管理は、TQMの核となる「全員参加」と「継続的改善」を具現化するための不可欠な活動である。</label>
+                        <label class="block p-3 rounded-md border border-slate-200 hover:bg-slate-50 cursor-pointer"><input type="radio" name="q2" value="D" class="mr-2">TQMは日常管理の概念の一部であり、日常管理の方がより広範な活動である。</label>
+                    </div>
+                    <div id="feedback-q2" class="quiz-feedback"></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-800 text-white mt-16 py-8">
+        <div class="container mx-auto px-6 text-center">
+            <p>&copy; 2025 インタラクティブ学習ガイド</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // PDCA Interaction
+            const pdcaItems = document.querySelectorAll('.pdca-item');
+            const pdcaDetails = document.querySelectorAll('.pdca-details-card');
+
+            pdcaItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    pdcaItems.forEach(i => {
+                        i.classList.remove('active');
+                        i.classList.replace('bg-sky-500', 'bg-slate-200');
+                        i.classList.replace('text-white', 'text-slate-800');
+                    });
+                    item.classList.add('active');
+                    item.classList.replace('bg-slate-200', 'bg-sky-500');
+                    item.classList.replace('text-slate-800', 'text-white');
+
+                    const targetId = item.dataset.target;
+                    pdcaDetails.forEach(card => {
+                        if (card.id === targetId) card.classList.add('active');
+                        else card.classList.remove('active');
+                    });
+                });
+            });
+
+            // Quiz Logic
+            const quizData = {
+                q1: { correct: 'A', rationale: '正解です！日常管理は、PDCAサイクルを回すことで、現状の維持とさらなる改善を継続的に行うことを目的としています。' },
+                q2: { correct: 'C', rationale: '正解です！日常管理は、TQMの理念である全員参加と継続的改善を、日々の業務を通じて実践する具体的な活動として位置づけられます。' }
+            };
+
+            const quizItems = document.querySelectorAll('.quiz-item');
+            quizItems.forEach(item => {
+                const radios = item.querySelectorAll('input[type="radio"]');
+                const quizId = item.querySelector('.space-y-2').dataset.quizId;
+                const feedbackEl = document.getElementById(`feedback-${quizId}`);
+
+                radios.forEach(radio => {
+                    radio.addEventListener('change', () => {
+                        const selectedAns = radio.value;
+                        if (selectedAns === quizData[quizId].correct) {
+                            feedbackEl.textContent = quizData[quizId].rationale;
+                            feedbackEl.className = 'quiz-feedback correct';
+                        } else {
+                            feedbackEl.textContent = '不正解です。もう一度、各コンセプトの説明を読み返してみましょう。';
+                            feedbackEl.className = 'quiz-feedback incorrect';
+                        }
+                        feedbackEl.style.display = 'block';
+                        radios.forEach(r => r.disabled = true);
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
