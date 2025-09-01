@@ -1,13 +1,13 @@
 // pages/guides/[exam]/[slug].tsx
 import type { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
-import Link from "next/link";
 import Head from "next/head";
+import Link from "next/link";
 import { allGuides, type Guide } from "contentlayer/generated";
 import { useMDXComponent } from "next-contentlayer2/hooks";
 
-/* ===== 共通 ===== */
-type ExamKey = "qc" | "stat" | "engineer";
+/* ========= 基本 ========= */
 
+type ExamKey = "qc" | "stat" | "engineer";
 const EXAM_LABEL: Record<ExamKey, string> = {
   qc: "品質管理",
   stat: "統計",
@@ -22,33 +22,39 @@ const toExamKey = (v: unknown): ExamKey | null => {
   return null;
 };
 
-// g から /guides/{exam}/{slug} を“必ず”復元する
+// contentlayer の computedFields（exam/slug）を優先しつつ、安全に復元
 function stablePath(g: Guide): { exam: ExamKey; slug: string; url: string } {
-  const fromRaw = String(g._raw?.flattenedPath ?? "").split("/");
-  // content/guides/<exam>/<...>/<slug>
-  const rawExam = fromRaw[1] || "";
-  const rawSlug = fromRaw[fromRaw.length - 1] || "";
+  const raw = String(g._raw?.flattenedPath ?? ""); // guides/qc/new-qc-seven-tools
+  const parts = raw.split("/");
+  const rawExam = parts.length >= 2 ? parts[1] : "";
+  const rawSlug = parts[parts.length - 1] ?? "";
 
   const exam = toExamKey((g as any).exam) ?? toExamKey(rawExam) ?? "qc";
   const slug = String((g as any).slug ?? rawSlug).trim();
-  const url = `/guides/${exam}/${slug}`;
-  return { exam, slug, url };
+  return { exam, slug, url: `/guides/${exam}/${slug}` };
 }
 
 const THEME: Record<ExamKey, { accent: string; link: string; title: string }> = {
   qc: { accent: "bg-amber-300/70", link: "text-amber-700 hover:text-amber-800", title: "text-amber-800" },
-  stat: { accent: "bg-sky-300/70", link: "text-sky-700 hover:text-sky-800", title: "text-sky-800" },
-  engineer: { accent: "bg-emerald-300/70", link: "text-emerald-700 hover:text-emerald-800", title: "text-emerald-800" },
+  stat:{ accent: "bg-sky-300/70",   link: "text-sky-700 hover:text-sky-800",     title: "text-sky-800" },
+  engineer:{ accent:"bg-emerald-300/70", link:"text-emerald-700 hover:text-emerald-800", title:"text-emerald-800" },
 };
 
-/* ===== SSG ===== */
+/* ========= SSG ========= */
+
 export const getStaticPaths: GetStaticPaths = async () => {
   const seen = new Set<string>();
-  const paths = allGuides
-    .filter((g) => (g as any).status !== "draft")
-    .map((g) => stablePath(g))
-    .filter(({ exam, slug }) => !!exam && !!slug && !seen.has(`${exam}/${slug}`) && seen.add(`${exam}/${slug}`))
-    .map(({ exam, slug }) => ({ params: { exam, slug } }));
+  const paths: { params: { exam: ExamKey; slug: string } }[] = [];
+
+  for (const g of allGuides) {
+    if ((g as any).status === "draft") continue;
+    const { exam, slug } = stablePath(g);
+    if (!exam || !slug) continue;
+    const key = `${exam}/${slug}`.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    paths.push({ params: { exam, slug } });
+  }
 
   return { paths, fallback: false };
 };
@@ -58,6 +64,7 @@ export const getStaticProps: GetStaticProps<{ guide: Guide; exam: ExamKey }> = a
   const slugParam = String(params?.slug ?? "").trim().toLowerCase();
   if (!examParam || !slugParam) return { notFound: true };
 
+  // computedFields の exam/slug を優先して一致させる（大小無視）
   const guide =
     allGuides.find((g) => {
       if ((g as any).status === "draft") return false;
@@ -69,7 +76,8 @@ export const getStaticProps: GetStaticProps<{ guide: Guide; exam: ExamKey }> = a
   return { props: { guide, exam: examParam }, revalidate: 60 };
 };
 
-/* ===== Page ===== */
+/* ========= Page ========= */
+
 export default function GuidePage({ guide, exam }: InferGetStaticPropsType<typeof getStaticProps>) {
   const MDX = useMDXComponent(guide.body.code);
   const theme = THEME[exam];
