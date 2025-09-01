@@ -16,36 +16,34 @@ status: "published"
 
 最小二乗法による傾き $\hat{\beta}_1$ は **説明変数 $x$ と目的変数 $y$ の共分散** を **説明変数 $x$ の分散** で割ったものに相当します。
 
-<div className="not-prose bg-gray-50 rounded-md p-3 overflow-x-auto">
-<pre className="whitespace-nowrap text-sm md:text-base">
-{`  \u005Chat{β}_1 = Σ(x_i- x̄)(y_i- ȳ)  /  Σ(x_i- x̄)^2  =  S_xy / S_xx`}
-</pre>
-</div>
+$$
+\hat{\beta}_1
+= \frac{\sum (x_i-\bar{x})(y_i-\bar{y})}{\sum (x_i-\bar{x})^2}
+= \frac{S_{xy}}{S_{xx}}
+$$
 
-- `S_xy` … $x$ と $y$ の偏差積和（共分散）
-- `S_xx` … $x$ の偏差平方和（分散）
+- $S_{xy}$ … $x$ と $y$ の偏差積和（共分散）
+- $S_{xx}$ … $x$ の偏差平方和（分散）
 
 ### 分散分析（ANOVA）の読み方
 
-| 変動要因 | 偏差平方和 (SS) | 自由度 (df) | 分散 (MS)           | F比 |
+| 変動要因 | 偏差平方和 (SS) | 自由度 (df) | 分散 (MS)             | F比                     |
 |---|---:|---:|---:|---:|
-| 回帰 (Regression) | `SS_R` | `1`   | `MS_R = SS_R / 1`   | `F = MS_R / MS_E` |
-| 残差 (Error)      | `SS_E` | `n-2` | `MS_E = SS_E/(n-2)` |  |
-| 全体 (Total)      | `SS_T = SS_R + SS_E` | `n-1` |  |  |
+| 回帰 (Regression) | $SS_R$ | $1$   | $MS_R = SS_R / 1$     | $F = MS_R / MS_E$       |
+| 残差 (Error)      | $SS_E$ | $n-2$ | $MS_E = SS_E/(n-2)$   |                         |
+| 全体 (Total)      | $SS_T = SS_R + SS_E$ | $n-1$ |                         |                         |
 
-**F検定の帰無仮説**：$\beta_1 = 0$（回帰に意味なし）。棄却されればモデルは有意。
+**F検定の帰無仮説**：$H_0:\beta_1=0$（回帰に意味なし）。棄却されればモデルは有意。
 
 ## 偏差平方和の分解と図解
 
 全体平方和は **回帰による平方和** と **残差平方和** に分かれます。
 
-<div className="not-prose bg-gray-50 rounded-md p-3 overflow-x-auto">
-<pre className="whitespace-nowrap text-sm md:text-base">
-{`  S_yy = Σ(y_i - ȳ)^2  =  Σ(ŷ_i - ȳ)^2  +  Σ(y_i - ŷ_i)^2
-           ^^^^^^^^^^^     ^^^^^^^^^^^
-             回帰による平方和        残差平方和`}
-</pre>
-</div>
+$$
+S_{yy} = \sum (y_i-\bar{y})^2
+= \sum (\hat{y}_i-\bar{y})^2 + \sum (y_i-\hat{y}_i)^2
+= \text{回帰による平方和} + \text{残差平方和}
+$$
 
 <figure className="not-prose bg-white rounded-md p-4 border">
   <img
@@ -55,8 +53,8 @@ status: "published"
     loading="lazy"
   />
   <figcaption className="text-center text-sm text-gray-600 mt-2">
-    図：平方和の分解（A: 残差 <span class="whitespace-nowrap">|y<sub>i</sub> − ŷ<sub>i</sub>|</span>、
-    B: 回帰による差 <span class="whitespace-nowrap">|ŷ<sub>i</sub> − ȳ|</span>）
+    図：平方和の分解（A: 残差 <span className="whitespace-nowrap">|y<sub>i</sub> − ŷ<sub>i</sub>|</span>、
+    B: 回帰による差 <span className="whitespace-nowrap">|ŷ<sub>i</sub> − ȳ|</span>）
   </figcaption>
 </figure>
 
@@ -64,13 +62,16 @@ status: "published"
 
 <details>
   <summary className="cursor-pointer font-semibold">
-    Q1. 切片 β₀の記述として最も不適切なのは？
+    Q1. 切片 β₀ の記述として最も不適切なのは？
   </summary>
   <div className="mt-3 space-y-1">
     <div>A. x=0 のときの y の予測値</div>
-    <div>B. 推定値は <code>ŷ₀ = ȳ − \u005Chat{β}_1 x̄</code></div>
+    <div>B. 推定値は <code>\hat{\beta}_0 = \bar{y} - \hat{\beta}_1 \bar{x}</code></div>
     <div>C. β₀ が不有意でもモデル全体が不有意とは限らない</div>
-    <div>D. \u005Chat{β}_0 は必ずしも x=0 の観測値と一致しない</div>
-    <div>E. **切片**は x–y の線形関係の存在を示す</div>
+    <div>D. \hat{β}_0 は必ずしも x=0 の観測値と一致しない</div>
+    <div>E. <strong>切片</strong>は x–y の線形関係の存在を示す</div>
     <div className="mt-2 p-3 rounded bg-blue-50">
-      <strong>答え：E</strong>（線
+      <strong>答え：E</strong>（線形関係の有無を示すのは傾き $\beta_1$ であり、切片ではありません）
+    </div>
+  </div>
+</details>
