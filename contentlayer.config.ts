@@ -1,5 +1,8 @@
 // contentlayer.config.ts
 import { defineDocumentType, makeSource } from "contentlayer2/source-files";
+import fs from "fs";
+import path from "path";
+import cp from "child_process";
 
 const CANONICAL_EXAMS = ["qc", "stat", "engineer"] as const;
 type Exam = (typeof CANONICAL_EXAMS)[number];
@@ -30,6 +33,42 @@ function normalizeTags(v: unknown): string[] {
   return [];
 }
 
+// 文字列 → ISO（失敗時は ""）
+function toIso(v: unknown): string {
+  const s = safeString(v);
+  if (!s) return "";
+  // 既に YYYY-MM-DD なら ISO に近い形式とみなし UTC 00:00 を採用
+  const m = s.match(/^(\d{4})[-/](\d{2})[-/](\d{2})/);
+  if (m) return `${m[1]}-${m[2]}-${m[3]}T00:00:00.000Z`;
+  const t = Date.parse(s);
+  return Number.isFinite(t) ? new Date(t).toISOString() : "";
+}
+
+// Git の最終コミット日時（ISO）を取得、ダメなら fs.mtime を返す
+function getLastUpdatedIso(relFromContentDir: string): string {
+  try {
+    // コンテンツの実ファイルパス（content/ 配下）
+    const abs = path.join(process.cwd(), "content", relFromContentDir);
+    // Git 履歴（浅いクローンでも最新コミット分は取れる想定。無ければ catch）
+    const iso = cp
+      .execSync(`git log -1 --format=%cI -- "${abs}"`, { stdio: ["ignore", "pipe", "ignore"] })
+      .toString()
+      .trim();
+    if (iso) return iso;
+    // フォールバック：ファイルの mtime
+    const st = fs.statSync(abs);
+    return new Date(st.mtimeMs).toISOString();
+  } catch {
+    try {
+      const abs = path.join(process.cwd(), "content", relFromContentDir);
+      const st = fs.statSync(abs);
+      return new Date(st.mtimeMs).toISOString();
+    } catch {
+      return "";
+    }
+  }
+}
+
 export const Guide = defineDocumentType(() => ({
   name: "Guide",
   contentType: "mdx",
@@ -43,7 +82,7 @@ export const Guide = defineDocumentType(() => ({
     tags: { type: "json" },
     version: { type: "string", default: "1.0.0" },
     status: { type: "string", default: "published" },
-    updatedAt: { type: "string" },
+    updatedAt: { type: "string" }, // ← frontmatter があれば優先
     date: { type: "date" },
   },
   computedFields: {
@@ -76,6 +115,17 @@ export const Guide = defineDocumentType(() => ({
     tags: {
       type: "json",
       resolve: (doc) => normalizeTags((doc as any).tags),
+    },
+    // ★ 自動更新日：frontmatter > Git > date の順で解決（ISO）
+    updatedAtAuto: {
+      type: "string",
+      resolve: (doc) => {
+        const fromFm = toIso((doc as any).updatedAt);
+        if (fromFm) return fromFm;
+        const fromGit = getLastUpdatedIso(doc._raw.sourceFilePath);
+        if (fromGit) return fromGit;
+        return toIso((doc as any).date);
+      },
     },
   },
 }));
