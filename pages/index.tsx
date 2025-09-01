@@ -1,176 +1,171 @@
-// pages/index.tsx
-import Link from 'next/link';
-import type { GetStaticProps } from 'next';
-import { allGuides, type Guide } from 'contentlayer/generated';
-import HomeFeeds from '@/components/home/Feeds';
+// pages/guides/index.tsx
+import Link from "next/link";
+import { allGuides, type Guide } from "contentlayer/generated";
 
-type ExamKey = 'qc' | 'stat' | 'engineer';
+/* ========= 基本 ========= */
+type ExamKey = "qc" | "stat" | "engineer";
 
 const EXAM_LABEL: Record<ExamKey, string> = {
-  qc: '品質管理',
-  stat: '統計',
-  engineer: '技術士',
+  qc: "品質管理",
+  stat: "統計",
+  engineer: "技術士",
 };
 
 const EXAM_DESC: Record<ExamKey, string> = {
-  qc: '現場改善・QC手法の要点をコンパクトに。QC七つ道具／新QC七つ道具など。',
-  stat: '検定・推定・管理図など。品質・R&Dで使う統計を実務目線で整理。',
-  engineer: '学習計画や要点整理を中心に、効率よく得点力を高めるナレッジ。',
+  qc: "統計の基礎〜管理図・検定・推定。現場データで演習。",
+  stat: "記述・推測統計／多変量。理解と活用を両立。",
+  engineer: "論文構成・キーワード整理。演習添削に対応。",
 };
 
-// 配色ルール（QC=薄いオレンジ / 統計=青 / 技術士=緑）
-const COLORS = {
-  qc: { badgeDot: 'text-[#D26B00]', headerBg: 'bg-[#FFE5CC]', button: 'bg-[#F28C28] hover:bg-[#e87f18] text-white' },
-  stat: { badgeDot: 'text-[#0058B0]', headerBg: 'bg-[#CCE5FF]', button: 'bg-[#2D75D3] hover:bg-[#1f62b5] text-white' },
-  engineer: { badgeDot: 'text-[#0F7A35]', headerBg: 'bg-[#CCF5CC]', button: 'bg-[#1E9E50] hover:bg-[#198543] text-white' },
-} as const;
-
-// Contentlayer 側で exam は正規化済み
-const asExamKey = (v: Guide['exam']): ExamKey | null => (v === 'qc' || v === 'stat' || v === 'engineer' ? v : null);
-
-// 並べ替えキー（updatedAt → date）
-const sortKey = (g: Guide) =>
-  Date.parse(String((g as any).updatedAt ?? '')) ||
-  Date.parse(String((g as any).date ?? '')) ||
-  0;
-
-type Props = {
-  latestByExam: { qc: Guide[]; stat: Guide[]; engineer: Guide[] };
-  latestAll: Guide[]; // 下部の「最新の更新フィード」で使用（任意）
+const THEME: Record<
+  ExamKey,
+  { accent: string; title: string; link: string; pillBg: string; pillBorder: string; btn: string; btnHover: string }
+> = {
+  qc:       { accent: "bg-amber-300/70",   title: "text-amber-800",   link: "text-amber-700 hover:text-amber-800",
+              pillBg: "bg-amber-50 text-amber-800",   pillBorder: "border-amber-200",
+              btn: "bg-amber-500",   btnHover: "hover:bg-amber-600" },
+  stat:     { accent: "bg-sky-300/70",     title: "text-sky-800",     link: "text-sky-700 hover:text-sky-800",
+              pillBg: "bg-sky-50 text-sky-800",       pillBorder: "border-sky-200",
+              btn: "bg-sky-600",     btnHover: "hover:bg-sky-700" },
+  engineer: { accent: "bg-emerald-300/70", title: "text-emerald-800", link: "text-emerald-700 hover:text-emerald-800",
+              pillBg: "bg-emerald-50 text-emerald-800", pillBorder: "border-emerald-200",
+              btn: "bg-emerald-600", btnHover: "hover:bg-emerald-700" },
 };
 
-export default function Home({ latestByExam, latestAll }: Props) {
-  const CategoryCard = ({ exam }: { exam: ExamKey }) => {
-    const color = COLORS[exam];
-    const items = latestByExam[exam];
+const toExamKey = (v: unknown): ExamKey | null => {
+  const s = String(v ?? "").toLowerCase().trim();
+  if (s === "qc") return "qc";
+  if (s === "stat" || s === "stats" || s === "statistics") return "stat";
+  if (s === "engineer" || s === "pe" || s === "eng") return "engineer";
+  return null;
+};
 
-    return (
-      <section className='rounded-2xl border border-black/5 bg-white shadow-sm overflow-hidden'>
-        {/* ヘッダー（色帯） */}
-        <div className={`${color.headerBg} px-6 py-4`}>
-          <div className='flex items-center gap-2 text-sm text-black/70'>
-            <span className={`${color.badgeDot}`}>●</span>
-            <span>{EXAM_LABEL[exam]}</span>
-          </div>
-          <h3 className='mt-1 text-xl font-bold text-black'>
-            {exam === 'qc' ? 'QC ガイド' : exam === 'stat' ? '統計ガイド' : '技術士ガイド'}
-          </h3>
-          <p className='mt-1 text-sm text-black/70'>{EXAM_DESC[exam]}</p>
-          <div className='mt-3'>
-            <Link
-              href={`/guides/${exam}`}
-              className={`inline-flex items-center rounded-lg px-4 py-2 text-sm font-semibold ${color.button}`}
-            >
-              {exam === 'qc' ? 'QCのガイドを見る' : exam === 'stat' ? '統計のガイドを見る' : '技術士のガイドを見る'}
-            </Link>
-          </div>
-        </div>
+/* ========= 安全ユーティリティ ========= */
+// UTC固定の YYYY-MM-DD（SSR/CSR差の再発防止）
+const formatYMD = (v1?: unknown, v2?: unknown): string => {
+  const s = String(v1 ?? v2 ?? "").trim();
+  if (!s) return "";
+  const m = s.match(/^(\d{4})[-/](\d{2})[-/](\d{2})/);
+  if (m) return `${m[1]}-${m[2]}-${m[3]}`;
+  const t = Date.parse(s);
+  if (!Number.isFinite(t)) return "";
+  const d = new Date(t);
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
+};
 
-        {/* 各カテゴリ 更新履歴（最新2件） */}
-        <div className='px-6 py-5'>
-          <div className='rounded-xl border border-black/10 bg-white'>
-            <div className='border-b border-black/10 px-4 py-2 text-sm text-black/70'>更新履歴（最新2件）</div>
-            <div className='p-4 text-sm'>
-              {items.length === 0 ? (
-                <p className='text-black/50'>更新情報はまだありません。</p>
-              ) : (
-                <ul className='space-y-2'>
-                  {items.map((g) => (
-                    <li key={g._id} className='leading-relaxed'>
-                      <Link href={g.url} className='text-blue-700 hover:underline'>
-                        {g.title}
-                      </Link>
-                      {sortKey(g) > 0 && (
-                        <span className='ml-2 text-black/40'>
-                          {new Date(sortKey(g)).toLocaleDateString('ja-JP')}
-                        </span>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  };
+const guideHref = (g: Guide, fallbackExam: ExamKey) => {
+  if (typeof (g as any).url === "string" && (g as any).url.startsWith("/guides/")) {
+    return (g as any).url as string;
+  }
+  const exam = toExamKey((g as any).exam) ?? fallbackExam;
+  const slug = String((g as any).slug ?? g._raw?.flattenedPath?.split("/").pop() ?? "").trim();
+  return `/guides/${exam}/${slug}`;
+};
 
+// 並べ替えキー：updatedAtAuto > updatedAt > date
+const timeKey = (g: Guide): number =>
+  Date.parse(
+    String((g as any).updatedAtAuto ?? (g as any).updatedAt ?? (g as any).date ?? "")
+  ) || 0;
+
+/* ========= データ整形 ========= */
+const published = allGuides.filter((g) => (g as any).status !== "draft");
+
+// カテゴリごとに配列（未知カテゴリは捨てる）
+const byExam: Record<ExamKey, Guide[]> = { qc: [], stat: [], engineer: [] };
+for (const g of published) {
+  const exam = toExamKey((g as any).exam) ?? null;
+  if (exam) byExam[exam].push(g);
+}
+
+// 各カテゴリを日付降順に並べ替え
+for (const k of Object.keys(byExam) as ExamKey[]) {
+  byExam[k] = [...byExam[k]].sort((a, b) => timeKey(b) - timeKey(a));
+}
+
+/* ========= UI ========= */
+function Card({ exam }: { exam: ExamKey }) {
+  const t = THEME[exam];
   return (
-    <main className='mx-auto max-w-6xl px-4 py-10'>
-      {/* ヒーロー */}
-      <section className='rounded-3xl bg-emerald-50 px-8 py-8'>
-        <h1 className='text-3xl font-extrabold tracking-tight'>QC × IE LABO</h1>
-        <p className='mt-2 text-black/70'>見やすさと親しみやすさを大切に、淡いグリーン基調で設計しました。</p>
-      </section>
-
-      {/* 学習ガイドライブラリ（カテゴリカード＋各カテゴリの最新2件） */}
-      <h2 className='mt-10 text-center text-2xl font-bold'>学習ガイドライブラリ</h2>
-      <div className='mt-6 grid grid-cols-1 gap-6 md:grid-cols-3'>
-        <CategoryCard exam='qc' />
-        <CategoryCard exam='stat' />
-        <CategoryCard exam='engineer' />
+    <div className="rounded-2xl border border-black/5 bg-white shadow-sm">
+      <div className={`h-1 w-full rounded-t-2xl ${t.accent}`} />
+      <div className="p-6">
+        <h3 className={`text-xl font-extrabold mb-1 ${t.title}`}>{EXAM_LABEL[exam]}</h3>
+        <p className="text-gray-600 mb-4">{EXAM_DESC[exam]}</p>
+        <Link
+          href={`/guides/${exam}`}
+          className={`inline-block rounded-full ${t.btn} ${t.btnHover} px-4 py-2 text-white font-semibold`}
+        >
+          学習コンテンツを開く
+        </Link>
       </div>
-
-      {/* フィード群：ニュース5件／X5件／ブログ／Note／Instagram */}
-      <section className='mt-12'>
-        <HomeFeeds />
-      </section>
-
-      {/* サイト全体の更新フィード（任意） */}
-      <section className='mt-12'>
-        <div className='rounded-2xl border border-black/5 bg-white p-6 shadow-sm'>
-          <h3 className='text-xl font-bold mb-3'>最新の更新フィード</h3>
-          {latestAll.length === 0 ? (
-            <p className='text-sm text-black/50'>更新はまだありません。</p>
-          ) : (
-            <ul className='space-y-2 text-sm'>
-              {latestAll.map((g) => (
-                <li key={g._id}>
-                  <Link href={g.url} className='text-blue-700 hover:underline'>
-                    [{EXAM_LABEL[g.exam as ExamKey]}] {g.title}
-                  </Link>
-                  {sortKey(g) > 0 && (
-                    <span className='ml-2 text-black/40'>
-                      {new Date(sortKey(g)).toLocaleDateString('ja-JP')}
-                    </span>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </section>
-    </main>
+    </div>
   );
 }
 
-export const getStaticProps: GetStaticProps<{
-  latestByExam: { qc: Guide[]; stat: Guide[]; engineer: Guide[] };
-  latestAll: Guide[];
-}> = async () => {
-  // 下書き除外
-  const guides = allGuides.filter((g) => g.status !== 'draft');
+function Updates({ exam }: { exam: ExamKey }) {
+  const items = byExam[exam].slice(0, 2); // ★ 最新2件だけ
+  const t = THEME[exam];
+  return (
+    <section className="mb-10">
+      <h4 className={`text-sm font-semibold mb-2 ${t.title}`}>更新（最新2件）</h4>
+      {items.length === 0 ? (
+        <p className="text-sm text-gray-500">準備中</p>
+      ) : (
+        <ul className="space-y-2">
+          {items.map((g) => {
+            const href = guideHref(g, exam);
+            const ymd = formatYMD((g as any).updatedAtAuto ?? (g as any).updatedAt, (g as any).date);
+            return (
+              <li key={g._id} className="rounded-lg border border-gray-200 bg-white p-3 shadow-sm">
+                <Link href={href} className={`block font-medium ${t.link}`}>
+                  {(g as any).title}
+                </Link>
+                <div className="text-xs text-gray-500" suppressHydrationWarning>
+                  {ymd ? `更新: ${ymd}` : ""}
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </section>
+  );
+}
 
-  // カテゴリ振り分け
-  const byExam: Record<ExamKey, Guide[]> = { qc: [], stat: [], engineer: [] };
-  for (const g of guides) {
-    const ek = asExamKey(g.exam);
-    if (ek) byExam[ek].push(g);
-  }
+export default function GuidesTop() {
+  return (
+    <main className="mx-auto max-w-5xl px-4 py-10">
+      <h1 className="text-3xl font-extrabold mb-6">学習カテゴリ</h1>
 
-  const pickN = (arr: Guide[], n: number) =>
-    [...arr].sort((a, b) => sortKey(b) - sortKey(a)).slice(0, n);
+      {/* 上段：3カード */}
+      <div className="grid gap-6 md:grid-cols-3 mb-8">
+        <Card exam="qc" />
+        <Card exam="stat" />
+        <Card exam="engineer" />
+      </div>
 
-  const latestByExam = {
-    qc: pickN(byExam.qc, 2),
-    stat: pickN(byExam.stat, 2),
-    engineer: pickN(byExam.engineer, 2),
-  };
-
-  const latestAll = [...guides]
-    .sort((a, b) => sortKey(b) - sortKey(a))
-    .slice(0, 10);
-
-  return { props: { latestByExam, latestAll } };
-};
+      {/* 下段：カテゴリごとの最新2件 */}
+      <div className="grid gap-8 md:grid-cols-3">
+        <div>
+          <h2 className="text-xl font-bold mb-3">
+            <Link href="/guides/qc" className="underline">{EXAM_LABEL.qc}</Link>
+          </h2>
+          <Updates exam="qc" />
+        </div>
+        <div>
+          <h2 className="text-xl font-bold mb-3">
+            <Link href="/guides/stat" className="underline">{EXAM_LABEL.stat}</Link>
+          </h2>
+          <Updates exam="stat" />
+        </div>
+        <div>
+          <h2 className="text-xl font-bold mb-3">
+            <Link href="/guides/engineer" className="underline">{EXAM_LABEL.engineer}</Link>
+          </h2>
+          <Updates exam="engineer" />
+        </div>
+      </div>
+    </main>
+  );
+}
