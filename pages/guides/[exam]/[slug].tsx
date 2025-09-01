@@ -22,39 +22,48 @@ const toExamKey = (v: unknown): ExamKey | null => {
   return null;
 };
 
-// contentlayer の computedFields（exam/slug）を優先しつつ、安全に復元
+// guides/qc/new-qc-seven-tools → exam/slug を復元
 function stablePath(g: Guide): { exam: ExamKey; slug: string; url: string } {
-  const raw = String(g._raw?.flattenedPath ?? ""); // guides/qc/new-qc-seven-tools
+  const raw = String(g._raw?.flattenedPath ?? "");
   const parts = raw.split("/");
-  const rawExam = parts.length >= 2 ? parts[1] : "";
+  const rawExam = parts[1] ?? "";
   const rawSlug = parts[parts.length - 1] ?? "";
-
   const exam = toExamKey((g as any).exam) ?? toExamKey(rawExam) ?? "qc";
   const slug = String((g as any).slug ?? rawSlug).trim();
   return { exam, slug, url: `/guides/${exam}/${slug}` };
 }
 
+// タイムゾーン差の出ない YYYY-MM-DD を返す（なければ ""）
+function formatYMD(v1?: unknown, v2?: unknown): string {
+  const s = String(v1 ?? v2 ?? "").trim();
+  if (!s) return "";
+  // 既に YYYY-MM-DD ならそのまま
+  const m = s.match(/^(\d{4})[-/](\d{2})[-/](\d{2})/);
+  if (m) return `${m[1]}-${m[2]}-${m[3]}`;
+  const t = Date.parse(s);
+  if (!Number.isFinite(t)) return "";
+  const d = new Date(t);
+  const y = d.getUTCFullYear();
+  const mm = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const dd = String(d.getUTCDate()).padStart(2, "0");
+  return `${y}-${mm}-${dd}`;
+}
+
 const THEME: Record<ExamKey, { accent: string; link: string; title: string }> = {
   qc: { accent: "bg-amber-300/70", link: "text-amber-700 hover:text-amber-800", title: "text-amber-800" },
-  stat:{ accent: "bg-sky-300/70",   link: "text-sky-700 hover:text-sky-800",     title: "text-sky-800" },
-  engineer:{ accent:"bg-emerald-300/70", link:"text-emerald-700 hover:text-emerald-800", title:"text-emerald-800" },
+  stat: { accent: "bg-sky-300/70", link: "text-sky-700 hover:text-sky-800", title: "text-sky-800" },
+  engineer: { accent: "bg-emerald-300/70", link: "text-emerald-700 hover:text-emerald-800", title: "text-emerald-800" },
 };
 
 /* ========= SSG ========= */
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const seen = new Set<string>();
-  const paths: { params: { exam: ExamKey; slug: string } }[] = [];
-
-  for (const g of allGuides) {
-    if ((g as any).status === "draft") continue;
-    const { exam, slug } = stablePath(g);
-    if (!exam || !slug) continue;
-    const key = `${exam}/${slug}`.toLowerCase();
-    if (seen.has(key)) continue;
-    seen.add(key);
-    paths.push({ params: { exam, slug } });
-  }
+  const paths = allGuides
+    .filter((g) => (g as any).status !== "draft")
+    .map((g) => stablePath(g))
+    .filter(({ exam, slug }) => !!exam && !!slug && !seen.has(`${exam}/${slug}`) && seen.add(`${exam}/${slug}`))
+    .map(({ exam, slug }) => ({ params: { exam, slug } }));
 
   return { paths, fallback: false };
 };
@@ -64,7 +73,6 @@ export const getStaticProps: GetStaticProps<{ guide: Guide; exam: ExamKey }> = a
   const slugParam = String(params?.slug ?? "").trim().toLowerCase();
   if (!examParam || !slugParam) return { notFound: true };
 
-  // computedFields の exam/slug を優先して一致させる（大小無視）
   const guide =
     allGuides.find((g) => {
       if ((g as any).status === "draft") return false;
@@ -83,10 +91,8 @@ export default function GuidePage({ guide, exam }: InferGetStaticPropsType<typeo
   const theme = THEME[exam];
   const { url } = stablePath(guide);
 
-  const updated =
-    (guide as any).updatedAt || (guide as any).date
-      ? new Date(String((guide as any).updatedAt ?? (guide as any).date)).toLocaleString("ja-JP")
-      : "";
+  // ← ここをロケール依存しない書式に修正
+  const updatedYmd = formatYMD((guide as any).updatedAt, (guide as any).date);
 
   const sourcePath =
     (guide._raw?.sourceFilePath as string | undefined) ??
@@ -114,7 +120,10 @@ export default function GuidePage({ guide, exam }: InferGetStaticPropsType<typeo
       <h1 className={`text-2xl md:text-3xl font-extrabold ${theme.title}`}>{guide.title}</h1>
 
       <div className="mt-2 text-xs text-gray-500">
-        {updated ? <>更新: {updated}</> : null}
+        {/* SSR/CSRの差分警告を抑止（念のため） */}
+        <span suppressHydrationWarning>
+          {updatedYmd ? `更新: ${updatedYmd}` : ""}
+        </span>
         {guide.version ? <span className="ml-2">v{guide.version}</span> : null}
         <a href={editUrl} target="_blank" rel="noreferrer" className="ml-3 underline">編集する</a>
       </div>
