@@ -6,28 +6,39 @@ exam: "stat"
 status: "published"
 ---
 
+/**
+ * このファイルは stat 配下用のガイドです。
+ * パス: content/guides/stat/chi-square.mdx など
+ * 相対 import は '../../../src/components/...'
+ */
 import { GuideLayout, Glossary, QA } from '../../../src/components/guide/GuideLayout';
 import ChiSquareGuide from '../../../src/components/guide/ChiSquareGuide';
 
+{/* ★ GuideLayout には title を渡さない（frontmatter の title を使用） */}
 <GuideLayout
-  title="クロス集計とカイ二乗検定ガイド"
   intro="クロス集計表とカイ二乗検定を、期待度数と観測度数の『ズレ』という観点から直感的に学びます。"
 >
 
-<section style={{ marginBottom: 24 }}>
-  <ChiSquareGuide />
-</section>
+  <section style={{ marginBottom: 24 }}>
+    <ChiSquareGuide />
+  </section>
 
-<Glossary items={[
-  { term: 'クロス集計表', desc: '2つのカテゴリ変数の度数分布を表形式で示す。' },
-  { term: '期待度数', desc: '(行合計×列合計) ÷ 全体。独立が成り立つと仮定したときの基準値。' },
-  { term: 'カイ二乗値', desc: 'Σ (O−E)² / E。観測と期待のズレの大きさ。' },
-  { term: '自由度', desc: '(行数−1)×(列数−1)。' },
-]} />
+  <Glossary items={[
+    { term: 'クロス集計表', desc: '2つのカテゴリ変数の度数分布を表形式で示す。' },
+    { term: '期待度数', desc: '(行合計×列合計) ÷ 全体。独立が成り立つと仮定したときの基準値。' },
+    { term: 'カイ二乗値', desc: 'Σ (O−E)² / E。観測と期待のズレの大きさ。' },
+    { term: '自由度', desc: '(行数−1)×(列数−1)。' },
+  ]} />
 
-<section style={{ maxWidth: 760, margin:'0 auto', display:'grid', gap:12 }}>
-  <QA q="カイ二乗検定は因果を示しますか？" a={<div>いいえ。関連（独立性）に関する検定です。因果の有無は別の設計（実験計画など）が必要です。</div>} />
-  <QA q="セルの期待度数が小さいときは？" a={<div>連結セルでまとめる／フィッシャーの正確確率検定などを検討。</div>} />
-</section>
+  <section style={{ maxWidth: 760, margin:'0 auto', display:'grid', gap:12 }}>
+    <QA
+      q="カイ二乗検定は因果を示しますか？"
+      a={<div>いいえ。独立性（関連の有無）に関する検定です。因果の有無は別の設計（実験計画など）が必要です。</div>}
+    />
+    <QA
+      q="セルの期待度数が小さいときは？"
+      a={<div>区分の再編（連結セル）を検討、もしくはフィッシャーの正確確率検定などを使用します。</div>}
+    />
+  </section>
 
 </GuideLayout>
