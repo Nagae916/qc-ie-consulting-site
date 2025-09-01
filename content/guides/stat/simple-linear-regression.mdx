@@ -6,231 +6,71 @@ exam: "stat"
 status: "published"
 ---
 
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charSet="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>単回帰分析ガイド</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+# 単回帰分析を学ぶ
 
-  <!-- MathJax（数式） -->
-  <script>
-    window.MathJax = {
-      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
-      svg: { fontCache: 'global' }
-    };
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-svg.js"></script>
+1つの説明変数が1つの目的変数に与える影響を分析する単回帰分析について、回帰直線のイメージと重要な概念、計算方法を整理します。
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
+## 主要概念
 
-  <style>
-    body{ font-family:'Inter','Noto Sans JP',sans-serif; background-color:#F8F9FA; color:#34495E; }
-    .content-card{ background:#fff; border:1px solid #EAEAEA; transition:all .3s ease-in-out; }
-    .no-wrap{ white-space:nowrap; word-break:keep-all; }
-    /* --- 数式の予期せぬ改行を抑止（長い式は横スクロール） --- */
-    mjx-container[display="true"]{ display:block !important; overflow-x:auto; overflow-y:hidden; padding-bottom:.25rem; }
-    mjx-container[display="true"] mjx-math{ white-space:nowrap !important; }
-    mjx-container:not([display="true"]){ display:inline-block !important; vertical-align:middle; }
-  </style>
-</head>
+### 回帰直線の傾きの求め方
 
-<body class="antialiased">
-  <header class="bg-white/90 backdrop-blur-lg sticky top-0 z-10 border-b border-gray-200">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16">
-        <h1 class="text-xl font-bold text-[#2c5282]">単回帰分析スタディガイド</h1>
-      </div>
-    </div>
-  </header>
+最小二乗法による傾き $\hat{\beta}_1$ は **説明変数 $x$ と目的変数 $y$ の共分散** を **説明変数 $x$ の分散** で割ったものに相当します。
 
-  <main class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
+<div className="not-prose bg-gray-50 rounded-md p-3 overflow-x-auto">
+<pre className="whitespace-nowrap text-sm md:text-base">
+{`  \u005Chat{β}_1 = Σ(x_i- x̄)(y_i- ȳ)  /  Σ(x_i- x̄)^2  =  S_xy / S_xx`}
+</pre>
+</div>
 
-    <section id="intro" class="mb-12 text-center">
-      <h2 class="text-3xl font-bold mb-4">単回帰分析を学ぶ</h2>
-      <p class="max-w-3xl mx-auto text-lg text-gray-600">
-        1つの説明変数が1つの目的変数に与える影響を分析する単回帰分析について学びます。回帰直線のイメージと重要な概念、計算方法を再確認しましょう。
-      </p>
-    </section>
+- `S_xy` … $x$ と $y$ の偏差積和（共分散）
+- `S_xx` … $x$ の偏差平方和（分散）
 
-    <section id="key-concepts" class="mb-16">
-      <h2 class="text-2xl font-bold text-center mb-8">主要概念</h2>
-      <div class="max-w-3xl mx-auto space-y-4">
+### 分散分析（ANOVA）の読み方
 
-        <div class="content-card p-5 rounded-lg">
-          <h3 class="font-semibold text-lg">回帰直線の傾きの求め方</h3>
-          <p class="text-gray-600">
-            最小二乗法による傾き $\hat{\beta}_1$ の計算式は、<strong>説明変数 $x$ と目的変数 $y$ の共分散</strong> を
-            <strong>説明変数 $x$ の分散</strong> で割ったものに相当します。
-          </p>
-          <div class="text-center my-4 overflow-auto text-sm md:text-base p-2 bg-gray-50 rounded-md">
-            <p class="no-wrap">
-              $$ \hat{\beta}_1 = \frac{\sum(x_i - \bar{x})(y_i - \bar{y})}{\sum(x_i - \bar{x})^2} = \frac{S_{xy}}{S_{xx}} $$
-            </p>
-          </div>
-          <ul class="text-gray-600 list-disc list-inside space-y-1 mt-2 text-sm">
-            <li>$S_{xy}$：$x$と$y$の偏差積和（共分散）</li>
-            <li>$S_{xx}$：$x$の偏差平方和（分散）</li>
-          </ul>
-        </div>
+| 変動要因 | 偏差平方和 (SS) | 自由度 (df) | 分散 (MS)           | F比 |
+|---|---:|---:|---:|---:|
+| 回帰 (Regression) | `SS_R` | `1`   | `MS_R = SS_R / 1`   | `F = MS_R / MS_E` |
+| 残差 (Error)      | `SS_E` | `n-2` | `MS_E = SS_E/(n-2)` |  |
+| 全体 (Total)      | `SS_T = SS_R + SS_E` | `n-1` |  |  |
 
-        <div class="content-card p-5 rounded-lg">
-          <h3 class="font-semibold text-lg">分散分析表の読み方と計算</h3>
-          <p class="text-gray-600">
-            分散分析表は、目的変数の全変動を、モデルで説明できる変動（回帰）と説明できない変動（残差）に分解して示します。
-          </p>
-          <div class="my-4 overflow-x-auto">
-            <table class="min-w-full bg-white border border-gray-200 rounded-md">
-              <thead>
-                <tr class="bg-gray-100">
-                  <th class="px-4 py-2 border-b text-sm font-medium text-gray-600">変動要因</th>
-                  <th class="px-4 py-2 border-b text-sm font-medium text-gray-600">偏差平方和 ($SS$)</th>
-                  <th class="px-4 py-2 border-b text-sm font-medium text-gray-600">自由度 ($df$)</th>
-                  <th class="px-4 py-2 border-b text-sm font-medium text-gray-600">分散 ($MS$)</th>
-                  <th class="px-4 py-2 border-b text-sm font-medium text-gray-600">F比</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class="px-4 py-2 border-b text-sm">回帰 (Regression)</td>
-                  <td class="px-4 py-2 border-b text-sm text-center">$SS_R$</td>
-                  <td class="px-4 py-2 border-b text-sm text-center">$1$</td>
-                  <td class="px-4 py-2 border-b text-sm text-center">$MS_R = SS_R / 1$</td>
-                  <td class="px-4 py-2 border-b text-sm text-center">$ \large F = \frac{MS_R}{MS_E} $</td>
-                </tr>
-                <tr>
-                  <td class="px-4 py-2 border-b text-sm">残差 (Error)</td>
-                  <td class="px-4 py-2 border-b text-sm text-center">$SS_E$</td>
-                  <td class="px-4 py-2 border-b text-sm text-center">$n-2$</td>
-                  <td class="px-4 py-2 border-b text-sm text-center">$MS_E = SS_E / (n-2)$</td>
-                  <td class="px-4 py-2 border-b text-sm text-center"></td>
-                </tr>
-                <tr>
-                  <td class="px-4 py-2 text-sm">全体 (Total)</td>
-                  <td class="px-4 py-2 text-sm text-center">$SS_T = SS_R + SS_E$</td>
-                  <td class="px-4 py-2 text-sm text-center">$n-1$</td>
-                  <td class="px-4 py-2 text-sm text-center"></td>
-                  <td class="px-4 py-2 text-sm text-center"></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+**F検定の帰無仮説**：$\beta_1 = 0$（回帰に意味なし）。棄却されればモデルは有意。
 
-        <div class="content-card p-5 rounded-lg">
-          <h3 class="font-semibold text-lg">F検定の目的と帰無仮説</h3>
-          <p class="text-gray-600">
-            F検定は、回帰モデル全体が統計的に有意かどうか（説明変数が目的変数の変動を有意に説明できているか）を判定します。
-            <strong>帰無仮説</strong> $H_0:\beta_1=0$ が棄却されれば、モデルは有意と言えます。
-          </p>
-        </div>
+## 偏差平方和の分解と図解
 
-      </div>
-    </section>
+全体平方和は **回帰による平方和** と **残差平方和** に分かれます。
 
-    <section id="anova-detail" class="mb-16">
-      <h2 class="text-2xl font-bold text-center mb-8">偏差平方和の分解と検定の図解</h2>
-      <div class="max-w-3xl mx-auto space-y-4">
-        <div class="content-card p-8 rounded-lg shadow-md">
-          <p class="mb-4">
-            回帰直線の推定式を当てはめることに意味があるかどうかを統計的に判定するため、次式のように平方和を分解します。
-          </p>
-          <p class="text-center text-sm md:text-base p-2 bg-gray-50 rounded-md mb-0">
-            <span class="no-wrap">$$ S_{yy} = \sum(y_i - \bar{y})^2 $$</span>
-            <span class="no-wrap">$$ = \sum(y_i - \hat{\beta}_0 - \hat{\beta}_1 x_i + \hat{\beta}_0 + \hat{\beta}_1 x_i - \bar{y})^2 $$</span>
-            <span class="no-wrap">$$ = \sum(y_i - \hat{y}_i)^2 + \sum(\hat{y}_i - \bar{y})^2 $$</span>
-            <span class="no-wrap">$$ = \text{回帰による平方和} + \text{残差平方和} $$</span>
-          </p>
-          <!-- ⚠ ここから下（説明や選択肢ブロック等）はご要望により削除しました -->
-        </div>
-      </div>
-    </section>
+<div className="not-prose bg-gray-50 rounded-md p-3 overflow-x-auto">
+<pre className="whitespace-nowrap text-sm md:text-base">
+{`  S_yy = Σ(y_i - ȳ)^2  =  Σ(ŷ_i - ȳ)^2  +  Σ(y_i - ŷ_i)^2
+           ^^^^^^^^^^^     ^^^^^^^^^^^
+             回帰による平方和        残差平方和`}
+</pre>
+</div>
 
-    <section id="quiz" class="mb-16">
-      <h2 class="text-2xl font-bold text-center mb-8">理解度チェック</h2>
-      <p class="text-center text-gray-500 mb-6">解説をよく読み、もう一度挑戦してみましょう。</p>
+<figure className="not-prose bg-white rounded-md p-4 border">
+  <img
+    src="/images/stat/ss-decomposition.jpg"
+    alt="平方和の分解（A: 残差 |y_i − ŷ_i|、B: 回帰による差 |ŷ_i − ȳ|）"
+    className="mx-auto max-w-full h-auto rounded"
+    loading="lazy"
+  />
+  <figcaption className="text-center text-sm text-gray-600 mt-2">
+    図：平方和の分解（A: 残差 <span class="whitespace-nowrap">|y<sub>i</sub> − ŷ<sub>i</sub>|</span>、
+    B: 回帰による差 <span class="whitespace-nowrap">|ŷ<sub>i</sub> − ȳ|</span>）
+  </figcaption>
+</figure>
 
-      <div class="max-w-3xl mx-auto space-y-6">
+## 理解度チェック（クリックで展開）
 
-        <div class="content-card p-5 rounded-lg">
-          <p class="font-semibold text-lg mb-3">
-            Q1: 単回帰の回帰式 $y=\beta_0+\beta_1 x+\epsilon$ における切片 $\beta_0$ について最も不適切なものはどれか。
-          </p>
-          <ul class="list-disc list-inside my-3 space-y-2">
-            <li>A. $x=0$ のときの $y$ の予測値。</li>
-            <li>B. $\hat{\beta}_0=\bar{y}-\hat{\beta}_1\bar{x}$ で計算できる。</li>
-            <li>C. 切片が有意でなくても、モデル全体が有意でないとは限らない。</li>
-            <li>D. $\hat{\beta}_0$ は必ずしも観測の $x=0$ 点と一致しない。</li>
-            <li>E. 切片は $x$ と $y$ の線形関係の存在を示す。</li>
-          </ul>
-          <button class="answer-toggle bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">答えを見る</button>
-          <div class="answer mt-3 p-4 bg-gray-50 rounded-md border border-gray-200 hidden">
-            <p class="font-bold">正解: E</p>
-            <p>線形関係の有無を示すのは傾き $\beta_1$。切片 $\beta_0$ ではありません。</p>
-          </div>
-        </div>
-
-        <div class="content-card p-5 rounded-lg">
-          <p class="font-semibold text-lg mb-3">
-            Q2: 最小二乗法について不適切なものはどれか。
-          </p>
-          <ul class="list-disc list-inside my-3 space-y-2">
-            <li>A. $x$ と $y$ の間に直線関係を仮定する。</li>
-            <li>B. 残差二乗和が最小となるように傾きと切片を決める。</li>
-            <li>C. 推定直線は全観測点を必ずしも通らない。</li>
-            <li>D. 関係が非線形でも適切な変換等により適用可能な場合がある。</li>
-            <li>E. 傾きは共分散を分散で割った値に等しい。</li>
-          </ul>
-          <button class="answer-toggle bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">答えを見る</button>
-          <div class="answer mt-3 p-4 bg-gray-50 rounded-md border border-gray-200 hidden">
-            <p class="font-bold">正解: E</p>
-            <p>厳密には $ \hat{\beta}_1 = S_{xy}/S_{xx}$（共分散÷分散）です。</p>
-          </div>
-        </div>
-
-        <div class="content-card p-5 rounded-lg">
-          <p class="font-semibold text-lg mb-3">
-            Q3: 分散分析表に関する記述として最も不適切なものはどれか。
-          </p>
-          <ul class="list-disc list-inside my-3 space-y-2">
-            <li>A. $SS_T = SS_R + SS_E$。</li>
-            <li>B. $SS_R$ はモデルで説明できる変動。</li>
-            <li>C. $SS_E$ はモデルで説明できない変動。</li>
-            <li>D. $F$ 値でモデルの有意性を検定する。</li>
-            <li>E. 回帰の自由度は常に 2 である。</li>
-          </ul>
-          <button class="answer-toggle bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">答えを見る</button>
-          <div class="answer mt-3 p-4 bg-gray-50 rounded-md border border-gray-200 hidden">
-            <p class="font-bold">正解: E</p>
-            <p>単回帰の回帰の自由度は常に <strong>1</strong>。2 になるのは説明変数が2つ以上の重回帰です。</p>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-  </main>
-
-  <footer class="bg-white border-t border-gray-200 mt-16">
-    <div class="max-w-6xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-gray-500">
-      <p>&copy; 2025 品質管理学習リソース</p>
-    </div>
-  </footer>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      document.querySelectorAll('.answer-toggle').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const ans = btn.nextElementSibling;
-          const hide = ans.classList.contains('hidden');
-          ans.classList.toggle('hidden');
-          btn.textContent = hide ? '答えを隠す' : '答えを見る';
-        });
-      });
-    });
-  </script>
-</body>
-</html>
+<details>
+  <summary className="cursor-pointer font-semibold">
+    Q1. 切片 β₀の記述として最も不適切なのは？
+  </summary>
+  <div className="mt-3 space-y-1">
+    <div>A. x=0 のときの y の予測値</div>
+    <div>B. 推定値は <code>ŷ₀ = ȳ − \u005Chat{β}_1 x̄</code></div>
+    <div>C. β₀ が不有意でもモデル全体が不有意とは限らない</div>
+    <div>D. \u005Chat{β}_0 は必ずしも x=0 の観測値と一致しない</div>
+    <div>E. **切片**は x–y の線形関係の存在を示す</div>
+    <div className="mt-2 p-3 rounded bg-blue-50">
+      <strong>答え：E</strong>（線
