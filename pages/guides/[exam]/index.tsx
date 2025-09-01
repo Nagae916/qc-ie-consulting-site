@@ -3,22 +3,23 @@ import Link from "next/link";
 import type { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
 import { allGuides, type Guide } from "contentlayer/generated";
 
-// ---- 基本定義 -------------------------------------------------------------
+/* ========= 基本 ========= */
 type ExamKey = "qc" | "stat" | "engineer";
-
-const EXAM_LABEL: Record<ExamKey, string> = {
-  qc: "品質管理",
-  stat: "統計",
-  engineer: "技術士",
-};
+const EXAM_LABEL: Record<ExamKey, string> = { qc: "品質管理", stat: "統計", engineer: "技術士" };
 
 const THEME: Record<
   ExamKey,
   { border: string; accent: string; title: string; pillBg: string; pillBorder: string; btn: string; btnHover: string }
 > = {
-  qc:       { border: "border-amber-200",   accent: "bg-amber-300/70",   title: "text-amber-800",   pillBg: "bg-amber-50 text-amber-800",   pillBorder: "border-amber-200",   btn: "bg-amber-500",   btnHover: "hover:bg-amber-600" },
-  stat:     { border: "border-sky-200",     accent: "bg-sky-300/70",     title: "text-sky-800",     pillBg: "bg-sky-50 text-sky-800",       pillBorder: "border-sky-200",     btn: "bg-sky-600",     btnHover: "hover:bg-sky-700" },
-  engineer: { border: "border-emerald-200", accent: "bg-emerald-300/70", title: "text-emerald-800", pillBg: "bg-emerald-50 text-emerald-800", pillBorder: "border-emerald-200", btn: "bg-emerald-600", btnHover: "hover:bg-emerald-700" },
+  qc:       { border: "border-amber-200",   accent: "bg-amber-300/70",     title: "text-amber-800",
+              pillBg: "bg-amber-50 text-amber-800",   pillBorder: "border-amber-200",
+              btn: "bg-amber-500",   btnHover: "hover:bg-amber-600" },
+  stat:     { border: "border-sky-200",     accent: "bg-sky-300/70",       title: "text-sky-800",
+              pillBg: "bg-sky-50 text-sky-800",       pillBorder: "border-sky-200",
+              btn: "bg-sky-600",     btnHover: "hover:bg-sky-700" },
+  engineer: { border: "border-emerald-200", accent: "bg-emerald-300/70",   title: "text-emerald-800",
+              pillBg: "bg-emerald-50 text-emerald-800", pillBorder: "border-emerald-200",
+              btn: "bg-emerald-600", btnHover: "hover:bg-emerald-700" },
 };
 
 const toExamKey = (v: unknown): ExamKey | null => {
@@ -29,13 +30,14 @@ const toExamKey = (v: unknown): ExamKey | null => {
   return null;
 };
 
-// ---- 依存なしの安全ユーティリティ -----------------------------------------
+/* ========= 安全ユーティリティ ========= */
 const safeTags = (v: unknown): string[] => {
   if (Array.isArray(v)) return v.map((x) => String(x ?? "")).filter(Boolean);
   if (typeof v === "string") return v.split(/[,\s]+/).map((s) => s.trim()).filter(Boolean);
   return [];
 };
-// ロケール差の出ない YYYY-MM-DD（UTC）で返す
+
+// UTC固定の YYYY-MM-DD（SSR/CSR差の再発防止）
 const formatYMD = (v1?: unknown, v2?: unknown): string => {
   const s = String(v1 ?? v2 ?? "").trim();
   if (!s) return "";
@@ -44,22 +46,21 @@ const formatYMD = (v1?: unknown, v2?: unknown): string => {
   const t = Date.parse(s);
   if (!Number.isFinite(t)) return "";
   const d = new Date(t);
-  const y = d.getUTCFullYear();
-  const mm = String(d.getUTCMonth() + 1).padStart(2, "0");
-  const dd = String(d.getUTCDate()).padStart(2, "0");
-  return `${y}-${mm}-${dd}`;
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
 };
 
 const guideHref = (g: Guide, fallbackExam: ExamKey) => {
-  if (typeof (g as any).url === "string" && (g as any).url.startsWith("/guides/")) {
-    return (g as any).url as string;
-  }
+  if (typeof (g as any).url === "string" && (g as any).url.startsWith("/guides/")) return (g as any).url as string;
   const exam = toExamKey((g as any).exam) ?? fallbackExam;
   const slug = String((g as any).slug ?? g._raw?.flattenedPath?.split("/").pop() ?? "").trim();
   return `/guides/${exam}/${slug}`;
 };
 
-// ---- SSG -------------------------------------------------------------------
+// 並べ替えキー：updatedAtAuto > updatedAt > date
+const timeKey = (g: Guide): number =>
+  Date.parse(String((g as any).updatedAtAuto ?? (g as any).updatedAt ?? (g as any).date ?? "")) || 0;
+
+/* ========= SSG ========= */
 export const getStaticPaths: GetStaticPaths = async () => ({
   paths: (["qc", "stat", "engineer"] as ExamKey[]).map((exam) => ({ params: { exam } })),
   fallback: false,
@@ -71,17 +72,15 @@ export const getStaticProps: GetStaticProps<{ exam: ExamKey }> = async ({ params
   return { props: { exam }, revalidate: 60 };
 };
 
-// ---- Page ------------------------------------------------------------------
+/* ========= Page ========= */
 export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getStaticProps>) {
-  // 下書き除外 → セクション → 日付降順
+  // 下書き除外 → セクション優先 → 更新日降順（updatedAtAuto優先）
   const guides = allGuides
     .filter((g) => toExamKey((g as any).exam) === exam && (g as any).status !== "draft")
     .sort((a, b) => {
       const secCmp = String((a as any).section ?? "").localeCompare(String((b as any).section ?? ""));
       if (secCmp !== 0) return secCmp;
-      const ta = Date.parse(String((a as any).updatedAt ?? (a as any).date ?? "")) || 0;
-      const tb = Date.parse(String((b as any).updatedAt ?? (b as any).date ?? "")) || 0;
-      return tb - ta;
+      return timeKey(b) - timeKey(a);
     });
 
   const t = THEME[exam];
@@ -94,11 +93,12 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
 
       <h1 className="mt-2 text-2xl md:text-3xl font-extrabold">{EXAM_LABEL[exam]} 一覧</h1>
 
+      {/* 2カラムのカードレイアウト */}
       <div className="mt-6 grid gap-4 md:grid-cols-2">
         {guides.map((g) => {
           const href = guideHref(g, exam);
           const tags = safeTags((g as any).tags).slice(0, 4);
-          const updatedYmd = formatYMD((g as any).updatedAt, (g as any).date); // ← 変更
+          const updatedYmd = formatYMD((g as any).updatedAtAuto ?? (g as any).updatedAt, (g as any).date);
 
           return (
             <article key={g._id} className={`rounded-2xl border shadow-sm bg-white ${t.border}`}>
@@ -128,7 +128,6 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
                 ) : null}
 
                 <div className="mt-4 flex items-center justify-between">
-                  {/* SSR/CSR差の警告を抑止 */}
                   <span className="text-xs text-gray-500" suppressHydrationWarning>
                     {updatedYmd ? `更新: ${updatedYmd}` : ""}
                   </span>
