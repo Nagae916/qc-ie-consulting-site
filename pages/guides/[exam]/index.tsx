@@ -35,11 +35,21 @@ const safeTags = (v: unknown): string[] => {
   if (typeof v === "string") return v.split(/[,\s]+/).map((s) => s.trim()).filter(Boolean);
   return [];
 };
-const safeDate = (v1?: unknown, v2?: unknown) => {
-  const s = String(v1 ?? v2 ?? "");
+// ロケール差の出ない YYYY-MM-DD（UTC）で返す
+const formatYMD = (v1?: unknown, v2?: unknown): string => {
+  const s = String(v1 ?? v2 ?? "").trim();
+  if (!s) return "";
+  const m = s.match(/^(\d{4})[-/](\d{2})[-/](\d{2})/);
+  if (m) return `${m[1]}-${m[2]}-${m[3]}`;
   const t = Date.parse(s);
-  return Number.isFinite(t) ? new Date(t) : null;
+  if (!Number.isFinite(t)) return "";
+  const d = new Date(t);
+  const y = d.getUTCFullYear();
+  const mm = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const dd = String(d.getUTCDate()).padStart(2, "0");
+  return `${y}-${mm}-${dd}`;
 };
+
 const guideHref = (g: Guide, fallbackExam: ExamKey) => {
   if (typeof (g as any).url === "string" && (g as any).url.startsWith("/guides/")) {
     return (g as any).url as string;
@@ -88,8 +98,7 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
         {guides.map((g) => {
           const href = guideHref(g, exam);
           const tags = safeTags((g as any).tags).slice(0, 4);
-          const d = safeDate((g as any).updatedAt, (g as any).date);
-          const updated = d ? d.toLocaleDateString("ja-JP") : "";
+          const updatedYmd = formatYMD((g as any).updatedAt, (g as any).date); // ← 変更
 
           return (
             <article key={g._id} className={`rounded-2xl border shadow-sm bg-white ${t.border}`}>
@@ -119,7 +128,10 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
                 ) : null}
 
                 <div className="mt-4 flex items-center justify-between">
-                  <span className="text-xs text-gray-500">{updated ? `更新: ${updated}` : ""}</span>
+                  {/* SSR/CSR差の警告を抑止 */}
+                  <span className="text-xs text-gray-500" suppressHydrationWarning>
+                    {updatedYmd ? `更新: ${updatedYmd}` : ""}
+                  </span>
                   <Link href={href} className={`inline-block rounded-full ${t.btn} ${t.btnHover} text-white text-sm font-semibold px-3 py-1.5`}>
                     開く
                   </Link>
