@@ -4,6 +4,10 @@ import fs from "fs";
 import path from "path";
 import cp from "child_process";
 
+// ★ 追加：数式プラグイン
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+
 const CANONICAL_EXAMS = ["qc", "stat", "engineer"] as const;
 type Exam = (typeof CANONICAL_EXAMS)[number];
 
@@ -37,7 +41,6 @@ function normalizeTags(v: unknown): string[] {
 function toIso(v: unknown): string {
   const s = safeString(v);
   if (!s) return "";
-  // 既に YYYY-MM-DD なら ISO に近い形式とみなし UTC 00:00 を採用
   const m = s.match(/^(\d{4})[-/](\d{2})[-/](\d{2})/);
   if (m) return `${m[1]}-${m[2]}-${m[3]}T00:00:00.000Z`;
   const t = Date.parse(s);
@@ -47,15 +50,12 @@ function toIso(v: unknown): string {
 // Git の最終コミット日時（ISO）を取得、ダメなら fs.mtime を返す
 function getLastUpdatedIso(relFromContentDir: string): string {
   try {
-    // コンテンツの実ファイルパス（content/ 配下）
     const abs = path.join(process.cwd(), "content", relFromContentDir);
-    // Git 履歴（浅いクローンでも最新コミット分は取れる想定。無ければ catch）
     const iso = cp
       .execSync(`git log -1 --format=%cI -- "${abs}"`, { stdio: ["ignore", "pipe", "ignore"] })
       .toString()
       .trim();
     if (iso) return iso;
-    // フォールバック：ファイルの mtime
     const st = fs.statSync(abs);
     return new Date(st.mtimeMs).toISOString();
   } catch {
@@ -82,7 +82,7 @@ export const Guide = defineDocumentType(() => ({
     tags: { type: "json" },
     version: { type: "string", default: "1.0.0" },
     status: { type: "string", default: "published" },
-    updatedAt: { type: "string" }, // ← frontmatter があれば優先
+    updatedAt: { type: "string" }, // frontmatter があれば優先
     date: { type: "date" },
   },
   computedFields: {
@@ -133,5 +133,9 @@ export const Guide = defineDocumentType(() => ({
 export default makeSource({
   contentDirPath: "content",
   documentTypes: [Guide],
-  mdx: { remarkPlugins: [], rehypePlugins: [] },
+  mdx: {
+    // ★ 追加：MDX の数式サポート（CSP フレンドリー）
+    remarkPlugins: [remarkMath],
+    rehypePlugins: [rehypeKatex],
+  },
 });
