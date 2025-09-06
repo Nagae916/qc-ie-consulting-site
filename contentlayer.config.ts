@@ -1,141 +1,38 @@
 // contentlayer.config.ts
-import { defineDocumentType, makeSource } from "contentlayer2/source-files";
-import fs from "fs";
-import path from "path";
-import cp from "child_process";
-
-// ★ 追加：数式プラグイン
+import { defineDocumentType, makeSource } from "contentlayer/source-files";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 
-const CANONICAL_EXAMS = ["qc", "stat", "engineer"] as const;
-type Exam = (typeof CANONICAL_EXAMS)[number];
-
-function safeString(v: unknown, fb = ""): string {
-  const s = typeof v === "string" ? v.trim() : String(v ?? "").trim();
-  return s || fb;
-}
-function fromPath(parts: string[]) {
-  const p = parts[0] === "guides" ? parts.slice(1) : parts;
-  return { exam: safeString(p[0]), slug: safeString(p[p.length - 1]) };
-}
-function normalizeExam(v: unknown, pathExam: string): Exam {
-  const raw = safeString(v, pathExam).toLowerCase();
-  const e =
-    raw === "qc" ? "qc" :
-    raw === "stat" || raw === "stats" || raw === "statistics" ? "stat" :
-    raw === "engineer" || raw === "pe" || raw === "eng" ? "engineer" :
-    "qc";
-  return e as Exam;
-}
-function normalizeSlug(v: unknown, pathSlug: string) {
-  return safeString(v, pathSlug);
-}
-function normalizeTags(v: unknown): string[] {
-  if (Array.isArray(v)) return v.filter(Boolean).map((x) => safeString(x)).filter(Boolean);
-  if (typeof v === "string") return v.split(/[,\s]+/).map((s) => s.trim()).filter(Boolean);
-  return [];
-}
-
-// 文字列 → ISO（失敗時は ""）
-function toIso(v: unknown): string {
-  const s = safeString(v);
-  if (!s) return "";
-  const m = s.match(/^(\d{4})[-/](\d{2})[-/](\d{2})/);
-  if (m) return `${m[1]}-${m[2]}-${m[3]}T00:00:00.000Z`;
-  const t = Date.parse(s);
-  return Number.isFinite(t) ? new Date(t).toISOString() : "";
-}
-
-// Git の最終コミット日時（ISO）を取得、ダメなら fs.mtime を返す
-function getLastUpdatedIso(relFromContentDir: string): string {
-  try {
-    const abs = path.join(process.cwd(), "content", relFromContentDir);
-    const iso = cp
-      .execSync(`git log -1 --format=%cI -- "${abs}"`, { stdio: ["ignore", "pipe", "ignore"] })
-      .toString()
-      .trim();
-    if (iso) return iso;
-    const st = fs.statSync(abs);
-    return new Date(st.mtimeMs).toISOString();
-  } catch {
-    try {
-      const abs = path.join(process.cwd(), "content", relFromContentDir);
-      const st = fs.statSync(abs);
-      return new Date(st.mtimeMs).toISOString();
-    } catch {
-      return "";
-    }
-  }
-}
-
+// 必要に応じてフィールドは増減してください（既存の frontmatter を壊さないように緩めに定義）
 export const Guide = defineDocumentType(() => ({
   name: "Guide",
   contentType: "mdx",
+  // 例: content/guides/** 配下の .md / .mdx を対象
   filePathPattern: "guides/**/*.{md,mdx}",
   fields: {
     title: { type: "string", required: true },
-    exam: { type: "string" },
-    slug: { type: "string" },
-    section: { type: "string" },
-    description: { type: "string" },
-    tags: { type: "json" },
-    version: { type: "string", default: "1.0.0" },
-    status: { type: "string", default: "published" },
-    updatedAt: { type: "string" }, // frontmatter があれば優先
-    date: { type: "date" },
+    description: { type: "string", required: false },
+    tags: { type: "list", of: { type: "string" }, required: false },
+    exam: { type: "string", required: false },        // "qc" | "stat" | "engineer" 想定（緩めに文字列）
+    status: { type: "string", required: false },      // "draft" | "published" など
+    section: { type: "string", required: false },
+    version: { type: "string", required: false },
+    updatedAt: { type: "string", required: false },
+    date: { type: "string", required: false },
+    slug: { type: "string", required: false },        // frontmatter で指定があれば利用（任意）
+    url: { type: "string", required: false },         // frontmatter で明示 URL を持つ場合用（任意）
   },
-  computedFields: {
-    exam: {
-      type: "string",
-      resolve: (doc) => {
-        const parts = doc._raw.flattenedPath.split("/");
-        const { exam: pathExam } = fromPath(parts);
-        return normalizeExam((doc as any).exam, pathExam);
-      },
-    },
-    slug: {
-      type: "string",
-      resolve: (doc) => {
-        const parts = doc._raw.flattenedPath.split("/");
-        const { slug: pathSlug } = fromPath(parts);
-        return normalizeSlug((doc as any).slug, pathSlug);
-      },
-    },
-    url: {
-      type: "string",
-      resolve: (doc) => {
-        const parts = doc._raw.flattenedPath.split("/");
-        const { exam: pathExam, slug: pathSlug } = fromPath(parts);
-        const exam = normalizeExam((doc as any).exam, pathExam);
-        const slug = normalizeSlug((doc as any).slug, pathSlug);
-        return `/guides/${exam}/${slug}`;
-      },
-    },
-    tags: {
-      type: "json",
-      resolve: (doc) => normalizeTags((doc as any).tags),
-    },
-    // ★ 自動更新日：frontmatter > Git > date の順で解決（ISO）
-    updatedAtAuto: {
-      type: "string",
-      resolve: (doc) => {
-        const fromFm = toIso((doc as any).updatedAt);
-        if (fromFm) return fromFm;
-        const fromGit = getLastUpdatedIso(doc._raw.sourceFilePath);
-        if (fromGit) return fromGit;
-        return toIso((doc as any).date);
-      },
-    },
-  },
+  // 必要なら computedFields を追加してください（現状は触らずに安全運用）
+  computedFields: {},
 }));
 
 export default makeSource({
   contentDirPath: "content",
   documentTypes: [Guide],
   mdx: {
-    // ★ 追加：MDX の数式サポート（CSP フレンドリー）
+    // ★ 数式（$...$ / $$...$$）をサポート
     remarkPlugins: [remarkMath],
+    // ★ KaTeX でビルド時に静的レンダ（CSP安全 / クライアントJS不要）
     rehypePlugins: [rehypeKatex],
   },
 });
