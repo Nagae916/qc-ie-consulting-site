@@ -10,13 +10,13 @@ import { Quiz } from "@/components/guide/Quiz";
 import ControlChart from "@/components/guide/ControlChart";
 
 // ▼ フォールバック用（MDXコードが無い場合に Markdown(+Math)→HTML へ）
+//    ※ rehype-sanitize は KaTeXのHTMLを壊しやすいので使用しません。
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import remarkRehype from "remark-rehype";
 import rehypeKatex from "rehype-katex";
-import rehypeSanitize from "rehype-sanitize";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeStringify from "rehype-stringify";
@@ -71,7 +71,6 @@ async function mdToHtml(mdxRaw: string): Promise<string> {
     .use(remarkMath)
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeKatex)
-    .use(rehypeSanitize)
     .use(rehypeSlug)
     .use(rehypeAutolinkHeadings, { behavior: "wrap" })
     .use(rehypeStringify, { allowDangerousHtml: true })
@@ -137,7 +136,7 @@ export default function GuidePage({
 
   // MDX（推奨ルート）
   const MDX = mdxCode ? useMDXComponent(mdxCode) : null;
-  const components = useMemoizedComponents();
+  const components = componentsMap();
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
@@ -178,10 +177,8 @@ export default function GuidePage({
   );
 }
 
-/** components のメモ化（再描画最適化） */
-function useMemoizedComponents() {
-  // ここで“許可コンポーネント”を増減させるだけで、全ガイドへ即反映
-  // 例：Glossary, OCSimulator などを後から追加可能
+/** “許可コンポーネント”の注入ポイント（ここを増やせば全ガイドに効く） */
+function componentsMap() {
   return {
     Quiz,
     ControlChart,
