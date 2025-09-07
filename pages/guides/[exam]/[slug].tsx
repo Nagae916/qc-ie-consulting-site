@@ -9,8 +9,7 @@ import { useMDXComponent } from "next-contentlayer/hooks";
 import { Quiz } from "@/components/guide/Quiz";
 import ControlChart from "@/components/guide/ControlChart";
 
-// ▼ フォールバック用（MDXコードが無い場合に Markdown(+Math)→HTML へ）
-//    ※ rehype-sanitize は KaTeXのHTMLを壊しやすいので使用しません。
+// ▼ フォールバック（MD→HTML）。※sanitizeは未使用：KaTeX破損回避
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
@@ -134,8 +133,6 @@ export default function GuidePage({
     `${guide._raw?.flattenedPath ?? `${exam}/${(guide as any).slug}`}.mdx`;
   const editUrl = `https://github.com/Nagae916/qc-ie-consulting-site/edit/main/content/${sourcePath}`;
 
-  // MDX（推奨ルート）
-  const MDX = mdxCode ? useMDXComponent(mdxCode) : null;
   const components = componentsMap();
 
   return (
@@ -149,13 +146,8 @@ export default function GuidePage({
       </Head>
 
       <nav className="mb-4 text-sm text-gray-500">
-        <Link href="/guides" className="underline">
-          ガイド
-        </Link>
-        {" / "}
-        <Link href={`/guides/${exam}`} className={`underline ${theme.link}`}>
-          {EXAM_LABEL[exam]}
-        </Link>
+        <Link href="/guides" className="underline">ガイド</Link>{" / "}
+        <Link href={`/guides/${exam}`} className={`underline ${theme.link}`}>{EXAM_LABEL[exam]}</Link>
       </nav>
 
       <div className={`h-1 w-full rounded-t-2xl ${theme.accent} mb-3`} />
@@ -164,14 +156,16 @@ export default function GuidePage({
       <div className="mt-2 text-xs text-gray-500">
         <span suppressHydrationWarning>{updatedYmd ? `更新: ${updatedYmd}` : ""}</span>
         {guide.version ? <span className="ml-2">v{guide.version}</span> : null}
-        <a href={editUrl} target="_blank" rel="noreferrer" className="ml-3 underline">
-          編集する
-        </a>
+        <a href={editUrl} target="_blank" rel="noreferrer" className="ml-3 underline">編集する</a>
       </div>
 
       {/* 優先：MDX（Reactコンポーネント可）／ 代替：HTML */}
       <article className="prose prose-neutral max-w-none mt-6">
-        {MDX ? <MDX components={components} /> : <div dangerouslySetInnerHTML={{ __html: html ?? "" }} />}
+        {mdxCode ? (
+          <MDXRenderer code={mdxCode} components={components} />
+        ) : (
+          <div dangerouslySetInnerHTML={{ __html: html ?? "" }} />
+        )}
       </article>
     </main>
   );
@@ -183,4 +177,16 @@ function componentsMap() {
     Quiz,
     ControlChart,
   };
+}
+
+/** useMDXComponent を条件分岐の“外”で呼ぶための分離コンポーネント */
+function MDXRenderer({
+  code,
+  components,
+}: {
+  code: string;
+  components: Record<string, any>;
+}) {
+  const MDX = useMDXComponent(code);
+  return <MDX components={components} />;
 }
