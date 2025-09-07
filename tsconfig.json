@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": [
-      "ES2022",
-      "DOM",
-      "DOM.Iterable"
-    ],
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "jsx": "preserve",
@@ -24,18 +20,13 @@
     // パスエイリアス
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "src/*"
-      ],
-      "contentlayer/generated": [
-        "./.contentlayer/generated"
-      ]
+      "@/*": ["src/*"],
+      "contentlayer/generated": ["./.contentlayer/generated"]
     },
     // Node 型の利用
-    "types": [
-      "node"
-    ],
+    "types": ["node"],
     "incremental": true,
+    // ※ 次の3つは Next.js に合わせて必須
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "isolatedModules": true
@@ -47,9 +38,16 @@
     "**/*.mdx",
     ".next/types/**/*.ts",
     ".contentlayer/generated",
-    "src/types" // ← 追加：手元の d.ts を拾う
+    "src/types" // 手元の d.ts を拾う
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    ".next",
+    ".contentlayer",
+    "public",
+    "qc-ie-consulting-site.old",
+    "__archive_old",
+    "**/__pages_bak/**",
+    "**/__app_bak/**"
   ]
 }
