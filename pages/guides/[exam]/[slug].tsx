@@ -117,6 +117,8 @@ export default function GuidePage({
         <title>{guide.title} | QC × IE LABO</title>
         <meta name="description" content={(guide as any).description ?? ""} />
         <link rel="canonical" href={url} />
+        {/* ▼ 追加：ガイド統一スタイル */}
+        <link rel="stylesheet" href="/styles/guide.css" />
       </Head>
 
       <nav className="mb-4 text-sm text-gray-500">
