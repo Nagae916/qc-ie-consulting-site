@@ -1,7 +1,11 @@
 // pages/_app.tsx
 import type { AppProps } from "next/app";
-import "katex/dist/katex.min.css";        // ★ 追加：KaTeX のスタイルを全ページに適用
-import "../styles/globals.css";
+
+// 全ページ共通スタイル
+import "katex/dist/katex.min.css";  // 数式（KaTeX）
+import "../styles/globals.css";     // 既存のグローバル
+import "../styles/guide.css";       // ★ 追加：ガイド統一様式（QAカード等）
+
 import ErrorBoundary from "@/components/common/ErrorBoundary";
 
 export default function MyApp({ Component, pageProps }: AppProps) {
