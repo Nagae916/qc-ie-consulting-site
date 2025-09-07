@@ -7,9 +7,9 @@ import { allGuides, type Guide } from "contentlayer/generated";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
-import remarkMath from "remark-math";       // ← MDXではなく“Math拡張”だけを使う
+import remarkMath from "remark-math";          // ← MDXではなく数式拡張のみ
 import remarkRehype from "remark-rehype";
-import rehypeKatex from "rehype-katex";      // ← KaTeX で数式をHTML化
+import rehypeKatex from "rehype-katex";         // ← 数式をHTML化
 import rehypeSanitize from "rehype-sanitize";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
@@ -27,7 +27,7 @@ const toExamKey = (v: unknown): ExamKey | null => {
 };
 
 function stablePath(g: Guide): { exam: ExamKey; slug: string; url: string } {
-  const raw = String(g._raw?.flattenedPath ?? "");
+  const raw = String(g._raw?.flattenedPath ?? ""); // 例: guides/qc/xxx
   const parts = raw.split("/");
   const rawExam = parts[1] ?? "";
   const rawSlug = parts[parts.length - 1] ?? "";
@@ -53,14 +53,14 @@ const THEME: Record<ExamKey, { accent: string; link: string; title: string }> = 
   engineer: { accent: "bg-emerald-300/70", link: "text-emerald-700 hover:text-emerald-800", title: "text-emerald-800" },
 };
 
-// ※ ここが肝：remark-mdx を使わず Markdown(+Math) として変換
+// Markdown(+Math) → HTML（MDXは使わない）
 async function mdxToHtml(mdxRaw: string): Promise<string> {
   const file = await unified()
     .use(remarkParse)
     .use(remarkGfm)
-    .use(remarkMath) // ← $...$, $$...$$ を解釈
+    .use(remarkMath) // $...$, $$...$$
     .use(remarkRehype, { allowDangerousHtml: true })
-    .use(rehypeKatex) // ← 数式をHTML化（_app.tsx で KaTeX CSS を読み込み済）
+    .use(rehypeKatex) // KaTeX へ
     .use(rehypeSanitize)
     .use(rehypeSlug)
     .use(rehypeAutolinkHeadings, { behavior: "wrap" })
