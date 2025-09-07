@@ -2,47 +2,74 @@
 title: "（タイトル）"
 description: "（概要）"
 tags: ["タグ1", "タグ2"]
-exam: "qc"
-status: "draft"
+exam: "qc"          # ← ディレクトリと一致させる（例：content/guides/qc/）
+slug: "（スラッグ）" # ← ファイル名と一致（拡張子除く）
+status: "draft"     # published / draft
 ---
 
-/** ▼ 使用時の注意
- * - このファイルはテンプレートです（直接ビルド対象にしない想定）。
- * - コピー先の場所に応じて import パスを調整してください。
- *   - QC配下: content/guides/qc/slug.mdx → '../../../src/components/...'
- *   - 浅い階層: content/guides/slug.mdx → '../../src/components/...'
- */
-import { GuideLayout, Glossary, QA } from '../../src/components/guide/GuideLayout';
-/** 必要なコンポーネントだけ有効化
-import OCSimulator from '../../src/components/guide/OCSimulator';
-import AvailabilitySimulator from '../../src/components/guide/AvailabilitySimulator';
-import ControlChart from '../../src/components/guide/ControlChart';
-import TestNavigator from '../../src/components/guide/TestNavigator';
-import MethodNavigator from '../../src/components/guide/MethodNavigator';
-import ChiSquareGuide from '../../src/components/guide/ChiSquareGuide';
-*/
+<!--
+  ▼ このテンプレートは「純Markdown＋KaTeX＋最小限の生HTML」用です。
+  - import や JSX（<Component />）は使いません（表示崩れ防止）。
+  - 数式は $...$ / $$...$$（KaTeX）で書けます。
+  - 理解度チェックは <details> を使ったノーJS共通UIを使用します。
+  - 動的教材（チャート等）が必要なら、/guides/tools/... へのリンク or iframe を使います。
+-->
 
-{/* ★ GuideLayout に title を渡さない（optional） */}
-<GuideLayout intro="（ここに導入文）">
+# （タイトル）
 
-<section style={{ marginBottom: 24 }}>
-  {/* 本文やインタラクティブ */}
-  {/* 例:
-  <AvailabilitySimulator
-    defaultMTBF={500} minMTBF={10} maxMTBF={1000}
-    defaultMTTR={10}  minMTTR={1}  maxMTTR={100}
-  />
-  */}
-</section>
+（導入文）  
+工程の安定性は通常、中心線から $ \pm 3\sigma $ の範囲で評価します。
 
-<Glossary items={[
-  { term: '用語A', desc: '説明A' },
-  { term: '用語B', desc: '説明B' },
-]} />
+---
 
-<section style={{ maxWidth: 760, margin:'0 auto', display:'grid', gap:12 }}>
-  <QA q="質問1？" a={<div>答え1</div>} />
-  <QA q="質問2？" a={<div>答え2</div>} />
-</section>
+## インタラクティブ教材（必要な場合のみ）
 
-</GuideLayout>
+[インタラクティブ管理図（React版）を開く](/guides/tools/control-charts)
+
+<!-- 直接埋め込みたい場合は以下を使用（不要なら削除） -->
+<!--
+<iframe
+  src="/guides/tools/control-charts"
+  title="インタラクティブ管理図"
+  loading="lazy"
+  style="width:100%;height:340px;border:1px solid #e5e7eb;border-radius:12px;margin:12px 0;"
+></iframe>
+-->
+
+---
+
+## 用語集（例）
+
+- **管理限界（UCL/LCL）**：中心線から $ \pm 3\sigma $ に設定される統計的な限界。
+- **管理外れ**：点が限界外、または限界内でも異常パターン（連続上昇など）を示す状態。
+
+---
+
+## 理解度チェック
+
+<div class="qa-card">
+  <p class="qa-q">Q1: 管理限界線の外に出た点は正常？異常？理由も一言で。</p>
+  <details class="qa-a">
+    <summary>答えを見る</summary>
+    <div>異常。統計的に稀な変動（特殊原因）の疑いがあるため、原因究明が必要。</div>
+  </details>
+</div>
+
+<div class="qa-card">
+  <p class="qa-q">Q2: 検査数が日で変動する場合、np管理図とp管理図のどちらが適切？</p>
+  <details class="qa-a">
+    <summary>答えを見る</summary>
+    <div>p管理図（不適合率）。母数（検査数）の変動を取り込める。</div>
+  </details>
+</div>
+
+---
+
+## 参考式（KaTeX）
+
+インライン例：$ \bar{x} \pm 3 \frac{R\_\\text{bar}}{d\_2} $
+
+ブロック例：
+$$
+\sigma = \sqrt{\frac{\sum (x - \bar{x})^2}{n - 1}}
+$$
