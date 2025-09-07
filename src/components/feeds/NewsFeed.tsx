@@ -65,9 +65,14 @@ export default function NewsFeed({
   );
 
   const fetchNews = useCallback(
-    async (signal?: AbortSignal) => {
+    async (signal?: AbortSignal | null) => {
       try {
-        const r = await fetch(requestUrl, { cache: "no-store", signal });
+        // undefined のときはプロパティ自体を付けない（型エラー回避）
+        const init: RequestInit = {
+          cache: "no-store",
+          ...(signal ? { signal } : {}),
+        };
+        const r = await fetch(requestUrl, init);
         if (!r.ok) {
           setItems([]);
           return;
@@ -127,13 +132,23 @@ export default function NewsFeed({
         {Header}
         <ul className="divide-y divide-brand-200">
           {items.map((it, idx) => (
-            <li key={it.link || `${it.title}-${idx}`} className="p-4 hover:bg-brand-50/60 transition">
-              <a href={it.link} target="_blank" rel="noopener noreferrer" className="block">
+            <li
+              key={it.link || `${it.title}-${idx}`}
+              className="p-4 hover:bg-brand-50/60 transition"
+            >
+              <a
+                href={it.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block"
+              >
                 <p className="font-medium text-brand-900">{it.title}</p>
                 <p className="text-xs text-gray-500 mt-1">
                   {it.source || hostOf(it.link)}
                   {it.pubDate
-                    ? ` ・ ${new Date(it.pubDate).toLocaleString("ja-JP", { hour12: false })}`
+                    ? ` ・ ${new Date(it.pubDate).toLocaleString("ja-JP", {
+                        hour12: false,
+                      })}`
                     : ""}
                 </p>
               </a>
@@ -161,7 +176,9 @@ export default function NewsFeed({
               <span>{it.source || hostOf(it.link)}</span>
               <span>
                 {it.pubDate
-                  ? new Date(it.pubDate).toLocaleString("ja-JP", { hour12: false })
+                  ? new Date(it.pubDate).toLocaleString("ja-JP", {
+                      hour12: false,
+                    })
                   : ""}
               </span>
             </div>
