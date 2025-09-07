@@ -1,5 +1,5 @@
 // src/components/feeds/NoteFeed.tsx
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 type Item = { title: string; link: string; pubDate: string | null; excerpt: string };
 
@@ -7,46 +7,63 @@ export default function NoteFeed({ limit = 6, user }: { limit?: number; user?: s
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchNotes = useCallback(async (signal?: AbortSignal) => {
-    setLoading(true);
-    try {
-      const qs = new URLSearchParams({ limit: String(limit) });
-      if (user) qs.set("user", user.replace(/^@/, ""));
-      qs.set("_", String(Date.now()));
-
-      const res = await fetch(`/api/note?${qs.toString()}`, { cache: "no-store", signal });
-      const json = await res.json().catch(() => ({ data: [] as any[] }));
-      const arr: any[] = Array.isArray(json) ? json : Array.isArray(json?.data) ? json.data : [];
-
-      const normalized: Item[] = arr
-        .map((it) => ({
-          title: String(it.title || ""),
-          link: String(it.link || ""),
-          pubDate: typeof it.isoDate === "string" ? new Date(it.isoDate).toISOString() : null,
-          excerpt: String(it.contentSnippet || ""),
-        }))
-        .filter((x) => x.title && x.link)
-        .sort((a, b) => new Date(b.pubDate || 0).getTime() - new Date(a.pubDate || 0).getTime())
-        .slice(0, limit);
-
-      setItems(normalized);
-    } catch (e: any) {
-      if (e?.name !== "AbortError") setItems([]);
-    } finally {
-      setLoading(false);
-    }
+  // フェッチURLは依存が変わるたびに再計算
+  const requestUrl = useMemo(() => {
+    const qs = new URLSearchParams({ limit: String(limit) });
+    if (user) qs.set("user", user.replace(/^@/, ""));
+    qs.set("_", String(Date.now()));
+    return `/api/note?${qs.toString()}`;
   }, [limit, user]);
 
+  const fetchNotes = useCallback(
+    async (signal?: AbortSignal | null) => {
+      try {
+        // ← ここが重要：signal があるときだけプロパティに含める
+        const init: RequestInit = { cache: "no-store", ...(signal ? { signal } : {}) };
+        const res = await fetch(requestUrl, init);
+        const json = await res.json().catch(() => ({ data: [] as any[] }));
+        const arr: any[] = Array.isArray(json) ? json : Array.isArray(json?.data) ? json.data : [];
+
+        const normalized: Item[] = arr
+          .map((it) => ({
+            title: String(it.title || ""),
+            link: String(it.link || ""),
+            pubDate: typeof it.isoDate === "string" ? new Date(it.isoDate).toISOString() : null,
+            excerpt: String(it.contentSnippet || ""),
+          }))
+          .filter((x) => x.title && x.link)
+          .sort(
+            (a, b) =>
+              new Date(b.pubDate || 0).getTime() - new Date(a.pubDate || 0).getTime()
+          )
+          .slice(0, limit);
+
+        setItems(normalized);
+      } catch {
+        setItems([]);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [requestUrl, limit]
+  );
+
   useEffect(() => {
+    setLoading(true);
     const ac = new AbortController();
     fetchNotes(ac.signal);
-    const iv = window.setInterval(() => fetchNotes(ac.signal), 5 * 60 * 1000);
-    const onVis = () => document.visibilityState === "visible" && fetchNotes(ac.signal);
+
+    const onVis = () => {
+      if (document.visibilityState === "visible") fetchNotes(null);
+    };
     document.addEventListener("visibilitychange", onVis);
+
+    const iv = window.setInterval(() => fetchNotes(null), 5 * 60 * 1000); // 5分
+
     return () => {
+      ac.abort();
       clearInterval(iv);
       document.removeEventListener("visibilitychange", onVis);
-      ac.abort();
     };
   }, [fetchNotes]);
 
