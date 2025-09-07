@@ -4,19 +4,17 @@ import Head from "next/head";
 import Link from "next/link";
 import { allGuides, type Guide } from "contentlayer/generated";
 
-// ▼ MDXではなく「Markdown + Math」をHTML化（acornを使わない）
+// ▼ Markdown + 数式のみ（MDXは使わない）
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import remarkRehype from "remark-rehype";
 import rehypeKatex from "rehype-katex";
-import rehypeSanitize from "rehype-sanitize";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeStringify from "rehype-stringify";
 
-/* ========= 基本 ========= */
 type ExamKey = "qc" | "stat" | "engineer";
 const EXAM_LABEL: Record<ExamKey, string> = { qc: "品質管理", stat: "統計", engineer: "技術士" };
 
@@ -28,9 +26,8 @@ const toExamKey = (v: unknown): ExamKey | null => {
   return null;
 };
 
-// guides/qc/new-qc-seven-tools → exam/slug/url を安定復元
 function stablePath(g: Guide): { exam: ExamKey; slug: string; url: string } {
-  const raw = String(g._raw?.flattenedPath ?? ""); // 例: guides/qc/new-qc-seven-tools
+  const raw = String(g._raw?.flattenedPath ?? "");
   const parts = raw.split("/");
   const rawExam = parts[1] ?? "";
   const rawSlug = parts[parts.length - 1] ?? "";
@@ -39,7 +36,6 @@ function stablePath(g: Guide): { exam: ExamKey; slug: string; url: string } {
   return { exam, slug, url: `/guides/${exam}/${slug}` };
 }
 
-// UTC固定の YYYY-MM-DD（SSR/CSR差の再発防止）
 function formatYMD(v1?: unknown, v2?: unknown): string {
   const s = String(v1 ?? v2 ?? "").trim();
   if (!s) return "";
@@ -51,29 +47,21 @@ function formatYMD(v1?: unknown, v2?: unknown): string {
   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
 }
 
-const THEME: Record<ExamKey, { accent: string; link: string; title: string }> = {
-  qc: { accent: "bg-amber-300/70", link: "text-amber-700 hover:text-amber-800", title: "text-amber-800" },
-  stat: { accent: "bg-sky-300/70", link: "text-sky-700 hover:text-sky-800", title: "text-sky-800" },
-  engineer: { accent: "bg-emerald-300/70", link: "text-emerald-700 hover:text-emerald-800", title: "text-emerald-800" },
-};
-
-// Markdown(+GFM+Math) → HTML（SSGで実施）
-async function mdxToHtml(mdxRaw: string): Promise<string> {
+// ★ MDXを外し、Markdown + 数式だけでHTML化（acornを呼ばない）
+async function mdxToHtml(markdownRaw: string): Promise<string> {
   const file = await unified()
     .use(remarkParse)
     .use(remarkGfm)
-    .use(remarkMath) // ← 数式を先に確定
+    .use(remarkMath)
     .use(remarkRehype, { allowDangerousHtml: true })
-    .use(rehypeKatex) // ← KaTeX でレンダ
-    .use(rehypeSanitize)
+    .use(rehypeKatex)
     .use(rehypeSlug)
     .use(rehypeAutolinkHeadings, { behavior: "wrap" })
     .use(rehypeStringify, { allowDangerousHtml: true })
-    .process(mdxRaw);
+    .process(markdownRaw);
   return String(file);
 }
 
-/* ========= SSG ========= */
 export const getStaticPaths: GetStaticPaths = async () => {
   const seen = new Set<string>();
   const paths = allGuides
@@ -99,25 +87,27 @@ export const getStaticProps: GetStaticProps<{ guide: Guide; exam: ExamKey; html:
 
     if (!guide) return { notFound: true };
 
-    // ここで Markdown(+Math) → HTML（unsafe-eval 不要 & acorn 不使用）
+    // Markdown → HTML（数式OK、MDX無効）
     const html = await mdxToHtml(guide.body.raw);
 
-    // ★ updatedAtAuto を最優先で表示用に整形（fallback: updatedAt → date）
-    const updatedYmd = formatYMD((guide as any).updatedAtAuto ?? (guide as any).updatedAt, (guide as any).date);
+    const updatedYmd =
+      (() => {
+        const a = (guide as any).updatedAtAuto ?? (guide as any).updatedAt ?? (guide as any).date;
+        return formatYMD(a);
+      })();
 
     return { props: { guide, exam: examParam, html, updatedYmd }, revalidate: 60 };
   };
 
-/* ========= Page ========= */
-export default function GuidePage({
-  guide,
-  exam,
-  html,
-  updatedYmd,
-}: InferGetStaticPropsType<typeof getStaticProps>) {
+const THEME: Record<ExamKey, { accent: string; link: string; title: string }> = {
+  qc: { accent: "bg-amber-300/70", link: "text-amber-700 hover:text-amber-800", title: "text-amber-800" },
+  stat: { accent: "bg-sky-300/70", link: "text-sky-700 hover:text-sky-800", title: "text-sky-800" },
+  engineer: { accent: "bg-emerald-300/70", link: "text-emerald-700 hover:text-emerald-800", title: "text-emerald-800" },
+};
+
+export default function GuidePage({ guide, exam, html, updatedYmd }: InferGetStaticPropsType<typeof getStaticProps>) {
   const theme = THEME[exam];
   const { url } = stablePath(guide);
-
   const sourcePath =
     (guide._raw?.sourceFilePath as string | undefined) ??
     `${guide._raw?.flattenedPath ?? `${exam}/${(guide as any).slug}`}.mdx`;
@@ -131,16 +121,13 @@ export default function GuidePage({
         <link rel="canonical" href={url} />
       </Head>
 
-      {/* パンくず */}
       <nav className="mb-4 text-sm text-gray-500">
         <Link href="/guides" className="underline">ガイド</Link>
         {" / "}
         <Link href={`/guides/${exam}`} className={`underline ${theme.link}`}>{EXAM_LABEL[exam]}</Link>
       </nav>
 
-      {/* アクセントバー */}
       <div className={`h-1 w-full rounded-t-2xl ${theme.accent} mb-3`} />
-
       <h1 className={`text-2xl md:text-3xl font-extrabold ${theme.title}`}>{guide.title}</h1>
 
       <div className="mt-2 text-xs text-gray-500">
@@ -149,7 +136,7 @@ export default function GuidePage({
         <a href={editUrl} target="_blank" rel="noreferrer" className="ml-3 underline">編集する</a>
       </div>
 
-      {/* 変換済みHTMLを描画（CSPフレンドリー / 数式OK） */}
+      {/* 変換済みHTMLを直描画 */}
       <article className="prose prose-neutral max-w-none mt-6" dangerouslySetInnerHTML={{ __html: html }} />
     </main>
   );
