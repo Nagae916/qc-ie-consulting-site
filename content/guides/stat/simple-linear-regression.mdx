@@ -22,20 +22,20 @@ $$
 = \frac{S_{xy}}{S_{xx}}
 $$
 
-- $ S_{xy} $ … $ x $ と $ y $ の偏差積和（共分散）
+- $ S_{xy} $ … $ x $ と $ y $ の偏差積和（共分散）  
 - $ S_{xx} $ … $ x $ の偏差平方和（分散）
 
 ### 分散分析（ANOVA）の読み方
 
-| 変動要因 | 偏差平方和 (SS) | 自由度 (df) | 分散 (MS)             | F比                     |
+| 変動要因 | 偏差平方和 (SS) | 自由度 (df) | 分散 (MS)             | F比               |
 |---|---:|---:|---:|---:|
-| 回帰 (Regression) | $SS_R$ | $1$   | $MS_R = SS_R / 1$     | $F = MS_R / MS_E$       |
-| 残差 (Error)      | $SS_E$ | $n-2$ | $MS_E = SS_E/(n-2)$   |                         |
-| 全体 (Total)      | $SS_T = SS_R + SS_E$ | $n-1$ |                         |                         |
+| 回帰 (Regression) | $SS_R$ | $1$   | $MS_R = SS_R / 1$     | $F = MS_R / MS_E$ |
+| 残差 (Error)      | $SS_E$ | $n-2$ | $MS_E = SS_E/(n-2)$   |                   |
+| 全体 (Total)      | $SS_T = SS_R + SS_E$ | $n-1$ |                   |                   |
 
 **F検定の帰無仮説**：$ H_0:\beta_1=0 $（回帰に意味なし）。棄却されればモデルは有意。
 
-## 偏差平方和の分解と図解
+## 偏差平方和の分解
 
 全体平方和は **回帰による平方和** と **残差平方和** に分かれます。
 
@@ -45,33 +45,14 @@ S_{yy} = \sum (y_i-\bar y)^2
 = \text{回帰による平方和} + \text{残差平方和}
 $$
 
-<figure className="not-prose bg-white rounded-md p-4 border">
-  <img
-    src="/images/stat/ss-decomposition.jpg"
-    alt="平方和の分解（A: 残差 |y_i − ŷ_i|、B: 回帰による差 |ŷ_i − ȳ|）"
-    className="mx-auto max-w-full h-auto rounded"
-    loading="lazy"
-  />
-  <figcaption className="text-center text-sm text-gray-600 mt-2">
-    図：平方和の分解（A: 残差 <span className="whitespace-nowrap">|y<sub>i</sub> − ŷ<sub>i</sub>|</span>、
-    B: 回帰による差 <span className="whitespace-nowrap">|ŷ<sub>i</sub> − ȳ|</span>）
-  </figcaption>
-</figure>
+![平方和の分解（A: 残差 |y_i − ŷ_i|、B: 回帰による差 |ŷ_i − ȳ|）](/images/stat/ss-decomposition.jpg)
 
-## 理解度チェック（クリックで展開）
+## 理解度チェック
 
-<details>
-  <summary className="cursor-pointer font-semibold">
-    Q1. 切片 $ \beta_0 $ の記述として最も不適切なのは？
-  </summary>
-  <div className="mt-3 space-y-1">
-    <div>A. $ x=0 $ のときの $ y $ の予測値</div>
-    <div>B. 推定値は $ \hat\beta_0 = \bar y - \hat\beta_1 \bar x $</div>
-    <div>C. $ \beta_0 $ が不有意でもモデル全体が不有意とは限らない</div>
-    <div>D. $ \hat\beta_0 $ は必ずしも $ x=0 $ の観測値と一致しない</div>
-    <div>E. <strong>切片</strong>は $ x $–$ y $ の線形関係の存在を示す</div>
-    <div className="mt-2 p-3 rounded bg-blue-50">
-      <strong>答え：E</strong>（線形関係の有無を示すのは傾き $ \beta_1 $ であり、切片ではありません）
-    </div>
-  </div>
-</details>
+**Q1. 切片 $ \beta_0 $ の記述として最も不適切なのは？**
+
+- A. $ x=0 $ のときの $ y $ の予測値  
+- B. 推定値は $ \hat\beta_0 = \bar y - \hat\beta_1 \bar x $  
+- C. $ \beta_0 $ が不有意でもモデル全体が不有意とは限らない  
+- D. $ \hat\beta_0 $ は必ずしも $ x=0 $ の観測値と一致しない  
+- **E. 切片は $ x $–$ y $ の線形関係の存在を示す** ← **誤り**（線形関係の有無を示すのは傾き $ \beta_1 $）
