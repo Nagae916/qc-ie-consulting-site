@@ -2,19 +2,23 @@
 import type { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
 import Head from "next/head";
 import Link from "next/link";
+import { allGuides, type Guide } from "contentlayer/generated";
 
-// ★ contentlayer2 を使用
-import { allGuides, type Guide } from "contentlayer2/generated";
-import { useMDXComponent } from "next-contentlayer2/hooks";
+// ▼ MDXではなく「Markdown + Math」をHTML化（acornを使わない）
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import remarkRehype from "remark-rehype";
+import rehypeKatex from "rehype-katex";
+import rehypeSanitize from "rehype-sanitize";
+import rehypeSlug from "rehype-slug";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import rehypeStringify from "rehype-stringify";
 
+/* ========= 基本 ========= */
 type ExamKey = "qc" | "stat" | "engineer";
 const EXAM_LABEL: Record<ExamKey, string> = { qc: "品質管理", stat: "統計", engineer: "技術士" };
-
-const THEME: Record<ExamKey, { accent: string; link: string; title: string }> = {
-  qc: { accent: "bg-amber-300/70", link: "text-amber-700 hover:text-amber-800", title: "text-amber-800" },
-  stat: { accent: "bg-sky-300/70", link: "text-sky-700 hover:text-sky-800", title: "text-sky-800" },
-  engineer: { accent: "bg-emerald-300/70", link: "text-emerald-700 hover:text-emerald-800", title: "text-emerald-800" },
-};
 
 const toExamKey = (v: unknown): ExamKey | null => {
   const s = String(v ?? "").toLowerCase().trim();
@@ -24,9 +28,20 @@ const toExamKey = (v: unknown): ExamKey | null => {
   return null;
 };
 
-// YYYY-MM-DD（UTC固定）
-function formatYMD(...candidates: Array<unknown | undefined>): string {
-  const s = String(candidates.find((x) => x) ?? "").trim();
+// guides/qc/new-qc-seven-tools → exam/slug/url を安定復元
+function stablePath(g: Guide): { exam: ExamKey; slug: string; url: string } {
+  const raw = String(g._raw?.flattenedPath ?? ""); // 例: guides/qc/new-qc-seven-tools
+  const parts = raw.split("/");
+  const rawExam = parts[1] ?? "";
+  const rawSlug = parts[parts.length - 1] ?? "";
+  const exam = toExamKey((g as any).exam) ?? toExamKey(rawExam) ?? "qc";
+  const slug = String((g as any).slug ?? rawSlug).trim();
+  return { exam, slug, url: `/guides/${exam}/${slug}` };
+}
+
+// UTC固定の YYYY-MM-DD（SSR/CSR差の再発防止）
+function formatYMD(v1?: unknown, v2?: unknown): string {
+  const s = String(v1 ?? v2 ?? "").trim();
   if (!s) return "";
   const m = s.match(/^(\d{4})[-/](\d{2})[-/](\d{2})/);
   if (m) return `${m[1]}-${m[2]}-${m[3]}`;
@@ -36,43 +51,73 @@ function formatYMD(...candidates: Array<unknown | undefined>): string {
   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
 }
 
+const THEME: Record<ExamKey, { accent: string; link: string; title: string }> = {
+  qc: { accent: "bg-amber-300/70", link: "text-amber-700 hover:text-amber-800", title: "text-amber-800" },
+  stat: { accent: "bg-sky-300/70", link: "text-sky-700 hover:text-sky-800", title: "text-sky-800" },
+  engineer: { accent: "bg-emerald-300/70", link: "text-emerald-700 hover:text-emerald-800", title: "text-emerald-800" },
+};
+
+// Markdown(+GFM+Math) → HTML（SSGで実施）
+async function mdxToHtml(mdxRaw: string): Promise<string> {
+  const file = await unified()
+    .use(remarkParse)
+    .use(remarkGfm)
+    .use(remarkMath) // ← 数式を先に確定
+    .use(remarkRehype, { allowDangerousHtml: true })
+    .use(rehypeKatex) // ← KaTeX でレンダ
+    .use(rehypeSanitize)
+    .use(rehypeSlug)
+    .use(rehypeAutolinkHeadings, { behavior: "wrap" })
+    .use(rehypeStringify, { allowDangerousHtml: true })
+    .process(mdxRaw);
+  return String(file);
+}
+
 /* ========= SSG ========= */
 export const getStaticPaths: GetStaticPaths = async () => {
+  const seen = new Set<string>();
   const paths = allGuides
     .filter((g) => (g as any).status !== "draft")
-    .map((g) => ({ params: { exam: g.exam as ExamKey, slug: g.slug } }));
+    .map((g) => stablePath(g))
+    .filter(({ exam, slug }) => !!exam && !!slug && !seen.has(`${exam}/${slug}`) && seen.add(`${exam}/${slug}`))
+    .map(({ exam, slug }) => ({ params: { exam, slug } }));
   return { paths, fallback: false };
 };
 
-export const getStaticProps: GetStaticProps<{ guide: Guide; exam: ExamKey; updatedYmd: string }> = async ({ params }) => {
-  const exam = toExamKey(params?.exam);
-  const slug = String(params?.slug ?? "").trim().toLowerCase();
-  if (!exam || !slug) return { notFound: true };
+export const getStaticProps: GetStaticProps<{ guide: Guide; exam: ExamKey; html: string; updatedYmd: string }> =
+  async ({ params }) => {
+    const examParam = toExamKey(params?.exam);
+    const slugParam = String(params?.slug ?? "").trim().toLowerCase();
+    if (!examParam || !slugParam) return { notFound: true };
 
-  const guide =
-    allGuides.find((g) => (g as any).status !== "draft" && g.exam === exam && g.slug.toLowerCase() === slug) ?? null;
+    const guide =
+      allGuides.find((g) => {
+        if ((g as any).status === "draft") return false;
+        const { exam, slug } = stablePath(g);
+        return exam === examParam && slug.toLowerCase() === slugParam;
+      }) ?? null;
 
-  if (!guide) return { notFound: true };
+    if (!guide) return { notFound: true };
 
-  // frontmatter > computed(updatedAtAuto) > date の順で表示用に整形
-  const updatedYmd = formatYMD((guide as any).updatedAt, (guide as any).updatedAtAuto, (guide as any).date);
+    // ここで Markdown(+Math) → HTML（unsafe-eval 不要 & acorn 不使用）
+    const html = await mdxToHtml(guide.body.raw);
 
-  return { props: { guide, exam, updatedYmd }, revalidate: 60 };
-};
+    // ★ updatedAtAuto を最優先で表示用に整形（fallback: updatedAt → date）
+    const updatedYmd = formatYMD((guide as any).updatedAtAuto ?? (guide as any).updatedAt, (guide as any).date);
+
+    return { props: { guide, exam: examParam, html, updatedYmd }, revalidate: 60 };
+  };
 
 /* ========= Page ========= */
 export default function GuidePage({
   guide,
   exam,
+  html,
   updatedYmd,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
-  // ★ 決定打：raw を使わず、Contentlayer が生成した code をそのまま描画
-  const MDX = useMDXComponent(guide.body.code);
-
   const theme = THEME[exam];
-  const canonical = (guide as any).url || `/guides/${exam}/${guide.slug}`;
+  const { url } = stablePath(guide);
 
-  // GitHub 編集リンク
   const sourcePath =
     (guide._raw?.sourceFilePath as string | undefined) ??
     `${guide._raw?.flattenedPath ?? `${exam}/${(guide as any).slug}`}.mdx`;
@@ -82,8 +127,8 @@ export default function GuidePage({
     <main className="mx-auto max-w-3xl px-4 py-8">
       <Head>
         <title>{guide.title} | QC × IE LABO</title>
-        {guide.description ? <meta name="description" content={guide.description} /> : null}
-        <link rel="canonical" href={canonical} />
+        <meta name="description" content={(guide as any).description ?? ""} />
+        <link rel="canonical" href={url} />
       </Head>
 
       {/* パンくず */}
@@ -104,10 +149,8 @@ export default function GuidePage({
         <a href={editUrl} target="_blank" rel="noreferrer" className="ml-3 underline">編集する</a>
       </div>
 
-      {/* Contentlayer で事前コンパイル済みの MDX を描画 */}
-      <article className="prose prose-neutral max-w-none mt-6">
-        <MDX />
-      </article>
+      {/* 変換済みHTMLを描画（CSPフレンドリー / 数式OK） */}
+      <article className="prose prose-neutral max-w-none mt-6" dangerouslySetInnerHTML={{ __html: html }} />
     </main>
   );
 }
