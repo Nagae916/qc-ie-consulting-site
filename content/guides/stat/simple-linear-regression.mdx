@@ -14,7 +14,7 @@ status: "published"
 
 ### 回帰直線の傾きの求め方
 
-最小二乗法による傾き $\hat{\beta}_1$ は **説明変数 $x$ と目的変数 $y$ の共分散** を **説明変数 $x$ の分散** で割ったものに相当します。
+最小二乗法による傾き $ \hat{\beta}_1 $ は **説明変数 $ x $ と目的変数 $ y $ の共分散** を **説明変数 $ x $ の分散** で割ったものに相当します。
 
 $$
 \hat{\beta}_1
@@ -22,8 +22,8 @@ $$
 = \frac{S_{xy}}{S_{xx}}
 $$
 
-- $S_{xy}$ … $x$ と $y$ の偏差積和（共分散）
-- $S_{xx}$ … $x$ の偏差平方和（分散）
+- $ S_{xy} $ … $ x $ と $ y $ の偏差積和（共分散）
+- $ S_{xx} $ … $ x $ の偏差平方和（分散）
 
 ### 分散分析（ANOVA）の読み方
 
@@ -33,7 +33,7 @@ $$
 | 残差 (Error)      | $SS_E$ | $n-2$ | $MS_E = SS_E/(n-2)$   |                         |
 | 全体 (Total)      | $SS_T = SS_R + SS_E$ | $n-1$ |                         |                         |
 
-**F検定の帰無仮説**：$H_0:\beta_1=0$（回帰に意味なし）。棄却されればモデルは有意。
+**F検定の帰無仮説**：$ H_0:\beta_1=0 $（回帰に意味なし）。棄却されればモデルは有意。
 
 ## 偏差平方和の分解と図解
 
@@ -62,16 +62,16 @@ $$
 
 <details>
   <summary className="cursor-pointer font-semibold">
-    Q1. 切片 β₀ の記述として最も不適切なのは？
+    Q1. 切片 $ \beta_0 $ の記述として最も不適切なのは？
   </summary>
   <div className="mt-3 space-y-1">
-    <div>A. x=0 のときの y の予測値</div>
-    <div>B. 推定値は <code>\hat{\beta}_0 = \bar{y} - \hat{\beta}_1 \bar{x}</code></div>
-    <div>C. β₀ が不有意でもモデル全体が不有意とは限らない</div>
-    <div>D. \hat{β}_0 は必ずしも x=0 の観測値と一致しない</div>
-    <div>E. <strong>切片</strong>は x–y の線形関係の存在を示す</div>
+    <div>A. $ x=0 $ のときの $ y $ の予測値</div>
+    <div>B. 推定値は $ \hat{\beta}_0 = \bar{y} - \hat{\beta}_1 \bar{x} $</div>
+    <div>C. $ \beta_0 $ が不有意でもモデル全体が不有意とは限らない</div>
+    <div>D. $ \hat{\beta}_0 $ は必ずしも $ x=0 $ の観測値と一致しない</div>
+    <div>E. <strong>切片</strong>は $ x $–$ y $ の線形関係の存在を示す</div>
     <div className="mt-2 p-3 rounded bg-blue-50">
-      <strong>答え：E</strong>（線形関係の有無を示すのは傾き $\beta_1$ であり、切片ではありません）
+      <strong>答え：E</strong>（線形関係の有無を示すのは傾き $ \beta_1 $ であり、切片ではありません）
     </div>
   </div>
 </details>
