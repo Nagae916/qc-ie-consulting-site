@@ -4,9 +4,16 @@ import fs from "fs";
 import path from "path";
 import cp from "child_process";
 
-// ★ 追加：数式プラグイン
+// 数式
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
+
+// ⬇ 追加：見出しスラッグ & 自動リンク & サニタイズ
+import rehypeSlug from "rehype-slug";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
+// 型相性を避けるため defaultSchema は hast-util-sanitize から
+import rehypeSanitize from "rehype-sanitize";
+import { defaultSchema } from "hast-util-sanitize";
 
 const CANONICAL_EXAMS = ["qc", "stat", "engineer"] as const;
 type Exam = (typeof CANONICAL_EXAMS)[number];
@@ -47,14 +54,12 @@ function toIso(v: unknown): string {
   return Number.isFinite(t) ? new Date(t).toISOString() : "";
 }
 
-// Git の最終コミット日時（ISO）を取得、ダメなら fs.mtime を返す
+// Git の最終コミット日時（ISO）を取得、ダメなら fs.mtime
 function getLastUpdatedIso(relFromContentDir: string): string {
   try {
     const abs = path.join(process.cwd(), "content", relFromContentDir);
-    const iso = cp
-      .execSync(`git log -1 --format=%cI -- "${abs}"`, { stdio: ["ignore", "pipe", "ignore"] })
-      .toString()
-      .trim();
+    const iso = cp.execSync(`git log -1 --format=%cI -- "${abs}"`, { stdio: ["ignore", "pipe", "ignore"] })
+      .toString().trim();
     if (iso) return iso;
     const st = fs.statSync(abs);
     return new Date(st.mtimeMs).toISOString();
@@ -82,7 +87,7 @@ export const Guide = defineDocumentType(() => ({
     tags: { type: "json" },
     version: { type: "string", default: "1.0.0" },
     status: { type: "string", default: "published" },
-    updatedAt: { type: "string" }, // frontmatter があれば優先
+    updatedAt: { type: "string" },
     date: { type: "date" },
   },
   computedFields: {
@@ -116,7 +121,7 @@ export const Guide = defineDocumentType(() => ({
       type: "json",
       resolve: (doc) => normalizeTags((doc as any).tags),
     },
-    // ★ 自動更新日：frontmatter > Git > date の順で解決（ISO）
+    // frontmatter > Git > date の順
     updatedAtAuto: {
       type: "string",
       resolve: (doc) => {
@@ -130,12 +135,43 @@ export const Guide = defineDocumentType(() => ({
   },
 }));
 
+// ⬇ rehype-sanitize の許可リスト拡張（KaTeX/見出し/コード）
+const sanitizeSchema = (() => {
+  const base: any = JSON.parse(JSON.stringify(defaultSchema));
+  base.attributes ||= {};
+
+  // 見出し id（rehype-slug）
+  base.attributes["*"] = [...(base.attributes["*"] || []), "id"];
+
+  // KaTeX の className
+  const katexClass = ["className", /^katex(-\w+)?$/];
+  base.attributes["span"] = [...(base.attributes["span"] || []), katexClass];
+  base.attributes["div"] = [...(base.attributes["div"] || []), katexClass];
+
+  // コードブロック（language-xxx）
+  base.attributes["code"] = [...(base.attributes["code"] || []), ["className", /^language-/]];
+
+  // 安全な外部リンク
+  base.attributes["a"] = [
+    ...(base.attributes["a"] || []),
+    ["target", /^_blank$/],
+    ["rel", /^(?:nofollow|noreferrer|noopener)(?:\s+(?:nofollow|noreferrer|noopener))*$/],
+  ];
+
+  return base;
+})();
+
 export default makeSource({
   contentDirPath: "content",
   documentTypes: [Guide],
   mdx: {
-    // ★ 追加：MDX の数式サポート（CSP フレンドリー）
+    // 数式 → KaTeX → 見出し → オートリンク → 最後にサニタイズ
     remarkPlugins: [remarkMath],
-    rehypePlugins: [rehypeKatex],
+    rehypePlugins: [
+      rehypeKatex,
+      rehypeSlug,
+      [rehypeAutolinkHeadings, { behavior: "wrap" }],
+      [rehypeSanitize, sanitizeSchema],
+    ],
   },
 });
