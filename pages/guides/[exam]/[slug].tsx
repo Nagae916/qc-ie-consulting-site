@@ -7,7 +7,6 @@ import Link from "next/link";
 import { allGuides, type Guide } from "contentlayer2/generated";
 import { useMDXComponent } from "next-contentlayer2/hooks";
 
-// 表示カテゴリ
 type ExamKey = "qc" | "stat" | "engineer";
 const EXAM_LABEL: Record<ExamKey, string> = { qc: "品質管理", stat: "統計", engineer: "技術士" };
 
@@ -17,7 +16,6 @@ const THEME: Record<ExamKey, { accent: string; link: string; title: string }> = 
   engineer: { accent: "bg-emerald-300/70", link: "text-emerald-700 hover:text-emerald-800", title: "text-emerald-800" },
 };
 
-// パラメータ正規化
 const toExamKey = (v: unknown): ExamKey | null => {
   const s = String(v ?? "").toLowerCase().trim();
   if (s === "qc") return "qc";
@@ -68,7 +66,7 @@ export default function GuidePage({
   exam,
   updatedYmd,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
-  // ★ 決定的修正点：raw ではなく「code」を渡す
+  // ★ 決定打：raw を使わず、Contentlayer が生成した code をそのまま描画
   const MDX = useMDXComponent(guide.body.code);
 
   const theme = THEME[exam];
