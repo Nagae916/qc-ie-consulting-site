@@ -1,31 +1,23 @@
 // next.config.js
-const withMDX = require('@next/mdx')({
-  extension: /\.mdx?$/,
-  options: {
-    // Markdown拡張と数式（KaTeX）をMDXに統合
-    remarkPlugins: [require('remark-gfm'), require('remark-math')],
-    rehypePlugins: [require('rehype-katex')],
+/** @type {import('next').NextConfig} */
+const baseConfig = {
+  reactStrictMode: true,
+
+  // MD/MDX は「ページ」化せず Contentlayer 経由で読むため、拡張子は TS/TSX のみに限定
+  pageExtensions: ['ts', 'tsx'],
+
+  async rewrites() {
+    return [
+      // 将来、ツール用の固定パスを足す場合だけここに追記
+      // 例）{ source: '/guides/tools/:name', destination: '/tools/:name' },
+    ];
   },
-});
+};
 
-const { withContentlayer } = require('next-contentlayer');
+// next-contentlayer が入っていれば使う（無ければそのまま）— @next/mdx 依存は廃止
+let withContentlayer = (cfg) => cfg;
+try {
+  ({ withContentlayer } = require('next-contentlayer'));
+} catch (_) {}
 
-module.exports = withContentlayer(
-  withMDX({
-    // .md/.mdx もページ拡張として扱う
-    pageExtensions: ['ts', 'tsx', 'md', 'mdx'],
-
-    // MDXのRust実装を有効化（ビルド安定＆高速）
-    experimental: { mdxRs: true },
-
-    reactStrictMode: true,
-
-    // ルーティングは /pages/guides/[exam]/[slug].tsx に委譲（固定方針）
-    async rewrites() {
-      return [
-        // 将来、ツール用の固定パスを足す場合だけここに追記
-        // 例）{ source: '/guides/tools/:name', destination: '/tools/:name' },
-      ];
-    },
-  })
-);
+module.exports = withContentlayer(baseConfig);
