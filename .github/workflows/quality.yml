@@ -1,0 +1,24 @@
+name: Quality
+on:
+  push:
+  pull_request:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint:unused:code
+        continue-on-error: true
+      - run: npm run lint:unused:exports
+        continue-on-error: true
+      - run: npm run lint:unused:deps
+        continue-on-error: true
+      - run: npm run lint:graph
+        continue-on-error: true
