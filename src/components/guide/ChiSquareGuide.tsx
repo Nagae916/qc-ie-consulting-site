@@ -1,3 +1,4 @@
+// src/components/guide/ChiSquareGuide.tsx
 'use client';
 import React, { useMemo, useState } from 'react';
 import {
@@ -11,8 +12,13 @@ import {
   set2DImmutable,
 } from '../../lib/safe-matrix';
 
+/**
+ * 運用ルール対応版：
+ * - 依存は「外から来る値＝obs」だけに集約（派生値は1つの useMemo 内で計算）
+ * - UIは現状の見た目/挙動を維持
+ */
 export default function ChiSquareGuide() {
-  // 観測度数（動的サイズに耐える：初期値は 2×2）
+  // 観測度数（初期 2×2）
   const [obs, setObs] = useState<number[][]>([
     [30, 20],
     [20, 30],
@@ -20,15 +26,16 @@ export default function ChiSquareGuide() {
   const [showExpected, setShowExpected] = useState(false);
   const [showChi, setShowChi] = useState(false);
 
-  // 合計類（共通ライブラリ）
-  const rows = useMemo(() => libRowSums(obs), [obs]);
-  const cols = useMemo(() => libColSums(obs), [obs]);
-  const grand = useMemo(() => libGrandTotal(obs), [obs]);
-
-  // 期待度数・χ²（共通ライブラリ）
-  const exp = useMemo(() => libExpected(obs), [obs, rows, cols, grand]);
-  const chi = useMemo(() => libChiEach(obs, exp), [obs, exp]);
-  const chiVal = useMemo(() => libChiTotal(obs, exp), [chi, exp]);
+  // ★ すべての派生値を obs だけに依存して一括計算（警告恒久解消）
+  const { rows, cols, grand, exp, chi, chiVal } = useMemo(() => {
+    const rows = libRowSums(obs);
+    const cols = libColSums(obs);
+    const grand = libGrandTotal(obs);
+    const exp = libExpected(obs);
+    const chi = libChiEach(obs, exp);
+    const chiVal = libChiTotal(obs, exp);
+    return { rows, cols, grand, exp, chi, chiVal };
+  }, [obs]);
 
   // セル更新（不変更新・自動拡張）
   const updateCell = (i: number, j: number, v: string) => {
@@ -39,14 +46,17 @@ export default function ChiSquareGuide() {
     setShowChi(false);
   };
 
-  // ── UI（当初の見た目を維持） ──
+  // ── UI（既存スタイルを維持） ──
   const card: React.CSSProperties = {
-    background: '#fff', border: '1px solid #e5e7eb', borderRadius: 16, padding: 16,
-    boxShadow: '0 2px 8px rgba(0,0,0,.04)'
+    background: '#fff',
+    border: '1px solid #e5e7eb',
+    borderRadius: 16,
+    padding: 16,
+    boxShadow: '0 2px 8px rgba(0,0,0,.04)',
   };
   const sub: React.CSSProperties = { color: '#64748b' };
 
-  // 表示は 2×2（UIの表現は固定・中身は動的でも安全）
+  // 表示は 2×2（UI表現は固定）
   const rowIdxs = [0, 1];
   const colIdxs = [0, 1];
 
@@ -76,6 +86,7 @@ export default function ChiSquareGuide() {
                   <td key={j} className="border p-2">
                     <input
                       type="number"
+                      inputMode="numeric"
                       min={0}
                       value={get2D(obs, i, j, 0)}
                       onChange={e => updateCell(i, j, e.target.value)}
