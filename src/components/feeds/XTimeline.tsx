@@ -1,28 +1,22 @@
 // src/components/feeds/XTimeline.tsx
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { feedApiPath } from "@/lib/routes";
 
-declare global {
-  interface Window {
-    twttr?: any;
-  }
-}
+declare global { interface Window { twttr?: any } }
 
 type ChromeOption = "noheader" | "nofooter" | "noborders" | "transparent" | "noscrollbar";
 type FallbackItem = { title: string; link: string; pubDate: string | null };
 
 type Props = {
-  username: string; // '@' あり/なしOK（公式ウィジェットに使用）
-  limit?: number; // 既定 5
+  username: string;
+  limit?: number;
   height?: number | string;
   width?: number | string;
   theme?: "light" | "dark";
   chrome?: ChromeOption[] | string;
   className?: string;
-  minHeight?: number; // 既定 600（見た目安定）
-  /** 表示モード：auto=まずwidget,失敗時fallback / widget=常にウィジェット / fallback=常に軽量表示 */
-  mode?: "auto" | "widget" | "fallback"; // ← 未指定なら環境変数NEXT_PUBLIC_X_EMBED_MODE→autoの順で適用
-  /** 任意：デバッグログ */
+  minHeight?: number;
+  mode?: "auto" | "widget" | "fallback";
   debug?: boolean;
 };
 
@@ -35,26 +29,26 @@ export default function XTimeline({
   chrome,
   className,
   minHeight = 600,
-  mode, // デフォルト値はenv優先で後段計算
+  mode,
   debug = false,
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const [fallback, setFallback] = useState<FallbackItem[] | null>(null);
   const [loading, setLoading] = useState(true);
-  const [nonce, setNonce] = useState(0); // 再試行用
+  const [nonce, setNonce] = useState(0);
 
   const envMode = (process.env.NEXT_PUBLIC_X_EMBED_MODE as "auto" | "widget" | "fallback" | undefined) ?? undefined;
   const effectiveMode: "auto" | "widget" | "fallback" = mode ?? envMode ?? "auto";
 
-  const log = (...a: any[]) => {
-    if (debug) console.log("[XTimeline]", ...a);
-  };
+  const log = (...a: any[]) => { if (debug) console.log("[XTimeline]", ...a); };
+
+  // ★ 依存配列の複雑式をここで正規化（警告解消）
+  const chromeKey = useMemo(() => (Array.isArray(chrome) ? chrome.join(" ") : chrome) ?? "", [chrome]);
 
   const loadFallback = async () => {
     try {
-      // ▼ 集約APIを使用（.env の X_RSS_URL を参照）
       const url = feedApiPath("x", limit);
-      const r = await fetch(url); // CDNキャッシュを活かす（no-store禁止、timestampなし）
+      const r = await fetch(url);
       if (!r.ok) throw new Error("fallback fetch failed");
       const data: any[] = await r.json().catch(() => []);
       const items: FallbackItem[] = (Array.isArray(data) ? data : [])
@@ -84,14 +78,12 @@ export default function XTimeline({
     let cancelled = false;
     let timer: number | undefined;
 
-    // 常に軽量表示
     if (effectiveMode === "fallback") {
       log("mode=fallback → always fallback");
       loadFallback();
       return;
     }
 
-    // ウィジェット読み込み
     const ensureWidgets = async () => {
       const src = "https://platform.twitter.com/widgets.js";
       if (window.twttr?.widgets?.createTimeline) return;
@@ -115,7 +107,6 @@ export default function XTimeline({
       try {
         await ensureWidgets();
 
-        // auto のときは4秒でタイムアウト → フォールバック
         if (effectiveMode === "auto") {
           timer = window.setTimeout(() => {
             if (!cancelled && loading) {
@@ -130,11 +121,10 @@ export default function XTimeline({
         const screenName = username.replace(/^@/, "");
         ref.current.innerHTML = "";
 
-        const chromeOpt = Array.isArray(chrome) ? chrome.join(" ") : chrome;
         const opts: any = { tweetLimit: limit, theme };
         if (height != null) opts.height = height;
         if (width != null) opts.width = width;
-        if (chromeOpt) opts.chrome = chromeOpt;
+        if (chromeKey) opts.chrome = chromeKey;
 
         log("createTimeline", { mode: effectiveMode, opts });
         await window.twttr.widgets.createTimeline({ sourceType: "profile", screenName }, ref.current, opts);
@@ -153,29 +143,16 @@ export default function XTimeline({
             loadFallback();
           }
         } else {
-          setLoading(false); // mode=widget の場合は何もしない
+          setLoading(false);
         }
       }
     };
 
     renderWidget();
-    return () => {
-      cancelled = true;
-      if (timer) clearTimeout(timer);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    username,
-    limit,
-    height,
-    width,
-    theme,
-    Array.isArray(chrome) ? chrome.join(" ") : chrome,
-    effectiveMode,
-    nonce,
-  ]);
+    return () => { cancelled = true; if (timer) clearTimeout(timer); };
+  // ★ 依存配列はプリミティブのみ
+  }, [username, limit, height, width, theme, chromeKey, effectiveMode, nonce, debug, loading]);
 
-  // フォールバック表示
   if (fallback) {
     const profileUrl = `https://x.com/${username.replace(/^@/, "")}`;
     return (
@@ -223,6 +200,5 @@ export default function XTimeline({
     );
   }
 
-  // 公式ウィジェット表示領域
   return <div ref={ref} className={className} style={{ minHeight }} />;
 }
