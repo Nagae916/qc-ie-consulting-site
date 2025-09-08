@@ -1,21 +1,27 @@
-import { useEffect, useRef, useState } from 'react';
+// src/components/feeds/XTimeline.tsx
+import { useEffect, useRef, useState } from "react";
+import { feedApiPath } from "@/lib/routes";
 
-declare global { interface Window { twttr?: any } }
+declare global {
+  interface Window {
+    twttr?: any;
+  }
+}
 
-type ChromeOption = 'noheader' | 'nofooter' | 'noborders' | 'transparent' | 'noscrollbar';
+type ChromeOption = "noheader" | "nofooter" | "noborders" | "transparent" | "noscrollbar";
 type FallbackItem = { title: string; link: string; pubDate: string | null };
 
 type Props = {
-  username: string;                       // '@' あり/なしOK
-  limit?: number;                         // 既定 5
+  username: string; // '@' あり/なしOK（公式ウィジェットに使用）
+  limit?: number; // 既定 5
   height?: number | string;
   width?: number | string;
-  theme?: 'light' | 'dark';
+  theme?: "light" | "dark";
   chrome?: ChromeOption[] | string;
   className?: string;
-  minHeight?: number;                     // 既定 600（見た目安定）
+  minHeight?: number; // 既定 600（見た目安定）
   /** 表示モード：auto=まずwidget,失敗時fallback / widget=常にウィジェット / fallback=常に軽量表示 */
-  mode?: 'auto' | 'widget' | 'fallback';
+  mode?: "auto" | "widget" | "fallback"; // ← 未指定なら環境変数NEXT_PUBLIC_X_EMBED_MODE→autoの順で適用
   /** 任意：デバッグログ */
   debug?: boolean;
 };
@@ -25,11 +31,11 @@ export default function XTimeline({
   limit = 5,
   height,
   width,
-  theme = 'light',
+  theme = "light",
   chrome,
   className,
   minHeight = 600,
-  mode = 'auto',
+  mode, // デフォルト値はenv優先で後段計算
   debug = false,
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
@@ -37,18 +43,38 @@ export default function XTimeline({
   const [loading, setLoading] = useState(true);
   const [nonce, setNonce] = useState(0); // 再試行用
 
-  const log = (...a: any[]) => { if (debug) console.log('[XTimeline]', ...a); };
+  const envMode = (process.env.NEXT_PUBLIC_X_EMBED_MODE as "auto" | "widget" | "fallback" | undefined) ?? undefined;
+  const effectiveMode: "auto" | "widget" | "fallback" = mode ?? envMode ?? "auto";
+
+  const log = (...a: any[]) => {
+    if (debug) console.log("[XTimeline]", ...a);
+  };
 
   const loadFallback = async () => {
     try {
-      const u = username.replace(/^@/, '');
-      const r = await fetch(`/api/x-rss?user=${encodeURIComponent(u)}&limit=${limit}&_=${Date.now()}`, { cache: 'no-store' });
-      const data: FallbackItem[] = await r.json();
-      setFallback(data);
-      log('fallback items:', data.length);
-    } catch {
+      // ▼ 集約APIを使用（.env の X_RSS_URL を参照）
+      const url = feedApiPath("x", limit);
+      const r = await fetch(url); // CDNキャッシュを活かす（no-store禁止、timestampなし）
+      if (!r.ok) throw new Error("fallback fetch failed");
+      const data: any[] = await r.json().catch(() => []);
+      const items: FallbackItem[] = (Array.isArray(data) ? data : [])
+        .map((it) => ({
+          title: String(it.title || ""),
+          link: String(it.link || ""),
+          pubDate:
+            typeof it.pubDate === "string"
+              ? new Date(it.pubDate).toISOString()
+              : typeof it.isoDate === "string"
+              ? new Date(it.isoDate).toISOString()
+              : null,
+        }))
+        .filter((x) => x.title && x.link)
+        .slice(0, limit);
+      setFallback(items);
+      log("fallback items:", items.length);
+    } catch (e) {
       setFallback([]);
-      log('fallback failed');
+      log("fallback failed", e);
     } finally {
       setLoading(false);
     }
@@ -59,24 +85,24 @@ export default function XTimeline({
     let timer: number | undefined;
 
     // 常に軽量表示
-    if (mode === 'fallback') {
-      log('mode=fallback → always fallback');
+    if (effectiveMode === "fallback") {
+      log("mode=fallback → always fallback");
       loadFallback();
       return;
     }
 
     // ウィジェット読み込み
     const ensureWidgets = async () => {
-      const src = 'https://platform.twitter.com/widgets.js';
+      const src = "https://platform.twitter.com/widgets.js";
       if (window.twttr?.widgets?.createTimeline) return;
       await new Promise<void>((resolve) => {
         const existing = document.querySelector(`script[src="${src}"]`) as HTMLScriptElement | null;
         if (existing) {
           if (window.twttr) resolve();
-          else existing.addEventListener('load', () => resolve());
+          else existing.addEventListener("load", () => resolve());
           return;
         }
-        const s = document.createElement('script');
+        const s = document.createElement("script");
         s.src = src;
         s.async = true;
         s.onload = () => resolve();
@@ -90,10 +116,10 @@ export default function XTimeline({
         await ensureWidgets();
 
         // auto のときは4秒でタイムアウト → フォールバック
-        if (mode === 'auto') {
+        if (effectiveMode === "auto") {
           timer = window.setTimeout(() => {
             if (!cancelled && loading) {
-              log('widget timeout → fallback');
+              log("widget timeout → fallback");
               loadFallback();
             }
           }, 4000);
@@ -101,31 +127,27 @@ export default function XTimeline({
 
         if (cancelled || !ref.current || !window.twttr?.widgets?.createTimeline) return;
 
-        const screenName = username.replace(/^@/, '');
-        ref.current.innerHTML = '';
+        const screenName = username.replace(/^@/, "");
+        ref.current.innerHTML = "";
 
-        const chromeOpt = Array.isArray(chrome) ? chrome.join(' ') : chrome;
+        const chromeOpt = Array.isArray(chrome) ? chrome.join(" ") : chrome;
         const opts: any = { tweetLimit: limit, theme };
         if (height != null) opts.height = height;
         if (width != null) opts.width = width;
         if (chromeOpt) opts.chrome = chromeOpt;
 
-        log('createTimeline', { mode, opts });
-        await window.twttr.widgets.createTimeline(
-          { sourceType: 'profile', screenName },
-          ref.current,
-          opts
-        );
+        log("createTimeline", { mode: effectiveMode, opts });
+        await window.twttr.widgets.createTimeline({ sourceType: "profile", screenName }, ref.current, opts);
 
         if (!cancelled) {
           if (timer) clearTimeout(timer);
           setLoading(false);
           setFallback(null);
-          log('widget rendered');
+          log("widget rendered");
         }
       } catch (e) {
-        log('widget error', e);
-        if (mode === 'auto') {
+        log("widget error", e);
+        if (effectiveMode === "auto") {
           if (!cancelled) {
             if (timer) clearTimeout(timer);
             loadFallback();
@@ -137,13 +159,25 @@ export default function XTimeline({
     };
 
     renderWidget();
-    return () => { cancelled = true; if (timer) clearTimeout(timer); };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [username, limit, height, width, theme, Array.isArray(chrome) ? chrome.join(' ') : chrome, mode, nonce]);
+    return () => {
+      cancelled = true;
+      if (timer) clearTimeout(timer);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    username,
+    limit,
+    height,
+    width,
+    theme,
+    Array.isArray(chrome) ? chrome.join(" ") : chrome,
+    effectiveMode,
+    nonce,
+  ]);
 
   // フォールバック表示
   if (fallback) {
-    const profileUrl = `https://twitter.com/${username.replace(/^@/, '')}`;
+    const profileUrl = `https://x.com/${username.replace(/^@/, "")}`;
     return (
       <div className={className} style={{ minHeight }}>
         {fallback.length === 0 ? (
@@ -155,7 +189,7 @@ export default function XTimeline({
               </a>
               <button
                 type="button"
-                onClick={() => setNonce(v => v + 1)}
+                onClick={() => setNonce((v) => v + 1)}
                 className="rounded-md border px-2 py-1 text-xs hover:bg-gray-50"
               >
                 再試行
@@ -172,7 +206,7 @@ export default function XTimeline({
                   </a>
                   {t.pubDate && (
                     <span className="ml-2 text-xs text-gray-500">
-                      {new Date(t.pubDate).toLocaleString('ja-JP')}
+                      {new Date(t.pubDate).toLocaleString("ja-JP", { hour12: false })}
                     </span>
                   )}
                 </li>
