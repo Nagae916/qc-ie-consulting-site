@@ -3,8 +3,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { feedApiPath } from "@/lib/routes";
 
-declare global { interface Window { twttr?: any } }
-
 type ChromeOption = "noheader" | "nofooter" | "noborders" | "transparent" | "noscrollbar";
 type FallbackItem = { title: string; link: string; pubDate: string | null };
 
