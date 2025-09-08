@@ -1,4 +1,5 @@
 // lib/feeds.ts
+// シンプル・運用優先のRSS正規化ユーティリティ（型依存を最小化）
 import Parser from "rss-parser";
 
 export type NormalizedFeedItem = {
@@ -10,16 +11,23 @@ export type NormalizedFeedItem = {
   image?: string | null;
 };
 
-type RssItem = Parser.Item & {
+// ライブラリ型に強く依存しない最小の項目セット
+type RssItem = {
+  title?: string;
+  link?: string;
+  guid?: string;
+  pubDate?: string;
   isoDate?: string;
   date?: string;
   contentSnippet?: string;
+  content?: string;
   enclosure?: { url?: string };
-  // RSSHub/Nitter 等のバリアント対策
   image?: string;
   thumbnail?: string;
   ["media:thumbnail"]?: { $?: { url?: string } };
   ["content:encoded"]?: string;
+  // その他は any 許容（将来のRSS差異に強くする）
+  [key: string]: any;
 };
 
 const parser = new Parser();
@@ -32,7 +40,12 @@ const toISO = (v?: string): string | null => {
 
 const stripHtml = (html?: string): string => {
   if (!html) return "";
-  return html.replace(/<br\s*\/?>/gi, "\n").replace(/<[^>]+>/g, "").trim();
+  return html
+    .replace(/<script[\s\S]*?<\/script>/gi, "")
+    .replace(/<style[\s\S]*?<\/style>/gi, "")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<[^>]+>/g, "")
+    .trim();
 };
 
 const imageFromHtml = (html?: string): string | null => {
@@ -41,31 +54,41 @@ const imageFromHtml = (html?: string): string | null => {
   return m?.[1] ?? null;
 };
 
-/** 任意の RSS URL を正規化して返す（/api/feeds/* から利用） */
+/** 任意のRSS URLをパースして、UIで使いやすい配列へ正規化 */
 export async function fetchFeed(url: string, limit = 10): Promise<NormalizedFeedItem[]> {
-  const feed = await parser.parseURL(url);
-  const source = feed.title ?? "";
-  const items = (feed.items ?? [])
-    .slice(0, limit)
-    // ★ ここで明示的に型注釈（implicit any を排除）
-    .map((it: RssItem): NormalizedFeedItem => {
-      const link = it.link ?? (it as any).guid ?? "";
-      const iso = toISO(it.isoDate ?? it.pubDate ?? it.date);
-      const title = it.title ?? "";
+  try {
+    const feed = await parser.parseURL(url);
+    const source = feed.title ?? "";
 
-      const html = (it as any)["content:encoded"] ?? (it as any).content ?? "";
-      const image =
-        it.enclosure?.url ||
-        it.image ||
-        it.thumbnail ||
-        (it["media:thumbnail"]?.$?.url ?? null) ||
-        imageFromHtml(html);
+    const items = (feed.items ?? [])
+      .map((raw): NormalizedFeedItem | null => {
+        const it = raw as RssItem;
 
-      const description = it.contentSnippet ?? stripHtml(html);
+        const title = it.title ?? "";
+        const link = it.link ?? it.guid ?? "";
+        if (!title || !link) return null;
 
-      return { title, link, source, isoDate: iso, description, image };
-    })
-    .filter((x) => x.title && x.link);
+        const isoDate = toISO(it.isoDate ?? it.pubDate ?? it.date);
 
-  return items;
+        const html = it["content:encoded"] ?? it.content ?? "";
+        const image =
+          it.enclosure?.url ||
+          it.image ||
+          it.thumbnail ||
+          it["media:thumbnail"]?.$?.url ||
+          imageFromHtml(html) ||
+          null;
+
+        const description = it.contentSnippet ?? stripHtml(html);
+
+        return { title, link, source, isoDate, description, image };
+      })
+      .filter((x): x is NormalizedFeedItem => !!x)
+      .slice(0, limit);
+
+    return items;
+  } catch {
+    // 壊れたRSSや一時エラーでも全体を落とさない
+    return [];
+  }
 }
