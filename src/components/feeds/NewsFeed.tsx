@@ -1,5 +1,6 @@
 // src/components/feeds/NewsFeed.tsx
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { feedApiPath } from "@/lib/routes";
 
 type NewsItem = {
   title: string;
@@ -59,19 +60,14 @@ export default function NewsFeed({
   const [items, setItems] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const requestUrl = useMemo(
-    () => `/api/news?limit=${encodeURIComponent(limit)}&_=${Date.now()}`,
-    [limit]
-  );
+  // ▼ 集約APIに一本化 + キャッシュ有効化（クエリにタイムスタンプは付けない）
+  const requestUrl = useMemo(() => feedApiPath("news", limit), [limit]);
 
   const fetchNews = useCallback(
     async (signal?: AbortSignal | null) => {
       try {
-        // undefined のときはプロパティ自体を付けない（型エラー回避）
-        const init: RequestInit = {
-          cache: "no-store",
-          ...(signal ? { signal } : {}),
-        };
+        // ▼ ブラウザ側の no-store は外す（CDNキャッシュを活かす）
+        const init: RequestInit = signal ? { signal } : {};
         const r = await fetch(requestUrl, init);
         if (!r.ok) {
           setItems([]);
@@ -102,9 +98,7 @@ export default function NewsFeed({
   const Header = (
     <div className="px-5 py-4 border-b border-brand-200 bg-brand-100/60 rounded-t-xl2">
       <h3 className="font-semibold text-brand-900">ニュース（経営工学／品質管理）</h3>
-      <p className="text-xs text-gray-600 mt-1">
-        GoogleニュースRSSから自動収集（30分キャッシュ）
-      </p>
+      <p className="text-xs text-gray-600 mt-1">GoogleニュースRSSから自動収集（30分キャッシュ）</p>
     </div>
   );
 
@@ -132,23 +126,13 @@ export default function NewsFeed({
         {Header}
         <ul className="divide-y divide-brand-200">
           {items.map((it, idx) => (
-            <li
-              key={it.link || `${it.title}-${idx}`}
-              className="p-4 hover:bg-brand-50/60 transition"
-            >
-              <a
-                href={it.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block"
-              >
+            <li key={it.link || `${it.title}-${idx}`} className="p-4 hover:bg-brand-50/60 transition">
+              <a href={it.link} target="_blank" rel="noopener noreferrer" className="block">
                 <p className="font-medium text-brand-900">{it.title}</p>
                 <p className="text-xs text-gray-500 mt-1">
                   {it.source || hostOf(it.link)}
                   {it.pubDate
-                    ? ` ・ ${new Date(it.pubDate).toLocaleString("ja-JP", {
-                        hour12: false,
-                      })}`
+                    ? ` ・ ${new Date(it.pubDate).toLocaleString("ja-JP", { hour12: false })}`
                     : ""}
                 </p>
               </a>
@@ -160,31 +144,4 @@ export default function NewsFeed({
   }
 
   return (
-    <div className="rounded-xl2 bg-white shadow-soft border border-brand-200">
-      {Header}
-      <div className="p-4 grid grid-cols-1 gap-3">
-        {items.map((it, idx) => (
-          <a
-            key={it.link || `${it.title}-${idx}`}
-            href={it.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block rounded-xl border border-black/10 bg-white p-4 shadow-sm hover:shadow-md transition"
-          >
-            <p className="font-medium text-gray-900 line-clamp-2">{it.title}</p>
-            <div className="mt-2 flex items-center justify-between text-xs text-gray-500">
-              <span>{it.source || hostOf(it.link)}</span>
-              <span>
-                {it.pubDate
-                  ? new Date(it.pubDate).toLocaleString("ja-JP", {
-                      hour12: false,
-                    })
-                  : ""}
-              </span>
-            </div>
-          </a>
-        ))}
-      </div>
-    </div>
-  );
-}
+    <div className="rounded-xl2 bg-white shadow-soft border bo
