@@ -15,9 +15,16 @@
     "check:dup": "node ./scripts/check-duplicate-urls.js",
     "check:audit": "node ./scripts/audit-guides.js",
     "check:fast": "npm run lint:fast && npm run check:routes && npm run check:dup && npm run check:audit",
-    "check:ci": "npm run gen && npm run check:fast && next build",
+    "check:ci": "npm run gen && npm run lint:all && npm run check:fast && next build",
     "guard": "node scripts/guard-mdx.js",
-    "check": "npm run check:fast"
+    "check": "npm run check:fast",
+
+    "typecheck": "tsc --noEmit",
+    "lint:unused:code": "knip",
+    "lint:unused:exports": "ts-prune -p tsconfig.json",
+    "lint:unused:deps": "depcheck --ignores=@types/node --skip-missing=true --ignore-dirs=node_modules,.next,.contentlayer",
+    "lint:graph": "madge --circular --extensions ts,tsx src pages",
+    "lint:all": "npm run typecheck && npm run lint:unused:code && npm run lint:unused:exports && npm run lint:unused:deps && npm run lint:graph"
   },
   "dependencies": {
     "next": "14.2.5",
@@ -31,7 +38,6 @@
     "remark-math": "^6.0.0",
     "rehype-katex": "^7.0.0",
     "katex": "^0.16.11",
-
     "unified": "^11.0.0",
     "remark-parse": "^11.0.0",
     "remark-gfm": "^4.0.0",
@@ -48,9 +54,14 @@
     "autoprefixer": "10.4.20",
     "eslint": "8.57.0",
     "eslint-config-next": "14.2.5",
+    "eslint-plugin-unused-imports": "^3",
     "postcss": "8.4.41",
     "tailwindcss": "3.4.10",
-    "typescript": "5.5.4"
+    "typescript": "5.5.4",
+    "knip": "^4",
+    "depcheck": "^1",
+    "ts-prune": "^0.10",
+    "madge": "^6"
   },
   "overrides": {
     "eslint": "8.57.0"
