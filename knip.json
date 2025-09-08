@@ -1,0 +1,20 @@
+{
+  "$schema": "https://raw.githubusercontent.com/webpro/knip/main/website/static/knip.schema.json",
+  "entry": [
+    "next.config.js",
+    "contentlayer.config.ts",
+    "pages/**/*.{ts,tsx}",
+    "src/**/*.{ts,tsx}"
+  ],
+  "ignore": [
+    ".next/**",
+    ".contentlayer/**",
+    "public/**",
+    "content/**",
+    "scripts/**",
+    "styles/**"
+  ],
+  "project": [
+    "{pages,src}/**/*.{ts,tsx}"
+  ]
+}
