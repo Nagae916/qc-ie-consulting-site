@@ -1,6 +1,8 @@
 // src/lib/routes.ts
+// 既存API互換を保ちながら、外部フィード用の共通パスヘルパを追加。
+// シンプル運用・見通し優先で最小限の型と関数に留めています。
 
-// ====== 既存APIを維持しつつ拡張 ======
+// ====== ガイド関連（既存） ======
 export type GuideSlug =
   | "qc-seven-tools"
   | "new-qc-seven-tools"
@@ -23,7 +25,7 @@ export function guideUrl(slug: GuideSlug): `/guides/qc/${GuideSlug}` {
   return `/guides/qc/${slug}`;
 }
 
-// ====== 一覧カード用のメタ定義（新規追加） ======
+// ====== 一覧カード用のメタ定義（既存＋拡張余地） ======
 export type GuideCard = {
   slug: GuideSlug;             // /guides/qc/${slug}
   title: string;
@@ -80,22 +82,43 @@ export const GUIDE_CARDS: GuideCard[] = [
 ];
 
 // 公開カードだけを使いたい場合はこれを参照
-export const PUBLISHED_GUIDE_CARDS = GUIDE_CARDS.filter(c => c.published);
+export const PUBLISHED_GUIDE_CARDS = GUIDE_CARDS.filter((c) => c.published);
 
 // =====================================================
-// 追記：外部フィード API のパス生成（集約API /api/feeds/[key] を想定）
+// 外部フィード API のパス生成（集約API /api/feeds/[key] を想定）
 // =====================================================
 
-// フィード種別
 export type FeedKey = "news" | "blog" | "note" | "instagram" | "x";
 
-// APIエンドポイント生成（limitは任意）
-export const feedApiPath = (key: FeedKey, limit?: number): string =>
-  `/api/feeds/${key}${typeof limit === "number" ? `?limit=${encodeURIComponent(limit)}` : ""}`;
+/**
+ * 共通APIエンドポイント生成。
+ * - limit のほか、任意のクエリ（例：{ user: "nieqc_0713" }）も付与可能。
+ * - 例）feedApiPath("note", 6, { user: "nieqc_0713" })
+ */
+export function feedApiPath(
+  key: FeedKey,
+  limit?: number,
+  params?: Record<string, string | number | boolean | undefined | null>
+): string {
+  const qs = new URLSearchParams();
+  if (typeof limit === "number") qs.set("limit", String(limit));
+  if (params) {
+    for (const [k, v] of Object.entries(params)) {
+      if (v === undefined || v === null) continue;
+      const s = String(v);
+      if (s.trim() !== "") qs.set(k, s);
+    }
+  }
+  const q = qs.toString();
+  return q ? `/api/feeds/${key}?${q}` : `/api/feeds/${key}`;
+}
 
 // 便利ショートカット（使わなければ削除可）
 export const newsApi = (limit?: number) => feedApiPath("news", limit);
 export const blogApi = (limit?: number) => feedApiPath("blog", limit);
-export const noteApi = (limit?: number) => feedApiPath("note", limit);
+export const noteApi = (limit?: number, user?: string) =>
+  feedApiPath("note", limit, user ? { user: user.replace(/^@/, "") } : undefined);
 export const instagramApi = (limit?: number) => feedApiPath("instagram", limit);
-export const xApi = (limit?: number) => feedApiPath("x", limit);
+export const xApi = (limit?: number, user?: string) =>
+  // X は通常 .env の既定URLで取得するが、必要なら user をクエリに渡せる
+  feedApiPath("x", limit, user ? { user: user.replace(/^@/, "") } : undefined);
