@@ -81,3 +81,21 @@ export const GUIDE_CARDS: GuideCard[] = [
 
 // 公開カードだけを使いたい場合はこれを参照
 export const PUBLISHED_GUIDE_CARDS = GUIDE_CARDS.filter(c => c.published);
+
+// =====================================================
+// 追記：外部フィード API のパス生成（集約API /api/feeds/[key] を想定）
+// =====================================================
+
+// フィード種別
+export type FeedKey = "news" | "blog" | "note" | "instagram" | "x";
+
+// APIエンドポイント生成（limitは任意）
+export const feedApiPath = (key: FeedKey, limit?: number): string =>
+  `/api/feeds/${key}${typeof limit === "number" ? `?limit=${encodeURIComponent(limit)}` : ""}`;
+
+// 便利ショートカット（使わなければ削除可）
+export const newsApi = (limit?: number) => feedApiPath("news", limit);
+export const blogApi = (limit?: number) => feedApiPath("blog", limit);
+export const noteApi = (limit?: number) => feedApiPath("note", limit);
+export const instagramApi = (limit?: number) => feedApiPath("instagram", limit);
+export const xApi = (limit?: number) => feedApiPath("x", limit);
