@@ -8,64 +8,39 @@ export default function NoteFeed({ limit = 6, user }: { limit?: number; user?: s
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // ▼ 集約APIに一本化（.env の NOTE_RSS_URL を参照）
-  //   - タイムスタンプは付けない（CDNキャッシュを活かす）
-  //   - user は無視（URLは .env で固定運用）
-  const requestUrl = useMemo(() => feedApiPath("note", limit), [limit]);
-
-  const fetchNotes = useCallback(
-    async (signal?: AbortSignal | null) => {
-      try {
-        // ▼ ブラウザ側の no-store は外す（CDN キャッシュが効く）
-        const init: RequestInit = signal ? { signal } : {};
-        const res = await fetch(requestUrl, init);
-        const json = await res.json().catch(() => ({ data: [] as any[] }));
-        const arr: any[] = Array.isArray(json) ? json : Array.isArray(json?.data) ? json.data : [];
-
-        const normalized: Item[] = arr
-          .map((it) => ({
-            title: String(it.title || ""),
-            link: String(it.link || ""),
-            pubDate:
-              typeof it.pubDate === "string"
-                ? new Date(it.pubDate).toISOString()
-                : typeof it.isoDate === "string"
-                ? new Date(it.isoDate).toISOString()
-                : null,
-            excerpt: String(it.description ?? it.contentSnippet ?? ""),
-          }))
-          .filter((x) => x.title && x.link)
-          .sort((a, b) => new Date(b.pubDate || 0).getTime() - new Date(a.pubDate || 0).getTime())
-          .slice(0, limit);
-
-        setItems(normalized);
-      } catch {
-        setItems([]);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [requestUrl, limit]
+  const normalizedUser = useMemo(() => (user ? user.replace(/^@/, "") : undefined), [user]);
+  const requestUrl = useMemo(
+    () => feedApiPath("note", limit, normalizedUser ? { user: normalizedUser } : undefined),
+    [limit, normalizedUser]
   );
+
+  const fetchNotes = useCallback(async (signal?: AbortSignal | null) => {
+    try {
+      const init: RequestInit = { cache: "no-store", ...(signal ? { signal } : {}) };
+      const res = await fetch(requestUrl, init);
+      const arr: any[] = await res.json().catch(() => []);
+      const normalized: Item[] = (Array.isArray(arr) ? arr : [])
+        .map((it) => ({
+          title: String(it.title || ""),
+          link: String(it.link || ""),
+          pubDate: typeof it.isoDate === "string" ? it.isoDate : null,
+          excerpt: String(it.description || ""),
+        }))
+        .filter((x) => x.title && x.link)
+        .slice(0, limit);
+      setItems(normalized);
+    } catch {
+      setItems([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [limit, requestUrl]);
 
   useEffect(() => {
     setLoading(true);
     const ac = new AbortController();
     fetchNotes(ac.signal);
-
-    // 画面復帰時と5分間隔で更新（CDNキャッシュがあるので軽い）
-    const onVis = () => {
-      if (document.visibilityState === "visible") fetchNotes(null);
-    };
-    document.addEventListener("visibilitychange", onVis);
-
-    const iv = window.setInterval(() => fetchNotes(null), 5 * 60 * 1000); // 5分
-
-    return () => {
-      ac.abort();
-      clearInterval(iv);
-      document.removeEventListener("visibilitychange", onVis);
-    };
+    return () => ac.abort();
   }, [fetchNotes]);
 
   if (loading) return <div className="p-4 text-gray-600">note記事を読み込み中…</div>;
@@ -75,7 +50,7 @@ export default function NoteFeed({ limit = 6, user }: { limit?: number; user?: s
     <div className="rounded-xl2 bg-white shadow-soft border border-brand-200">
       <div className="px-5 py-4 border-b border-brand-200 bg-brand-100/60 rounded-t-xl2">
         <h3 className="font-semibold text-brand-900">note（最新）</h3>
-        <p className="text-xs text-gray-600 mt-1">RSSから自動取得（CDNキャッシュ＋クライアント定期更新）</p>
+        <p className="text-xs text-gray-600 mt-1">RSSから自動取得（30分キャッシュ）</p>
       </div>
       <ul className="divide-y divide-brand-200">
         {items.map((it) => (
