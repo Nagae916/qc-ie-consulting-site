@@ -18,14 +18,14 @@ function stripHtml(html?: string): string {
   return html.replace(/<br\s*\/?>/gi, "\n").replace(/<[^>]+>/g, "").trim();
 }
 
-/** description等から最初の画像URLを抜く（RSSHubのInstagramに対応） */
+/** description 等から最初の画像URLを抽出（RSSHubのInstagramに対応） */
 function firstImageFromHtml(html?: string): string | null {
   if (!html) return null;
   const m = html.match(/<img[^>]+src=["']([^"']+)["']/i);
   return m?.[1] ?? null;
 }
 
-export default function InstagramFeed({ limit = 6 }: { limit?: number }) {
+export default function InstagramFeed({ limit = 3 }: { limit?: number }) {
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
@@ -58,23 +58,31 @@ export default function InstagramFeed({ limit = 6 }: { limit?: number }) {
               (it.enclosure?.url as string | undefined) ||
               firstImageFromHtml(desc);
 
+            const ts =
+              typeof it.pubDate === "string"
+                ? new Date(it.pubDate).toISOString()
+                : typeof it.isoDate === "string"
+                ? new Date(it.isoDate).toISOString()
+                : null;
+
             return {
               id: link || `ig-${idx}`,
               caption: stripHtml(title || desc) || "（キャプションなし）",
               media_url: img ?? null,
               permalink: link || "#",
-              timestamp:
-                typeof it.pubDate === "string"
-                  ? new Date(it.pubDate).toISOString()
-                  : typeof it.isoDate === "string"
-                  ? new Date(it.isoDate).toISOString()
-                  : null,
+              timestamp: ts,
             };
           })
-          .filter((x) => !!x.permalink)
-          .slice(0, limit);
+          .filter((x) => !!x.permalink);
 
-        if (mounted) setItems(mapped);
+        // ▼ 「直近3件」を保証：時刻降順に並べてから slice
+        const sorted = mapped.sort(
+          (a, b) =>
+            new Date(b.timestamp || 0).getTime() - new Date(a.timestamp || 0).getTime()
+        );
+        const limited = sorted.slice(0, limit);
+
+        if (mounted) setItems(limited);
       } catch (e: any) {
         if (mounted) setErr(e?.message ?? "取得に失敗しました");
       } finally {
