@@ -1,5 +1,5 @@
 // lib/feeds.ts
-// シンプル・運用優先のRSS正規化ユーティリティ（型依存を最小化）
+// シンプル・運用優先のRSS正規化ユーティリティ（型依存は最小限）
 import Parser from "rss-parser";
 
 export type NormalizedFeedItem = {
@@ -11,7 +11,7 @@ export type NormalizedFeedItem = {
   image?: string | null;
 };
 
-// ライブラリ型に強く依存しない最小の項目セット
+// ライブラリ型に強く依存しない、必要最小限の項目セット
 type RssItem = {
   title?: string;
   link?: string;
@@ -26,8 +26,8 @@ type RssItem = {
   thumbnail?: string;
   ["media:thumbnail"]?: { $?: { url?: string } };
   ["content:encoded"]?: string;
-  // その他は any 許容（将来のRSS差異に強くする）
-  [key: string]: any;
+  // 将来の差分に耐えるため余剰フィールドは許容
+  [key: string]: unknown;
 };
 
 const parser = new Parser();
@@ -54,14 +54,17 @@ const imageFromHtml = (html?: string): string | null => {
   return m?.[1] ?? null;
 };
 
-/** 任意のRSS URLをパースして、UIで使いやすい配列へ正規化 */
+/** 任意のRSS URLをパースして、UIで使いやすい配列へ正規化（壊れても空配列で返す） */
 export async function fetchFeed(url: string, limit = 10): Promise<NormalizedFeedItem[]> {
   try {
     const feed = await parser.parseURL(url);
-    const source = feed.title ?? "";
+    const source = feed?.title ?? "";
 
-    const items = (feed.items ?? [])
-      .map((raw): NormalizedFeedItem | null => {
+    // feed.items を unknown[] として安全に受ける
+    const list: unknown[] = Array.isArray(feed?.items) ? (feed!.items as unknown[]) : [];
+
+    const items = list
+      .map((raw: unknown): NormalizedFeedItem | null => {
         const it = raw as RssItem;
 
         const title = it.title ?? "";
