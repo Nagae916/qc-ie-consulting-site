@@ -1,5 +1,6 @@
 // src/components/feeds/XTimeline.tsx
-import { useEffect, useMemo, useRef, useState } from "react";
+"use client";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { feedApiPath } from "@/lib/routes";
 
 declare global { interface Window { twttr?: any } }
@@ -8,15 +9,17 @@ type ChromeOption = "noheader" | "nofooter" | "noborders" | "transparent" | "nos
 type FallbackItem = { title: string; link: string; pubDate: string | null };
 
 type Props = {
-  username: string;
-  limit?: number;
+  username: string;                       // '@' あり/なし OK
+  limit?: number;                         // 既定 5
   height?: number | string;
   width?: number | string;
   theme?: "light" | "dark";
   chrome?: ChromeOption[] | string;
   className?: string;
-  minHeight?: number;
+  minHeight?: number;                     // 既定 600
+  /** 表示モード：auto=まずwidget,失敗時fallback / widget=常にウィジェット / fallback=常に軽量表示 */
   mode?: "auto" | "widget" | "fallback";
+  /** 任意：デバッグログ */
   debug?: boolean;
 };
 
@@ -40,12 +43,14 @@ export default function XTimeline({
   const envMode = (process.env.NEXT_PUBLIC_X_EMBED_MODE as "auto" | "widget" | "fallback" | undefined) ?? undefined;
   const effectiveMode: "auto" | "widget" | "fallback" = mode ?? envMode ?? "auto";
 
-  const log = (...a: any[]) => { if (debug) console.log("[XTimeline]", ...a); };
-
-  // ★ 依存配列の複雑式をここで正規化（警告解消）
+  // ◎ 依存配列のキー化（配列→文字列）
   const chromeKey = useMemo(() => (Array.isArray(chrome) ? chrome.join(" ") : chrome) ?? "", [chrome]);
 
-  const loadFallback = async () => {
+  // ◎ 安定化したログ関数（依存は debug のみ）
+  const log = useCallback((...a: any[]) => { if (debug) console.log("[XTimeline]", ...a); }, [debug]);
+
+  // ◎ フォールバック取得（依存を明示）→ useEffect の deps に入れられる
+  const loadFallback = useCallback(async () => {
     try {
       const url = feedApiPath("x", limit);
       const r = await fetch(url);
@@ -58,8 +63,8 @@ export default function XTimeline({
           pubDate:
             typeof it.pubDate === "string"
               ? new Date(it.pubDate).toISOString()
-              : typeof it.isoDate === "string"
-              ? new Date(it.isoDate).toISOString()
+              : typeof (it as any).isoDate === "string"
+              ? new Date((it as any).isoDate).toISOString()
               : null,
         }))
         .filter((x) => x.title && x.link)
@@ -72,7 +77,7 @@ export default function XTimeline({
     } finally {
       setLoading(false);
     }
-  };
+  }, [limit, log]);
 
   useEffect(() => {
     let cancelled = false;
@@ -150,9 +155,13 @@ export default function XTimeline({
 
     renderWidget();
     return () => { cancelled = true; if (timer) clearTimeout(timer); };
-  // ★ 依存配列はプリミティブのみ
-  }, [username, limit, height, width, theme, chromeKey, effectiveMode, nonce, debug, loading]);
+  }, [
+    username, limit, height, width, theme,
+    chromeKey, effectiveMode, nonce, loading,
+    loadFallback, log,
+  ]);
 
+  // フォールバック表示
   if (fallback) {
     const profileUrl = `https://x.com/${username.replace(/^@/, "")}`;
     return (
@@ -200,5 +209,6 @@ export default function XTimeline({
     );
   }
 
+  // 公式ウィジェット表示
   return <div ref={ref} className={className} style={{ minHeight }} />;
 }
