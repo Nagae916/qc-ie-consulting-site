@@ -3,7 +3,7 @@
 const baseConfig = {
   reactStrictMode: true,
 
-  // MD/MDX は「ページ」化せず Contentlayer 経由で読むため、拡張子は TS/TSX のみに限定
+  // MD/MDX はページ化せず Contentlayer 経由で読むため、拡張子は TS/TSX のみに限定
   pageExtensions: ['ts', 'tsx'],
 
   async rewrites() {
@@ -14,10 +14,12 @@ const baseConfig = {
   },
 };
 
-// next-contentlayer が入っていれば使う（無ければそのまま）— @next/mdx 依存は廃止
+// ★ 固定：contentlayer2 系を使用（next-contentlayer → next-contentlayer2）
 let withContentlayer = (cfg) => cfg;
 try {
-  ({ withContentlayer } = require('next-contentlayer'));
-} catch (_) {}
+  ({ withContentlayer } = require('next-contentlayer2'));
+} catch (_) {
+  // 依存が無い環境でもビルドを壊さない（そのまま baseConfig を返す）
+}
 
 module.exports = withContentlayer(baseConfig);
