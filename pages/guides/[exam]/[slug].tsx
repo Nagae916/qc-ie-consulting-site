@@ -3,19 +3,21 @@ import type { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "ne
 import Head from "next/head";
 import Link from "next/link";
 import { allGuides, type Guide } from "contentlayer/generated";
-import { useMDXComponent } from "next-contentlayer/hooks";
+// ★ 修正：contentlayer2 の hooks を使用
+import { useMDXComponent } from "next-contentlayer2/hooks";
 
 // ▼ MDXで使える“許可コンポーネント”を注入
 import { Quiz } from "@/components/guide/Quiz";
 import ControlChart from "@/components/guide/ControlChart";
 
-// ▼ フォールバック（MD→HTML）。※sanitizeは未使用：KaTeX破損回避
+// ▼ フォールバック用（MDXコードが無い場合に Markdown(+Math)→HTML へ）
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import remarkRehype from "remark-rehype";
 import rehypeKatex from "rehype-katex";
+import rehypeSanitize from "rehype-sanitize";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeStringify from "rehype-stringify";
@@ -70,6 +72,7 @@ async function mdToHtml(mdxRaw: string): Promise<string> {
     .use(remarkMath)
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeKatex)
+    .use(rehypeSanitize)
     .use(rehypeSlug)
     .use(rehypeAutolinkHeadings, { behavior: "wrap" })
     .use(rehypeStringify, { allowDangerousHtml: true })
@@ -133,7 +136,9 @@ export default function GuidePage({
     `${guide._raw?.flattenedPath ?? `${exam}/${(guide as any).slug}`}.mdx`;
   const editUrl = `https://github.com/Nagae916/qc-ie-consulting-site/edit/main/content/${sourcePath}`;
 
-  const components = componentsMap();
+  // ★ Hooksの順序を安定させる：常に呼び出す
+  const MDX = useMDXComponent(mdxCode || "");
+  const components = useMemoizedComponents();
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
@@ -146,8 +151,13 @@ export default function GuidePage({
       </Head>
 
       <nav className="mb-4 text-sm text-gray-500">
-        <Link href="/guides" className="underline">ガイド</Link>{" / "}
-        <Link href={`/guides/${exam}`} className={`underline ${theme.link}`}>{EXAM_LABEL[exam]}</Link>
+        <Link href="/guides" className="underline">
+          ガイド
+        </Link>
+        {" / "}
+        <Link href={`/guides/${exam}`} className={`underline ${theme.link}`}>
+          {EXAM_LABEL[exam]}
+        </Link>
       </nav>
 
       <div className={`h-1 w-full rounded-t-2xl ${theme.accent} mb-3`} />
@@ -156,37 +166,23 @@ export default function GuidePage({
       <div className="mt-2 text-xs text-gray-500">
         <span suppressHydrationWarning>{updatedYmd ? `更新: ${updatedYmd}` : ""}</span>
         {guide.version ? <span className="ml-2">v{guide.version}</span> : null}
-        <a href={editUrl} target="_blank" rel="noreferrer" className="ml-3 underline">編集する</a>
+        <a href={editUrl} target="_blank" rel="noreferrer" className="ml-3 underline">
+          編集する
+        </a>
       </div>
 
       {/* 優先：MDX（Reactコンポーネント可）／ 代替：HTML */}
       <article className="prose prose-neutral max-w-none mt-6">
-        {mdxCode ? (
-          <MDXRenderer code={mdxCode} components={components} />
-        ) : (
-          <div dangerouslySetInnerHTML={{ __html: html ?? "" }} />
-        )}
+        {mdxCode ? <MDX components={components} /> : <div dangerouslySetInnerHTML={{ __html: html ?? "" }} />}
       </article>
     </main>
   );
 }
 
-/** “許可コンポーネント”の注入ポイント（ここを増やせば全ガイドに効く） */
-function componentsMap() {
+/** components のメモ化（“許可コンポーネント”をここに集約） */
+function useMemoizedComponents() {
   return {
     Quiz,
     ControlChart,
   };
-}
-
-/** useMDXComponent を条件分岐の“外”で呼ぶための分離コンポーネント */
-function MDXRenderer({
-  code,
-  components,
-}: {
-  code: string;
-  components: Record<string, any>;
-}) {
-  const MDX = useMDXComponent(code);
-  return <MDX components={components} />;
 }
