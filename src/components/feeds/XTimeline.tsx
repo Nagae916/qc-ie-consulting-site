@@ -1,9 +1,10 @@
 // src/components/feeds/XTimeline.tsx
-"use client";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { feedApiPath } from "@/lib/routes";
+'use client';
 
-type ChromeOption = "noheader" | "nofooter" | "noborders" | "transparent" | "noscrollbar";
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { feedApiPath } from '../../lib/routes';
+
+type ChromeOption = 'noheader' | 'nofooter' | 'noborders' | 'transparent' | 'noscrollbar';
 type FallbackItem = { title: string; link: string; pubDate: string | null };
 
 type Props = {
@@ -11,12 +12,14 @@ type Props = {
   limit?: number;                         // 既定 5
   height?: number | string;
   width?: number | string;
-  theme?: "light" | "dark";
+  theme?: 'light' | 'dark';
   chrome?: ChromeOption[] | string;
   className?: string;
   minHeight?: number;                     // 既定 600
   /** 表示モード：auto=まずwidget,失敗時fallback / widget=常にウィジェット / fallback=常に軽量表示 */
-  mode?: "auto" | "widget" | "fallback";
+  mode?: 'auto' | 'widget' | 'fallback';
+  /** SSR/ISRから渡す軽量リスト（あればフォールバック時に即表示） */
+  items?: FallbackItem[];
   /** 任意：デバッグログ */
   debug?: boolean;
 };
@@ -26,78 +29,91 @@ export default function XTimeline({
   limit = 5,
   height,
   width,
-  theme = "light",
+  theme = 'light',
   chrome,
   className,
   minHeight = 600,
   mode,
+  items,
   debug = false,
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
-  const [fallback, setFallback] = useState<FallbackItem[] | null>(null);
+
+  // SSRの items があれば初期値に採用（フォールバック即表示）
+  const [fallback, setFallback] = useState<FallbackItem[] | null>(items ?? null);
   const [loading, setLoading] = useState(true);
   const [nonce, setNonce] = useState(0);
 
-  const envMode = (process.env.NEXT_PUBLIC_X_EMBED_MODE as "auto" | "widget" | "fallback" | undefined) ?? undefined;
-  const effectiveMode: "auto" | "widget" | "fallback" = mode ?? envMode ?? "auto";
+  const envMode = (process.env.NEXT_PUBLIC_X_EMBED_MODE as 'auto' | 'widget' | 'fallback' | undefined) ?? undefined;
+  const effectiveMode: 'auto' | 'widget' | 'fallback' = mode ?? envMode ?? 'auto';
 
-  // ◎ 依存配列のキー化（配列→文字列）
-  const chromeKey = useMemo(() => (Array.isArray(chrome) ? chrome.join(" ") : chrome) ?? "", [chrome]);
+  // 依存を安定化
+  const chromeKey = useMemo(() => (Array.isArray(chrome) ? chrome.join(' ') : chrome) ?? '', [chrome]);
+  const screenName = useMemo(() => username.replace(/^@/, ''), [username]);
 
-  // ◎ 安定化したログ関数（依存は debug のみ）
-  const log = useCallback((...a: any[]) => { if (debug) console.log("[XTimeline]", ...a); }, [debug]);
+  const log = useCallback((...a: any[]) => { if (debug) console.log('[XTimeline]', ...a); }, [debug]);
 
-  // ◎ フォールバック取得（依存を明示）→ useEffect の deps に入れられる
+  // フォールバックをAPIから取得
   const loadFallback = useCallback(async () => {
     try {
-      const url = feedApiPath("x", limit);
+      // SSRから渡された items があればそれを優先して表示
+      if (items && items.length) {
+        setFallback(items.slice(0, limit));
+        setLoading(false);
+        log('use SSR items as fallback:', items.length);
+        return;
+      }
+      const url = feedApiPath('x', limit);
       const r = await fetch(url);
-      if (!r.ok) throw new Error("fallback fetch failed");
+      if (!r.ok) throw new Error('fallback fetch failed');
       const data: any[] = await r.json().catch(() => []);
-      const items: FallbackItem[] = (Array.isArray(data) ? data : [])
+      const mapped: FallbackItem[] = (Array.isArray(data) ? data : [])
         .map((it) => ({
-          title: String(it.title || ""),
-          link: String(it.link || ""),
+          title: String(it?.title || ''),
+          link: String(it?.link || ''),
           pubDate:
-            typeof it.pubDate === "string"
-              ? new Date(it.pubDate).toISOString()
-              : typeof (it as any).isoDate === "string"
-              ? new Date((it as any).isoDate).toISOString()
+            typeof it?.pubDate === 'string'
+              ? it.pubDate
+              : typeof (it as any)?.isoDate === 'string'
+              ? (it as any).isoDate
               : null,
         }))
         .filter((x) => x.title && x.link)
         .slice(0, limit);
-      setFallback(items);
-      log("fallback items:", items.length);
+      setFallback(mapped);
+      log('fallback items:', mapped.length);
     } catch (e) {
       setFallback([]);
-      log("fallback failed", e);
+      log('fallback failed', e);
     } finally {
       setLoading(false);
     }
-  }, [limit, log]);
+  }, [items, limit, log]);
 
   useEffect(() => {
     let cancelled = false;
     let timer: number | undefined;
 
-    if (effectiveMode === "fallback") {
-      log("mode=fallback → always fallback");
+    // 常に軽量表示
+    if (effectiveMode === 'fallback') {
+      log('mode=fallback → always fallback');
       loadFallback();
-      return;
+      return () => { /* noop */ };
     }
 
     const ensureWidgets = async () => {
-      const src = "https://platform.twitter.com/widgets.js";
-      if (window.twttr?.widgets?.createTimeline) return;
+      const src = 'https://platform.twitter.com/widgets.js';
+      const twttr = (window as any).twttr;
+      if (twttr?.widgets?.createTimeline) return;
+
       await new Promise<void>((resolve) => {
         const existing = document.querySelector(`script[src="${src}"]`) as HTMLScriptElement | null;
         if (existing) {
-          if (window.twttr) resolve();
-          else existing.addEventListener("load", () => resolve());
+          if ((window as any).twttr) resolve();
+          else existing.addEventListener('load', () => resolve());
           return;
         }
-        const s = document.createElement("script");
+        const s = document.createElement('script');
         s.src = src;
         s.async = true;
         s.onload = () => resolve();
@@ -110,58 +126,55 @@ export default function XTimeline({
       try {
         await ensureWidgets();
 
-        if (effectiveMode === "auto") {
+        // auto のときは4秒でタイムアウト → フォールバック
+        if (effectiveMode === 'auto') {
           timer = window.setTimeout(() => {
-            if (!cancelled && loading) {
-              log("widget timeout → fallback");
+            if (!cancelled) {
+              log('widget timeout → fallback');
               loadFallback();
             }
           }, 4000);
         }
 
-        if (cancelled || !ref.current || !window.twttr?.widgets?.createTimeline) return;
+        const twttr = (window as any).twttr;
+        if (cancelled || !ref.current || !twttr?.widgets?.createTimeline) return;
 
-        const screenName = username.replace(/^@/, "");
-        ref.current.innerHTML = "";
+        ref.current.innerHTML = '';
 
         const opts: any = { tweetLimit: limit, theme };
         if (height != null) opts.height = height;
         if (width != null) opts.width = width;
         if (chromeKey) opts.chrome = chromeKey;
 
-        log("createTimeline", { mode: effectiveMode, opts });
-        await window.twttr.widgets.createTimeline({ sourceType: "profile", screenName }, ref.current, opts);
+        log('createTimeline', { mode: effectiveMode, opts });
+        await twttr.widgets.createTimeline({ sourceType: 'profile', screenName }, ref.current, opts);
 
         if (!cancelled) {
           if (timer) clearTimeout(timer);
           setLoading(false);
           setFallback(null);
-          log("widget rendered");
+          log('widget rendered');
         }
       } catch (e) {
-        log("widget error", e);
-        if (effectiveMode === "auto") {
-          if (!cancelled) {
-            if (timer) clearTimeout(timer);
+        log('widget error', e);
+        if (!cancelled) {
+          if (timer) clearTimeout(timer);
+          if (effectiveMode === 'auto') {
             loadFallback();
+          } else {
+            setLoading(false);
           }
-        } else {
-          setLoading(false);
         }
       }
     };
 
     renderWidget();
     return () => { cancelled = true; if (timer) clearTimeout(timer); };
-  }, [
-    username, limit, height, width, theme,
-    chromeKey, effectiveMode, nonce, loading,
-    loadFallback, log,
-  ]);
+  }, [screenName, limit, height, width, theme, chromeKey, effectiveMode, nonce, loadFallback, log]);
 
   // フォールバック表示
   if (fallback) {
-    const profileUrl = `https://x.com/${username.replace(/^@/, "")}`;
+    const profileUrl = `https://x.com/${screenName}`;
     return (
       <div className={className} style={{ minHeight }}>
         {fallback.length === 0 ? (
@@ -190,7 +203,7 @@ export default function XTimeline({
                   </a>
                   {t.pubDate && (
                     <span className="ml-2 text-xs text-gray-500">
-                      {new Date(t.pubDate).toLocaleString("ja-JP", { hour12: false })}
+                      {new Date(t.pubDate).toLocaleString('ja-JP', { hour12: false })}
                     </span>
                   )}
                 </li>
