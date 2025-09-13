@@ -1,7 +1,8 @@
 // src/components/feeds/NewsFeed.tsx
-import { useCallback, useEffect, useMemo, useState } from "react";
+'use client';
+import { useEffect, useState } from 'react';
 // エイリアスに依存しない相対参照（環境差で壊れない）
-import { feedApiPath } from "../../lib/routes";
+import { feedApiPath } from '../../lib/routes';
 
 type NewsItem = {
   title: string;
@@ -13,59 +14,63 @@ type NewsItem = {
 function hostOf(url: string) {
   try {
     const h = new URL(url).hostname;
-    return h.startsWith("www.") ? h.slice(4) : h;
+    return h.startsWith('www.') ? h.slice(4) : h;
   } catch {
-    return "";
+    return '';
   }
 }
 
 export default function NewsFeed({
   limit = 5,
-  // 未使用警告を出さないために _variant として受ける（UIはカード固定）
-  variant: _variant = "card",
+  // レイアウトはカード固定。未使用警告を避けるため _variant で受ける
+  variant: _variant = 'card',
+  items,
 }: {
   limit?: number;
-  variant?: "card" | "list";
+  variant?: 'card' | 'list';
+  /** SSR/ISR で渡される初期アイテム（推奨運用） */
+  items?: NewsItem[];
 }) {
-  const [items, setItems] = useState<NewsItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  // items が来ていればそれを表示。無ければ一度だけ取得。
+  const [data, setData] = useState<NewsItem[]>(items ?? []);
+  const [loading, setLoading] = useState(!items || items.length === 0);
 
-  const requestUrl = useMemo(() => feedApiPath("news", limit), [limit]);
+  useEffect(() => {
+    if (items && items.length > 0) {
+      setData(items);
+      setLoading(false);
+      return;
+    }
 
-  const fetchNews = useCallback(
-    async (signal?: AbortSignal | null) => {
+    const controller = new AbortController();
+    const load = async () => {
       try {
-        const init: RequestInit = { cache: "no-store", ...(signal ? { signal } : {}) };
-        const r = await fetch(requestUrl, init);
-        const data: any[] = await r.json().catch(() => []);
-
-        // /api/feeds/news の正規化スキーマに合わせる（pubDate を使用）
-        const list: NewsItem[] = (Array.isArray(data) ? data : [])
+        setLoading(true);
+        const r = await fetch(feedApiPath('news', limit), {
+          cache: 'no-store',
+          signal: controller.signal,
+        });
+        const raw: any[] = (await r.json().catch(() => [])) ?? [];
+        const list: NewsItem[] = raw
           .map((it) => ({
-            title: String(it?.title || ""),
-            link: String(it?.link || ""),
-            source: String(it?.source || ""),
-            pubDate: typeof it?.pubDate === "string" ? it.pubDate : null,
+            title: String(it?.title || ''),
+            link: String(it?.link || ''),
+            source: String(it?.source || ''),
+            pubDate: typeof it?.pubDate === 'string' ? it.pubDate : null, // /api/feeds/news のスキーマに準拠
           }))
           .filter((x) => x.title && x.link)
           .slice(0, limit);
-
-        setItems(list);
+        setData(list);
       } catch {
-        setItems([]);
+        setData([]);
       } finally {
         setLoading(false);
       }
-    },
-    [limit, requestUrl]
-  );
+    };
 
-  useEffect(() => {
-    setLoading(true);
-    const ac = new AbortController();
-    fetchNews(ac.signal);
-    return () => ac.abort();
-  }, [fetchNews]);
+    load();
+    return () => controller.abort();
+  }, [items, limit]);
 
   const Header = (
     <div className="px-5 py-4 border-b border-brand-200 bg-brand-100/60 rounded-t-xl2">
@@ -80,10 +85,10 @@ export default function NewsFeed({
       <div className="p-4 grid grid-cols-1 gap-3">
         {loading ? (
           <div className="text-gray-600">読み込み中...</div>
-        ) : items.length === 0 ? (
+        ) : data.length === 0 ? (
           <div className="text-gray-600">現在表示できるニュースはありません。</div>
         ) : (
-          items.map((it, idx) => (
+          data.map((it, idx) => (
             <a
               key={it.link || `${it.title}-${idx}`}
               href={it.link}
@@ -95,9 +100,7 @@ export default function NewsFeed({
               <div className="mt-2 flex items-center justify-between text-xs text-gray-500">
                 <span>{it.source || hostOf(it.link)}</span>
                 <span>
-                  {it.pubDate
-                    ? new Date(it.pubDate).toLocaleString("ja-JP", { hour12: false })
-                    : ""}
+                  {it.pubDate ? new Date(it.pubDate).toLocaleString('ja-JP', { hour12: false }) : ''}
                 </span>
               </div>
             </a>
