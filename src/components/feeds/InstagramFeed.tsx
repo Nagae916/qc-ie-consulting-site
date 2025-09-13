@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { feedApiPath } from '@/lib/routes';
+import { feedApiPath } from '../../lib/routes';
 
 type Item = {
   id: string;
@@ -24,18 +24,28 @@ function firstImageFromHtml(html?: string): string | null {
   return m?.[1] ?? null;
 }
 
-export default function InstagramFeed({ limit = 3 }: { limit?: number }) {
-  const [items, setItems] = useState<Item[]>([]);
-  const [loading, setLoading] = useState(true);
+type Props = {
+  /** 直近何件を表示するか（既定 3） */
+  limit?: number;
+  /** ISR/SSR から渡す場合はこれを指定（指定があればクライアントでの取得は行わない） */
+  items?: Item[];
+  className?: string;
+};
+
+export default function InstagramFeed({ limit = 3, items, className }: Props) {
+  const [list, setList] = useState<Item[]>(items?.slice(0, limit) ?? []);
+  const [loading, setLoading] = useState(!items);
   const [err, setErr] = useState<string | null>(null);
 
   // 集約APIを使用（.env の INSTAGRAM_RSS_URL を参照）
   const requestUrl = useMemo(() => feedApiPath('instagram', limit), [limit]);
 
   useEffect(() => {
-    let mounted = true;
+    // SSR/ISR から items が渡っていれば取得しない
+    if (items && items.length) return;
 
-    const load = async () => {
+    let mounted = true;
+    (async () => {
       try {
         setLoading(true);
         setErr(null);
@@ -47,22 +57,22 @@ export default function InstagramFeed({ limit = 3 }: { limit?: number }) {
 
         const mapped: Item[] = arr
           .map((it, idx) => {
-            const link: string = String((it as any).link || '');
-            const title = String((it as any).title || '');
-            const desc = String((it as any).description || (it as any).contentSnippet || '');
-            const img =
-              (it as any).image ||
-              (it as any).media_url ||
-              (it as any).thumbnail ||
-              (it as any).enclosure?.url ||
-              firstImageFromHtml(desc) ||
+            const link: string = String(it?.link || '');
+            const title = String(it?.title || '');
+            const desc = String(it?.description || it?.contentSnippet || '');
+            const img: string | null =
+              (it?.image as string | undefined) ??
+              (it?.media_url as string | undefined) ??
+              (it?.thumbnail as string | undefined) ??
+              (it?.enclosure?.url as string | undefined) ??
+              firstImageFromHtml(desc) ??
               null;
 
             const ts =
-              typeof (it as any).pubDate === 'string'
-                ? new Date((it as any).pubDate).toISOString()
-                : typeof (it as any).isoDate === 'string'
-                ? new Date((it as any).isoDate).toISOString()
+              typeof it?.pubDate === 'string'
+                ? new Date(it.pubDate).toISOString()
+                : typeof it?.isoDate === 'string'
+                ? new Date(it.isoDate).toISOString()
                 : null;
 
             return {
@@ -73,36 +83,19 @@ export default function InstagramFeed({ limit = 3 }: { limit?: number }) {
               timestamp: ts,
             };
           })
-          .filter((x) => !!x.permalink);
-
-        // 「直近 limit 件」を保証：時刻降順に並べて slice
-        const limited = mapped
+          .filter((x) => !!x.permalink)
           .sort((a, b) => new Date(b.timestamp || 0).getTime() - new Date(a.timestamp || 0).getTime())
           .slice(0, limit);
 
-        if (mounted) setItems(limited);
+        if (mounted) setList(mapped);
       } catch (e: any) {
         if (mounted) setErr(e?.message ?? '取得に失敗しました');
       } finally {
         if (mounted) setLoading(false);
       }
-    };
+    })();
 
-    load();
-
-    // 画面復帰時＆5分ごとに再取得（軽量：CDNキャッシュあり）
-    const onVis = () => {
-      if (document.visibilityState === 'visible') load();
-    };
-    document.addEventListener('visibilitychange', onVis);
-    const iv = window.setInterval(load, 5 * 60 * 1000);
-
-    return () => {
-      mounted = false;
-      clearInterval(iv);
-      document.removeEventListener('visibilitychange', onVis);
-    };
-  }, [requestUrl, limit]);
+  }, [items, requestUrl, limit]);
 
   if (loading) return <p>読み込み中…</p>;
   if (err)
@@ -121,17 +114,18 @@ export default function InstagramFeed({ limit = 3 }: { limit?: number }) {
         <span style={{ fontSize: 12 }}>{err}</span>
       </div>
     );
-  if (!items.length) return <p>表示できる投稿がありません。</p>;
+  if (!list.length) return <p>表示できる投稿がありません。</p>;
 
   return (
     <ul
+      className={className}
       style={{
         display: 'grid',
         gap: 16,
         gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
       }}
     >
-      {items.map((it) => (
+      {list.map((it) => (
         <li key={it.id} style={{ border: '1px solid #e5e7eb', borderRadius: 12, overflow: 'hidden' }}>
           <a href={it.permalink} target="_blank" rel="noopener noreferrer">
             <div style={{ position: 'relative', width: '100%', aspectRatio: '1 / 1', background: '#f3f4f6' }}>
