@@ -3,7 +3,7 @@ import type { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "ne
 import Head from "next/head";
 import Link from "next/link";
 import { allGuides, type Guide } from "contentlayer/generated";
-// ★ 修正：contentlayer2 の hooks を使用
+// ★ contentlayer2 の hooks を使用
 import { useMDXComponent } from "next-contentlayer2/hooks";
 
 // ▼ MDXで使える“許可コンポーネント”を注入
@@ -138,7 +138,10 @@ export default function GuidePage({
 
   // ★ Hooksの順序を安定させる：常に呼び出す
   const MDX = useMDXComponent(mdxCode || "");
-  const components = useMemoizedComponents();
+  const components = {
+    Quiz,
+    ControlChart,
+  };
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
@@ -177,12 +180,4 @@ export default function GuidePage({
       </article>
     </main>
   );
-}
-
-/** components のメモ化（“許可コンポーネント”をここに集約） */
-function useMemoizedComponents() {
-  return {
-    Quiz,
-    ControlChart,
-  };
 }
