@@ -1,5 +1,6 @@
 // src/components/feeds/NewsFeed.tsx
 'use client';
+
 import { useEffect, useState } from 'react';
 // エイリアスに依存しない相対参照（環境差で壊れない）
 import { feedApiPath } from '../../lib/routes';
