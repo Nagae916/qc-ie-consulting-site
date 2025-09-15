@@ -18,7 +18,6 @@
     "check:ci": "npm run gen && npm run lint:all && npm run check:fast && next build",
     "guard": "node scripts/guard-mdx.js",
     "check": "npm run check:fast",
-
     "typecheck": "tsc --noEmit",
     "lint:unused:code": "knip",
     "lint:unused:exports": "ts-prune -p tsconfig.json",
