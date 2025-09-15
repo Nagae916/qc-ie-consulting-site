@@ -3,20 +3,21 @@
 import Head from "next/head";
 import type { GetStaticProps, InferGetStaticPropsType } from "next";
 
-// 既存フィードUI（レイアウトは維持してそのまま利用）
+// 既存フィードUI
 import NewsFeed from "@/components/feeds/NewsFeed";
 import NoteFeed from "@/components/feeds/NoteFeed";
 import XTimeline from "@/components/feeds/XTimeline";
-import InstagramFeed from "@/components/feeds/InstagramFeed"; // ← 既存のRSS対応版を使用
+// 既存の InstagramFeed を利用（items を渡せる実装）
+import InstagramFeed from "@/components/feeds/InstagramFeed";
 
-// RSS正規化ヘルパ（/lib/feeds の最小スキーマに合わせる）
-import { fetchFeed, type NormalizedFeedItem } from "@/lib/feeds";
+// RSS正規化ヘルパ（URL直指定用の fetchFeedByUrl を使用）
+import { fetchFeedByUrl, type NormalizedFeedItem } from "@/lib/feeds";
 
 // -- 各UIが使いやすい形に変換 --
-type NewsItem = { title: string; link: string; source: string; pubDate: string | null };
-type NoteItem = { title: string; link: string; pubDate: string | null; excerpt: string };
-type XItem    = { title: string; link: string; pubDate: string | null };
-type InstaRaw = { link: string; image: string; caption: string; isoDate: string | null };
+type NewsItem  = { title: string; link: string; source: string; pubDate: string | null };
+type NoteItem  = { title: string; link: string; pubDate: string | null; excerpt: string };
+type XItem     = { title: string; link: string; pubDate: string | null };
+type InstaItem = { link: string; image: string; caption: string; isoDate: string | null };
 
 // 重複除去（link 基準）
 const uniqByLink = <T extends { link: string }>(arr: T[]): T[] => {
@@ -30,17 +31,16 @@ const toNews = (a: NormalizedFeedItem[]): NewsItem[] =>
     title: it.title,
     link: it.link,
     source: it.source,
-    // lib/feeds は pubDate を保証（ISO）。isoDate 参照は不要。
-    pubDate: it.pubDate ?? null,
+    pubDate: it.pubDate ?? null, // ← /lib/feeds のスキーマに合わせる
   }));
 
-// 正規化 → Note 用（description は型に無い可能性があるので any 経由で安全に取得）
+// 正規化 → Note 用
 const toNote = (a: NormalizedFeedItem[]): NoteItem[] =>
   a.map((it) => ({
     title: it.title,
     link: it.link,
     pubDate: it.pubDate ?? null,
-    excerpt: ((it as any)?.description as string | undefined) ?? "",
+    excerpt: it.description ?? "",
   }));
 
 // 正規化 → X の軽量表示用
@@ -51,14 +51,14 @@ const toX = (a: NormalizedFeedItem[]): XItem[] =>
     pubDate: it.pubDate ?? null,
   }));
 
-// 正規化 → Instagram（後で InstagramFeed の Item に変換）
-const toInsta = (a: NormalizedFeedItem[]): InstaRaw[] =>
+// 正規化 → Instagram（RSS版 UI 用）
+const toInsta = (a: NormalizedFeedItem[]): InstaItem[] =>
   a
     .map((it) => ({
       link: it.link,
-      image: (it as any)?.image ?? "", // 画像が無いエントリは後段で除外
-      caption: ((it as any)?.description as string | undefined) ?? "",
-      isoDate: it.pubDate ?? null,     // 正規化は pubDate を使用
+      image: it.image ?? "", // 画像が無いエントリは後段で除外
+      caption: it.description ?? "",
+      isoDate: it.pubDate ?? null,
     }))
     .filter((x) => !!x.image);
 
@@ -66,7 +66,7 @@ export const getStaticProps: GetStaticProps<{
   newsItems: NewsItem[];
   noteItems: NoteItem[];
   xItems: XItem[];
-  instaItems: InstaRaw[];
+  instaItems: InstaItem[];
 }> = async () => {
   // .env のURL（空は無視）
   const NEWS_RSS_URL = process.env.NEWS_RSS_URL || "";
@@ -76,10 +76,10 @@ export const getStaticProps: GetStaticProps<{
 
   // 並列取得（空URLは空配列を返す）
   const [newsRaw, noteRaw, xRaw, instaRaw] = await Promise.all([
-    NEWS_RSS_URL ? fetchFeed(NEWS_RSS_URL, 6) : Promise.resolve<NormalizedFeedItem[]>([]),
-    NOTE_RSS_URL ? fetchFeed(NOTE_RSS_URL, 6) : Promise.resolve<NormalizedFeedItem[]>([]),
-    X_RSS_URL ? fetchFeed(X_RSS_URL, 5) : Promise.resolve<NormalizedFeedItem[]>([]),
-    INSTAGRAM_RSS_URL ? fetchFeed(INSTAGRAM_RSS_URL, 8) : Promise.resolve<NormalizedFeedItem[]>([]),
+    NEWS_RSS_URL      ? fetchFeedByUrl(NEWS_RSS_URL, 6)      : Promise.resolve<NormalizedFeedItem[]>([]),
+    NOTE_RSS_URL      ? fetchFeedByUrl(NOTE_RSS_URL, 6)      : Promise.resolve<NormalizedFeedItem[]>([]),
+    X_RSS_URL         ? fetchFeedByUrl(X_RSS_URL, 5)         : Promise.resolve<NormalizedFeedItem[]>([]),
+    INSTAGRAM_RSS_URL ? fetchFeedByUrl(INSTAGRAM_RSS_URL, 8) : Promise.resolve<NormalizedFeedItem[]>([]),
   ]);
 
   // 形を合わせつつ、重複除去
@@ -101,15 +101,6 @@ export default function HomePage({
   xItems,
   instaItems,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
-  // InstagramFeed が期待する Item 形に SSR 側で変換して渡す
-  const instaItemsForComp = instaItems.map((it, i) => ({
-    id: it.link || `ig-${i}`,
-    caption: it.caption || "（キャプションなし）",
-    media_url: it.image || null,
-    permalink: it.link || "#",
-    timestamp: it.isoDate ?? null,
-  }));
-
   return (
     <>
       <Head>
@@ -117,7 +108,6 @@ export default function HomePage({
         <meta name="description" content="品質管理・経営工学の学習と実務に役立つガイドと最新情報" />
       </Head>
 
-      {/* ▼ ここから下は“現行のトップレイアウト”を維持したまま、items を渡すだけに留めています */}
       <main className="mx-auto max-w-6xl px-4 py-8">
         {/* --- ヒーロー／イントロ（既存のまま） --- */}
         <section className="mb-8">
@@ -132,28 +122,27 @@ export default function HomePage({
           {/* 左（2カラム相当）— 既存の学習ガイドカードなど */}
           <div className="lg:col-span-2 space-y-6">
             {/* 既存のガイド一覧やカード群をそのまま残してください */}
-            {/* 例）<GuidesGrid /> 等 */}
           </div>
 
           {/* 右（1カラム）— 外部フィード */}
           <aside className="space-y-6">
-            {/* News（SSR渡し） */}
-            {(NewsFeed as any)({ limit: 6, variant: "card", items: newsItems })}
+            {/* News：現状はクライアント取得のまま（必要なら NewsFeed に items?: NewsItem[] を追加） */}
+            <NewsFeed limit={6} variant="card" />
 
-            {/* note（SSR渡し） */}
-            {(NoteFeed as any)({ limit: 6, user: "nieqc_0713", items: noteItems })}
+            {/* note：現状はクライアント取得のまま（必要なら NoteFeed に items?: NoteItem[] を追加） */}
+            <NoteFeed limit={6} user="nieqc_0713" />
 
-            {/* X（軽量フォールバック用リストを SSR で渡す／埋め込みはコンポーネント側の mode に従う） */}
-            {(XTimeline as any)({
-              username: "@n_ieqclab",
-              limit: 5,
-              mode: process.env.NEXT_PUBLIC_X_EMBED_MODE || "auto",
-              items: xItems,
-              minHeight: 600,
-            })}
+            {/* X：ISRで用意した軽量リストを渡す（埋め込み失敗時フォールバック用） */}
+            <XTimeline
+              username="@n_ieqclab"
+              limit={5}
+              mode={(process.env.NEXT_PUBLIC_X_EMBED_MODE as "auto" | "widget" | "fallback") || "auto"}
+              items={xItems}
+              minHeight={600}
+            />
 
-            {/* Instagram（直近3件）— 既存コンポーネントへ SSR 変換済み items を渡す */}
-            <InstagramFeed limit={3} items={instaItemsForComp} />
+            {/* Instagram：ISRで用意した3件を渡す（既存コンポーネント流用） */}
+            <InstagramFeed limit={3} items={instaItems} />
           </aside>
         </div>
       </main>
