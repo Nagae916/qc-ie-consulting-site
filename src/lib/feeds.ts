@@ -8,7 +8,7 @@ export type NormalizedFeedItem = {
   link: string;
   source: string;
   pubDate: string | null; // ISO8601 or null
-  excerpt?: string;       // exactOptionalPropertyTypes 対応：存在するときのみ string
+  excerpt?: string;       // 存在する時のみ付与
 };
 
 const env = {
@@ -49,7 +49,7 @@ function hostOf(url: string) {
   }
 }
 
-/** URL直指定版：RSSを最小情報に正規化 */
+/** URL直指定：RSSを最小情報に正規化 */
 export async function fetchFeedByUrl(url: string, limit = 10): Promise<NormalizedFeedItem[]> {
   if (!url) return [];
 
@@ -75,19 +75,18 @@ export async function fetchFeedByUrl(url: string, limit = 10): Promise<Normalize
         ? raw.description
         : undefined;
 
-    // base を作って、excerpt があるときだけ追加（undefined を入れない）
     const item: NormalizedFeedItem = {
       title,
       link,
       source: src || hostOf(link),
       pubDate: iso,
     };
-    if (typeof excerptRaw === "string") item.excerpt = excerptRaw;
+    if (typeof excerptRaw === "string") item.excerpt = excerptRaw; // undefined を入れない
+
     return item;
   });
 
   const items: NormalizedFeedItem[] = mapped
-    // 明示的な型ガードで implicit any を回避
     .filter((x: NormalizedFeedItem | null): x is NormalizedFeedItem => x !== null)
     .sort(
       (a, b) =>
@@ -98,7 +97,7 @@ export async function fetchFeedByUrl(url: string, limit = 10): Promise<Normalize
   return items;
 }
 
-/** キー指定版：環境変数のURLを使用 */
+/** キー指定：環境変数のURLを使用 */
 export async function fetchFeed(key: FeedKey, limit = 10): Promise<NormalizedFeedItem[]> {
   const url = pickUrl(key);
   if (!url) return [];
