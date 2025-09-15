@@ -41,8 +41,7 @@ export default function XTimeline({
 
   // SSRの items があれば初期値に採用（フォールバック即表示）
   const [fallback, setFallback] = useState<FallbackItem[] | null>(items ?? null);
-  const [loading, setLoading] = useState(true);
-  const [nonce, setNonce] = useState(0);
+  const [nonce, setNonce] = useState(0); // 再試行用
 
   const envMode = (process.env.NEXT_PUBLIC_X_EMBED_MODE as 'auto' | 'widget' | 'fallback' | undefined) ?? undefined;
   const effectiveMode: 'auto' | 'widget' | 'fallback' = mode ?? envMode ?? 'auto';
@@ -50,6 +49,7 @@ export default function XTimeline({
   // 依存を安定化
   const chromeKey = useMemo(() => (Array.isArray(chrome) ? chrome.join(' ') : chrome) ?? '', [chrome]);
   const screenName = useMemo(() => username.replace(/^@/, ''), [username]);
+  const profileUrl = useMemo(() => `https://x.com/${screenName}`, [screenName]);
 
   const log = useCallback((...a: any[]) => { if (debug) console.log('[XTimeline]', ...a); }, [debug]);
 
@@ -59,7 +59,6 @@ export default function XTimeline({
       // SSRから渡された items があればそれを優先して表示
       if (items && items.length) {
         setFallback(items.slice(0, limit));
-        setLoading(false);
         log('use SSR items as fallback:', items.length);
         return;
       }
@@ -85,8 +84,6 @@ export default function XTimeline({
     } catch (e) {
       setFallback([]);
       log('fallback failed', e);
-    } finally {
-      setLoading(false);
     }
   }, [items, limit, log]);
 
@@ -122,7 +119,6 @@ export default function XTimeline({
     };
 
     const renderWidget = async () => {
-      setLoading(true);
       try {
         await ensureWidgets();
 
@@ -151,19 +147,14 @@ export default function XTimeline({
 
         if (!cancelled) {
           if (timer) clearTimeout(timer);
-          setLoading(false);
-          setFallback(null);
+          setFallback(null); // ウィジェット表示に切替
           log('widget rendered');
         }
       } catch (e) {
         log('widget error', e);
         if (!cancelled) {
           if (timer) clearTimeout(timer);
-          if (effectiveMode === 'auto') {
-            loadFallback();
-          } else {
-            setLoading(false);
-          }
+          if (effectiveMode === 'auto') loadFallback();
         }
       }
     };
@@ -174,7 +165,6 @@ export default function XTimeline({
 
   // フォールバック表示
   if (fallback) {
-    const profileUrl = `https://x.com/${screenName}`;
     return (
       <div className={className} style={{ minHeight }}>
         {fallback.length === 0 ? (
