@@ -7,17 +7,16 @@ import type { GetStaticProps, InferGetStaticPropsType } from "next";
 import NewsFeed from "@/components/feeds/NewsFeed";
 import NoteFeed from "@/components/feeds/NoteFeed";
 import XTimeline from "@/components/feeds/XTimeline";
-// ← Instagram は実体ファイルに直接差し替え
-import InstagramFeedRSS from "@/components/feeds/InstagramFeed";
+import InstagramFeedRSS from "@/components/feeds/InstagramFeed"; // ←実体に合わせる
 
 // RSS正規化ヘルパ（ライブラリ依存を最小化）
 import { fetchFeed, type NormalizedFeedItem } from "@/lib/feeds";
 
 // -- 各UIが使いやすい形に変換 --
-type NewsItem = { title: string; link: string; source: string; pubDate: string | null };
-type NoteItem = { title: string; link: string; pubDate: string | null; excerpt: string };
-type XItem = { title: string; link: string; pubDate: string | null };
-type InstaItem = { link: string; image: string; caption: string; isoDate: string | null };
+type NewsItem  = { title: string; link: string; source: string; pubDate: string | null };
+type NoteItem  = { title: string; link: string; pubDate: string | null; excerpt: string };
+type XItem     = { title: string; link: string; pubDate: string | null };
+type InstaItem = { link: string; image: string; caption: string; pubDate: string | null };
 
 // 重複除去（link 基準）
 const uniqByLink = <T extends { link: string }>(arr: T[]): T[] => {
@@ -31,7 +30,7 @@ const toNews = (a: NormalizedFeedItem[]): NewsItem[] =>
     title: it.title,
     link: it.link,
     source: it.source,
-    pubDate: it.isoDate ?? null,
+    pubDate: it.pubDate ?? null, // ★ isoDate → pubDate
   }));
 
 // 正規化 → Note 用
@@ -39,7 +38,7 @@ const toNote = (a: NormalizedFeedItem[]): NoteItem[] =>
   a.map((it) => ({
     title: it.title,
     link: it.link,
-    pubDate: it.isoDate ?? null,
+    pubDate: it.pubDate ?? null, // ★
     excerpt: it.description ?? "",
   }));
 
@@ -48,7 +47,7 @@ const toX = (a: NormalizedFeedItem[]): XItem[] =>
   a.map((it) => ({
     title: it.title,
     link: it.link,
-    pubDate: it.isoDate ?? null,
+    pubDate: it.pubDate ?? null, // ★
   }));
 
 // 正規化 → Instagram（RSS版 UI 用）
@@ -58,7 +57,7 @@ const toInsta = (a: NormalizedFeedItem[]): InstaItem[] =>
       link: it.link,
       image: it.image ?? "", // 画像が無いエントリは後段で除外
       caption: it.description ?? "",
-      isoDate: it.isoDate ?? null,
+      pubDate: it.pubDate ?? null, // ★
     }))
     .filter((x) => !!x.image);
 
@@ -83,9 +82,9 @@ export const getStaticProps: GetStaticProps<{
   ]);
 
   // 形を合わせつつ、重複除去
-  const newsItems = uniqByLink(toNews(newsRaw)).slice(0, 6);
-  const noteItems = uniqByLink(toNote(noteRaw)).slice(0, 6);
-  const xItems = uniqByLink(toX(xRaw)).slice(0, 5);
+  const newsItems  = uniqByLink(toNews(newsRaw)).slice(0, 6);
+  const noteItems  = uniqByLink(toNote(noteRaw)).slice(0, 6);
+  const xItems     = uniqByLink(toX(xRaw)).slice(0, 5);
   const instaItems = uniqByLink(toInsta(instaRaw)).slice(0, 3); // 直近3件
 
   return {
@@ -127,7 +126,6 @@ export default function HomePage({
           {/* 右（1カラム）— 外部フィード */}
           <aside className="space-y-6">
             {/* News（SSR渡し） */}
-            {/* props 型が無い場合でも、安全に渡せるよう any キャストしています（UIは現行のまま） */}
             {(NewsFeed as any)({ limit: 6, variant: "card", items: newsItems })}
 
             {/* note（SSR渡し） */}
