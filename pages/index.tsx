@@ -7,16 +7,16 @@ import type { GetStaticProps, InferGetStaticPropsType } from "next";
 import NewsFeed from "@/components/feeds/NewsFeed";
 import NoteFeed from "@/components/feeds/NoteFeed";
 import XTimeline from "@/components/feeds/XTimeline";
-import InstagramFeedRSS from "@/components/feeds/InstagramFeedRSS"; // ← RSS版を使う
+import InstagramFeed from "@/components/feeds/InstagramFeed"; // ← 既存のRSS対応版を使用
 
 // RSS正規化ヘルパ（/lib/feeds の最小スキーマに合わせる）
 import { fetchFeed, type NormalizedFeedItem } from "@/lib/feeds";
 
-// -- 各UIが使いやすい形に変換（NormalizedFeedItem には title/link/source/pubDate/image だけがある想定） --
+// -- 各UIが使いやすい形に変換 --
 type NewsItem = { title: string; link: string; source: string; pubDate: string | null };
 type NoteItem = { title: string; link: string; pubDate: string | null; excerpt: string };
-type XItem = { title: string; link: string; pubDate: string | null };
-type InstaItem = { link: string; image: string; caption: string; isoDate: string | null };
+type XItem    = { title: string; link: string; pubDate: string | null };
+type InstaRaw = { link: string; image: string; caption: string; isoDate: string | null };
 
 // 重複除去（link 基準）
 const uniqByLink = <T extends { link: string }>(arr: T[]): T[] => {
@@ -29,17 +29,18 @@ const toNews = (a: NormalizedFeedItem[]): NewsItem[] =>
   a.map((it) => ({
     title: it.title,
     link: it.link,
-    source: it.source ?? "",
+    source: it.source,
+    // lib/feeds は pubDate を保証（ISO）。isoDate 参照は不要。
     pubDate: it.pubDate ?? null,
   }));
 
-// 正規化 → Note 用（NormalizedFeedItem に description は無い前提なので excerpt は空でOK）
+// 正規化 → Note 用（description は型に無い可能性があるので any 経由で安全に取得）
 const toNote = (a: NormalizedFeedItem[]): NoteItem[] =>
   a.map((it) => ({
     title: it.title,
     link: it.link,
     pubDate: it.pubDate ?? null,
-    excerpt: "", // ※抜粋が必要なら /lib/feeds 側に description を追加してからここで利用
+    excerpt: ((it as any)?.description as string | undefined) ?? "",
   }));
 
 // 正規化 → X の軽量表示用
@@ -50,14 +51,14 @@ const toX = (a: NormalizedFeedItem[]): XItem[] =>
     pubDate: it.pubDate ?? null,
   }));
 
-// 正規化 → Instagram（RSS版 UI 用）: caption はタイトルを流用、image が無いものは除外
-const toInsta = (a: NormalizedFeedItem[]): InstaItem[] =>
+// 正規化 → Instagram（後で InstagramFeed の Item に変換）
+const toInsta = (a: NormalizedFeedItem[]): InstaRaw[] =>
   a
     .map((it) => ({
       link: it.link,
-      image: it.image ?? "",
-      caption: it.title,
-      isoDate: it.pubDate ?? null,
+      image: (it as any)?.image ?? "", // 画像が無いエントリは後段で除外
+      caption: ((it as any)?.description as string | undefined) ?? "",
+      isoDate: it.pubDate ?? null,     // 正規化は pubDate を使用
     }))
     .filter((x) => !!x.image);
 
@@ -65,7 +66,7 @@ export const getStaticProps: GetStaticProps<{
   newsItems: NewsItem[];
   noteItems: NoteItem[];
   xItems: XItem[];
-  instaItems: InstaItem[];
+  instaItems: InstaRaw[];
 }> = async () => {
   // .env のURL（空は無視）
   const NEWS_RSS_URL = process.env.NEWS_RSS_URL || "";
@@ -82,9 +83,9 @@ export const getStaticProps: GetStaticProps<{
   ]);
 
   // 形を合わせつつ、重複除去
-  const newsItems = uniqByLink(toNews(newsRaw)).slice(0, 6);
-  const noteItems = uniqByLink(toNote(noteRaw)).slice(0, 6);
-  const xItems = uniqByLink(toX(xRaw)).slice(0, 5);
+  const newsItems  = uniqByLink(toNews(newsRaw)).slice(0, 6);
+  const noteItems  = uniqByLink(toNote(noteRaw)).slice(0, 6);
+  const xItems     = uniqByLink(toX(xRaw)).slice(0, 5);
   const instaItems = uniqByLink(toInsta(instaRaw)).slice(0, 3); // 直近3件
 
   return {
@@ -100,6 +101,15 @@ export default function HomePage({
   xItems,
   instaItems,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
+  // InstagramFeed が期待する Item 形に SSR 側で変換して渡す
+  const instaItemsForComp = instaItems.map((it, i) => ({
+    id: it.link || `ig-${i}`,
+    caption: it.caption || "（キャプションなし）",
+    media_url: it.image || null,
+    permalink: it.link || "#",
+    timestamp: it.isoDate ?? null,
+  }));
+
   return (
     <>
       <Head>
@@ -112,14 +122,17 @@ export default function HomePage({
         {/* --- ヒーロー／イントロ（既存のまま） --- */}
         <section className="mb-8">
           <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900">QC × IE LABO</h1>
-          <p className="mt-2 text-gray-600">現場で使える品質管理・経営工学のガイドと最新情報を一箇所に。</p>
+          <p className="mt-2 text-gray-600">
+            現場で使える品質管理・経営工学のガイドと最新情報を一箇所に。
+          </p>
         </section>
 
         {/* --- グリッド：左にガイド／右に外部フィード等（既存の配置を踏襲） --- */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* 左（2カラム相当）— 既存の学習ガイドカードなど */}
           <div className="lg:col-span-2 space-y-6">
-            {/* 既存のガイド一覧やカード群をそのまま残してください（例：<GuidesGrid />） */}
+            {/* 既存のガイド一覧やカード群をそのまま残してください */}
+            {/* 例）<GuidesGrid /> 等 */}
           </div>
 
           {/* 右（1カラム）— 外部フィード */}
@@ -139,8 +152,8 @@ export default function HomePage({
               minHeight: 600,
             })}
 
-            {/* Instagram（直近3件） */}
-            {(InstagramFeedRSS as any)({ items: instaItems })}
+            {/* Instagram（直近3件）— 既存コンポーネントへ SSR 変換済み items を渡す */}
+            <InstagramFeed limit={3} items={instaItemsForComp} />
           </aside>
         </div>
       </main>
