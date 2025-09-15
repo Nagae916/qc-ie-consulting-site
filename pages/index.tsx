@@ -7,7 +7,8 @@ import type { GetStaticProps, InferGetStaticPropsType } from "next";
 import NewsFeed from "@/components/feeds/NewsFeed";
 import NoteFeed from "@/components/feeds/NoteFeed";
 import XTimeline from "@/components/feeds/XTimeline";
-import InstagramFeedRSS from "@/components/feeds/InstagramFeedRSS"; // ←RSS版を使う想定
+// ← Instagram は実体ファイルに直接差し替え
+import InstagramFeedRSS from "@/components/feeds/InstagramFeed";
 
 // RSS正規化ヘルパ（ライブラリ依存を最小化）
 import { fetchFeed, type NormalizedFeedItem } from "@/lib/feeds";
@@ -15,7 +16,7 @@ import { fetchFeed, type NormalizedFeedItem } from "@/lib/feeds";
 // -- 各UIが使いやすい形に変換 --
 type NewsItem = { title: string; link: string; source: string; pubDate: string | null };
 type NoteItem = { title: string; link: string; pubDate: string | null; excerpt: string };
-type XItem    = { title: string; link: string; pubDate: string | null };
+type XItem = { title: string; link: string; pubDate: string | null };
 type InstaItem = { link: string; image: string; caption: string; isoDate: string | null };
 
 // 重複除去（link 基準）
@@ -82,9 +83,9 @@ export const getStaticProps: GetStaticProps<{
   ]);
 
   // 形を合わせつつ、重複除去
-  const newsItems  = uniqByLink(toNews(newsRaw)).slice(0, 6);
-  const noteItems  = uniqByLink(toNote(noteRaw)).slice(0, 6);
-  const xItems     = uniqByLink(toX(xRaw)).slice(0, 5);
+  const newsItems = uniqByLink(toNews(newsRaw)).slice(0, 6);
+  const noteItems = uniqByLink(toNote(noteRaw)).slice(0, 6);
+  const xItems = uniqByLink(toX(xRaw)).slice(0, 5);
   const instaItems = uniqByLink(toInsta(instaRaw)).slice(0, 3); // 直近3件
 
   return {
@@ -112,9 +113,7 @@ export default function HomePage({
         {/* --- ヒーロー／イントロ（既存のまま） --- */}
         <section className="mb-8">
           <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900">QC × IE LABO</h1>
-          <p className="mt-2 text-gray-600">
-            現場で使える品質管理・経営工学のガイドと最新情報を一箇所に。
-          </p>
+          <p className="mt-2 text-gray-600">現場で使える品質管理・経営工学のガイドと最新情報を一箇所に。</p>
         </section>
 
         {/* --- グリッド：左にガイド／右に外部フィード等（既存の配置を踏襲） --- */}
