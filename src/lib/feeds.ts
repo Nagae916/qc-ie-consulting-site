@@ -8,7 +8,7 @@ export type NormalizedFeedItem = {
   link: string;
   source: string;
   pubDate: string | null; // ISO8601 or null
-  excerpt?: string;
+  excerpt?: string;       // exactOptionalPropertyTypes 対応：存在するときのみ string
 };
 
 const env = {
@@ -49,44 +49,45 @@ function hostOf(url: string) {
   }
 }
 
-/** RSSを読み込んで最小情報に正規化（壊れにくさ優先） */
+/** URL直指定版：RSSを最小情報に正規化 */
 export async function fetchFeedByUrl(url: string, limit = 10): Promise<NormalizedFeedItem[]> {
   if (!url) return [];
+
   const parser = new Parser();
   const feed = await parser.parseURL(url).catch(() => ({ title: "", items: [] as any[] }));
-
   const src = feed.title ?? "";
-  const mapped: Array<NormalizedFeedItem | null> = (feed.items ?? []).map(
-    (raw: any): NormalizedFeedItem | null => {
-      const title = String(raw?.title || "").trim();
-      const link =
-        (typeof raw?.link === "string" && raw.link) ||
-        (typeof raw?.guid === "string" && raw.guid) ||
-        "";
-      if (!title || !link) return null;
 
-      const iso = toISO(raw?.isoDate ?? raw?.pubDate ?? (raw as any)?.date);
-      const excerpt: string | undefined =
-        typeof raw?.contentSnippet === "string"
-          ? raw.contentSnippet
-          : typeof raw?.summary === "string"
-          ? raw.summary
-          : typeof raw?.description === "string"
-          ? raw.description
-          : undefined;
+  const mapped: Array<NormalizedFeedItem | null> = (feed.items ?? []).map((raw: any) => {
+    const title = String(raw?.title || "").trim();
+    const link =
+      (typeof raw?.link === "string" && raw.link) ||
+      (typeof raw?.guid === "string" && raw.guid) ||
+      "";
+    if (!title || !link) return null;
 
-      return {
-        title,
-        link,
-        source: src || hostOf(link),
-        pubDate: iso,
-        excerpt,
-      };
-    }
-  );
+    const iso = toISO(raw?.isoDate ?? raw?.pubDate ?? (raw as any)?.date);
+    const excerptRaw =
+      typeof raw?.contentSnippet === "string"
+        ? raw.contentSnippet
+        : typeof raw?.summary === "string"
+        ? raw.summary
+        : typeof raw?.description === "string"
+        ? raw.description
+        : undefined;
+
+    // base を作って、excerpt があるときだけ追加（undefined を入れない）
+    const item: NormalizedFeedItem = {
+      title,
+      link,
+      source: src || hostOf(link),
+      pubDate: iso,
+    };
+    if (typeof excerptRaw === "string") item.excerpt = excerptRaw;
+    return item;
+  });
 
   const items: NormalizedFeedItem[] = mapped
-    // ★ 明示型を付けた型ガードで implicit any を回避
+    // 明示的な型ガードで implicit any を回避
     .filter((x: NormalizedFeedItem | null): x is NormalizedFeedItem => x !== null)
     .sort(
       (a, b) =>
@@ -97,7 +98,7 @@ export async function fetchFeedByUrl(url: string, limit = 10): Promise<Normalize
   return items;
 }
 
-/** 環境変数に紐づくキー指定版 */
+/** キー指定版：環境変数のURLを使用 */
 export async function fetchFeed(key: FeedKey, limit = 10): Promise<NormalizedFeedItem[]> {
   const url = pickUrl(key);
   if (!url) return [];
