@@ -14,6 +14,20 @@
           }
         ]
       }
+    },
+    {
+      "files": ["**/*.d.ts"],
+      "rules": {
+        "unused-imports/no-unused-imports": "off",
+        "unused-imports/no-unused-vars": "off"
+      }
+    },
+    {
+      "files": ["src/lib/safe-matrix.ts"],
+      "rules": {
+        "unused-imports/no-unused-imports": "off",
+        "unused-imports/no-unused-vars": "off"
+      }
     }
   ],
   "rules": {
