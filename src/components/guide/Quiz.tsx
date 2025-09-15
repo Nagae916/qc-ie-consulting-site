@@ -31,9 +31,6 @@ type Item = QAItem | MCQItemSingle | MCQItemMulti;
 function isQA(i: Item): i is QAItem {
   return (i as any).a !== undefined && (i as any).choices === undefined;
 }
-function isMC(i: Item): i is MCQItemSingle | MCQItemMulti {
-  return Array.isArray((i as any).choices);
-}
 function isMulti(i: MCQItemSingle | MCQItemMulti): i is MCQItemMulti {
   return Array.isArray((i as any).answer);
 }
@@ -43,7 +40,7 @@ export function Quiz({ items }: { items: Item[] }) {
     <section>
       {items.map((it, idx) => (
         <div className="qa-card" key={idx}>
-          {isQA(it) ? <QAView item={it} /> : <MCQView item={it} index={idx} />}
+          {isQA(it) ? <QAView item={it} /> : <MCQView item={it as MCQItemSingle | MCQItemMulti} index={idx} />}
         </div>
       ))}
     </section>
@@ -70,9 +67,7 @@ function MCQView({ item, index }: { item: MCQItemSingle | MCQItemMulti; index: n
   const [pickedSet, setPickedSet] = useState<Set<number>>(new Set());
   const multi = isMulti(item);
 
-  const handleSingle = (i: number) => {
-    setPicked(i);
-  };
+  const handleSingle = (i: number) => setPicked(i);
 
   const toggleMulti = (i: number) => {
     setPicked(null);
@@ -102,6 +97,7 @@ function MCQView({ item, index }: { item: MCQItemSingle | MCQItemMulti; index: n
     background: '#fff',
   };
   const choiceActive: React.CSSProperties = { borderColor: '#2563eb', boxShadow: '0 0 0 2px rgba(37,99,235,.15)' };
+  const labelBase: React.CSSProperties = { display: 'flex', alignItems: 'center', gap: 10 };
 
   return (
     <>
@@ -110,7 +106,7 @@ function MCQView({ item, index }: { item: MCQItemSingle | MCQItemMulti; index: n
         {item.choices.map((c, i) => {
           const checked = multi ? pickedSet.has(i) : picked === i;
           return (
-            <label key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, ...(checked ? choiceActive : {}) }}>
+            <label key={i} style={{ ...labelBase, ...(checked ? choiceActive : {}) }}>
               {multi ? (
                 <input
                   type="checkbox"
@@ -128,7 +124,7 @@ function MCQView({ item, index }: { item: MCQItemSingle | MCQItemMulti; index: n
                   style={{ width: 16, height: 16 }}
                 />
               )}
-              <span style={choiceStyle as any}>{c}</span>
+              <span style={choiceStyle}>{c}</span>
             </label>
           );
         })}
@@ -139,9 +135,12 @@ function MCQView({ item, index }: { item: MCQItemSingle | MCQItemMulti; index: n
         <div
           className="note"
           style={{
+            borderLeft: '4px solid',
             borderLeftColor: verdict === 'correct' ? '#10b981' : '#ef4444',
             background: '#f9fafb',
             marginTop: 8,
+            padding: '8px 10px',
+            borderRadius: 6,
           }}
         >
           {verdict === 'correct' ? '正解！' : '不正解'}
