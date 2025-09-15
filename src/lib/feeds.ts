@@ -1,23 +1,14 @@
 // src/lib/feeds.ts
 import Parser from "rss-parser";
 
-/** /api/feeds/[key] などで使うフィード種別 */
 export type FeedKey = "news" | "blog" | "note" | "instagram" | "x";
 
-/** どのUIでも扱える“最小で壊れにくい”正規化スキーマ */
 export type NormalizedFeedItem = {
   title: string;
   link: string;
-  source: string;           // フィードタイトル or ドメイン
-  pubDate: string | null;   // ISO8601 or null
-  /** 互換用（同値を入れておく） */
-  isoDate?: string | null;  // = pubDate
-  /** 抜粋（contentSnippet / content / description の順で採用） */
-  description?: string;
-  /** 互換用（旧コード向けエイリアス） */
+  source: string;
+  pubDate: string | null; // ISO8601 or null
   excerpt?: string;
-  /** あればサムネイル等の画像URL（enclosure / media / HTML内img を探索） */
-  image?: string | null;
 };
 
 const env = {
@@ -28,13 +19,18 @@ const env = {
   X_RSS_URL: process.env.X_RSS_URL || "",
 };
 
-export function pickUrl(key: FeedKey): string {
+function pickUrl(key: FeedKey): string {
   switch (key) {
-    case "news": return env.NEWS_RSS_URL;
-    case "blog": return env.BLOG_RSS_URL;
-    case "note": return env.NOTE_RSS_URL;
-    case "instagram": return env.INSTAGRAM_RSS_URL;
-    case "x": return env.X_RSS_URL;
+    case "news":
+      return env.NEWS_RSS_URL;
+    case "blog":
+      return env.BLOG_RSS_URL;
+    case "note":
+      return env.NOTE_RSS_URL;
+    case "instagram":
+      return env.INSTAGRAM_RSS_URL;
+    case "x":
+      return env.X_RSS_URL;
   }
 }
 
@@ -44,7 +40,7 @@ function toISO(v: unknown): string | null {
   return Number.isNaN(d.getTime()) ? null : d.toISOString();
 }
 
-function hostOf(url: string): string {
+function hostOf(url: string) {
   try {
     const h = new URL(url).hostname;
     return h.startsWith("www.") ? h.slice(4) : h;
@@ -53,78 +49,57 @@ function hostOf(url: string): string {
   }
 }
 
-function str(v: unknown): string {
-  return typeof v === "string" ? v : "";
-}
-
-function firstImgFromHtml(html?: string): string | null {
-  if (!html) return null;
-  const m = html.match(/<img[^>]+src=["']([^"']+)["']/i);
-  return m?.[1] ?? null;
-}
-
-/** 生URLを受け取って RSS を正規化（内部共通実装） */
-async function parseAndNormalize(url: string, limit = 10): Promise<NormalizedFeedItem[]> {
+/** RSSを読み込んで最小情報に正規化（壊れにくさ優先） */
+export async function fetchFeedByUrl(url: string, limit = 10): Promise<NormalizedFeedItem[]> {
   if (!url) return [];
-
   const parser = new Parser();
   const feed = await parser.parseURL(url).catch(() => ({ title: "", items: [] as any[] }));
-  const feedTitle = str((feed as any).title);
 
-  const items: NormalizedFeedItem[] = (Array.isArray((feed as any).items) ? (feed as any).items : [])
-    .map((raw: any): NormalizedFeedItem | null => {
-      const title = str(raw?.title).trim();
+  const src = feed.title ?? "";
+  const mapped: Array<NormalizedFeedItem | null> = (feed.items ?? []).map(
+    (raw: any): NormalizedFeedItem | null => {
+      const title = String(raw?.title || "").trim();
       const link =
         (typeof raw?.link === "string" && raw.link) ||
         (typeof raw?.guid === "string" && raw.guid) ||
         "";
       if (!title || !link) return null;
 
-      const iso = toISO(raw?.isoDate) ?? toISO(raw?.pubDate) ?? toISO((raw as any)?.date);
-      const desc =
-        str(raw?.contentSnippet) ||
-        str(raw?.content) ||
-        str(raw?.description) ||
-        "";
-
-      const image =
-        (raw?.enclosure?.url as string | undefined) ||
-        (Array.isArray(raw?.enclosures) && raw.enclosures[0]?.url) ||
-        (raw?.["media:content"]?.url as string | undefined) ||
-        firstImgFromHtml(str(raw?.content) || str(raw?.description)) ||
-        null;
+      const iso = toISO(raw?.isoDate ?? raw?.pubDate ?? (raw as any)?.date);
+      const excerpt: string | undefined =
+        typeof raw?.contentSnippet === "string"
+          ? raw.contentSnippet
+          : typeof raw?.summary === "string"
+          ? raw.summary
+          : typeof raw?.description === "string"
+          ? raw.description
+          : undefined;
 
       return {
         title,
         link,
-        source: feedTitle || hostOf(link),
+        source: src || hostOf(link),
         pubDate: iso,
-        isoDate: iso,
-        description: desc,
-        excerpt: desc,
-        image,
+        excerpt,
       };
-    })
-    .filter((x): x is NormalizedFeedItem => !!x)
-    .sort((a, b) => new Date(b.pubDate || 0).getTime() - new Date(a.pubDate || 0).getTime())
+    }
+  );
+
+  const items: NormalizedFeedItem[] = mapped
+    // ★ 明示型を付けた型ガードで implicit any を回避
+    .filter((x: NormalizedFeedItem | null): x is NormalizedFeedItem => x !== null)
+    .sort(
+      (a, b) =>
+        new Date(b.pubDate || 0).getTime() - new Date(a.pubDate || 0).getTime()
+    )
     .slice(0, limit);
 
   return items;
 }
 
-/**
- * 汎用取得関数：
- * - FeedKey でも “生のURL文字列” でも受け取れる
- */
-export async function fetchFeed(input: FeedKey | string, limit = 10): Promise<NormalizedFeedItem[]> {
-  const url =
-    typeof input === "string"
-      ? (/^https?:\/\//i.test(input) ? input : pickUrl(input as FeedKey))
-      : pickUrl(input);
-  return parseAndNormalize(url, limit);
-}
-
-/** URL直指定版（index.tsx が参照する旧名との互換用） */
-export async function fetchFeedByUrl(url: string, limit = 10): Promise<NormalizedFeedItem[]> {
-  return parseAndNormalize(url, limit);
+/** 環境変数に紐づくキー指定版 */
+export async function fetchFeed(key: FeedKey, limit = 10): Promise<NormalizedFeedItem[]> {
+  const url = pickUrl(key);
+  if (!url) return [];
+  return fetchFeedByUrl(url, limit);
 }
