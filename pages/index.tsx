@@ -1,6 +1,4 @@
 // pages/index.tsx
-// レイアウトは極力そのまま。データ取得だけ SSG（30分ISR）にし、各フィードへ items を渡します。
-// Instagram は画像URLなど専用項目が必要なため items は渡さず、クライアント側取得に任せます。
 import Head from "next/head";
 import type { GetStaticProps, InferGetStaticPropsType } from "next";
 
@@ -22,7 +20,7 @@ const uniqByLink = <T extends { link: string }>(arr: T[]): T[] => {
   return arr.filter((x) => (x.link && !seen.has(x.link) ? (seen.add(x.link), true) : false));
 };
 
-// 正規化 → News 用
+// 正規化 → News
 const toNews = (a: NormalizedFeedItem[]): NewsItem[] =>
   a.map((it) => ({
     title: it.title,
@@ -31,7 +29,7 @@ const toNews = (a: NormalizedFeedItem[]): NewsItem[] =>
     pubDate: it.pubDate ?? null,
   }));
 
-// 正規化 → Note 用
+// 正規化 → Note
 const toNote = (a: NormalizedFeedItem[]): NoteItem[] =>
   a.map((it) => ({
     title: it.title,
@@ -40,7 +38,7 @@ const toNote = (a: NormalizedFeedItem[]): NoteItem[] =>
     excerpt: it.excerpt ?? "",
   }));
 
-// 正規化 → X の軽量表示用
+// 正規化 → X（軽量）
 const toX = (a: NormalizedFeedItem[]): XItem[] =>
   a.map((it) => ({
     title: it.title,
@@ -48,32 +46,33 @@ const toX = (a: NormalizedFeedItem[]): XItem[] =>
     pubDate: it.pubDate ?? null,
   }));
 
+// env をユニオン型へ安全に絞り込む
+function toXMode(v?: string): "auto" | "widget" | "fallback" {
+  return v === "widget" || v === "fallback" || v === "auto" ? v : "auto";
+}
+
 export const getStaticProps: GetStaticProps<{
   newsItems: NewsItem[];
   noteItems: NoteItem[];
   xItems: XItem[];
 }> = async () => {
-  // .env のURL（空は無視）
   const NEWS_RSS_URL = process.env.NEWS_RSS_URL || "";
   const NOTE_RSS_URL = process.env.NOTE_RSS_URL || "";
   const X_RSS_URL    = process.env.X_RSS_URL || "";
 
-  // 並列取得（空URLは空配列を返す）
   const [newsRaw, noteRaw, xRaw] = await Promise.all([
     NEWS_RSS_URL ? fetchFeedByUrl(NEWS_RSS_URL, 6) : Promise.resolve<NormalizedFeedItem[]>([]),
     NOTE_RSS_URL ? fetchFeedByUrl(NOTE_RSS_URL, 6) : Promise.resolve<NormalizedFeedItem[]>([]),
     X_RSS_URL    ? fetchFeedByUrl(X_RSS_URL, 5)    : Promise.resolve<NormalizedFeedItem[]>([]),
   ]);
 
-  // 形を合わせつつ、重複除去
   const newsItems = uniqByLink(toNews(newsRaw)).slice(0, 6);
   const noteItems = uniqByLink(toNote(noteRaw)).slice(0, 6);
   const xItems    = uniqByLink(toX(xRaw)).slice(0, 5);
 
   return {
     props: { newsItems, noteItems, xItems },
-    // 30分ごとに再生成（トップの最新性を担保）
-    revalidate: 1800,
+    revalidate: 1800, // 30分ISR
   };
 };
 
@@ -82,6 +81,8 @@ export default function HomePage({
   noteItems,
   xItems,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
+  const xEmbedMode = toXMode(process.env.NEXT_PUBLIC_X_EMBED_MODE);
+
   return (
     <>
       <Head>
@@ -89,9 +90,7 @@ export default function HomePage({
         <meta name="description" content="品質管理・経営工学の学習と実務に役立つガイドと最新情報" />
       </Head>
 
-      {/* ▼ ここから下は“現行のトップレイアウト”を維持したまま、items を渡すだけに留めています */}
       <main className="mx-auto max-w-6xl px-4 py-8">
-        {/* --- ヒーロー／イントロ（既存のまま） --- */}
         <section className="mb-8">
           <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900">QC × IE LABO</h1>
           <p className="mt-2 text-gray-600">
@@ -99,27 +98,21 @@ export default function HomePage({
           </p>
         </section>
 
-        {/* --- グリッド：左にガイド／右に外部フィード等（既存の配置を踏襲） --- */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* 左（2カラム相当）— 既存の学習ガイドカードなど */}
           <div className="lg:col-span-2 space-y-6">
             {/* 既存のガイド一覧やカード群をそのまま残してください */}
-            {/* 例）<GuidesGrid /> 等 */}
           </div>
 
-          {/* 右（1カラム）— 外部フィード */}
           <aside className="space-y-6">
-            {/* News（ISR渡し） */}
+            {/* ISR 渡し */}
             <NewsFeed limit={6} items={newsItems} />
-
-            {/* note（ISR渡し） */}
             <NoteFeed limit={6} user="nieqc_0713" items={noteItems} />
 
-            {/* X（軽量フォールバック用リストを ISR で渡す／埋め込みはコンポーネント側の mode に従う） */}
+            {/* X：ISRの軽量リスト + ウィジェット（modeはユニオン化した値を渡す） */}
             <XTimeline
               username="@n_ieqclab"
               limit={5}
-              mode={process.env.NEXT_PUBLIC_X_EMBED_MODE || "auto"}
+              mode={xEmbedMode}
               items={xItems}
               minHeight={600}
             />
