@@ -66,7 +66,6 @@ const ts = (v: unknown): number => {
 
 // Contentlayer から「全部の allXXX 配列」を総当りで集める
 const collectAllDocs = (): any[] => {
-  // CL 内の export のうち、配列で、かつ _raw を持つ要素を含むものだけを採用
   const arrays = Object.values(CL).filter(
     (v: unknown) =>
       Array.isArray(v) &&
@@ -94,100 +93,4 @@ export const getStaticProps: GetStaticProps<{
   ]);
 
   const newsItems = uniqByLink(toNews(newsRaw)).slice(0, 6);
-  const noteItems = uniqByLink(toNote(noteRaw)).slice(0, 6);
-  const xItems    = uniqByLink(toX(xRaw)).slice(0, 5);
-
-  // --- ガイド取得（型名や schema 変更に強いロジック） ---
-  const allDocs = collectAllDocs();
-  const guides: GuideItem[] = allDocs
-    // guides/ 配下のみ（型名に依存しない）
-    .filter((d: any) => d?._raw?.flattenedPath?.startsWith?.("guides/"))
-    // draft を除外（未設定は published 扱い）
-    .filter((d: any) => (d?.status ?? "published") !== "draft")
-    // 更新順（updated > date の順で存在する方）
-    .sort((a: any, b: any) => ts(b?.updated ?? b?.date) - ts(a?.updated ?? a?.date))
-    .slice(0, 6)
-    .map((g: any) => ({
-      href:
-        g?.url ??
-        (g?.exam
-          ? `/guides/${g.exam}/${g.slug}`
-          : `/guides/${g?.slug ?? ""}`),
-      title: g?.title ?? "(no title)",
-      exam: g?.exam,
-    }))
-    .filter((g) => !!g.href && g.href !== "/guides/");
-
-  return {
-    props: { newsItems, noteItems, xItems, guides },
-    revalidate: 1800, // 30分ISR
-  };
-};
-
-export default function HomePage({
-  newsItems,
-  noteItems,
-  xItems,
-  guides,
-}: InferGetStaticPropsType<typeof getStaticProps>) {
-  const xEmbedMode = toXMode(process.env.NEXT_PUBLIC_X_EMBED_MODE);
-
-  return (
-    <>
-      <Head>
-        <title>QC × IE LABO</title>
-        <meta name="description" content="品質管理・経営工学の学習と実務に役立つガイドと最新情報" />
-      </Head>
-
-      <main className="mx-auto max-w-6xl px-4 py-8">
-        <section className="mb-8">
-          <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900">QC × IE LABO</h1>
-          <p className="mt-2 text-gray-600">
-            現場で使える品質管理・経営工学のガイドと最新情報を一箇所に。
-          </p>
-        </section>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
-            {/* ▼ ガイド（新着） */}
-            {guides.length > 0 && (
-              <section aria-labelledby="section-guides">
-                <h2 id="section-guides" className="text-xl font-bold mb-3">
-                  ガイド（新着）
-                </h2>
-                <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {guides.map((g) => (
-                    <li key={g.href} className="rounded-2xl border border-gray-200 p-4 hover:shadow-sm">
-                      <Link href={g.href} className="block">
-                        <div className="text-sm text-gray-500">{g.exam ? `#${g.exam}` : ""}</div>
-                        <div className="mt-1 font-semibold">{g.title}</div>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            )}
-          </div>
-
-          <aside className="space-y-6">
-            {/* ISR 渡し */}
-            <NewsFeed limit={6} items={newsItems} />
-            <NoteFeed limit={6} user="nieqc_0713" items={noteItems} />
-
-            {/* X：ISRの軽量リスト + ウィジェット（modeはユニオン化した値を渡す） */}
-            <XTimeline
-              username="@n_ieqclab"
-              limit={5}
-              mode={xEmbedMode}
-              items={xItems}
-              minHeight={600}
-            />
-
-            {/* Instagram：画像URLなど専用項目が必要なため items は渡さずクライアント側取得 */}
-            <InstagramFeed limit={3} />
-          </aside>
-        </div>
-      </main>
-    </>
-  );
-}
+  const
