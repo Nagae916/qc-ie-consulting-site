@@ -9,7 +9,8 @@ import XTimeline from "@/components/feeds/XTimeline";
 import InstagramFeed from "@/components/feeds/InstagramFeed";
 
 import { fetchFeedByUrl, type NormalizedFeedItem } from "@/lib/feeds";
-import { allDocuments } from "contentlayer/generated";
+// Contentlayer: 具体の allXXX が無い環境でも動くように「総当り」で取得
+import * as CL from "contentlayer/generated";
 
 // -- 各UIが使いやすい形に変換 --
 type NewsItem  = { title: string; link: string; source: string; pubDate: string | null };
@@ -63,6 +64,19 @@ const ts = (v: unknown): number => {
   return 0;
 };
 
+// Contentlayer から「全部の allXXX 配列」を総当りで集める
+const collectAllDocs = (): any[] => {
+  // CL 内の export のうち、配列で、かつ _raw を持つ要素を含むものだけを採用
+  const arrays = Object.values(CL).filter(
+    (v: unknown) =>
+      Array.isArray(v) &&
+      v.length > 0 &&
+      typeof (v as any)[0] === "object" &&
+      (v as any)[0]?._raw
+  ) as any[][];
+  return arrays.flat();
+};
+
 export const getStaticProps: GetStaticProps<{
   newsItems: NewsItem[];
   noteItems: NoteItem[];
@@ -84,26 +98,25 @@ export const getStaticProps: GetStaticProps<{
   const xItems    = uniqByLink(toX(xRaw)).slice(0, 5);
 
   // --- ガイド取得（型名や schema 変更に強いロジック） ---
-  const guides =
-    ((allDocuments as unknown[]) ?? [])
-      // guides/ 配下のみ（型名に依存しない）
-      .filter((d: any) => d?._raw?.flattenedPath?.startsWith?.("guides/"))
-      // draft を除外（未設定は published 扱い）
-      .filter((d: any) => (d?.status ?? "published") !== "draft")
-      // 更新順（updated > date の順で存在する方）
-      .sort((a: any, b: any) => ts(b?.updated ?? b?.date) - ts(a?.updated ?? a?.date))
-      .slice(0, 6)
-      .map((g: any): GuideItem => ({
-        href:
-          g?.url ??
-          (g?.exam
-            ? `/guides/${g.exam}/${g.slug}`
-            : `/guides/${g?.slug ?? ""}`),
-        title: g?.title ?? "(no title)",
-        exam: g?.exam,
-      }))
-      // href が空文字のものは落とす
-      .filter((g) => !!g.href && g.href !== "/guides/");
+  const allDocs = collectAllDocs();
+  const guides: GuideItem[] = allDocs
+    // guides/ 配下のみ（型名に依存しない）
+    .filter((d: any) => d?._raw?.flattenedPath?.startsWith?.("guides/"))
+    // draft を除外（未設定は published 扱い）
+    .filter((d: any) => (d?.status ?? "published") !== "draft")
+    // 更新順（updated > date の順で存在する方）
+    .sort((a: any, b: any) => ts(b?.updated ?? b?.date) - ts(a?.updated ?? a?.date))
+    .slice(0, 6)
+    .map((g: any) => ({
+      href:
+        g?.url ??
+        (g?.exam
+          ? `/guides/${g.exam}/${g.slug}`
+          : `/guides/${g?.slug ?? ""}`),
+      title: g?.title ?? "(no title)",
+      exam: g?.exam,
+    }))
+    .filter((g) => !!g.href && g.href !== "/guides/");
 
   return {
     props: { newsItems, noteItems, xItems, guides },
