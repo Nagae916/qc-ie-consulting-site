@@ -1,63 +1,76 @@
-﻿---
+---
 title: "信頼性工学スタディガイド"
 description: "MTBF・MTTR・MTTF・アベイラビリティの基礎と、可用性シミュレーターでの体感"
 tags: ["信頼性", "MTBF", "MTTR", "MTTF", "可用性"]
 exam: "qc"
-status: published
+slug: "reliability"
+status: "published"
+date: "2025-09-16"
+updatedAt: "2025-09-16"
 ---
 
-import { GuideLayout, Glossary, QA } from '../../../src/components/guide/GuideLayout'
-import AvailabilitySimulator from '../../../src/components/guide/AvailabilitySimulator'
+# 信頼性工学スタディガイド
 
-<GuideLayout
-  title="信頼性工学スタディガイド"
-  intro="製品やシステムの信頼性・可用性を評価する代表指標を学び、MTBFとMTTRから可用性を直感的に理解します。"
->
+製品やシステムの信頼性・可用性を評価する代表指標を整理します。  
+**インタラクティブな可用性シミュレーターは別ページ**に分離しています。
 
-<section style={{ marginBottom: 24 }}>
-  <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px,1fr))', gap:16 }}>
-    <div style={{ background:'#fff', border:'1px solid #e5e7eb', borderRadius:16, padding:16 }}>
-      <h3 style={{ fontSize: 20, fontWeight: 800, margin: 0 }}>MTBF</h3>
-      <p style={{ color:'#94a3b8', fontWeight:600, margin:'8px 0' }}>Mean Time Between Failures / 平均故障間隔</p>
-      <p style={{ color:'#475569', margin:0 }}>修理可能なシステムが故障から次の故障まで稼働する平均時間。大きいほど信頼性が高い。</p>
-    </div>
-    <div style={{ background:'#fff', border:'1px solid #e5e7eb', borderRadius:16, padding:16 }}>
-      <h3 style={{ fontSize: 20, fontWeight: 800, margin: 0 }}>MTTR</h3>
-      <p style={{ color:'#94a3b8', fontWeight:600, margin:'8px 0' }}>Mean Time To Repair / 平均修復時間</p>
-      <p style={{ color:'#475569', margin:0 }}>故障から復旧までの平均時間。小さいほど保全性が高い。</p>
-    </div>
-    <div style={{ background:'#fff', border:'1px solid #e5e7eb', borderRadius:16, padding:16 }}>
-      <h3 style={{ fontSize: 20, fontWeight: 800, margin: 0 }}>MTTF</h3>
-      <p style={{ color:'#94a3b8', fontWeight:600, margin:'8px 0' }}>Mean Time To Failure / 平均故障寿命</p>
-      <p style={{ color:'#475569', margin:0 }}>修理不可製品の使用開始から故障までの平均時間（例：電球など）。</p>
-    </div>
-    <div style={{ background:'#fff', border:'1px solid #e5e7eb', borderRadius:16, padding:16 }}>
-      <h3 style={{ fontSize: 20, fontWeight: 800, margin: 0 }}>アベイラビリティ</h3>
-      <p style={{ color:'#94a3b8', fontWeight:600, margin:'8px 0' }}>Availability / 可用性・稼働率</p>
-      <p style={{ color:'#475569', margin:0 }}>必要なときに稼働できる割合。MTBF↑・MTTR↓で向上。指標の関係を下のシミュレーターで体感。</p>
-    </div>
+> シミュレーター（別ページ）  
+> [/tools/availability-simulator](/tools/availability-simulator)
+
+---
+
+## 1. 基本指標
+
+- **MTBF**（Mean Time Between Failures / 平均故障間隔）  
+  修理可能システムで、故障から次の故障までの平均稼働時間。大きいほど**信頼性**が高い。
+- **MTTR**（Mean Time To Repair / 平均修復時間）  
+  故障から復旧までの平均時間。小さいほど**保全性**が高い。
+- **MTTF**（Mean Time To Failure / 平均故障寿命）  
+  修理不可製品の使用開始から故障までの平均時間（例：電球など）。
+- **アベイラビリティ（可用性）**  
+  必要なときに稼働できる割合。  
+  $$
+  \text{Availability} \;=\; \frac{\text{MTBF}}{\text{MTBF}+\text{MTTR}}
+  $$
+
+---
+
+## 2. 直感と設計の要点
+
+- MTBF ↑・MTTR ↓ で**可用性↑**。ただしコストや保全体制とのトレードオフを評価。  
+- 可用性要求（例：99.9%）から、必要な MTBF/MTTR の目標値を逆算できる。  
+- 冗長化・ホットスタンバイ等では**系の合成**を考慮（本ガイドでは単一系を前提）。
+
+---
+
+## 3. 典型タスクの最短フロー
+
+1. 要求可用性の定義（例：月間 99.9%）  
+2. 現状の MTBF / MTTR を測定  
+3. 指標から不足分を特定（\> 対策：予防保全、予備品、訓練、設計変更）  
+4. シミュレーターで目標達成可否を**感覚的に確認** → 施策の優先度付け
+
+---
+
+## 4. 理解度チェック（Q&A）
+
+<details class="qa-card">
+  <summary class="qa-q">Q1. 可用性を高めるには何を優先すべき？</summary>
+  <div class="qa-a">
+    MTBF を伸ばす（故障しにくく）／MTTR を縮める（早く直す）の両輪。現実には MTTR 改善（保全体制の強化）が立ち上がりやすい。
   </div>
-</section>
+</details>
 
-<section style={{ marginBottom: 24 }}>
-  <h2 style={{ textAlign:'center', fontSize: 22, fontWeight: 800, margin:'0 0 12px' }}>アベイラビリティ・シミュレーター</h2>
-  <p style={{ textAlign:'center', color:'#64748b', margin:'0 0 12px' }}>スライダーまたは数値入力で MTBF/MTTR を変更すると、稼働率が即時更新されます。</p>
-  <AvailabilitySimulator
-    defaultMTBF={500} minMTBF={10} maxMTBF={1000}
-    defaultMTTR={10} minMTTR={1} maxMTTR={100}
-  />
-</section>
+<details class="qa-card">
+  <summary class="qa-q">Q2. 稼働 1000h・故障 5 回・修理合計 25h の可用性は？</summary>
+  <div class="qa-a">
+    MTBF=200h、MTTR=5h、可用性＝200/(200+5)=0.9756 → 97.56%。
+  </div>
+</details>
 
-<Glossary items={[
-  { term: 'MTBFの求め方', desc: '総稼働時間 ÷ 故障回数' },
-  { term: 'MTTRの求め方', desc: '総修理時間 ÷ 故障回数' },
-  { term: '可用性の式', desc: 'MTBF / (MTBF + MTTR)' },
-]} />
-
-<section style={{ maxWidth: 760, margin:'0 auto', display:'grid', gap:12 }}>
-  <QA q="サーバーの稼働率の算出手順は？" a={<div>①MTBF=総稼働時間/故障回数 ②MTTR=総修理時間/故障回数 ③可用性=MTBF/(MTBF+MTTR)</div>} />
-  <QA q="例題：稼働1000h/故障5回/修理合計25h の可用性は？" a={<div>MTBF=200h、MTTR=5h、可用性=200/(200+5)=97.56%</div>} />
-  <QA q="製品A:MTBF100/MTTR2 と B:MTBF50/MTTR1 を比較すると？" a={<div>Aは信頼性高い（壊れにくい）。Bは保全性高い（直しやすい）。可用性は概ね同程度。</div>} />
-</section>
-
-</GuideLayout>
+<details class="qa-card">
+  <summary class="qa-q">Q3. A: MTBF 100/MTTR 2 と B: MTBF 50/MTTR 1 の比較は？</summary>
+  <div class="qa-a">
+    Aは信頼性が高い（壊れにくい）。Bは保全性が高い（直しやすい）。可用性は概ね同程度。
+  </div>
+</details>
