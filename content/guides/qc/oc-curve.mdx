@@ -1,46 +1,97 @@
-﻿---
+---
 title: "計数基準型抜取検査（OC曲線）ガイド"
 description: "n と c を動かして OC 曲線と α・β を体感する"
 tags: ["QC", "統計", "OC曲線", "抜取検査"]
 exam: "qc"
-status: published
+slug: "oc-curve"
+status: "published"
+date: "2025-09-16"
+updatedAt: "2025-09-16"
 ---
 
-import { GuideLayout, Glossary, QA } from '../../../src/components/guide/GuideLayout'
-import OCSimulator from '../../../src/components/guide/OCSimulator'
+# 計数基準型抜取検査（OC曲線）ガイド
 
-<GuideLayout
-  title="計数基準型抜取検査（OC曲線）ガイド"
-  intro="抜取検査の性能をOC曲線で可視化します。n と c を動かし、AQL/RQL 点での α・β を確認しましょう。"
->
+ロットの不良率 $p$ に対し、**合格確率** $P_a$ がどう変わるかを示すのが **OC曲線** です。  
+ここでは定義と読み取り、パラメータ $n,c$ の影響をまとめます。インタラクティブな可視化は別ページをご利用ください。
 
-<section style={{ marginBottom: 24 }}>
-  <h3 style={{ fontSize: 20, fontWeight: 800, textAlign: 'center', margin: '0 0 12px' }}>
-    OC曲線シミュレーター
-  </h3>
-  <p style={{ textAlign: 'center', color: '#64748b', margin: '0 0 12px' }}>
-    パラメータ（サンプルサイズ n、合格判定個数 c）を変更して、曲線の変化を確認してください。
-  </p>
-  <OCSimulator
-    defaultN={30} minN={10} maxN={200}
-    defaultC={3}  minC={0}  maxC={10}
-    aql={1.0} rql={6.5}
-    pMaxPercent={40} stepPercent={1}
-    showRisk
-  />
-</section>
+> シミュレーター（別ページ）
+> - [/tools/oc-simulator](/tools/oc-simulator)
 
-<Glossary items={[
-  { term: '抜取検査', desc: '全数ではなく一部サンプルでロット合否を判定する手法。' },
-  { term: 'OC曲線', desc: '不良率 p（横軸）と合格確率 Pa（縦軸）の関係。' },
-  { term: '生産者危険 (α)', desc: '良いロットを不合格にしてしまう確率。' },
-  { term: '消費者危険 (β)', desc: '悪いロットを合格にしてしまう確率。' },
-]} />
+---
 
-<section style={{ maxWidth: 760, margin: '0 auto', display: 'grid', gap: 12 }}>
-  <QA q="OC曲線の軸は？" a="横軸＝ロットの不良率（%）、縦軸＝ロットが合格する確率（%）。" />
-  <QA q="n を大きくするとどうなる？" a="判定がより明確になり、曲線は急峻になります（合格判定は厳しめに）。" />
-  <QA q="c を小さくするとどうなる？" a="判定が厳しくなり、曲線は左にシフトします（合格しにくく）。" />
-</section>
+## 1. 基本の定義
 
-</GuideLayout>
+- **計数基準型**（合否判定 $c$）：サンプルサイズ $n$、不良個数が **$c$ 以下なら合格**  
+- **OC曲線**：横軸＝ロットの不良率 $p(\%)$、縦軸＝合格確率 $P_a(\%)$
+
+**合格確率（2項モデル）**  
+$$
+P_a(p; n,c) \;=\; \sum_{k=0}^{c} \binom{n}{k}\, p^{k}(1-p)^{\,n-k}
+$$
+
+---
+
+## 2. リスク指標（AQL/RQL と $\alpha,\beta$）
+
+- **AQL**（合格品質水準）：良いロットの代表点  
+- **RQL/LTPD**（不合格品質水準）：悪いロットの代表点  
+- **生産者危険** $\alpha$：良いロット（AQL）を不合格にする確率  
+  $$\alpha \;=\; 1 - P_a(\text{AQL}; n,c)$$
+- **消費者危険** $\beta$：悪いロット（RQL）を合格にしてしまう確率  
+  $$\beta \;=\; P_a(\text{RQL}; n,c)$$
+
+> OC曲線上では、AQL点の縦座標が $P_a(\text{AQL})$、RQL点の縦座標が $P_a(\text{RQL})$。  
+> それぞれの**距離**が $\alpha,\beta$ になります。
+
+---
+
+## 3. パラメータの影響（感度）
+
+- **$n$ を増やす** → 曲線が**急峻**に：判定が明確（合否がはっきり）  
+- **$c$ を減らす** → 曲線が**左へ**：厳しくなり合格しにくい  
+- **$c$ を増やす** → 曲線が**右へ**：甘くなり合格しやすい
+
+> 目的に応じて $\alpha,\beta$ のバランスを取り、AQL/RQL で望ましい合格確率になるよう $n,c$ を設計します。
+
+---
+
+## 4. 読み取りの手順（最短フロー）
+
+1. AQL・RQL（または目標の $\alpha,\beta$）を決める  
+2. 候補の $n,c$ を選び、$P_a(p; n,c)$ を描く  
+3. AQL点・RQL点の縦座標から $\alpha,\beta$ を確認  
+4. 要件を満たすまで $n$ と $c$ を微調整
+
+---
+
+## 5. よくある質問（Q&A）
+
+<details class="qa-card">
+  <summary class="qa-q">OC曲線の軸は？</summary>
+  <div class="qa-a">
+    横軸＝不良率 $p(\%)$、縦軸＝合格確率 $P_a(\%)$ です。
+  </div>
+</details>
+
+<details class="qa-card">
+  <summary class="qa-q">n を大きくするとどうなる？</summary>
+  <div class="qa-a">
+    判定が明確になり、曲線は急峻になります（AQL/RQL近辺での変化が大きく、合否がはっきり）。
+  </div>
+</details>
+
+<details class="qa-card">
+  <summary class="qa-q">c を小さくするとどうなる？</summary>
+  <div class="qa-a">
+    厳しくなり、曲線は左にシフトします（同じ $p$ でも合格確率が下がる）。
+  </div>
+</details>
+
+---
+
+### 数式メモ（参考）
+
+- **二項分布の漸近近似**（$n$ が大きく $p$ が中庸）：正規近似で $k \sim \mathcal{N}(np,\,np(1-p))$  
+- **ポアソン近似**（$p$ が小さく $n$ が大きい）：$\lambda=np$ として  
+  $P(k\le c) \approx \sum_{k=0}^c e^{-\lambda}\lambda^k/k!$
+
