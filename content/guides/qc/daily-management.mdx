@@ -1,132 +1,88 @@
-﻿---
+---
 title: "品質管理と日常管理（TQM）"
 description: "日常管理の2本柱とPDCAをインタラクティブに学ぶガイド"
 tags: ["TQM", "日常管理", "PDCA"]
 exam: "qc"
-status: published
+slug: "daily-management"
+status: "published"
+date: "2025-09-16"
+updatedAt: "2025-09-16"
 ---
 
 # TQMの核となる「日常管理」
 
-日常管理とは、組織の全員が日々の業務を通じて品質を維持し、改善していく継続的な活動です。このガイドで、その基本概念と実践方法を学びましょう。
+日常管理とは、組織の全員が日々の業務を通じて品質を維持し、改善していく継続的な活動です。  
+このガイドで、その基本概念と実践方法を学びましょう。
 
 ---
 
 ## 日常管理を支える「2つの柱」
 
-<div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-  <div className="bg-white p-8 rounded-lg shadow-lg border-t-4 border-sky-500">
-    <h3 className="text-2xl font-bold mb-3">1. 維持 (Maintain)</h3>
-    <p className="text-slate-600">
-      定められた標準（SOPなど）を確実に守り、現状の品質レベルを安定的に保つ活動です。品質のバラつきを防ぎ、安定した基盤を築きます。
-    </p>
-  </div>
+- **維持（Maintain）**  
+  定められた標準（SOPなど）を確実に守り、現状の品質レベルを安定的に保つ。ばらつきを抑え、安定した基盤を築く。
 
-  <div className="bg-white p-8 rounded-lg shadow-lg border-t-4 border-sky-500">
-    <h3 className="text-2xl font-bold mb-3">2. 改善 (Improve)</h3>
-    <p className="text-slate-600">
-      維持された品質レベルを、さらに高める活動です。日々の業務から課題を見つけ、PDCAサイクルを通じて継続的にレベルアップを図ります。
-    </p>
-  </div>
-</div>
+- **改善（Improve）**  
+  維持された品質レベルをさらに高める。日々の業務から課題を見つけ、**PDCA** を回して継続的にレベルアップ。
 
 ---
 
 ## 改善のエンジン：PDCAサイクル
 
-<p className="text-center text-slate-600 max-w-3xl mx-auto mb-6">
-  下の各ステップを開いて、具体的な活動内容を確認しましょう。（クリックで開閉）
-</p>
-
-<div className="grid md:grid-cols-2 gap-6 items-start">
-  <div className="grid grid-cols-2 gap-4 justify-items-center">
-    <div className="flex items-center justify-center w-36 h-36 rounded-tl-full bg-sky-500 text-white font-bold text-2xl">
-      P
-    </div>
-    <div className="flex items-center justify-center w-36 h-36 rounded-tr-full bg-slate-200 font-bold text-2xl">
-      D
-    </div>
-    <div className="flex items-center justify-center w-36 h-36 rounded-bl-full bg-slate-200 font-bold text-2xl">
-      A
-    </div>
-    <div className="flex items-center justify-center w-36 h-36 rounded-br-full bg-slate-200 font-bold text-2xl">
-      C
-    </div>
+<details class="qa-card">
+  <summary class="qa-q">Plan（計画）</summary>
+  <div class="qa-a">
+    目標設定（例：不良率1%削減）と達成プロセスの策定。QCストーリーや管理図などのツールを活用。
   </div>
+</details>
 
-  <div className="space-y-3">
-    <details open className="bg-white p-5 rounded-lg shadow-sm">
-      <summary className="cursor-pointer font-bold text-sky-700">Plan（計画）</summary>
-      <p className="mt-2">
-        目標を設定し（例：不良率1%削減）、それを達成するための具体的な計画を立てます。QCストーリーや管理図などのツールがここで活用されます。
-      </p>
-    </details>
-
-    <details className="bg-white p-5 rounded-lg shadow-sm">
-      <summary className="cursor-pointer font-bold text-sky-700">Do（実施）</summary>
-      <p className="mt-2">
-        立てた計画に従って、日々の業務を遂行します。標準作業手順書（SOP）などのルールを遵守することが重要です。
-      </p>
-    </details>
-
-    <details className="bg-white p-5 rounded-lg shadow-sm">
-      <summary className="cursor-pointer font-bold text-sky-700">Check（確認・評価）</summary>
-      <p className="mt-2">
-        結果が目標通りか、計画通りに実行できたかを確認します。品質データなどを用いて客観的に評価します。
-      </p>
-    </details>
-
-    <details className="bg-white p-5 rounded-lg shadow-sm">
-      <summary className="cursor-pointer font-bold text-sky-700">Act（処置・是正）</summary>
-      <p className="mt-2">
-        評価結果に基づき、改善策を講じます。目標達成なら成功要因を標準化し、未達成なら原因を究明して次の計画に活かします。
-      </p>
-    </details>
+<details class="qa-card">
+  <summary class="qa-q">Do（実施）</summary>
+  <div class="qa-a">
+    計画に沿って実行。標準作業手順（SOP）などのルール遵守を徹底。
   </div>
-</div>
+</details>
+
+<details class="qa-card">
+  <summary class="qa-q">Check（確認・評価）</summary>
+  <div class="qa-a">
+    目標達成度と実行状況を確認。品質データに基づき客観的に評価。
+  </div>
+</details>
+
+<details class="qa-card">
+  <summary class="qa-q">Act（処置・是正）</summary>
+  <div class="qa-a">
+    達成なら成功要因を標準化。未達成なら原因を深掘りし、次の計画へ反映。
+  </div>
+</details>
 
 ---
 
 ## 理解度チェック
 
-<div className="space-y-6 max-w-3xl mx-auto">
-
-  <div className="bg-white p-6 rounded-lg shadow-md">
-    <p className="font-bold mb-4">
-      1. 品質保証やTQMにおける日常管理の目的として、最も適切なものを1つ選択してください。
-    </p>
-    <ul className="space-y-2">
-      <li>A. 現状の品質レベルを維持し、さらに改善するための活動を継続的に行うこと。</li>
-      <li>B. 不良品が出たときのみ、根本原因を究明すること。</li>
-      <li>C. 製品の設計段階でのみ品質目標を設定すること。</li>
-      <li>D. 品質管理部門の専門家が、特別なプロジェクトとして実施すること。</li>
+<details class="qa-card">
+  <summary class="qa-q">Q1. 日常管理の目的として最も適切なのは？</summary>
+  <div class="qa-a">
+    <p><strong>正解：A</strong></p>
+    <ul>
+      <li>A. 現状の維持と継続的改善を両立させる活動を続ける。</li>
+      <li>B. 不良時のみ根本原因を究明する。</li>
+      <li>C. 設計段階でのみ品質目標を設定する。</li>
+      <li>D. 品質管理部門だけが特別プロジェクトとして実施する。</li>
     </ul>
-    <details className="mt-3">
-      <summary className="cursor-pointer inline-block bg-sky-600 text-white px-4 py-2 rounded-md">答えを見る</summary>
-      <div className="mt-3 p-4 bg-blue-50 rounded-md border border-blue-100">
-        <p><strong>正解：A</strong></p>
-        <p className="mt-1">日常管理は、PDCAサイクルを回して現状の維持と継続的改善を両立させる活動です。</p>
-      </div>
-    </details>
+    <p>日常管理は全員参加でPDCAを回すのが本質。</p>
   </div>
+</details>
 
-  <div className="bg-white p-6 rounded-lg shadow-md">
-    <p className="font-bold mb-4">
-      2. 日常管理とTQM（Total Quality Management）の関係性に関する記述として、最も適切なものを1つ選択してください。
-    </p>
-    <ul className="space-y-2">
-      <li>A. 日常管理とTQMは互いに独立した概念であり、関連性はない。</li>
-      <li>B. 日常管理は、TQMを特定のプロジェクトとして実施する際に適用される。</li>
-      <li>C. 日常管理は、TQMの核となる「全員参加」と「継続的改善」を具現化するための不可欠な活動である。</li>
-      <li>D. TQMは日常管理の概念の一部であり、日常管理の方がより広範な活動である。</li>
+<details class="qa-card">
+  <summary class="qa-q">Q2. TQM と日常管理の関係は？</summary>
+  <div class="qa-a">
+    <p><strong>正解：C</strong></p>
+    <ul>
+      <li>A. 互いに独立で関連なし。</li>
+      <li>B. 特別プロジェクト時のみ適用。</li>
+      <li><strong>C. TQMの「全員参加・継続的改善」を日々具現化する不可欠な活動。</strong></li>
+      <li>D. TQMは日常管理の一部。</li>
     </ul>
-    <details className="mt-3">
-      <summary className="cursor-pointer inline-block bg-sky-600 text-white px-4 py-2 rounded-md">答えを見る</summary>
-      <div className="mt-3 p-4 bg-blue-50 rounded-md border border-blue-100">
-        <p><strong>正解：C</strong></p>
-        <p className="mt-1">TQM の理念（全員参加・継続的改善）を、日々の業務として具体化するのが日常管理です。</p>
-      </div>
-    </details>
   </div>
-
-</div>
+</details>
