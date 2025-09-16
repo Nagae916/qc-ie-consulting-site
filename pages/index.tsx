@@ -1,5 +1,6 @@
 // pages/index.tsx
 import Head from "next/head";
+import Link from "next/link";
 import type { GetStaticProps, InferGetStaticPropsType } from "next";
 
 import NewsFeed from "@/components/feeds/NewsFeed";
@@ -8,11 +9,13 @@ import XTimeline from "@/components/feeds/XTimeline";
 import InstagramFeed from "@/components/feeds/InstagramFeed";
 
 import { fetchFeedByUrl, type NormalizedFeedItem } from "@/lib/feeds";
+import { allDocuments } from "contentlayer/generated";
 
 // -- 各UIが使いやすい形に変換 --
-type NewsItem = { title: string; link: string; source: string; pubDate: string | null };
-type NoteItem = { title: string; link: string; pubDate: string | null; excerpt: string };
-type XItem    = { title: string; link: string; pubDate: string | null };
+type NewsItem  = { title: string; link: string; source: string; pubDate: string | null };
+type NoteItem  = { title: string; link: string; pubDate: string | null; excerpt: string };
+type XItem     = { title: string; link: string; pubDate: string | null };
+type GuideItem = { href: string; title: string; exam?: string };
 
 // 重複除去（link 基準）
 const uniqByLink = <T extends { link: string }>(arr: T[]): T[] => {
@@ -51,10 +54,20 @@ function toXMode(v?: string): "auto" | "widget" | "fallback" {
   return v === "widget" || v === "fallback" || v === "auto" ? v : "auto";
 }
 
+// Contentlayer の日付ソート用ユーティリティ
+const ts = (v: unknown): number => {
+  if (typeof v === "string") {
+    const n = Date.parse(v);
+    return Number.isFinite(n) ? n : 0;
+  }
+  return 0;
+};
+
 export const getStaticProps: GetStaticProps<{
   newsItems: NewsItem[];
   noteItems: NoteItem[];
   xItems: XItem[];
+  guides: GuideItem[];
 }> = async () => {
   const NEWS_RSS_URL = process.env.NEWS_RSS_URL || "";
   const NOTE_RSS_URL = process.env.NOTE_RSS_URL || "";
@@ -70,8 +83,30 @@ export const getStaticProps: GetStaticProps<{
   const noteItems = uniqByLink(toNote(noteRaw)).slice(0, 6);
   const xItems    = uniqByLink(toX(xRaw)).slice(0, 5);
 
+  // --- ガイド取得（型名や schema 変更に強いロジック） ---
+  const guides =
+    ((allDocuments as unknown[]) ?? [])
+      // guides/ 配下のみ（型名に依存しない）
+      .filter((d: any) => d?._raw?.flattenedPath?.startsWith?.("guides/"))
+      // draft を除外（未設定は published 扱い）
+      .filter((d: any) => (d?.status ?? "published") !== "draft")
+      // 更新順（updated > date の順で存在する方）
+      .sort((a: any, b: any) => ts(b?.updated ?? b?.date) - ts(a?.updated ?? a?.date))
+      .slice(0, 6)
+      .map((g: any): GuideItem => ({
+        href:
+          g?.url ??
+          (g?.exam
+            ? `/guides/${g.exam}/${g.slug}`
+            : `/guides/${g?.slug ?? ""}`),
+        title: g?.title ?? "(no title)",
+        exam: g?.exam,
+      }))
+      // href が空文字のものは落とす
+      .filter((g) => !!g.href && g.href !== "/guides/");
+
   return {
-    props: { newsItems, noteItems, xItems },
+    props: { newsItems, noteItems, xItems, guides },
     revalidate: 1800, // 30分ISR
   };
 };
@@ -80,6 +115,7 @@ export default function HomePage({
   newsItems,
   noteItems,
   xItems,
+  guides,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   const xEmbedMode = toXMode(process.env.NEXT_PUBLIC_X_EMBED_MODE);
 
@@ -100,7 +136,24 @@ export default function HomePage({
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            {/* 既存のガイド一覧やカード群をそのまま残してください */}
+            {/* ▼ ガイド（新着） */}
+            {guides.length > 0 && (
+              <section aria-labelledby="section-guides">
+                <h2 id="section-guides" className="text-xl font-bold mb-3">
+                  ガイド（新着）
+                </h2>
+                <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {guides.map((g) => (
+                    <li key={g.href} className="rounded-2xl border border-gray-200 p-4 hover:shadow-sm">
+                      <Link href={g.href} className="block">
+                        <div className="text-sm text-gray-500">{g.exam ? `#${g.exam}` : ""}</div>
+                        <div className="mt-1 font-semibold">{g.title}</div>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
           </div>
 
           <aside className="space-y-6">
