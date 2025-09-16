@@ -1,60 +1,75 @@
-﻿---
+---
 title: "回帰分析・分散分析スタディガイド"
 description: "目的に応じて回帰分析・分散分析・t検定を選び、用語と理解度チェックで基礎を固める"
 tags: ["統計", "回帰分析", "分散分析", "t検定"]
 exam: "qc"
-status: published
+slug: "regression-anova"
+status: "published"
+date: "2025-09-16"
+updatedAt: "2025-09-16"
 ---
 
-import { GuideLayout, Glossary, QA } from '../../../src/components/guide/GuideLayout'
-import MethodNavigator from '../../../src/components/guide/MethodNavigator'
+# 回帰分析・分散分析スタディガイド
 
-<GuideLayout
-  title="回帰分析・分散分析スタディガイド"
-  intro="回帰分析と分散分析の基本概念と選び方を学びます。以下のナビゲーターに回答すると、あなたの目的に合う手法を提示します。"
->
+回帰分析と分散分析（ANOVA）の**基本概念**と**選び方**を短く整理します。  
+まずは目的（予測か比較か）を確認しましょう。
 
-<section style={{ marginBottom: 24 }}>
-  <MethodNavigator />
-</section>
+## 1. どれを選ぶ？
+- **回帰分析**：入力 $x$ から出力 $y$ を**予測**したい／関係の**強さ**を知りたい  
+  - 単回帰：$\,y=\beta_0+\beta_1 x+\varepsilon\,$
+  - 重回帰：$\,y=\beta_0+\sum_k \beta_k x_k+\varepsilon\,$
+- **分散分析（ANOVA）**：複数群の平均の**差**を検定したい  
+  - 一元配置：要因1つ、$\,F=\dfrac{MS_{\text{between}}}{MS_{\text{within}}}\,$
+- **t検定**：**2群**の平均差を検定（対応なし／あり）
 
-<section style={{ marginBottom: 24 }}>
-  <h2 style={{ textAlign:'center', fontSize: 22, fontWeight: 800, margin:'0 0 12px' }}>重要用語リスト</h2>
-  <div style={{ maxWidth: 760, margin:'0 auto', display:'grid', gap:12 }}>
-    <div style={{ background:'#fff', border:'1px solid #e5e7eb', borderRadius:16, padding:16 }}>
-      <h3 style={{ fontSize: 18, fontWeight: 800, margin:0 }}>説明変数 (Independent Variable)</h3>
-      <p style={{ color:'#64748b', margin:'8px 0 0' }}>結果に影響を与えると考えられる原因側の変数。</p>
-    </div>
-    <div style={{ background:'#fff', border:'1px solid #e5e7eb', borderRadius:16, padding:16 }}>
-      <h3 style={{ fontSize: 18, fontWeight: 800, margin:0 }}>目的変数 (Dependent Variable)</h3>
-      <p style={{ color:'#64748b', margin:'8px 0 0' }}>説明変数の影響を受けて変動する、知りたい結果の変数。</p>
-    </div>
-    <div style={{ background:'#fff', border:'1px solid #e5e7eb', borderRadius:16, padding:16 }}>
-      <h3 style={{ fontSize: 18, fontWeight: 800, margin:0 }}>平方和 (Sum of Squares)</h3>
-      <p style={{ color:'#64748b', margin:'8px 0 0' }}>ばらつきの大きさ。ANOVAでは全変動・要因間・要因内に分解。</p>
-    </div>
-    <div style={{ background:'#fff', border:'1px solid #e5e7eb', borderRadius:16, padding:16 }}>
-      <h3 style={{ fontSize: 18, fontWeight: 800, margin:0 }}>自由度 (Degrees of Freedom)</h3>
-      <p style={{ color:'#64748b', margin:'8px 0 0' }}>独立に値を取りうる数。検定統計量の分布形に関わる。</p>
-    </div>
-  </div>
-</section>
+> 直感：  
+> 予測したい → 回帰 ／ 平均を比べたい → ANOVA/t
 
-<section style={{ maxWidth: 760, margin:'0 auto', display:'grid', gap:12 }}>
-  <h2 style={{ textAlign:'center', fontSize: 22, fontWeight: 800, margin:'0 0 12px' }}>キー質問で理解度チェック</h2>
+## 2. 最低限おさえる指標
+- **決定係数 $R^2$**：モデルがばらつきをどれだけ説明したか（1に近いほど良い）  
+- **p値**：帰無仮説のもとで観測以上の極端さが出る確率（小さいほど有意）  
+- **残差**：$\,\hat{\varepsilon}_i = y_i - \hat{y}_i\,$。プロットで外れや歪みをチェック  
+- **効果量（ANOVA）**：$\eta^2,\,\omega^2$ など（「差の大きさ」を数量化）
 
-  <QA
-    q="気温とアイスの売上の関係をモデル化し将来の売上を予測したい。適切な手法は？"
-    a={<div><b>回帰分析</b>が適切。気温（説明変数）と売上（目的変数）の関係を数式で表す。</div>}
-  />
-  <QA
-    q="4つの製造方法で作った部品の平均耐久性に差があるか？"
-    a={<div><b>分散分析 (ANOVA)</b>が適切。3群以上の平均の差を検定するため。</div>}
-  />
-  <QA
-    q="回帰やANOVAが因果関係を証明しないのはなぜ？"
-    a={<div>どちらも<strong>関連</strong>や<strong>相関</strong>の検定・推定であり、因果の証明には管理実験等が必要。共通原因の存在に注意。</div>}
-  />
-</section>
+## 3. モデルの前提を確認
+- **独立性**：観測は互いに独立（時系列の自己相関に注意）
+- **等分散性**：群や説明変数の水準で分散が大差ない  
+- **正規性**：残差が概ね正規（大標本なら中心極限定理の助けも）
 
-</GuideLayout>
+> 前提が怪しいとき：ロバスト法、ノンパラ（Kruskal–Wallis など）、変数変換、分散不均一に強い手法を検討。
+
+## 4. 典型タスクの進め方（最短フロー）
+1. 目的を明確化（予測？平均差？）  
+2. データの可視化（散布図／箱ひげ／残差）  
+3. 手法の選択（回帰 or ANOVA/t）  
+4. 当てはめ → 指標確認（$R^2$, $F$, t, p値, 残差）  
+5. 前提検証＆改善（外れ値、非線形性、交互作用）  
+6. 解釈・示唆（現場での意思決定に接続）
+
+## 5. 理解度チェック
+<details class="qa-card">
+  <summary class="qa-q">Q1. 「3つの加工条件で平均強度が違うか」を検定。最初に検討する手法は？</summary>
+  <div class="qa-a">A. 一元配置ANOVA（群が3以上の平均差検定）。有意なら多重比較で差の所在を特定。</div>
+</details>
+
+<details class="qa-card">
+  <summary class="qa-q">Q2. 「温度と時間から歩留まりを予測」したい。どの手法？</summary>
+  <div class="qa-a">A. 重回帰分析（必要に応じて交互作用や非線形項も検討）。</div>
+</details>
+
+<details class="qa-card">
+  <summary class="qa-q">Q3. p値は0.03。実務上の示唆はすぐ確定してよい？</summary>
+  <div class="qa-a">A. 早計は禁物。効果量・信頼区間・実務影響度も併せて判断し、再現性やコストも考慮。</div>
+</details>
+
+## 6. 便利リンク
+- 方法ナビゲーター（外部ページ・インタラクティブ）
+  - [/tools/method-navigator](/tools/method-navigator)
+
+---
+
+### 数式メモ（参考）
+- 回帰の最小二乗推定：  
+  $\,\hat{\boldsymbol{\beta}} = (X^\top X)^{-1} X^\top \boldsymbol{y}\,$
+- ANOVA の分解：  
+  $\,SS_{\text{total}} = SS_{\text{between}} + SS_{\text{within}}\,$
