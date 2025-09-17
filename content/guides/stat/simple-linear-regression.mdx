@@ -1,14 +1,19 @@
 ---
+// content/guides/stat/simple-linear-regression.mdx
 title: "単回帰分析スタディガイド"
 description: "単回帰の主要概念・ANOVAの読み方・理解度チェックをコンパクトに整理。"
 tags: ["回帰", "単回帰", "ANOVA"]
 exam: "stat"
+slug: "simple-linear-regression"
 status: "published"
+date: "2025-09-17"
+updatedAt: "2025-09-17"
 ---
 
 # 単回帰分析を学ぶ
 
-1つの説明変数が1つの目的変数に与える影響を分析する単回帰分析について、回帰直線のイメージと重要な概念、計算方法を整理します。
+1つの説明変数が1つの目的変数に与える影響を分析する単回帰分析について、回帰直線のイメージと重要な概念、計算方法を整理します。  
+インタラクティブな散布図・回帰直線の可視化は **別ページ** に分離しています → [/tools/simple-linear-regression](/tools/simple-linear-regression)
 
 ## 主要概念
 
@@ -25,7 +30,7 @@ $$
 - $S_{xy}$ … $x$ と $y$ の偏差積和（共分散）  
 - $S_{xx}$ … $x$ の偏差平方和（分散）
 
-切片は次式で推定します（**ここを `<code>` で囲まないこと**）：
+切片は次式で推定します：
 
 $$
 \hat{\beta}_0 \;=\; \bar{y} \;-\; \hat{\beta}_1\,\bar{x}
@@ -50,8 +55,6 @@ S_{yy} = \sum (y_i-\bar{y})^2
 = \sum (\hat{y}_i-\bar{y})^2 + \sum (y_i-\hat{y}_i)^2
 = \text{回帰による平方和} + \text{残差平方和}
 $$
-
-> （図表は必要に応じて画像で挿入。本文に JSX の `<div>` や `<code>` を混在させず、Markdown＋数式記法のみを使用してください）
 
 ## 理解度チェック
 
