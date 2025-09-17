@@ -3,13 +3,15 @@ import Head from "next/head";
 import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 
-// Chart.js をクライアント側でのみ読み込む
+// Chart.js を先に動的ロードしてから Scatter を返す（登録漏れ防止）
 const Scatter = dynamic(
-  () => import("react-chartjs-2").then((m) => m.Scatter),
+  async () => {
+    await import("chart.js/auto"); // scales/elements/controllers を一括登録
+    const m = await import("react-chartjs-2");
+    return m.Scatter;
+  },
   { ssr: false, loading: () => <div className="text-gray-500">Loading chart…</div> }
 );
-
-// Chart.js のレジストリはクライアント側で行われる（react-chartjs-2 側でOK）
 
 type Pt = { x: number; y: number };
 
