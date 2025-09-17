@@ -1,30 +1,30 @@
-﻿---
+---
 title: "PSI管理学習ガイド"
 description: "Production・Sales・Inventory を統合して最適化するための基礎とシミュレーター"
 tags: ["PSI", "生産管理", "在庫", "販売計画"]
 exam: "engineer"
-status: published
+status: "published"
 ---
 
-# PSI管理学習ガイド
+import { GuideLayout } from '../../../src/components/guide/GuideLayout'
 
-技術士試験対策などにご活用ください。
+<GuideLayout
+  intro="PSI管理は、生産 (P)・販売 (S)・在庫 (I) を統合的に管理し、過剰在庫と欠品を回避してサプライチェーン全体の効率を最適化する枠組みです。"
+>
 
----
+<section className="mb-6">
+  <h2 className="text-2xl font-bold text-sky-700 mb-3">PSI管理とは？</h2>
+  <p className="text-slate-700">
+    PSI管理とは、<b>生産 (Production)</b>・<b>販売 (Sales)</b>・<b>在庫 (Inventory)</b> の3要素を統合的に管理し、バランスを最適化する手法です。過剰在庫や欠品を防ぎ、経営効率を高めます。
+  </p>
 
-## PSI管理とは？
-
-PSI管理とは、**生産(Production)**・**販売(Sales)**・**在庫(Inventory)** の3要素を統合的に管理し、サプライチェーン全体のバランスを最適化する手法です。過剰在庫や欠品を防ぎ、経営効率を高めます。
-
-<div className="mt-6">
-  <h3 className="font-semibold text-lg mb-3">PSIの連携</h3>
-  <div className="flex flex-col md:flex-row items-center justify-around bg-slate-200 p-4 rounded-lg text-center">
-    <div className="p-4 rounded-lg bg-blue-100 text-blue-800 w-40 mb-2 md:mb-0">
+  <div className="mt-4 flex flex-col md:flex-row items-center justify-around bg-slate-100 p-4 rounded-lg text-center">
+    <div className="p-4 rounded-lg bg-sky-100 text-sky-800 w-40 mb-2 md:mb-0">
       <span className="font-bold text-xl">生産 (P)</span>
       <p className="text-sm">どれだけ作るか</p>
     </div>
     <div className="text-2xl font-mono text-slate-500 mx-4">→</div>
-    <div className="p-4 rounded-lg bg-green-100 text-green-800 w-40 mb-2 md:mb-0">
+    <div className="p-4 rounded-lg bg-emerald-100 text-emerald-800 w-40 mb-2 md:mb-0">
       <span className="font-bold text-xl">在庫 (I)</span>
       <p className="text-sm">どれだけあるか</p>
     </div>
@@ -34,210 +34,223 @@ PSI管理とは、**生産(Production)**・**販売(Sales)**・**在庫(Inventor
       <p className="text-sm">どれだけ売れるか</p>
     </div>
   </div>
-</div>
+</section>
 
----
-
-## PSIの基本計算式
-
-PSI計画の根幹は以下の在庫バランス式です。これを変形して必要生産量を求めます。
-
-<div className="bg-slate-100 p-4 rounded-lg text-center">
-  <p className="text-lg md:text-xl font-mono text-slate-700 tracking-tight">
-    生産量 + 期首在庫 − 販売量 = 期末在庫
+<section className="mb-6">
+  <h2 className="text-2xl font-bold text-sky-700 mb-3">PSIの基本計算式</h2>
+  <p className="mb-3">在庫バランスの基礎式：</p>
+  <div className="bg-slate-100 p-4 rounded-lg text-center">
+    <p className="text-lg md:text-xl font-mono text-slate-700 tracking-tight">
+      生産量 + 期首在庫 − 販売量 = 期末在庫
+    </p>
+  </div>
+  <p className="mt-2 text-sm text-slate-600">
+    変形すると <b className="font-mono">生産量 = 販売量 + 期末在庫 − 期首在庫</b>。
   </p>
-</div>
+</section>
 
-<p className="mt-4 text-sm text-slate-600">
-  例：<span className="font-mono">生産量 = 販売量 + 期末在庫 − 期首在庫</span>
-</p>
-
----
-
-## 「動き」が分かるプリセット・シミュレーター（JSなし）
-
-> スライダーの代わりに、代表的な**3つのシナリオ**を用意しました。クリックで開くと、計算結果と**横型スタックバー**（供給／需要）が表示されます。  
-> JSを使わずに描画しているため、CSPにも安全です。
-
-### シナリオA（ベース）
-- 期首在庫：**150**／販売：**800**／目標期末在庫：**200**  
-- 生産量 = 800 + 200 − 150 = **850**
-
-<div className="grid grid-cols-1 md:grid-cols-[80px_1fr] gap-3 my-3">
-  <div className="text-sm text-right text-slate-600 md:self-center">供給</div>
-  <div className="h-6 rounded overflow-hidden bg-slate-200">
-    <span style={{width:"15%"}} className="inline-block h-full" title="期首在庫 150"></span>
-    <span style={{width:"85%"}} className="inline-block h-full" title="生産量 850"></span>
-  </div>
-
-  <div className="text-sm text-right text-slate-600 md:self-center">需要</div>
-  <div className="h-6 rounded overflow-hidden bg-slate-200">
-    <span style={{width:"80%"}} className="inline-block h-full" title="販売量 800"></span>
-    <span style={{width:"20%"}} className="inline-block h-full" title="期末在庫 200"></span>
-  </div>
-</div>
-
-<details className="bg-white p-4 rounded-lg border">
-  <summary className="cursor-pointer font-semibold">内訳・ポイント</summary>
-  <ul className="list-disc list-inside text-slate-600 mt-2">
-    <li>供給（期首在庫＋生産）＝ <b>1000</b>、需要（販売＋期末在庫）＝ <b>1000</b> でバランス。</li>
-    <li>在庫をやや積み増ししつつ、販売要求を満たしています。</li>
-  </ul>
-</details>
-
----
-
-### シナリオB（在庫過多の是正）
-- 期首在庫：**400**／販売：**800**／目標期末在庫：**200**  
-- 生産量 = 800 + 200 − 400 = **600**
-
-<div className="grid grid-cols-1 md:grid-cols-[80px_1fr] gap-3 my-3">
-  <div className="text-sm text-right text-slate-600 md:self-center">供給</div>
-  <div className="h-6 rounded overflow-hidden bg-slate-200">
-    <span style={{width:"40%"}} className="inline-block h-full" title="期首在庫 400"></span>
-    <span style={{width:"60%"}} className="inline-block h-full" title="生産量 600"></span>
-  </div>
-
-  <div className="text-sm text-right text-slate-600 md:self-center">需要</div>
-  <div className="h-6 rounded overflow-hidden bg-slate-200">
-    <span style={{width:"80%"}} className="inline-block h-full" title="販売量 800"></span>
-    <span style={{width:"20%"}} className="inline-block h-full" title="期末在庫 200"></span>
-  </div>
-</div>
-
-<details className="bg-white p-4 rounded-lg border">
-  <summary className="cursor-pointer font-semibold">内訳・ポイント</summary>
-  <ul className="list-disc list-inside text-slate-600 mt-2">
-    <li>在庫過多なので、生産を抑制（<b>600</b>）して在庫水準を調整。</li>
-    <li>販売計画は維持しつつ、目標期末在庫に着地させています。</li>
-  </ul>
-</details>
-
----
-
-### シナリオC（需要急増）
-- 期首在庫：**150**／販売：**1200**／目標期末在庫：**200**  
-- 生産量 = 1200 + 200 − 150 = **1250**
-
-<div className="grid grid-cols-1 md:grid-cols-[80px_1fr] gap-3 my-3">
-  <div className="text-sm text-right text-slate-600 md:self-center">供給</div>
-  <div className="h-6 rounded overflow-hidden bg-slate-200">
-    <span style={{width:"10.7%"}} className="inline-block h-full" title="期首在庫 150"></span>
-    <span style={{width:"89.3%"}} className="inline-block h-full" title="生産量 1250"></span>
-  </div>
-
-  <div className="text-sm text-right text-slate-600 md:self-center">需要</div>
-  <div className="h-6 rounded overflow-hidden bg-slate-200">
-    <span style={{width:"85.7%"}} className="inline-block h-full" title="販売量 1200"></span>
-    <span style={{width:"14.3%"}} className="inline-block h-full" title="期末在庫 200"></span>
-  </div>
-</div>
-
-<details className="bg-white p-4 rounded-lg border">
-  <summary className="cursor-pointer font-semibold">内訳・ポイント</summary>
-  <ul className="list-disc list-inside text-slate-600 mt-2">
-    <li>需要急増に対応するため、生産を大きく上積み（<b>1250</b>）。</li>
-    <li>必要に応じて残業・外注・在庫政策（安全在庫の見直し）も検討対象。</li>
-  </ul>
-</details>
-
-> ※ 色分け凡例：**期首在庫 / 生産量 / 販売量 / 期末在庫**（レジェンドは図内ツールチップで表示）
-
----
-
-## 重要用語の確認
-
-<details className="bg-white p-5 rounded-lg shadow-sm mb-2">
-  <summary className="cursor-pointer font-semibold">PSI（生産・販売・在庫）</summary>
-  <p className="mt-2 text-slate-600">
-    Production / Sales / Inventory の頭文字。3指標を統合的に管理する考え方。
+<section className="mb-8">
+  <h2 className="text-2xl font-bold text-sky-700 mb-2">「動き」が分かるプリセット（JSなし）</h2>
+  <p className="text-slate-600 mb-4">
+    スライダーの代わりに、代表的な <b>3つのシナリオ</b> を用意。クリックで内訳を確認できます。横型スタックバーは <span className="font-mono">width%</span> だけで描画しているため、CSPにも優しい実装です。
   </p>
-</details>
 
-<details className="bg-white p-5 rounded-lg shadow-sm mb-2">
-  <summary className="cursor-pointer font-semibold">適正在庫</summary>
-  <p className="mt-2 text-slate-600">
-    欠品を起こさず、かつ過剰在庫によるコスト増も招かない在庫水準。
+  {/* ========== シナリオA ========== */}
+  <h3 className="font-bold mt-4">シナリオA（ベース）</h3>
+  <p className="text-slate-700">
+    期首在庫：<b>150</b>／販売：<b>800</b>／目標期末在庫：<b>200</b><br />
+    生産量 = 800 + 200 − 150 = <b>850</b>
   </p>
-</details>
 
-<details className="bg-white p-5 rounded-lg shadow-sm mb-2">
-  <summary className="cursor-pointer font-semibold">安全在庫</summary>
-  <p className="mt-2 text-slate-600">
-    需要変動や供給遅延に備える緩衝在庫。
-  </p>
-</details>
+  <div className="grid grid-cols-1 md:grid-cols-[80px_1fr] gap-3 my-3">
+    <div className="text-sm text-right text-slate-600 md:self-center">供給</div>
+    <div className="h-6 rounded overflow-hidden bg-slate-200 relative" aria-label="供給（期首在庫・生産量）">
+      <span className="sr-only">期首在庫 150</span>
+      <span className="inline-block h-full bg-emerald-400" style={{width:"15%"}} />
+      <span className="sr-only">生産量 850</span>
+      <span className="inline-block h-full bg-sky-400" style={{width:"85%"}} />
+    </div>
 
-<details className="bg-white p-5 rounded-lg shadow-sm">
-  <summary className="cursor-pointer font-semibold">期首在庫 / 期末在庫</summary>
-  <p className="mt-2 text-slate-600">
-    期間の始まり/終わりの在庫量。期末在庫は次期の期首在庫となる。
-  </p>
-</details>
+    <div className="text-sm text-right text-slate-600 md:self-center">需要</div>
+    <div className="h-6 rounded overflow-hidden bg-slate-200 relative" aria-label="需要（販売量・期末在庫）">
+      <span className="sr-only">販売量 800</span>
+      <span className="inline-block h-full bg-amber-400" style={{width:"80%"}} />
+      <span className="sr-only">期末在庫 200</span>
+      <span className="inline-block h-full bg-violet-400" style={{width:"20%"}} />
+    </div>
+  </div>
 
----
-
-## 理解度チェック
-
-<div className="bg-white p-6 rounded-lg shadow-sm">
-  <div className="mb-4">
-    <p className="font-semibold mb-2">1. PSI管理の主目的で最も適切なのは？</p>
-    <ul className="list-disc list-inside text-slate-700">
-      <li>販売利益の最大化を最優先とする</li>
-      <li>品質向上のため在庫を常に厚く持つ</li>
-      <li><b>P・S・Iを統合管理し過剰在庫と欠品を回避</b></li>
-      <li>生産コストの最小化を最優先し欠品は許容</li>
+  <details className="bg-white p-4 rounded-lg border">
+    <summary className="cursor-pointer font-semibold">内訳・ポイント</summary>
+    <ul className="list-disc list-inside text-slate-600 mt-2">
+      <li>供給（期首在庫＋生産）＝ <b>1000</b>、需要（販売＋期末在庫）＝ <b>1000</b> でバランス。</li>
+      <li>在庫をやや積み増ししつつ、販売要求を満たしています。</li>
     </ul>
-    <details className="mt-2">
-      <summary className="cursor-pointer inline-block bg-slate-200 px-3 py-1 rounded">答えを見る</summary>
-      <div className="mt-2 text-slate-700">
-        正解：<b>「P・S・Iを統合管理し過剰在庫と欠品を回避」</b>。3要素のバランス最適化が核です。
-      </div>
-    </details>
+  </details>
+
+  {/* ========== シナリオB ========== */}
+  <h3 className="font-bold mt-6">シナリオB（在庫過多の是正）</h3>
+  <p className="text-slate-700">
+    期首在庫：<b>400</b>／販売：<b>800</b>／目標期末在庫：<b>200</b><br />
+    生産量 = 800 + 200 − 400 = <b>600</b>
+  </p>
+
+  <div className="grid grid-cols-1 md:grid-cols-[80px_1fr] gap-3 my-3">
+    <div className="text-sm text-right text-slate-600 md:self-center">供給</div>
+    <div className="h-6 rounded overflow-hidden bg-slate-200">
+      <span className="inline-block h-full bg-emerald-400" style={{width:"40%"}} />
+      <span className="inline-block h-full bg-sky-400" style={{width:"60%"}} />
+    </div>
+
+    <div className="text-sm text-right text-slate-600 md:self-center">需要</div>
+    <div className="h-6 rounded overflow-hidden bg-slate-200">
+      <span className="inline-block h-full bg-amber-400" style={{width:"80%"}} />
+      <span className="inline-block h-full bg-violet-400" style={{width:"20%"}} />
+    </div>
   </div>
 
-  <div className="mb-4">
-    <p className="font-semibold mb-2">2. 期首在庫150、販売800、目標期末在庫200。必要生産量は？</p>
-    <ul className="list-disc list-inside text-slate-700">
-      <li>650</li><li>750</li><li><b>850</b></li><li>950</li>
+  <details className="bg-white p-4 rounded-lg border">
+    <summary className="cursor-pointer font-semibold">内訳・ポイント</summary>
+    <ul className="list-disc list-inside text-slate-600 mt-2">
+      <li>在庫過多なので、生産を抑制（<b>600</b>）して在庫水準を調整。</li>
+      <li>販売計画は維持しつつ、目標期末在庫に着地させています。</li>
     </ul>
-    <details className="mt-2">
-      <summary className="cursor-pointer inline-block bg-slate-200 px-3 py-1 rounded">答えを見る</summary>
-      <div className="mt-2 text-slate-700">
-        正解：<b>850</b>（生産量 = 800 + 200 − 150）
-      </div>
-    </details>
+  </details>
+
+  {/* ========== シナリオC ========== */}
+  <h3 className="font-bold mt-6">シナリオC（需要急増）</h3>
+  <p className="text-slate-700">
+    期首在庫：<b>150</b>／販売：<b>1200</b>／目標期末在庫：<b>200</b><br />
+    生産量 = 1200 + 200 − 150 = <b>1250</b>
+  </p>
+
+  <div className="grid grid-cols-1 md:grid-cols-[80px_1fr] gap-3 my-3">
+    <div className="text-sm text-right text-slate-600 md:self-center">供給</div>
+    <div className="h-6 rounded overflow-hidden bg-slate-200">
+      <span className="inline-block h-full bg-emerald-400" style={{width:"10.7%"}} />
+      <span className="inline-block h-full bg-sky-400" style={{width:"89.3%"}} />
+    </div>
+
+    <div className="text-sm text-right text-slate-600 md:self-center">需要</div>
+    <div className="h-6 rounded overflow-hidden bg-slate-200">
+      <span className="inline-block h-full bg-amber-400" style={{width:"85.7%"}} />
+      <span className="inline-block h-full bg-violet-400" style={{width:"14.3%"}} />
+    </div>
   </div>
 
-  <div className="mb-4">
-    <p className="font-semibold mb-2">3. 安全在庫の主目的として最も適切なのは？</p>
-    <ul className="list-disc list-inside text-slate-700">
-      <li>廃棄コスト削減</li>
-      <li><b>需要変動や供給遅延による欠品回避</b></li>
-      <li>過剰在庫で常時稼働</li>
-      <li>保管費最小化でCF最大化</li>
+  <details className="bg-white p-4 rounded-lg border">
+    <summary className="cursor-pointer font-semibold">内訳・ポイント</summary>
+    <ul className="list-disc list-inside text-slate-600 mt-2">
+      <li>需要急増に対応するため、生産を大きく上積み（<b>1250</b>）。</li>
+      <li>必要に応じて残業・外注・安全在庫見直しなども検討対象。</li>
     </ul>
-    <details className="mt-2">
-      <summary className="cursor-pointer inline-block bg-slate-200 px-3 py-1 rounded">答えを見る</summary>
-      <div className="mt-2 text-slate-700">
-        正解：<b>需要変動や供給遅延による欠品回避</b>。不確実性に備えるバッファです。
-      </div>
-    </details>
-  </div>
+  </details>
 
-  <div>
-    <p className="font-semibold mb-2">4. 期首在庫が過剰だった。適切な調整は？</p>
-    <ul className="list-disc list-inside text-slate-700">
-      <li><b>当期の生産量を削減し在庫水準を調整</b></li>
-      <li>販売目標を上げ生産量も増やす</li>
-      <li>期首在庫を無視して計画する</li>
-      <li>販売単価を上げて販売量を落とす</li>
-    </ul>
-    <details className="mt-2">
-      <summary className="cursor-pointer inline-block bg-slate-200 px-3 py-1 rounded">答えを見る</summary>
-      <div className="mt-2 text-slate-700">
-        正解：<b>当期の生産量を削減</b>。過剰在庫の直接的対策です（販売増との併用も有効）。
-      </div>
-    </details>
+  <p className="mt-3 text-sm text-slate-500">
+    色分け凡例：<span className="inline-block h-3 w-3 align-middle bg-emerald-400 rounded-sm mr-1" />期首在庫 /
+    <span className="inline-block h-3 w-3 align-middle bg-sky-400 rounded-sm mx-1" />生産量 /
+    <span className="inline-block h-3 w-3 align-middle bg-amber-400 rounded-sm mx-1" />販売量 /
+    <span className="inline-block h-3 w-3 align-middle bg-violet-400 rounded-sm mx-1" />期末在庫
+  </p>
+</section>
+
+<section className="mb-6">
+  <h2 className="text-2xl font-bold text-sky-700 mb-3">重要用語の確認</h2>
+
+  <details className="bg-white p-5 rounded-lg shadow-sm mb-2">
+    <summary className="cursor-pointer font-semibold">PSI（生産・販売・在庫）</summary>
+    <p className="mt-2 text-slate-600">
+      Production / Sales / Inventory の頭文字。3指標を統合的に管理する考え方。
+    </p>
+  </details>
+
+  <details className="bg-white p-5 rounded-lg shadow-sm mb-2">
+    <summary className="cursor-pointer font-semibold">適正在庫</summary>
+    <p className="mt-2 text-slate-600">
+      欠品を起こさず、かつ過剰在庫によるコスト増も招かない在庫水準。
+    </p>
+  </details>
+
+  <details className="bg-white p-5 rounded-lg shadow-sm mb-2">
+    <summary className="cursor-pointer font-semibold">安全在庫</summary>
+    <p className="mt-2 text-slate-600">
+      需要変動や供給遅延に備える緩衝在庫。
+    </p>
+  </details>
+
+  <details className="bg-white p-5 rounded-lg shadow-sm">
+    <summary className="cursor-pointer font-semibold">期首在庫 / 期末在庫</summary>
+    <p className="mt-2 text-slate-600">
+      期間の始まり/終わりの在庫量。期末在庫は次期の期首在庫となる。
+    </p>
+  </details>
+</section>
+
+<section className="mb-2">
+  <h2 className="text-2xl font-bold text-sky-700 mb-3">理解度チェック</h2>
+
+  <div className="bg-white p-6 rounded-lg shadow-sm">
+    <div className="mb-4">
+      <p className="font-semibold mb-2">1. PSI管理の主目的で最も適切なのは？</p>
+      <ul className="list-disc list-inside text-slate-700">
+        <li>販売利益の最大化を最優先とする</li>
+        <li>品質向上のため在庫を常に厚く持つ</li>
+        <li><b>P・S・Iを統合管理し過剰在庫と欠品を回避</b></li>
+        <li>生産コストの最小化を最優先し欠品は許容</li>
+      </ul>
+      <details className="mt-2">
+        <summary className="cursor-pointer inline-block bg-slate-200 px-3 py-1 rounded">答えを見る</summary>
+        <div className="mt-2 text-slate-700">
+          正解：<b>「P・S・Iを統合管理し過剰在庫と欠品を回避」</b>。3要素のバランス最適化が核です。
+        </div>
+      </details>
+    </div>
+
+    <div className="mb-4">
+      <p className="font-semibold mb-2">2. 期首在庫150、販売800、目標期末在庫200。必要生産量は？</p>
+      <ul className="list-disc list-inside text-slate-700">
+        <li>650</li><li>750</li><li><b>850</b></li><li>950</li>
+      </ul>
+      <details className="mt-2">
+        <summary className="cursor-pointer inline-block bg-slate-200 px-3 py-1 rounded">答えを見る</summary>
+        <div className="mt-2 text-slate-700">
+          正解：<b>850</b>（生産量 = 800 + 200 − 150）
+        </div>
+      </details>
+    </div>
+
+    <div className="mb-4">
+      <p className="font-semibold mb-2">3. 安全在庫の主目的として最も適切なのは？</p>
+      <ul className="list-disc list-inside text-slate-700">
+        <li>廃棄コスト削減</li>
+        <li><b>需要変動や供給遅延による欠品回避</b></li>
+        <li>過剰在庫で常時稼働</li>
+        <li>保管費最小化でCF最大化</li>
+      </ul>
+      <details className="mt-2">
+        <summary className="cursor-pointer inline-block bg-slate-200 px-3 py-1 rounded">答えを見る</summary>
+        <div className="mt-2 text-slate-700">
+          正解：<b>需要変動や供給遅延による欠品回避</b>。不確実性に備えるバッファです。
+        </div>
+      </details>
+    </div>
+
+    <div>
+      <p className="font-semibold mb-2">4. 期首在庫が過剰だった。適切な調整は？</p>
+      <ul className="list-disc list-inside text-slate-700">
+        <li><b>当期の生産量を削減し在庫水準を調整</b></li>
+        <li>販売目標を上げ生産量も増やす</li>
+        <li>期首在庫を無視して計画する</li>
+        <li>販売単価を上げて販売量を落とす</li>
+      </ul>
+      <details className="mt-2">
+        <summary className="cursor-pointer inline-block bg-slate-200 px-3 py-1 rounded">答えを見る</summary>
+        <div className="mt-2 text-slate-700">
+          正解：<b>当期の生産量を削減</b>。過剰在庫の直接的対策です（販売増との併用も有効）。
+        </div>
+      </details>
+    </div>
   </div>
-</div>
+</section>
+
+</GuideLayout>
