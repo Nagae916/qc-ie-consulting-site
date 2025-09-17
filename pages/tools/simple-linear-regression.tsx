@@ -51,10 +51,15 @@ function stats(points: Pt[]) {
   const b1 = Sxy / Sxx;
   const b0 = ybar - b1 * xbar;
 
+  // 参考：yhat はグラフ用などに使うので残す
   const yhat = points.map((p) => b0 + b1 * p.x);
-  const SSR = yhat.reduce((s, yh) => s + Math.pow(yh - ybar, 2), 0);
-  const SSE = points.reduce((s, p, i) => s + Math.pow(p.y - yhat[i], 2), 0);
+
+  // ANOVA
   const SST = Syy;
+  // 等式: SSR = b1 * Sxy（= Sxy^2 / Sxx）
+  const SSR = b1 * Sxy;
+  // 等式: SSE = SST - SSR（丸め誤差で負微小になったら 0 に丸め）
+  const SSE = Math.max(0, SST - SSR);
 
   const R2 = SST > 0 ? SSR / SST : NaN;
   const df1 = 1;
