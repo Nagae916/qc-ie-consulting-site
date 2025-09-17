@@ -1,4 +1,5 @@
 // pages/guides/[exam]/index.tsx
+import Head from "next/head";
 import Link from "next/link";
 import type { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
 import { allGuides, type Guide } from "contentlayer/generated";
@@ -60,6 +61,12 @@ const guideHref = (g: Guide, fallbackExam: ExamKey) => {
 const timeKey = (g: Guide): number =>
   Date.parse(String((g as any).updatedAtAuto ?? (g as any).updatedAt ?? (g as any).date ?? "")) || 0;
 
+// 重複排除（href 基準）
+const uniqByHref = (arr: { href: string }[]) => {
+  const seen = new Set<string>();
+  return arr.filter(({ href }) => (href && !seen.has(href) ? (seen.add(href), true) : false));
+};
+
 /* ========= SSG ========= */
 export const getStaticPaths: GetStaticPaths = async () => ({
   paths: (["qc", "stat", "engineer"] as ExamKey[]).map((exam) => ({ params: { exam } })),
@@ -69,50 +76,63 @@ export const getStaticPaths: GetStaticPaths = async () => ({
 export const getStaticProps: GetStaticProps<{ exam: ExamKey }> = async ({ params }) => {
   const exam = toExamKey(params?.exam);
   if (!exam) return { notFound: true };
-  return { props: { exam }, revalidate: 60 };
+  return { props: { exam }, revalidate: 1800 }; // 30分ISR（トップと統一）
 };
 
 /* ========= Page ========= */
 export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getStaticProps>) {
   // 下書き除外 → セクション優先 → 更新日降順（updatedAtAuto優先）
-  const guides = allGuides
+  const guidesSorted = allGuides
     .filter((g) => toExamKey((g as any).exam) === exam && (g as any).status !== "draft")
     .sort((a, b) => {
       const secCmp = String((a as any).section ?? "").localeCompare(String((b as any).section ?? ""));
       if (secCmp !== 0) return secCmp;
       return timeKey(b) - timeKey(a);
-    });
+    })
+    .map((g) => ({
+      g,
+      href: guideHref(g, exam),
+      tags: safeTags((g as any).tags).slice(0, 4),
+      updatedYmd: formatYMD((g as any).updatedAtAuto ?? (g as any).updatedAt, (g as any).date),
+      title: (g as any).title ?? "(no title)",
+      description: (g as any).description as string | undefined,
+      section: (g as any).section as string | undefined,
+    }));
+
+  // 念のため重複ガード
+  const guides = uniqByHref(guidesSorted);
 
   const t = THEME[exam];
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-10">
-      <div className="text-sm text-gray-500">
-        <Link href="/guides" className="underline">ガイド</Link> / {EXAM_LABEL[exam]}
-      </div>
+    <>
+      <Head>
+        <title>{EXAM_LABEL[exam]}ガイド一覧 | QC × IE LABO</title>
+        <meta name="description" content={`${EXAM_LABEL[exam]}カテゴリのガイド一覧`} />
+      </Head>
 
-      <h1 className="mt-2 text-2xl md:text-3xl font-extrabold">{EXAM_LABEL[exam]} 一覧</h1>
+      <main className="mx-auto max-w-6xl px-4 py-10">
+        <div className="text-sm text-gray-500">
+          <Link href="/" className="underline">トップ</Link> / <Link href="/guides" className="underline">ガイド</Link> / {EXAM_LABEL[exam]}
+        </div>
 
-      {/* 2カラムのカードレイアウト */}
-      <div className="mt-6 grid gap-4 md:grid-cols-2">
-        {guides.map((g) => {
-          const href = guideHref(g, exam);
-          const tags = safeTags((g as any).tags).slice(0, 4);
-          const updatedYmd = formatYMD((g as any).updatedAtAuto ?? (g as any).updatedAt, (g as any).date);
+        <h1 className={`mt-2 text-2xl md:text-3xl font-extrabold ${t.title}`}>{EXAM_LABEL[exam]} 一覧</h1>
 
-          return (
+        {/* 2カラムのカードレイアウト（大画面は3カラムでも違和感なし） */}
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {guides.map(({ g, href, tags, updatedYmd, title, description, section }) => (
             <article key={g._id} className={`rounded-2xl border shadow-sm bg-white ${t.border}`}>
               <div className={`h-1 w-full rounded-t-2xl ${t.accent}`} />
               <div className="p-5">
                 <h2 className="text-lg font-bold leading-snug">
-                  <Link href={href} className={`${t.title} hover:underline`}>{(g as any).title}</Link>
+                  <Link href={href} className={`${t.title} hover:underline`}>{title}</Link>
                 </h2>
 
-                {(g as any).section || tags.length ? (
+                {(section || tags.length) && (
                   <div className="mt-2 flex flex-wrap gap-2">
-                    {(g as any).section && (
+                    {section && (
                       <span className={`inline-flex items-center rounded-full ${t.pillBg} ${t.pillBorder} border px-2 py-0.5 text-xs`}>
-                        {(g as any).section}
+                        {section}
                       </span>
                     )}
                     {tags.map((tag) => (
@@ -121,11 +141,9 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
                       </span>
                     ))}
                   </div>
-                ) : null}
+                )}
 
-                {(g as any).description ? (
-                  <p className="mt-3 text-sm text-gray-700 line-clamp-3">{(g as any).description}</p>
-                ) : null}
+                {description && <p className="mt-3 text-sm text-gray-700 line-clamp-3">{description}</p>}
 
                 <div className="mt-4 flex items-center justify-between">
                   <span className="text-xs text-gray-500" suppressHydrationWarning>
@@ -137,11 +155,11 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
                 </div>
               </div>
             </article>
-          );
-        })}
-      </div>
+          ))}
+        </div>
 
-      {guides.length === 0 && <p className="text-gray-500 mt-6">公開中のガイドはまだありません。</p>}
-    </main>
+        {guides.length === 0 && <p className="text-gray-500 mt-6">公開中のガイドはまだありません。</p>}
+      </main>
+    </>
   );
 }
