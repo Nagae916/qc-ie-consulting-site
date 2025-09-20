@@ -61,10 +61,10 @@ const guideHref = (g: Guide, fallbackExam: ExamKey) => {
 const timeKey = (g: Guide): number =>
   Date.parse(String((g as any).updatedAtAuto ?? (g as any).updatedAt ?? (g as any).date ?? "")) || 0;
 
-// 重複排除（href 基準）
-const uniqByHref = (arr: { href: string }[]) => {
+// ✅ ジェネリックで元の型を保持しつつ href 基準で重複排除
+const uniqByHref = <T extends { href: string }>(arr: T[]): T[] => {
   const seen = new Set<string>();
-  return arr.filter(({ href }) => (href && !seen.has(href) ? (seen.add(href), true) : false));
+  return arr.filter((item) => (item.href && !seen.has(item.href) ? (seen.add(item.href), true) : false));
 };
 
 /* ========= SSG ========= */
@@ -76,13 +76,23 @@ export const getStaticPaths: GetStaticPaths = async () => ({
 export const getStaticProps: GetStaticProps<{ exam: ExamKey }> = async ({ params }) => {
   const exam = toExamKey(params?.exam);
   if (!exam) return { notFound: true };
-  return { props: { exam }, revalidate: 1800 }; // 30分ISR（トップと統一）
+  return { props: { exam }, revalidate: 1800 }; // 30分ISR
 };
 
 /* ========= Page ========= */
+type Card = {
+  g: Guide;
+  href: string;
+  tags: string[];
+  updatedYmd: string;
+  title: string;
+  description?: string;
+  section?: string;
+};
+
 export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getStaticProps>) {
   // 下書き除外 → セクション優先 → 更新日降順（updatedAtAuto優先）
-  const guidesSorted = allGuides
+  const guidesEnriched: Card[] = allGuides
     .filter((g) => toExamKey((g as any).exam) === exam && (g as any).status !== "draft")
     .sort((a, b) => {
       const secCmp = String((a as any).section ?? "").localeCompare(String((b as any).section ?? ""));
@@ -99,8 +109,8 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
       section: (g as any).section as string | undefined,
     }));
 
-  // 念のため重複ガード
-  const guides = uniqByHref(guidesSorted);
+  // 重複ガード（href 基準）
+  const guides = uniqByHref<Card>(guidesEnriched);
 
   const t = THEME[exam];
 
