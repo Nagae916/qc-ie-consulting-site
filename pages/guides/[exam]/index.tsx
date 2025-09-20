@@ -86,28 +86,38 @@ type Card = {
   tags: string[];
   updatedYmd: string;
   title: string;
-  description?: string;
-  section?: string;
+  description?: string; // optional（undefined は代入しない。プロパティごと省略）
+  section?: string;     // optional（同上）
 };
 
 export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getStaticProps>) {
   // 下書き除外 → セクション優先 → 更新日降順（updatedAtAuto優先）
-  const guidesEnriched: Card[] = allGuides
+  const guidesEnriched = allGuides
     .filter((g) => toExamKey((g as any).exam) === exam && (g as any).status !== "draft")
     .sort((a, b) => {
       const secCmp = String((a as any).section ?? "").localeCompare(String((b as any).section ?? ""));
       if (secCmp !== 0) return secCmp;
       return timeKey(b) - timeKey(a);
     })
-    .map((g) => ({
-      g,
-      href: guideHref(g, exam),
-      tags: safeTags((g as any).tags).slice(0, 4),
-      updatedYmd: formatYMD((g as any).updatedAtAuto ?? (g as any).updatedAt, (g as any).date),
-      title: (g as any).title ?? "(no title)",
-      description: (g as any).description as string | undefined,
-      section: (g as any).section as string | undefined,
-    }));
+    .map((g): Card => {
+      const href = guideHref(g, exam);
+      const tags = safeTags((g as any).tags).slice(0, 4);
+      const updatedYmd = formatYMD((g as any).updatedAtAuto ?? (g as any).updatedAt, (g as any).date);
+      const title = (g as any).title ?? "(no title)";
+      const description = (g as any).description as string | undefined;
+      const section = (g as any).section as string | undefined;
+
+      // ⬇️ optional を「値があるときだけ追加」して exactOptionalPropertyTypes に対応
+      return {
+        g,
+        href,
+        tags,
+        updatedYmd,
+        title,
+        ...(description ? { description } : {}),
+        ...(section ? { section } : {}),
+      };
+    });
 
   // 重複ガード（href 基準）
   const guides = uniqByHref<Card>(guidesEnriched);
