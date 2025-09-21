@@ -9,12 +9,7 @@ date: "2025-09-17"
 updatedAt: "2025-09-17"
 ---
 
-{/* 
-  ✅ 直 import を削除しました（A. MDX を修正）。
-  ChiSquareGuide は /pages/guides/[exam]/[slug].tsx 側で
-  dynamic import（SSR無効）として “許可コンポーネント”に注入されています。
-  このMDXでは <ChiSquareGuide /> をそのまま呼び出すだけでOKです。
-*/}
+import ChiSquareGuide from '../../../src/components/guide/ChiSquareGuide'
 
 # クロス集計とカイ二乗検定ガイド
 
