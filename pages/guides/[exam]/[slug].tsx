@@ -7,20 +7,43 @@ import dynamic from "next/dynamic";
 import { allGuides, type Guide } from "contentlayer/generated";
 import { useMDXComponent } from "next-contentlayer2/hooks";
 
-/* ================= ラベル / テーマ ================= */
+// ───────── ランタイムで使う（MDX内の）許可コンポーネントを dynamic import（クライアントのみ描画） ─────────
+// /src/components/guide/Quiz.tsx → named export: Quiz
+const Quiz = dynamic(() => import("@/components/guide/Quiz").then((m) => m.Quiz), {
+  ssr: false,
+}) as React.ComponentType<any>;
+
+// /src/components/guide/ControlChart.tsx → default export
+const ControlChart = dynamic(() => import("@/components/guide/ControlChart").then((m) => m.default), {
+  ssr: false,
+}) as React.ComponentType<any>;
+
+// /src/components/guide/AvailabilitySimulator.tsx → default export
+const AvailabilitySimulator = dynamic(
+  () => import("@/components/guide/AvailabilitySimulator").then((m) => m.default),
+  { ssr: false }
+) as React.ComponentType<any>;
+
+// /src/components/guide/ChiSquareGuide.tsx → default export
+const ChiSquareGuide = dynamic(
+  () => import("@/components/guide/ChiSquareGuide").then((m) => m.default),
+  { ssr: false }
+) as React.ComponentType<any>;
+
+// ───────── 見た目テーマ等 ─────────
 type ExamKey = "qc" | "stat" | "engineer";
 const EXAM_LABEL: Record<ExamKey, string> = {
   qc: "品質管理",
   stat: "統計",
   engineer: "技術士",
 };
+
 const THEME: Record<ExamKey, { accent: string; link: string; title: string }> = {
   qc: { accent: "bg-amber-300/70", link: "text-amber-700 hover:text-amber-800", title: "text-amber-800" },
   stat: { accent: "bg-sky-300/70", link: "text-sky-700 hover:text-sky-800", title: "text-sky-800" },
   engineer: { accent: "bg-emerald-300/70", link: "text-emerald-700 hover:text-emerald-800", title: "text-emerald-800" },
 };
 
-/* ================= 小ユーティリティ ================= */
 const toExamKey = (v: unknown): ExamKey | null => {
   const s = String(v ?? "").toLowerCase().trim();
   if (s === "qc") return "qc";
@@ -50,7 +73,34 @@ function formatYMD(v1?: unknown, v2?: unknown): string {
   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
 }
 
-/* ================= SSG ================= */
+// Markdown(+Math) → HTML フォールバック（MDX code が無いときのみ使用）
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import remarkRehype from "remark-rehype";
+import rehypeKatex from "rehype-katex";
+import rehypeSanitize from "rehype-sanitize";
+import rehypeSlug from "rehype-slug";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import rehypeStringify from "rehype-stringify";
+
+async function mdToHtml(mdxRaw: string): Promise<string> {
+  const file = await unified()
+    .use(remarkParse)
+    .use(remarkGfm)
+    .use(remarkMath)
+    .use(remarkRehype, { allowDangerousHtml: true })
+    .use(rehypeKatex)
+    .use(rehypeSanitize)
+    .use(rehypeSlug)
+    .use(rehypeAutolinkHeadings, { behavior: "wrap" })
+    .use(rehypeStringify, { allowDangerousHtml: true })
+    .process(mdxRaw);
+  return String(file);
+}
+
+// ───────── SSG ─────────
 export const getStaticPaths: GetStaticPaths = async () => {
   const seen = new Set<string>();
   const paths = allGuides
@@ -65,6 +115,7 @@ export const getStaticProps: GetStaticProps<{
   guide: Guide;
   exam: ExamKey;
   mdxCode: string | null;
+  html: string | null;
   updatedYmd: string;
 }> = async ({ params }) => {
   const examParam = toExamKey(params?.exam);
@@ -80,40 +131,27 @@ export const getStaticProps: GetStaticProps<{
 
   if (!guide) return { notFound: true };
 
-  const mdxCode = (guide as any)?.body?.code ?? "";
-  const updatedYmd = formatYMD((guide as any).updatedAtAuto ?? (guide as any).updatedAt, (g as any).date);
+  // 優先：MDX（Reactコンポーネント利用可）
+  const mdxCode = (guide as any)?.body?.code ?? null;
 
-  return { props: { guide, exam: examParam, mdxCode, updatedYmd }, revalidate: 60 };
+  // フォールバック：HTML（MDXが無い or 無効な場合）
+  const html = mdxCode ? null : await mdToHtml(guide.body.raw);
+
+  // ★ 修正：誤って未定義変数 g を参照していた箇所を guide に統一
+  const updatedYmd = formatYMD(
+    (guide as any).updatedAtAuto ?? (guide as any).updatedAt,
+    (guide as any).date
+  );
+
+  return { props: { guide, exam: examParam, mdxCode, html, updatedYmd }, revalidate: 60 };
 };
 
-/* ================= MDX で使用可能にする“許可コンポーネント” =================
-   - すべて 'use client' な動的ウィジェットは SSR を無効化
-   - export 形に合わせて then() で取り出す
-   ========================================================================== */
-
-// /src/components/guide/Quiz.tsx （←このファイルは named export: `export function Quiz(...)` 前提）
-const Quiz = dynamic(() => import("@/components/guide/Quiz").then((m) => m.Quiz), { ssr: false }) as React.ComponentType<any>;
-
-// /src/components/guide/ControlChart.tsx （export default）
-const ControlChart = dynamic(() => import("@/components/guide/ControlChart").then((m) => m.default), { ssr: false }) as React.ComponentType<any>;
-
-// /src/components/guide/AvailabilitySimulator.tsx（export default）
-const AvailabilitySimulator = dynamic(
-  () => import("@/components/guide/AvailabilitySimulator").then((m) => m.default),
-  { ssr: false }
-) as React.ComponentType<any>;
-
-// /src/components/guide/ChiSquareGuide.tsx（export default）
-const ChiSquareGuide = dynamic(
-  () => import("@/components/guide/ChiSquareGuide").then((m) => m.default),
-  { ssr: false }
-) as React.ComponentType<any>;
-
-/* ================= Page ================= */
+// ───────── Page ─────────
 export default function GuidePage({
   guide,
   exam,
   mdxCode,
+  html,
   updatedYmd,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   const theme = THEME[exam];
@@ -124,10 +162,10 @@ export default function GuidePage({
     `${guide._raw?.flattenedPath ?? `${exam}/${(guide as any).slug}`}.mdx`;
   const editUrl = `https://github.com/Nagae916/qc-ie-consulting-site/edit/main/content/${sourcePath}`;
 
-  // Hooks は常に同順で呼ぶ
+  // Hooks の順序を安定させるため常に呼び出し
   const MDX = useMDXComponent(mdxCode || "");
 
-  // MDX 内で使えるコンポーネントの許可リスト
+  // MDX 内で使えるコンポーネントを注入（MDX側に import 行は不要）
   const components = {
     Quiz,
     ControlChart,
@@ -164,8 +202,9 @@ export default function GuidePage({
         </a>
       </div>
 
+      {/* 優先：MDX（Reactコンポーネント可）／ 代替：HTML */}
       <article className="prose prose-neutral max-w-none mt-6">
-        <MDX components={components} />
+        {mdxCode ? <MDX components={components} /> : <div dangerouslySetInnerHTML={{ __html: html ?? "" }} />}
       </article>
     </main>
   );
