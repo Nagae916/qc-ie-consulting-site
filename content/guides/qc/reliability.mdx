@@ -9,68 +9,36 @@ date: "2025-09-16"
 updatedAt: "2025-09-16"
 ---
 
+import AvailabilitySimulator from '../../../src/components/guide/AvailabilitySimulator'
+
 # 信頼性工学スタディガイド
 
-製品やシステムの信頼性・可用性を評価する代表指標を整理します。  
-**インタラクティブな可用性シミュレーターは別ページ**に分離しています。
+代表指標の関係を学び、**MTBF/MTTR を動かす**ことで可用性の感覚をつかみます。
 
-> シミュレーター（別ページ）  
-> [/tools/availability-simulator](/tools/availability-simulator)
+<section style={{margin:'12px 0 24px'}}>
+  <AvailabilitySimulator
+    defaultMTBF={500} minMTBF={10} maxMTBF={1000}
+    defaultMTTR={10}  minMTTR={1}  maxMTTR={100}
+  />
+</section>
 
 ---
 
 ## 1. 基本指標
 
-- **MTBF**（Mean Time Between Failures / 平均故障間隔）  
-  修理可能システムで、故障から次の故障までの平均稼働時間。大きいほど**信頼性**が高い。
-- **MTTR**（Mean Time To Repair / 平均修復時間）  
-  故障から復旧までの平均時間。小さいほど**保全性**が高い。
-- **MTTF**（Mean Time To Failure / 平均故障寿命）  
-  修理不可製品の使用開始から故障までの平均時間（例：電球など）。
-- **アベイラビリティ（可用性）**  
-  必要なときに稼働できる割合。  
-  $$
-  \text{Availability} \;=\; \frac{\text{MTBF}}{\text{MTBF}+\text{MTTR}}
-  $$
+- **MTBF** … 修理可能系の平均故障間隔（大きいほど信頼性↑）  
+- **MTTR** … 平均修復時間（小さいほど保全性↑）  
+- **MTTF** … 修理不可品の平均寿命  
+- **可用性**  
+  $$\mathrm{Availability}=\dfrac{\mathrm{MTBF}}{\mathrm{MTBF}+\mathrm{MTTR}}$$
 
 ---
 
-## 2. 直感と設計の要点
-
-- MTBF ↑・MTTR ↓ で**可用性↑**。ただしコストや保全体制とのトレードオフを評価。  
-- 可用性要求（例：99.9%）から、必要な MTBF/MTTR の目標値を逆算できる。  
-- 冗長化・ホットスタンバイ等では**系の合成**を考慮（本ガイドでは単一系を前提）。
+## 2. 典型タスクの最短フロー
+1) 要求可用性の定義 → 2) 現状 MTBF/MTTR 測定 → 3) 不足分析 → 4) 施策と効果見積り
 
 ---
 
-## 3. 典型タスクの最短フロー
-
-1. 要求可用性の定義（例：月間 99.9%）  
-2. 現状の MTBF / MTTR を測定  
-3. 指標から不足分を特定（> 対策：予防保全、予備品、訓練、設計変更）  
-4. シミュレーターで目標達成可否を**感覚的に確認** → 施策の優先度付け
-
----
-
-## 4. 理解度チェック（Q&A）
-
-<details class="qa-card">
-  <summary class="qa-q">Q1. 可用性を高めるには何を優先すべき？</summary>
-  <div class="qa-a">
-    MTBF を伸ばす（故障しにくく）／MTTR を縮める（早く直す）の両輪。現実には MTTR 改善（保全体制の強化）が立ち上がりやすい。
-  </div>
-</details>
-
-<details class="qa-card">
-  <summary class="qa-q">Q2. 稼働 1000h・故障 5 回・修理合計 25h の可用性は？</summary>
-  <div class="qa-a">
-    MTBF=200h、MTTR=5h、可用性＝200/(200+5)=0.9756 → 97.56%。
-  </div>
-</details>
-
-<details class="qa-card">
-  <summary class="qa-q">Q3. A: MTBF 100/MTTR 2 と B: MTBF 50/MTTR 1 の比較は？</summary>
-  <div class="qa-a">
-    Aは信頼性が高い（壊れにくい）。Bは保全性が高い（直しやすい）。可用性は概ね同程度。
-  </div>
-</details>
+## 3. Q&A
+<details class="qa-card"><summary class="qa-q">可用性を上げるコツは？</summary><div class="qa-a">MTBF↑とMTTR↓の両輪。短期はMTTR改善が効きやすい。</div></details>
+<details class="qa-card"><summary class="qa-q">例題：稼働1000h/故障5回/修理25h の可用性</summary><div class="qa-a">MTBF=200h, MTTR=5h → 200/(200+5)=97.56%</div></details>
