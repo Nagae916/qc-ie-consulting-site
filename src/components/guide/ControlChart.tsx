@@ -1,4 +1,3 @@
-// src/components/guide/ControlChart.tsx
 'use client';
 
 import React, { memo, useEffect, useMemo, useState } from 'react';
@@ -62,7 +61,6 @@ const A2_TABLE: Record<number, number> = {
 
 function mean(arr: readonly number[]): number {
   if (arr.length === 0) return 0;
-  // noUncheckedIndexedAccess 対応：インデックス参照を避ける
   let s = 0;
   for (const v of arr) s += v;
   return s / arr.length;
@@ -205,10 +203,7 @@ export default memo(function ControlChart({
 
     if (!len) {
       return {
-        chartData: {
-          labels: [],
-          datasets: [],
-        },
+        chartData: { labels: [], datasets: [] },
         options: {
           responsive: true,
           maintainAspectRatio: false,
@@ -263,9 +258,9 @@ export default memo(function ControlChart({
           borderWidth: 2,
           pointRadius: 3,
         },
-        { label: 'CL', data: cl, borderColor: 'green', borderDash: [6, 6], borderWidth: 2, pointRadius: 0 },
-        { label: 'UCL', data: ucl, borderColor: 'red', borderDash: [6, 6], borderWidth: 2, pointRadius: 0 },
-        { label: 'LCL', data: lcl, borderColor: 'red', borderDash: [6, 6], borderWidth: 2, pointRadius: 0 },
+        { label: 'CL',  data: cl,  borderColor: 'green', borderDash: [6, 6], borderWidth: 2, pointRadius: 0 },
+        { label: 'UCL', data: ucl, borderColor: 'red',   borderDash: [6, 6], borderWidth: 2, pointRadius: 0 },
+        { label: 'LCL', data: lcl, borderColor: 'red',   borderDash: [6, 6], borderWidth: 2, pointRadius: 0 },
       ],
     };
 
@@ -276,16 +271,9 @@ export default memo(function ControlChart({
       scales: {
         x: {
           title: { display: true, text: 'サンプル群番号' },
-          ticks: {
-            callback: (_v, i) => ((i + 1) % 2 === 0 ? `${i + 1}` : ''),
-            autoSkip: false,
-          },
+          ticks: { callback: (_v, i) => ((i + 1) % 2 === 0 ? `${i + 1}` : ''), autoSkip: false },
         },
-        y: {
-          title: { display: true, text: yLabel ?? title },
-          min: yMin,
-          max: yMax,
-        },
+        y: { title: { display: true, text: yLabel ?? title }, min: yMin, max: yMax },
       },
     };
 
