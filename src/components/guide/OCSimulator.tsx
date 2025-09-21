@@ -7,11 +7,9 @@ import {
   Title, Tooltip, Legend
 } from 'chart.js';
 
-// ※ プラグインは使わない（Vercel で依存解決不要）
 C.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 type Props = {
-  /** 初期値などの設定（%は 0–100 で指定） */
   defaultN?: number; minN?: number; maxN?: number;
   defaultC?: number; minC?: number; maxC?: number;
   aql?: number; rql?: number;     // %（x 軸）
@@ -22,8 +20,8 @@ type Props = {
 
 /** 二項分布の P(X <= c) を安定に計算（漸化式） */
 function binomCDF(n: number, c: number, p: number): number {
-  if (p <= 0) return 1;
-  if (p >= 1) return c >= n ? 1 : 0;
+  if (p <= 0) return 1;                 // p=0 なら常に X=0 → P(X<=c)=1
+  if (p >= 1) return c >= n ? 1 : 0;    // p=1 なら常に X=n
   const q = 1 - p;
   let prob = Math.pow(q, n); // x=0 の確率
   let sum = prob;
@@ -34,7 +32,6 @@ function binomCDF(n: number, c: number, p: number): number {
   return sum;
 }
 
-/** p(0..1) を刻んで Pa を配列で返す */
 function calcOCSeries(n: number, c: number, pMax: number, step: number) {
   const pts: { x: number; y: number }[] = [];
   for (let pp = 0; pp <= pMax + 1e-12; pp += step) {
@@ -55,7 +52,6 @@ export default function OCSimulator({
   const [n, setN] = useState<number>(defaultN);
   const [c, setC] = useState<number>(defaultC);
 
-  // 入力ガード
   const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, Math.round(v)));
   const onNChange = (v: number) => setN(clamp(v, minN, maxN));
   const onCChange = (v: number) => setC(clamp(v, minC, Math.min(maxC, n))); // c<=n にも抑制
@@ -76,25 +72,21 @@ export default function OCSimulator({
         ]
       : [];
 
-    // 注釈プラグインの代わりに、縦ラインを「2点の直線データセット」で描画
-    const aqlLine = showRisk
-      ? [{ x: aql, y: 0 }, { x: aql, y: 1 }]
-      : [];
-    const rqlLine = showRisk
-      ? [{ x: rql, y: 0 }, { x: rql, y: 1 }]
-      : [];
+    const aqlLine = showRisk ? [{ x: aql, y: 0 }, { x: aql, y: 1 }] : [];
+    const rqlLine = showRisk ? [{ x: rql, y: 0 }, { x: rql, y: 1 }] : [];
 
     return {
       data: {
         datasets: [
           {
-            label: '合格確率 (Pa)',
+            label: '合格確率 (Pₐ)',
             data: line,
             borderWidth: 3,
             tension: 0.35,
             pointRadius: 0,
+            borderColor: '#3B82F6',                 // 既存サイトのアクセント（sky系）
+            backgroundColor: 'rgba(59,130,246,.2)', // うすめの塗り
           },
-          // 縦ライン（AQL/RQL）
           {
             label: 'AQL',
             data: aqlLine as any,
@@ -113,7 +105,6 @@ export default function OCSimulator({
             borderColor: 'rgba(239,68,68,0.5)',
             borderDash: [6, 6],
           },
-          // リスク点
           {
             label: 'リスクポイント',
             data: riskPts as any,
@@ -139,7 +130,6 @@ export default function OCSimulator({
                 return `不良率: ${Number(x).toFixed(1)}%`;
               },
               label: (ctx: any) => {
-                // リスク点はラベルをそのまま表示
                 if (ctx.datasetIndex === 3 && ctx.raw?.label) {
                   return `${ctx.raw.label}: ${(ctx.raw.y * 100).toFixed(1)}%`;
                 }
@@ -156,25 +146,19 @@ export default function OCSimulator({
             title: { display: true, text: 'ロットの不良率 (p)' },
             min: 0,
             max: pMaxPercent,
-            ticks: {
-              callback: (v: any) => `${v}%`,
-            },
+            ticks: { callback: (v: any) => `${v}%` },
           },
           y: {
-            title: { display: true, text: 'ロットの合格確率 (Pa)' },
+            title: { display: true, text: 'ロットの合格確率 (Pₐ)' },
             min: 0,
             max: 1,
-            ticks: {
-              stepSize: 0.1,
-              callback: (v: any) => Number(v).toFixed(1),
-            },
+            ticks: { stepSize: 0.1, callback: (v: any) => Number(v).toFixed(1) },
           },
         },
       } as const,
     };
   }, [n, c, aql, rql, pMaxPercent, stepPercent, showRisk]);
 
-  // 簡易スタイル
   const card: React.CSSProperties = { background: '#fff', border: '1px solid #e5e7eb', borderRadius: 16, padding: 16, boxShadow: '0 2px 8px rgba(0,0,0,.04)' };
   const label: React.CSSProperties = { fontWeight: 600, marginBottom: 6 };
   const input: React.CSSProperties = { width: 72, padding: 6, textAlign: 'center', border: '1px solid #cbd5e1', borderRadius: 8 };
