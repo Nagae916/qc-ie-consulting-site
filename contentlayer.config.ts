@@ -22,7 +22,7 @@ const safeString = (v: unknown, fb = ""): string => {
   return s || fb;
 };
 const fromPath = (parts: string[]) => {
-  const p = parts[0] === "guides" ? parts.slice(1) : parts; // guides/qc/slug → qc, slug
+  const p = parts[0] === "guides" ? parts.slice(1) : parts;
   return { exam: safeString(p[0]), slug: safeString(p[p.length - 1]) };
 };
 const normalizeExam = (v: unknown, pathExam: string): Exam => {
@@ -69,10 +69,10 @@ const getLastUpdatedIso = (relFromContentDir: string): string => {
   }
 };
 
-/** ── DocumentType: Guide（必ず MDX モード） ───────────────────────── */
+/** ── DocumentType: Guide（MDX を強制） ─────────────────────────────── */
 export const Guide = defineDocumentType(() => ({
   name: "Guide",
-  contentType: "mdx", // ★ インタラクティブMDXを有効化
+  contentType: "mdx",
   filePathPattern: "guides/**/*.{md,mdx}",
   fields: {
     title: { type: "string", required: true },
@@ -132,97 +132,95 @@ export const Guide = defineDocumentType(() => ({
 }));
 
 /** ── rehype-sanitize 許可スキーマ拡張 ───────────────────────────────
- * MDXの「生HTML部分」にだけ効く。Reactコンポーネントはこの制約を受けない。
- * ガイドで使う <details> や className, style, input/button などを許可する。
+ * 1) KaTeX・見出し・リンク強化
+ * 2) よく使う HTML 要素
+ * 3) ★ ガイド用 React コンポーネントを tagNames に“明示ホワイトリスト”追加
+ *    （JSXは本来サニタイズ対象外だが、raw HTML混在や将来の安全性のため明示）
  */
 const sanitizeSchema = (() => {
   const base: any = JSON.parse(JSON.stringify(defaultSchema));
 
-  // 既存にマージ
   base.attributes ||= {};
 
-  // ▼ 全要素で許可する属性を拡張（class と style を緩める）
+  // 全要素: よく使う属性を許可
   base.attributes["*"] = [
     ...(base.attributes["*"] || []),
     "id",
     "className",
     "style",
+    ["data-*", /^data-[\w-]+$/],
   ];
 
-  // ▼ KaTeX 用の className（katex / katex-xxx）
+  // KaTeX
   const katexClass = ["className", /^katex(?:-\w+)?$/];
   base.attributes["span"] = [...(base.attributes["span"] || []), katexClass];
-  base.attributes["div"] = [...(base.attributes["div"] || []), katexClass];
+  base.attributes["div"]  = [...(base.attributes["div"]  || []), katexClass];
 
-  // ▼ コードブロック（language-xxx）
+  // コードブロック
   base.attributes["code"] = [...(base.attributes["code"] || []), ["className", /^language-/]];
 
-  // ▼ 安全な外部リンク
+  // 外部リンク
   base.attributes["a"] = [
     ...(base.attributes["a"] || []),
     ["target", /^_blank$/],
     ["rel", /^(?:nofollow|noreferrer|noopener)(?:\s+(?:nofollow|noreferrer|noopener))*$/],
   ];
 
-  // ▼ よく使う要素を明示許可（details/summary/table/img/input/button 等）
+  // よく使う HTML タグ
   base.tagNames = Array.from(
     new Set([
       ...(base.tagNames || []),
-      "section",
-      "details",
-      "summary",
-      "table",
-      "thead",
-      "tbody",
-      "tr",
-      "th",
-      "td",
-      "img",
-      "input",
-      "button",
-      "canvas",
+      "section","details","summary",
+      "table","thead","tbody","tr","th","td",
+      "img","input","button","canvas"
     ])
   );
-
-  // table セル結合
-  base.attributes["th"] = [...(base.attributes["th"] || []), "colSpan", "rowSpan"];
-  base.attributes["td"] = [...(base.attributes["td"] || []), "colSpan", "rowSpan"];
-
-  // img
+  base.attributes["th"] = [...(base.attributes["th"] || []), "colSpan","rowSpan"];
+  base.attributes["td"] = [...(base.attributes["td"] || []), "colSpan","rowSpan"];
   base.attributes["img"] = [
     ...(base.attributes["img"] || []),
-    "src",
-    "alt",
-    "title",
-    "width",
-    "height",
-    "loading",
-    "decoding",
+    "src","alt","title","width","height","loading","decoding",
   ];
-
-  // input / button（簡易許可）
   base.attributes["input"] = [
     ...(base.attributes["input"] || []),
-    "type",
-    "value",
-    "min",
-    "max",
-    "step",
-    "checked",
-    "placeholder",
-    "disabled",
-    "name",
+    "type","value","min","max","step","checked","placeholder","disabled","name",
   ];
   base.attributes["button"] = [
     ...(base.attributes["button"] || []),
-    "type",
-    "disabled",
-    "name",
-    "value",
+    "type","disabled","name","value",
+  ];
+  base.attributes["canvas"] = [...(base.attributes["canvas"] || []), "width","height"];
+
+  /** ★ 方式B: “消さずに通す”ガイド用 React コンポーネントのタグ名を列挙 */
+  const GUIDE_COMPONENT_TAGS = [
+    // src/components/guide/*
+    "GuideLayout",
+    "ChiSquareGuide",
+    "OCSimulator",
+    "ControlChart",
+    "AvailabilitySimulator",
+    "PSIQuiz",
+    "PSISimulator",
+    "Quiz",
+    "AccordionList",
+    "MethodNavigator",
+    "TestNavigator",
+    "BaseChart",
+    "Dynamic", // dynamic.tsx を使う場合
   ];
 
-  // canvas（チャート系で使う場合に備えて）
-  base.attributes["canvas"] = [...(base.attributes["canvas"] || []), "width", "height"];
+  base.tagNames = Array.from(new Set([...(base.tagNames || []), ...GUIDE_COMPONENT_TAGS]));
+
+  // 主要コンポーネントにも className / style / data-* を通す
+  for (const tag of GUIDE_COMPONENT_TAGS) {
+    base.attributes[tag] = [
+      ...(base.attributes[tag] || []),
+      "id",
+      "className",
+      "style",
+      ["data-*", /^data-[\w-]+$/],
+    ];
+  }
 
   return base;
 })();
