@@ -1,9 +1,7 @@
-// src/components/guide/AvailabilitySimulator.tsx
 'use client';
 import React, { useMemo, useState } from 'react';
 
 type Props = {
-  /** 時間（hour想定） */
   defaultMTBF?: number; minMTBF?: number; maxMTBF?: number;
   defaultMTTR?: number; minMTTR?: number; maxMTTR?: number;
 };
@@ -12,7 +10,6 @@ export default function AvailabilitySimulator({
   defaultMTBF = 500, minMTBF = 10,  maxMTBF = 1000,
   defaultMTTR = 10,  minMTTR = 1,   maxMTTR = 100,
 }: Props) {
-  // min/max の取り違えがあっても壊れないようにソート
   const [mtbfMin, mtbfMax] = useMemo(
     () => [Math.min(minMTBF, maxMTBF), Math.max(minMTBF, maxMTBF)],
     [minMTBF, maxMTBF]
@@ -22,7 +19,6 @@ export default function AvailabilitySimulator({
     [minMTTR, maxMTTR]
   );
 
-  // 入力の安全化
   const toFinite = (v: unknown, fb = 0) => Number.isFinite(Number(v)) ? Number(v) : fb;
   const clampRound = (v: number, lo: number, hi: number) =>
     Math.max(lo, Math.min(hi, Math.round(v)));
@@ -34,16 +30,9 @@ export default function AvailabilitySimulator({
     clampRound(toFinite(defaultMTTR, mttrMin), mttrMin, mttrMax)
   );
 
-  const onChangeMTBF = (raw: string) => {
-    const n = clampRound(toFinite(raw, mtbf), mtbfMin, mtbfMax);
-    setMTBF(n);
-  };
-  const onChangeMTTR = (raw: string) => {
-    const n = clampRound(toFinite(raw, mttr), mttrMin, mttrMax);
-    setMTTR(n);
-  };
+  const onChangeMTBF = (raw: string) => setMTBF(clampRound(toFinite(raw, mtbf), mtbfMin, mtbfMax));
+  const onChangeMTTR = (raw: string) => setMTTR(clampRound(toFinite(raw, mttr), mttrMin, mttrMax));
 
-  // 稼働率[%]（0割ガード、NaNガード、0–100にクランプ）
   const availability = useMemo(() => {
     const denom = mtbf + mttr;
     const a = denom <= 0 ? 0 : (mtbf / denom) * 100;
@@ -51,7 +40,6 @@ export default function AvailabilitySimulator({
     return Math.max(0, Math.min(100, safe));
   }, [mtbf, mttr]);
 
-  // styles（シンプルなインライン）
   const card: React.CSSProperties  = { background: '#fff', border: '1px solid #e5e7eb', borderRadius: 16, padding: 16, boxShadow: '0 2px 8px rgba(0,0,0,.04)' };
   const label: React.CSSProperties = { fontWeight: 600, marginBottom: 6 };
   const input: React.CSSProperties = { width: 88, padding: 6, textAlign: 'center', border: '1px solid #cbd5e1', borderRadius: 8 };
