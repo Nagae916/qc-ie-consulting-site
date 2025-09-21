@@ -9,90 +9,42 @@ date: "2025-09-17"
 updatedAt: "2025-09-17"
 ---
 
+import ControlChart from '../../../src/components/guide/ControlChart'
+
 # 管理図スタディガイド
 
-管理図は工程が**統計的に安定（管理状態）**かを監視し、**異常変動（特殊原因）**を早期に検知するツールです。  
-このガイドでは、データ型に応じた代表的な 4 種（**X̄–R / np / p / u**）の選び方・読み方を整理します。
+データ型に応じて代表的な **4 図**（X̄–R / np / p / u）を並べて体感できます。
 
-> インタラクティブな可視化は、必要に応じて**別ページ**に分離して運用してください（例：`/tools/control-chart`）。
-
----
-
-## 1. どれを使う？（最短フロー）
-
-- **計量値（連続値：寸法・重量・濃度など）**  
-  - **X̄–R 管理図**：サブグループ平均（X̄）と範囲（R）で中心とばらつきを同時監視
-- **計数値（合否・不適合の個数/率）**  
-  - **np 管理図**：**サンプルサイズ一定**のときの**不適合品個数**を監視  
-  - **p 管理図**：**サンプルサイズが変動**するときの**不適合率**を監視  
-  - **u 管理図**：単位当たり**欠点数**（例：1 枚当たりのキズ数）を監視
-
-> 迷ったら：  
-> 連続値 → **X̄–R**／合否カウント（n一定）→ **np**／合否率（n変動）→ **p**／欠点数/単位 → **u**
-
----
-
-## 2. 管理図の基本（式と読み方）
-
-- **管理限界線（UCL/LCL）**：通常 **CL ± 3σ**（約 99.7% 範囲）  
-- **管理外れ**：限界外の点や、連続片寄り・トレンド等の**異常パターン**出現時は原因究明
-
-### 2.1 X̄–R 管理図（計量）
-- 中心線（CL）：$\,\overline{\overline{X}},\; \overline{R}\,$  
-- 限界例：$\,\mathrm{UCL}_{\bar X}=\overline{\overline{X}}+A_2\overline{R},\;
-  \mathrm{LCL}_{\bar X}=\overline{\overline{X}}-A_2\overline{R}$  
-- ばらつき：$\,\mathrm{UCL}_R=D_4\overline{R},\; \mathrm{LCL}_R=D_3\overline{R}$
-
-### 2.2 np 管理図（個数・n一定）
-- $\,\mathrm{CL}= \bar{np}=n\bar{p}$  
-- $\,\mathrm{UCL/LCL}= \bar{np} \pm 3\sqrt{n\bar{p}(1-\bar{p})}$
-
-### 2.3 p 管理図（割合・n変動可）
-- $\,\mathrm{CL}= \bar{p}$  
-- $\,\mathrm{UCL/LCL}= \bar{p} \pm 3\sqrt{\dfrac{\bar{p}(1-\bar{p})}{n_i}}$  
-  （ポイント：**各点ごとの $n_i$ を使う**）
-
-### 2.4 u 管理図（単位当たり欠点数）
-- $\,\mathrm{CL}= \bar{u}$  
-- $\,\mathrm{UCL/LCL}= \bar{u} \pm 3\sqrt{\dfrac{\bar{u}}{n_i}}$
-
----
-
-## 3. 典型的な判断のしかた
-
-1. **点が UCL/LCL を超えた** → 特殊原因の疑い（工程・設備・材料・作業の変化を確認）  
-2. **連続片寄り**（例：同側 7 点連続）や**トレンド** → ドリフト・シフトの疑い  
-3. **R（ばらつき）だけ増大** → 工具摩耗・測定系の問題などを疑う
-
----
-
-## 4. 用語ミニ辞典
-
-- **管理状態**：偶然原因のみで変動している状態  
-- **特殊原因**：特定要因による一時的・系統的な変動（対策で除去可能）  
-- **多重比較**：管理外れ後の要因特定で使う検定群（本ガイドでは割愛）
-
----
-
-## 5. 理解度チェック（Q&A）
-
-<details class="qa-card">
-  <summary class="qa-q">Q1. 点が管理限界外に出た。正常？異常？</summary>
-  <div class="qa-a">
-    <strong>異常</strong>（特殊原因の可能性が高い）。工程・設備・材料・作業条件の変化を確認。
+<div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(320px,1fr))',gap:16,margin:'12px 0 20px'}}>
+  <div>
+    <div style={{fontWeight:700,marginBottom:6}}>X̄–R（計量）</div>
+    <ControlChart
+      title="X値"
+      type="x"
+      data={[10.1,10.2,9.9,10.3,9.8,10.0,10.4,10.1,9.9,10.2,10.5,9.7,10.0,10.3,9.9,10.1,10.6,9.8,10.2,10.0]}
+    />
   </div>
-</details>
-
-<details class="qa-card">
-  <summary class="qa-q">Q2. 検査数が一定／変動のときはどの管理図？</summary>
-  <div class="qa-a">
-    一定：<strong>np</strong> 管理図、変動：<strong>p</strong> 管理図。
+  <div>
+    <div style={{fontWeight:700,marginBottom:6}}>np（個数・n一定）</div>
+    <ControlChart title="不適合品数 (np)" type="np" data={[8,10,7,11,9,12,8,10,9,11,14,8,10,12,9,11,13,8,10,11]} />
   </div>
-</details>
-
-<details class="qa-card">
-  <summary class="qa-q">Q3. X̄–R 管理図が向くのは？</summary>
-  <div class="qa-a">
-    寸法・重さなどの<strong>連続値</strong>の平均とばらつきを同時に監視したいとき。
+  <div>
+    <div style={{fontWeight:700,marginBottom:6}}>p（割合・n変動）</div>
+    <ControlChart
+      title="不適合品率 (p)"
+      type="p"
+      data={[0.08,0.10,0.07,0.11,0.09,0.12,0.08,0.10,0.09,0.11,0.14,0.08,0.10,0.12,0.09,0.11,0.13,0.08,0.10,0.11]}
+      sampleSizes={[100,105,98,110,95,120,103,100,99,108,125,97,100,115,95,105,112,98,101,104]}
+    />
   </div>
-</details>
+  <div>
+    <div style={{fontWeight:700,marginBottom:6}}>u（単位当たり欠点数）</div>
+    <ControlChart title="欠点数 (u)" type="u" data={[2,3,1,4,0,2,5,3,1,2,8,1,3,4,2,3,5,1,2,3]} />
+  </div>
+</div>
+
+---
+
+## 見方の要点
+- **管理限界線**は通常 **CL ± 3σ**。外れや異常パターン出現時は原因究明。
+- np/p/u は **$\bar p$や$\bar u$** からUCL/LCLを算出（p/uは点ごとの $n_i$ に注意）。
