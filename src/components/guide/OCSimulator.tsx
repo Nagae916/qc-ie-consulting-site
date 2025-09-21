@@ -20,10 +20,10 @@ type Props = {
 
 /** 二項分布の P(X <= c) を安定に計算（漸化式） */
 function binomCDF(n: number, c: number, p: number): number {
-  if (p <= 0) return 1;                 // p=0 なら常に X=0 → P(X<=c)=1
-  if (p >= 1) return c >= n ? 1 : 0;    // p=1 なら常に X=n
+  if (p <= 0) return 1;
+  if (p >= 1) return c >= n ? 1 : 0;
   const q = 1 - p;
-  let prob = Math.pow(q, n); // x=0 の確率
+  let prob = Math.pow(q, n); // x=0
   let sum = prob;
   for (let x = 1; x <= c; x++) {
     prob = prob * ((n - (x - 1)) / x) * (p / q);
@@ -54,7 +54,7 @@ export default function OCSimulator({
 
   const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, Math.round(v)));
   const onNChange = (v: number) => setN(clamp(v, minN, maxN));
-  const onCChange = (v: number) => setC(clamp(v, minC, Math.min(maxC, n))); // c<=n にも抑制
+  const onCChange = (v: number) => setC(clamp(v, minC, Math.min(maxC, n))); // c<=n
 
   const { data, options } = useMemo(() => {
     const pMax = pMaxPercent / 100;
@@ -72,6 +72,7 @@ export default function OCSimulator({
         ]
       : [];
 
+    // 注釈プラグイン不使用: 縦線は2点のラインとして描画
     const aqlLine = showRisk ? [{ x: aql, y: 0 }, { x: aql, y: 1 }] : [];
     const rqlLine = showRisk ? [{ x: rql, y: 0 }, { x: rql, y: 1 }] : [];
 
@@ -84,10 +85,10 @@ export default function OCSimulator({
             borderWidth: 3,
             tension: 0.35,
             pointRadius: 0,
-            borderColor: '#3B82F6',                 // 既存サイトのアクセント（sky系）
-            backgroundColor: 'rgba(59,130,246,.2)', // うすめの塗り
+            borderColor: '#3B82F6',
+            backgroundColor: 'rgba(59,130,246,.2)',
           },
-          {
+          { // AQL 縦線
             label: 'AQL',
             data: aqlLine as any,
             showLine: true,
@@ -96,7 +97,7 @@ export default function OCSimulator({
             borderColor: 'rgba(59,130,246,0.5)',
             borderDash: [6, 6],
           },
-          {
+          { // RQL 縦線
             label: 'RQL',
             data: rqlLine as any,
             showLine: true,
@@ -105,7 +106,7 @@ export default function OCSimulator({
             borderColor: 'rgba(239,68,68,0.5)',
             borderDash: [6, 6],
           },
-          {
+          { // リスク点
             label: 'リスクポイント',
             data: riskPts as any,
             showLine: false,
