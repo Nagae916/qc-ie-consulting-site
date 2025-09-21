@@ -16,7 +16,7 @@ import OCSimulator from '../../../src/components/guide/OCSimulator'
 ロットの不良率 $p$ に対し、**合格確率** $P_a$ がどう変わるかを示すのが **OC曲線** です。  
 下のシミュレーターで **n / c / AQL / RQL** を触って体感してください。
 
-<section style={{margin:'16px 0 24px'}}>
+<section style={{ margin: '16px 0 24px' }}>
   <OCSimulator
     defaultN={30} minN={10} maxN={200}
     defaultC={3}  minC={0}  maxC={10}
@@ -44,8 +44,8 @@ $$
 
 - **AQL**（合格品質水準）：良いロットの代表点  
 - **RQL/LTPD**（不合格品質水準）：悪いロットの代表点  
-- **生産者危険** $\alpha = 1 - P_a(\text{AQL}; n,c)$  
-- **消費者危険** $\beta = P_a(\text{RQL}; n,c)$
+- **生産者危険** $\alpha \;=\; 1 - P_a(\text{AQL}; n,c)$  
+- **消費者危険** $\beta \;=\; P_a(\text{RQL}; n,c)$
 
 ---
 
@@ -60,12 +60,13 @@ $$
 ## 4. 読み取りの手順（最短フロー）
 
 1. AQL/RQL または目標の $\alpha,\beta$ を決める  
-2. 候補の $n,c$ を選び $P_a$ を描く  
-3. AQL・RQL点の縦座標から $\alpha,\beta$ を確認  
+2. 候補の $n,c$ を選び、$P_a(p; n,c)$ を描く  
+3. AQL・RQL 点の縦座標から $\alpha,\beta$ を確認  
 4. 要件を満たすまで $n,c$ を微調整
 
 ---
 
 ### 参考：近似
-- 正規近似：$k\sim\mathcal N(np,\,np(1-p))$  
-- ポアソン近似（$p$小・$n$大）：$\lambda=np,\;P(k\le c)\approx\sum_{k=0}^c e^{-\lambda}\lambda^k/k!$
+
+- **正規近似**：$k \sim \mathcal{N}(np,\,np(1-p))$  
+- **ポアソン近似**（$p$ 小・$n$ 大）：$\lambda = np,\; P(k\le c) \approx \sum_{k=0}^{c} e^{-\lambda}\lambda^k/k!$
