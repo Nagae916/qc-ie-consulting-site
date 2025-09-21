@@ -4,10 +4,10 @@ import Head from "next/head";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { allGuides, type Guide } from "contentlayer/generated";
-// contentlayer2 の hooks
+// contentlayer2 hooks
 import { useMDXComponent } from "next-contentlayer2/hooks";
 
-// Markdown(+Math) → HTML フォールバック
+// ===== Markdown(+Math) → HTML フォールバック（MDX code が無い場合のみ） =====
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
@@ -19,7 +19,6 @@ import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeStringify from "rehype-stringify";
 
-/* ================= 基本定義 ================= */
 type ExamKey = "qc" | "stat" | "engineer";
 const EXAM_LABEL: Record<ExamKey, string> = {
   qc: "品質管理",
@@ -62,7 +61,7 @@ function formatYMD(v1?: unknown, v2?: unknown): string {
   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
 }
 
-// Markdown(+Math) → HTML フォールバック（MDX code が無いときだけ使用）
+// Markdown(+Math) → HTML フォールバック
 async function mdToHtml(mdxRaw: string): Promise<string> {
   const file = await unified()
     .use(remarkParse)
@@ -78,7 +77,6 @@ async function mdToHtml(mdxRaw: string): Promise<string> {
   return String(file);
 }
 
-/* ================= SSG ================= */
 export const getStaticPaths: GetStaticPaths = async () => {
   const seen = new Set<string>();
   const paths = allGuides
@@ -109,37 +107,30 @@ export const getStaticProps: GetStaticProps<{
 
   if (!guide) return { notFound: true };
 
-  // 優先：MDX（Reactコンポーネント利用可）
-  const mdxCode = (guide as any)?.body?.code ?? null;
-
-  // フォールバック：HTML（MDXが無い or 無効な場合）
-  const html = mdxCode ? null : await mdToHtml(guide.body.raw);
+  const mdxCode = (guide as any)?.body?.code ?? null; // 優先：MDX（動的コンポーネント可）
+  const html = mdxCode ? null : await mdToHtml(guide.body.raw); // フォールバック：純HTML
 
   const updatedYmd = formatYMD((guide as any).updatedAtAuto ?? (guide as any).updatedAt, (guide as any).date);
 
   return { props: { guide, exam: examParam, mdxCode, html, updatedYmd }, revalidate: 60 };
 };
 
-/* ================= MDX許可コンポーネント（SSR無効の動的import） =================
-   ▼ ファイル名もコメントで残すことで、人為ミスを低減
-*/
-// /src/components/guide/Quiz.tsx （named export: Quiz）
-const Quiz = dynamic(
-  () => import("@/components/guide/Quiz").then((m) => m.Quiz),
-  { ssr: false }
-);
+/* ================= MDX で使用可能にする“許可コンポーネント” =================
+   すべて 'use client' な動的ウィジェットは SSR を無効化して安定化させる。
+   ★ 人為ミス削減のため、元ファイル名をコメントで明記する。 */
 
-// /src/components/guide/ControlChart.tsx（default export）
-const ControlChart = dynamic(
-  () => import("@/components/guide/ControlChart").then((m) => m.default),
-  { ssr: false }
-);
-
-// /src/components/guide/AvailabilitySimulator.tsx（default export：必要ならMDXで使用可）
-const AvailabilitySimulator = dynamic(
-  () => import("@/components/guide/AvailabilitySimulator").then((m) => m.default),
-  { ssr: false }
-);
+// /src/components/guide/Quiz.tsx
+const Quiz = dynamic(() => import("@/components/guide/Quiz").then(m => m.default), { ssr: false }) as unknown as React.ComponentType<any>;
+// /src/components/guide/ControlChart.tsx
+const ControlChart = dynamic(() => import("@/components/guide/ControlChart").then(m => m.default), { ssr: false }) as unknown as React.ComponentType<any>;
+// /src/components/guide/AvailabilitySimulator.tsx
+const AvailabilitySimulator = dynamic(() => import("@/components/guide/AvailabilitySimulator").then(m => m.default), { ssr: false }) as unknown as React.ComponentType<any>;
+// /src/components/guide/OCSimulator.tsx
+const OCSimulator = dynamic(() => import("@/components/guide/OCSimulator").then(m => m.default), { ssr: false }) as unknown as React.ComponentType<any>;
+// /src/components/guide/ChiSquareGuide.tsx
+const ChiSquareGuide = dynamic(() => import("@/components/guide/ChiSquareGuide").then(m => m.default), { ssr: false }) as unknown as React.ComponentType<any>;
+// /src/components/guide/BaseChart.tsx（必要時に MDX で直接使うなら）
+const BaseChart = dynamic(() => import("@/components/guide/BaseChart").then(m => m.default), { ssr: false }) as unknown as React.ComponentType<any>;
 
 export default function GuidePage({
   guide,
@@ -156,15 +147,18 @@ export default function GuidePage({
     `${guide._raw?.flattenedPath ?? `${exam}/${(guide as any).slug}`}.mdx`;
   const editUrl = `https://github.com/Nagae916/qc-ie-consulting-site/edit/main/content/${sourcePath}`;
 
-  // Hooksは常に同じ順序で呼ぶ
+  // Hooks 順序を安定させる：常に呼び出し
   const MDX = useMDXComponent(mdxCode || "");
 
-  // MDX から使えるコンポーネントを注入
+  // MDX 内で使えるコンポーネントの許可リスト
   const components = {
     Quiz,
     ControlChart,
     AvailabilitySimulator,
-  };
+    OCSimulator,
+    ChiSquareGuide,
+    BaseChart,
+  } as const;
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
@@ -172,18 +166,14 @@ export default function GuidePage({
         <title>{guide.title} | QC × IE LABO</title>
         <meta name="description" content={(guide as any).description ?? ""} />
         <link rel="canonical" href={url} />
-        {/* guide.css を _app.tsx で import していない場合は下行を有効化 */}
-        {/* <link rel="stylesheet" href="/styles/guide.css" /> */}
+        {/* guide.css を _app.tsx で import していない場合は有効化
+        <link rel="stylesheet" href="/styles/guide.css" /> */}
       </Head>
 
       <nav className="mb-4 text-sm text-gray-500">
-        <Link href="/guides" className="underline">
-          ガイド
-        </Link>
+        <Link href="/guides" className="underline">ガイド</Link>
         {" / "}
-        <Link href={`/guides/${exam}`} className={`underline ${theme.link}`}>
-          {EXAM_LABEL[exam]}
-        </Link>
+        <Link href={`/guides/${exam}`} className={`underline ${theme.link}`}>{EXAM_LABEL[exam]}</Link>
       </nav>
 
       <div className={`h-1 w-full rounded-t-2xl ${theme.accent} mb-3`} />
@@ -192,14 +182,16 @@ export default function GuidePage({
       <div className="mt-2 text-xs text-gray-500">
         <span suppressHydrationWarning>{updatedYmd ? `更新: ${updatedYmd}` : ""}</span>
         {guide.version ? <span className="ml-2">v{guide.version}</span> : null}
-        <a href={editUrl} target="_blank" rel="noreferrer" className="ml-3 underline">
-          編集する
-        </a>
+        <a href={editUrl} target="_blank" rel="noreferrer" className="ml-3 underline">編集する</a>
       </div>
 
       {/* 優先：MDX（Reactコンポーネント可）／ 代替：HTML */}
       <article className="prose prose-neutral max-w-none mt-6">
-        {mdxCode ? <MDX components={components} /> : <div dangerouslySetInnerHTML={{ __html: html ?? "" }} />}
+        {mdxCode ? (
+          <MDX components={components} />
+        ) : (
+          <div dangerouslySetInnerHTML={{ __html: html ?? "" }} />
+        )}
       </article>
     </main>
   );
