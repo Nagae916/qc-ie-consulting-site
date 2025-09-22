@@ -5,19 +5,22 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { allGuides, type Guide } from "contentlayer/generated";
 import { useMDXComponent } from "next-contentlayer2/hooks";
+import type { ComponentType } from "react";
 
-// ── テーマ等 ──────────────────────────────────────────────
+/* ========= 基本 ========= */
 type ExamKey = "qc" | "stat" | "engineer";
 const EXAM_LABEL: Record<ExamKey, string> = {
   qc: "品質管理",
   stat: "統計",
   engineer: "技術士",
 };
+
 const THEME: Record<ExamKey, { accent: string; link: string; title: string }> = {
   qc: { accent: "bg-amber-300/70", link: "text-amber-700 hover:text-amber-800", title: "text-amber-800" },
   stat: { accent: "bg-sky-300/70", link: "text-sky-700 hover:text-sky-800", title: "text-sky-800" },
   engineer: { accent: "bg-emerald-300/70", link: "text-emerald-700 hover:text-emerald-800", title: "text-emerald-800" },
 };
+
 const toExamKey = (v: unknown): ExamKey | null => {
   const s = String(v ?? "").toLowerCase().trim();
   if (s === "qc") return "qc";
@@ -25,8 +28,9 @@ const toExamKey = (v: unknown): ExamKey | null => {
   if (s === "engineer" || s === "pe" || s === "eng") return "engineer";
   return null;
 };
+
 function stablePath(g: Guide): { exam: ExamKey; slug: string; url: string } {
-  const raw = String(g._raw?.flattenedPath ?? "");
+  const raw = String(g._raw?.flattenedPath ?? ""); // 例: guides/qc/xxx
   const parts = raw.split("/");
   const rawExam = parts[1] ?? "";
   const rawSlug = parts[parts.length - 1] ?? "";
@@ -34,7 +38,9 @@ function stablePath(g: Guide): { exam: ExamKey; slug: string; url: string } {
   const slug = String((g as any).slug ?? rawSlug).trim();
   return { exam, slug, url: `/guides/${exam}/${slug}` };
 }
-function formatYMD(v1?: unknown, v2?: unknown): string {
+
+// UTC固定の YYYY-MM-DD
+const formatYMD = (v1?: unknown, v2?: unknown): string => {
   const s = String(v1 ?? v2 ?? "").trim();
   if (!s) return "";
   const m = s.match(/^(\d{4})[-/](\d{2})[-/](\d{2})/);
@@ -43,22 +49,17 @@ function formatYMD(v1?: unknown, v2?: unknown): string {
   if (!Number.isFinite(t)) return "";
   const d = new Date(t);
   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
-}
+};
 
-// ── Dynamic import（全て 'use client' / ssr:false） ─────────
-// ファイル名をコメントに明記（人為ミス防止）
-const Quiz =
-  dynamic(() => import("@/components/guide/Quiz").then((m: any) => m.default ?? m), { ssr: false }) as unknown as React.ComponentType<any>; // /src/components/guide/Quiz.tsx
-const ControlChart =
-  dynamic(() => import("@/components/guide/ControlChart").then((m: any) => m.default ?? m), { ssr: false }) as unknown as React.ComponentType<any>; // /src/components/guide/ControlChart.tsx
-const AvailabilitySimulator =
-  dynamic(() => import("@/components/guide/AvailabilitySimulator").then((m: any) => m.default ?? m), { ssr: false }) as unknown as React.ComponentType<any>; // /src/components/guide/AvailabilitySimulator.tsx
-const OCSimulator =
-  dynamic(() => import("@/components/guide/OCSimulator").then((m: any) => m.default ?? m), { ssr: false }) as unknown as React.ComponentType<any>; // /src/components/guide/OCSimulator.tsx
-const ChiSquareGuide =
-  dynamic(() => import("@/components/guide/ChiSquareGuide").then((m: any) => m.default ?? m), { ssr: false }) as unknown as React.ComponentType<any>; // /src/components/guide/ChiSquareGuide.tsx
+/* ================= “許可コンポーネント”を SSR 無効で動的読み込み =================
+   MDX本文には <OCSimulator /> 等のタグだけを置き、import はここで一本化する。 */
+const Quiz = dynamic(() => import("@/components/guide/Quiz").then(m => m.default ?? m as any), { ssr: false }) as unknown as ComponentType<any>;
+const ControlChart = dynamic(() => import("@/components/guide/ControlChart").then(m => m.default ?? m as any), { ssr: false }) as unknown as ComponentType<any>;
+const AvailabilitySimulator = dynamic(() => import("@/components/guide/AvailabilitySimulator").then(m => m.default ?? m as any), { ssr: false }) as unknown as ComponentType<any>;
+const OCSimulator = dynamic(() => import("@/components/guide/OCSimulator").then(m => m.default ?? m as any), { ssr: false }) as unknown as ComponentType<any>;
+const ChiSquareGuide = dynamic(() => import("@/components/guide/ChiSquareGuide").then(m => m.default ?? m as any), { ssr: false }) as unknown as ComponentType<any>;
 
-// ── SSG ─────────────────────────────────────────────────────
+/* ========= SSG ========= */
 export const getStaticPaths: GetStaticPaths = async () => {
   const seen = new Set<string>();
   const paths = allGuides
@@ -88,7 +89,7 @@ export const getStaticProps: GetStaticProps<{
 
   if (!guide) return { notFound: true };
 
-  // MDX（Reactコンポーネント利用可）を優先
+  // ★ MDXコードは必須（contentlayer が生成）
   const mdxCode = (guide as any)?.body?.code ?? "";
 
   const updatedYmd = formatYMD((guide as any).updatedAtAuto ?? (guide as any).updatedAt, (guide as any).date);
@@ -96,7 +97,7 @@ export const getStaticProps: GetStaticProps<{
   return { props: { guide, exam: examParam, mdxCode, updatedYmd }, revalidate: 60 };
 };
 
-// ── Page ────────────────────────────────────────────────────
+/* ========= Page ========= */
 export default function GuidePage({
   guide,
   exam,
@@ -111,8 +112,10 @@ export default function GuidePage({
     `${guide._raw?.flattenedPath ?? `${exam}/${(guide as any).slug}`}.mdx`;
   const editUrl = `https://github.com/Nagae916/qc-ie-consulting-site/edit/main/content/${sourcePath}`;
 
-  // Hooks の順序を安定させる：常に呼ぶ
-  const MDX = useMDXComponent(mdxCode || "");
+  // ★ 常に呼び出す（hooks 順序を安定）
+  const MDX = useMDXComponent(mdxCode);
+
+  // MDX で使えるコンポーネントを注入
   const components = {
     Quiz,
     ControlChart,
@@ -130,8 +133,7 @@ export default function GuidePage({
       </Head>
 
       <nav className="mb-4 text-sm text-gray-500">
-        <Link href="/guides" className="underline">ガイド</Link>
-        {" / "}
+        <Link href="/guides" className="underline">ガイド</Link>{" / "}
         <Link href={`/guides/${exam}`} className={`underline ${theme.link}`}>{EXAM_LABEL[exam]}</Link>
       </nav>
 
