@@ -1,3 +1,9 @@
+// pages/guides/[exam]/[slug].tsx
+// 方針: MDX本文は "タグのみ"。実体化は registry.client.ts の GUIDE_COMPONENTS を useMDXComponent に渡して行う。
+// - Contentlayer: contentType:'mdx'（body.code を使用）
+// - 代替: body.code が無い場合のみ Markdown(+Math) → HTML フォールバック
+// - ISR: revalidate 60秒（必要に応じて調整）
+
 import type { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
 import Head from "next/head";
 import Link from "next/link";
@@ -5,7 +11,7 @@ import * as React from "react";
 import { allGuides, type Guide } from "contentlayer/generated";
 import { useMDXComponent } from "next-contentlayer2/hooks";
 
-// ★ 追加：MDX に注入する“許可コンポーネント辞書”を一括 import
+// 許可コンポーネント辞書（SSR無効dynamicは registry 側で設定済み）
 import { GUIDE_COMPONENTS, type GuideComponentMap } from "@/components/guide/registry.client";
 
 /* ================= 共通ユーティリティ ================= */
@@ -111,10 +117,10 @@ export const getStaticProps: GetStaticProps<{
 
   if (!guide) return { notFound: true };
 
-  // 優先：MDX（Reactコンポーネント利用可）
+  // 優先：MDX（Reactコンポーネント利用可／本文はタグのみ）
   const mdxCode = (guide as any)?.body?.code ?? null;
 
-  // フォールバック：HTML（MDXが無い場合）
+  // フォールバック：HTML（MDXが無い場合のみ）
   const html = mdxCode ? null : await mdToHtml(guide.body.raw);
 
   const updatedYmd = formatYMD((guide as any).updatedAtAuto ?? (guide as any).updatedAt, (guide as any).date);
@@ -139,10 +145,10 @@ export default function GuidePage({
     `${guide._raw?.flattenedPath ?? `${exam}/${(guide as any).slug}`}.mdx`;
   const editUrl = `https://github.com/Nagae916/qc-ie-consulting-site/edit/main/content/${sourcePath}`;
 
-  // ★ Hooks の順序を安定化：常に呼び出す
+  // Hooks の順序を安定化：常に useMDXComponent を呼ぶ（mdxCode が空でもOK）
   const MDX = useMDXComponent(mdxCode || "");
 
-  // ★ 許可コンポーネント辞書をそのまま渡す（default/named 差異は registry 側で吸収）
+  // 許可コンポーネント辞書をそのまま渡す（default/named 差異は registry 側で吸収）
   const components = React.useMemo(() => GUIDE_COMPONENTS as GuideComponentMap, []);
 
   return (
