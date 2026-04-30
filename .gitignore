@@ -15,7 +15,9 @@ out/
 # Other build outputs / caches
 dist/
 .cache/
+.npm-cache/
 .eslintcache
+tsconfig.tsbuildinfo
 
 # Vercel
 .vercel/

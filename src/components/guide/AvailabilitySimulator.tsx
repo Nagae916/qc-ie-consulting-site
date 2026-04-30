@@ -4,11 +4,13 @@ import React, { useMemo, useState } from 'react';
 type Props = {
   defaultMTBF?: number; minMTBF?: number; maxMTBF?: number;
   defaultMTTR?: number; minMTTR?: number; maxMTTR?: number;
+  targetAvailability?: number;
 };
 
 export default function AvailabilitySimulator({
   defaultMTBF = 500, minMTBF = 10,  maxMTBF = 1000,
   defaultMTTR = 10,  minMTTR = 1,   maxMTTR = 100,
+  targetAvailability = 99,
 }: Props) {
   const [mtbfMin, mtbfMax] = useMemo(
     () => [Math.min(minMTBF, maxMTBF), Math.max(minMTBF, maxMTBF)],
@@ -40,11 +42,19 @@ export default function AvailabilitySimulator({
     return Math.max(0, Math.min(100, safe));
   }, [mtbf, mttr]);
 
-  const card: React.CSSProperties  = { background: '#fff', border: '1px solid #e5e7eb', borderRadius: 16, padding: 16, boxShadow: '0 2px 8px rgba(0,0,0,.04)' };
+  const downtimePerMonth = useMemo(() => (1 - availability / 100) * 24 * 30, [availability]);
+  const requiredMttrForTarget = useMemo(() => {
+    const target = Math.max(0.0001, Math.min(99.9999, targetAvailability)) / 100;
+    return mtbf * (1 - target) / target;
+  }, [mtbf, targetAvailability]);
+  const targetMet = availability >= targetAvailability;
+
+  const card: React.CSSProperties  = { background: '#fff', border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, boxShadow: '0 2px 8px rgba(0,0,0,.04)' };
   const label: React.CSSProperties = { fontWeight: 600, marginBottom: 6 };
   const input: React.CSSProperties = { width: 88, padding: 6, textAlign: 'center', border: '1px solid #cbd5e1', borderRadius: 8 };
   const barBg: React.CSSProperties = { width: '100%', background: '#e5e7eb', borderRadius: 9999, height: 24 };
   const bar: React.CSSProperties   = { height: 24, width: `${availability.toFixed(2)}%`, borderRadius: 9999, backgroundImage: 'linear-gradient(90deg,#2dd4bf,#3b82f6)' };
+  const metric: React.CSSProperties = { border: '1px solid #e5e7eb', borderRadius: 8, padding: 12, background: '#f8fafc' };
 
   return (
     <div style={card}>
@@ -111,6 +121,23 @@ export default function AvailabilitySimulator({
         <p style={{ textAlign: 'center', color: '#64748b', marginTop: 12, fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace' }}>
           計算式: MTBF / (MTBF + MTTR)
         </p>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12, marginTop: 16 }}>
+        <div style={metric}>
+          <div style={{ color: '#64748b', fontSize: 12 }}>月あたり停止時間の目安</div>
+          <div style={{ fontWeight: 800, fontSize: 22 }}>{downtimePerMonth.toFixed(1)} 時間</div>
+        </div>
+        <div style={metric}>
+          <div style={{ color: '#64748b', fontSize: 12 }}>目標 {targetAvailability.toFixed(2)}% に必要なMTTR</div>
+          <div style={{ fontWeight: 800, fontSize: 22 }}>{requiredMttrForTarget.toFixed(1)} 時間以下</div>
+        </div>
+        <div style={{ ...metric, borderColor: targetMet ? '#14b8a6' : '#f59e0b' }}>
+          <div style={{ color: '#64748b', fontSize: 12 }}>目標判定</div>
+          <div style={{ fontWeight: 800, fontSize: 22, color: targetMet ? '#0f766e' : '#b45309' }}>
+            {targetMet ? '達成' : '未達'}
+          </div>
+        </div>
       </div>
     </div>
   );

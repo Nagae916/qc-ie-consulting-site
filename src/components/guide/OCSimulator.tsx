@@ -49,14 +49,19 @@ export default function OCSimulator({
   stepPercent = 1,
   showRisk = true,
 }: Props) {
-  const [n, setN] = useState<number>(defaultN);
-  const [c, setC] = useState<number>(defaultC);
-
   const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, Math.round(v)));
-  const onNChange = (v: number) => setN(clamp(v, minN, maxN));
-  const onCChange = (v: number) => setC(clamp(v, minC, Math.min(maxC, n))); // c<=n
+  const safeNumber = (v: number, fb: number) => Number.isFinite(v) ? v : fb;
+  const [n, setN] = useState<number>(clamp(safeNumber(defaultN, minN), minN, maxN));
+  const [c, setC] = useState<number>(clamp(safeNumber(defaultC, minC), minC, Math.min(maxC, defaultN)));
 
-  const { data, options } = useMemo(() => {
+  const onNChange = (v: number) => {
+    const nextN = clamp(safeNumber(v, n), minN, maxN);
+    setN(nextN);
+    setC((prev) => clamp(prev, minC, Math.min(maxC, nextN)));
+  };
+  const onCChange = (v: number) => setC(clamp(safeNumber(v, c), minC, Math.min(maxC, n))); // c<=n
+
+  const { data, options, alphaPa, betaPa } = useMemo(() => {
     const pMax = pMaxPercent / 100;
     const step = stepPercent / 100;
 
@@ -157,12 +162,17 @@ export default function OCSimulator({
           },
         },
       } as const,
+      alphaPa,
+      betaPa,
     };
   }, [n, c, aql, rql, pMaxPercent, stepPercent, showRisk]);
 
-  const card: React.CSSProperties = { background: '#fff', border: '1px solid #e5e7eb', borderRadius: 16, padding: 16, boxShadow: '0 2px 8px rgba(0,0,0,.04)' };
+  const alphaRisk = Math.max(0, 1 - alphaPa);
+  const betaRisk = betaPa;
+  const card: React.CSSProperties = { background: '#fff', border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, boxShadow: '0 2px 8px rgba(0,0,0,.04)' };
   const label: React.CSSProperties = { fontWeight: 600, marginBottom: 6 };
   const input: React.CSSProperties = { width: 72, padding: 6, textAlign: 'center', border: '1px solid #cbd5e1', borderRadius: 8 };
+  const metric: React.CSSProperties = { border: '1px solid #e5e7eb', borderRadius: 8, padding: 12, background: '#f8fafc' };
 
   return (
     <div style={card}>
@@ -182,6 +192,21 @@ export default function OCSimulator({
           </div>
         </div>
       </div>
+
+      {showRisk ? (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12, marginBottom: 12 }}>
+          <div style={metric}>
+            <div style={{ color: '#64748b', fontSize: 12 }}>AQL {aql}% での合格確率</div>
+            <div style={{ fontWeight: 800, fontSize: 22 }}>{(alphaPa * 100).toFixed(1)}%</div>
+            <div style={{ color: '#64748b', fontSize: 12 }}>生産者危険 α: {(alphaRisk * 100).toFixed(1)}%</div>
+          </div>
+          <div style={metric}>
+            <div style={{ color: '#64748b', fontSize: 12 }}>RQL {rql}% での合格確率</div>
+            <div style={{ fontWeight: 800, fontSize: 22 }}>{(betaPa * 100).toFixed(1)}%</div>
+            <div style={{ color: '#64748b', fontSize: 12 }}>消費者危険 β: {(betaRisk * 100).toFixed(1)}%</div>
+          </div>
+        </div>
+      ) : null}
 
       <div style={{ height: 380 }}>
         <Line data={data as any} options={options as any} />
