@@ -36,7 +36,7 @@ export const learningPillars: LearningPillar[] = [
   {
     key: "engineer",
     title: "技術士",
-    href: "/guides/engineer",
+    href: "/guides/engineer/learning-map",
     summary: "IE、生産管理、保全、論文構成をキャリア形成と試験対策に接続します。",
   },
 ];

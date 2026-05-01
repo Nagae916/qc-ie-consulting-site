@@ -29,7 +29,7 @@ const EXAMS = [
     key: "engineer",
     title: "技術士",
     lead: "IE、生産管理、保全の知識を、論文構成と実務理解につなげる入口。",
-    order: ["psi-management", "production-modes", "maintenance-generations", "xxx"],
+    order: ["learning-map", "psi-management", "production-modes", "maintenance-generations", "xxx"],
   },
 ] as const;
 
