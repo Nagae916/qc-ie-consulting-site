@@ -3,6 +3,8 @@
 
 import type React from 'react';
 import dynamic from 'next/dynamic';
+import GuideQuiz from './GuideQuiz';
+import EngineeringLearningMap from './EngineeringLearningMap';
 
 /**
  * asDefault:
@@ -26,6 +28,8 @@ const asDefault = async <T extends Record<string, any>>(
  * - dynamic import は SSR 無効（{ ssr:false }）
  */
 export const GUIDE_COMPONENTS = {
+  GuideQuiz,
+  EngineeringLearningMap,
   // ファイルパスをコメントで明記し、人的ミスを予防
 
   // /src/components/guide/Quiz.tsx（named export: Quiz）

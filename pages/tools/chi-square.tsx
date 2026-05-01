@@ -1,6 +1,7 @@
 // pages/tools/chi-square.tsx
 import Head from "next/head";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 
 // クライアント専用コンポーネントを SSR 無効で読み込み
 const ChiSquareGuide = dynamic(
@@ -20,6 +21,9 @@ export default function ChiSquareToolPage() {
       </Head>
 
       <main className="mx-auto max-w-5xl px-4 py-8">
+        <Link href="/tools" className="text-sm font-semibold text-teal-700 hover:text-teal-900">
+          シミュレーター一覧へ
+        </Link>
         <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 mb-4">
           クロス集計とカイ二乗（χ²）ツール
         </h1>

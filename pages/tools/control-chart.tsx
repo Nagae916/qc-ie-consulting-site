@@ -1,6 +1,7 @@
 // pages/tools/control-chart.tsx
 import Head from "next/head";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 
 const ControlChart = dynamic(
   () => import("@/components/guide/ControlChart"),
@@ -15,6 +16,9 @@ export default function ControlChartTool() {
         <meta name="description" content="X̄–R / np / p / u 管理図の可視化" />
       </Head>
       <main className="mx-auto max-w-5xl px-4 py-8">
+        <Link href="/tools" className="text-sm font-semibold text-teal-700 hover:text-teal-900">
+          シミュレーター一覧へ
+        </Link>
         <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 mb-4">管理図ツール</h1>
 
         {/* X̄–R（計量） */}
