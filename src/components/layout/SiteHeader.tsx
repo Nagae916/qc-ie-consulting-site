@@ -1,19 +1,18 @@
 import Link from "next/link";
 
 const primaryLinks = [
-  { href: "/", label: "ホーム" },
-  { href: "/guides/engineer/learning-map", label: "学習マップ" },
-  { href: "/guides/engineer", label: "技術士" },
-  { href: "/guides/qc", label: "品質管理" },
-  { href: "/guides/stat", label: "統計" },
-  { href: "/guides", label: "サイトマップ" },
+  { href: "/", label: "ホーム", description: "全体入口" },
+  { href: "/learn", label: "学習方針", description: "何から学ぶか" },
+  { href: "/guides", label: "ガイド", description: "個別テーマ" },
+  { href: "/tools", label: "演習・ツール", description: "操作して練習" },
+  { href: "/references", label: "参考資料", description: "白書・過去問" },
 ];
 
-const engineerLinks = [
-  { href: "/guides/engineer/first-exam-roadmap", label: "第一次試験" },
-  { href: "/guides/engineer/past-exam-trend-map", label: "過去問トレンド" },
-  { href: "/guides/engineer/issue-decomposition-matrix", label: "課題分解" },
-  { href: "/guides/engineer/answer-structure-builder", label: "答案骨子" },
+const guideLinks = [
+  { href: "/guides/qc", label: "QC" },
+  { href: "/guides/stat", label: "統計" },
+  { href: "/guides/engineer", label: "技術士" },
+  { href: "/guides/engineer/learning-map", label: "学習マップ" },
 ];
 
 export function SiteHeader() {
@@ -34,22 +33,23 @@ export function SiteHeader() {
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-full px-3 py-1.5 font-semibold text-slate-700 hover:bg-slate-100 hover:text-teal-700"
+              className="rounded-lg px-3 py-1.5 font-semibold text-slate-700 hover:bg-slate-100 hover:text-teal-700"
             >
-              {item.label}
+              <span className="block leading-5">{item.label}</span>
+              <span className="hidden text-[11px] font-normal leading-4 text-slate-500 xl:block">{item.description}</span>
             </Link>
           ))}
         </nav>
       </div>
 
       <div className="border-t border-slate-100 bg-slate-50">
-        <nav className="mx-auto flex max-w-6xl flex-wrap gap-2 px-4 py-2 text-xs" aria-label="技術士ショートカット">
-          <span className="py-1.5 font-bold text-emerald-800">技術士ショートカット</span>
-          {engineerLinks.map((item) => (
+        <nav className="mx-auto flex max-w-6xl flex-wrap gap-2 px-4 py-2 text-xs" aria-label="分野別ショートカット">
+          <span className="py-1.5 font-bold text-slate-700">分野別</span>
+          {guideLinks.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-full border border-emerald-100 bg-white px-3 py-1.5 font-semibold text-emerald-800 hover:border-emerald-300"
+              className="rounded-full border border-slate-200 bg-white px-3 py-1.5 font-semibold text-slate-700 hover:border-teal-300 hover:text-teal-700"
             >
               {item.label}
             </Link>

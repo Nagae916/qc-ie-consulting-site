@@ -7,8 +7,10 @@ import InstagramFeed from "@/components/feeds/InstagramFeed";
 import NewsFeed from "@/components/feeds/NewsFeed";
 import NoteFeed from "@/components/feeds/NoteFeed";
 import { insightItems, type InsightItem } from "@/data/insights";
+import { siteSections } from "@/data/site-sections";
 import { labTools, socialChannels } from "@/data/site";
 import { fetchFeedByUrl, type NormalizedFeedItem } from "@/lib/feeds";
+import { isGuideContent } from "@/lib/content-classification";
 
 type ExamKey = "qc" | "stat" | "engineer";
 type NewsItem = { title: string; link: string; source: string; pubDate: string | null };
@@ -69,7 +71,7 @@ const learningPaths = [
   {
     title: "インタラクティブ教材",
     description: "触って理解するシミュレーター型教材",
-    href: "/guides",
+    href: "/tools",
     className: "border-slate-200 bg-white",
   },
 ];
@@ -84,11 +86,44 @@ const featuredContents = [
 ];
 
 const interactiveCards = [
-  { title: "χ²検定シミュレーター", href: "/guides/stat", status: "準備中" },
-  { title: "OC曲線シミュレーター", href: "/guides/qc", status: "準備中" },
-  { title: "管理図シミュレーター", href: "/guides/qc", status: "準備中" },
-  { title: "工程能力シミュレーター", href: "/guides/qc", status: "準備中" },
-  { title: "実験計画法シミュレーター", href: "/guides/qc", status: "準備中" },
+  { title: "χ²検定シミュレーター", href: "/tools/chi-square", status: "利用可" },
+  { title: "OC曲線シミュレーター", href: "/tools/oc-simulator", status: "利用可" },
+  { title: "管理図シミュレーター", href: "/tools/control-chart", status: "利用可" },
+  { title: "答案骨子ビルダー", href: "/guides/engineer/answer-structure-builder", status: "利用可" },
+  { title: "過去問トレンドマップ", href: "/guides/engineer/past-exam-trend-map", status: "利用可" },
+];
+
+const purposeEntrances = [
+  {
+    title: "技術士試験の勉強を始めたい",
+    description: "まず学習方針で全体像と進め方を確認します。",
+    href: "/learn",
+    label: "学習方針へ",
+  },
+  {
+    title: "用語や手法を調べたい",
+    description: "QC、統計、技術士の個別テーマガイドから探します。",
+    href: "/guides",
+    label: "ガイドへ",
+  },
+  {
+    title: "答案の骨子を作りたい",
+    description: "課題分解、過去問傾向、答案骨子ビルダーを順に使います。",
+    href: "/tools",
+    label: "演習・ツールへ",
+  },
+  {
+    title: "白書・法令・過去問を確認したい",
+    description: "一次情報や過去問データを参考資料から確認します。",
+    href: "/references",
+    label: "参考資料へ",
+  },
+  {
+    title: "QCや統計を基礎から学びたい",
+    description: "品質管理と統計のガイド入口から、基礎テーマへ進みます。",
+    href: "/guides/qc",
+    label: "QC入口へ",
+  },
 ];
 
 const uniqBy = <T, K extends string | number>(arr: T[], key: (v: T) => K) => {
@@ -154,6 +189,7 @@ const toHomeGuide = (guide: GuideLike): HomeGuide | null => {
 const buildGuideLists = () => {
   const guides = (allGuides as unknown as GuideLike[])
     .filter((guide) => guide.status !== "draft")
+    .filter((guide) => isGuideContent({ slug: guide.slug }))
     .map(toHomeGuide)
     .filter((guide): guide is HomeGuide => guide !== null)
     .sort((a, b) => b.sortValue - a.sortValue || a.title.localeCompare(b.title, "ja"));
@@ -270,6 +306,40 @@ export default function HomePage({
 
         <section className="border-y border-slate-200 bg-white">
           <div className="mx-auto max-w-6xl px-4 py-10">
+            <SectionTitle eyebrow="What you can do" title="このサイトでできること" description="ロードマップ、個別テーマ、演習教材、参考資料を分けて探せます。ガイドは個別テーマを学ぶコンテンツに限定しています。" />
+            <div className="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              {siteSections.map((section) => (
+                <Link key={section.key} href={section.href} className="rounded-lg border border-slate-200 bg-white p-5 hover:border-teal-500 hover:shadow-sm">
+                  <h3 className="font-bold">{section.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">{section.description}</p>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {section.examples.slice(0, 2).map((example) => (
+                      <span key={example} className="rounded-full bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">
+                        {example}
+                      </span>
+                    ))}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-6xl px-4 py-10">
+          <SectionTitle eyebrow="Start by purpose" title="目的別入口" description="いまやりたいことから、最短の入口へ進めます。" />
+          <div className="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+            {purposeEntrances.map((item) => (
+              <Link key={item.title} href={item.href} className="rounded-lg border border-slate-200 bg-white p-5 hover:border-teal-500 hover:shadow-sm">
+                <h3 className="font-bold">{item.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">{item.description}</p>
+                <span className="mt-4 inline-block text-sm font-semibold text-teal-700">{item.label}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <section className="bg-[#f7f8f5]">
+          <div className="mx-auto max-w-6xl px-4 py-10">
             <SectionTitle eyebrow="Featured contents" title="重点コンテンツ" description="試験にも実務にも効くテーマを、先に見える場所へ置いています。" />
             <div className="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {featuredContents.map((content) => (
@@ -283,7 +353,7 @@ export default function HomePage({
         </section>
 
         <section className="mx-auto max-w-6xl px-4 py-10">
-          <SectionTitle eyebrow="Latest guides" title="サイト内の最新更新" description="Contentlayerのガイドから、全体の最新とカテゴリ別の最新を表示します。" />
+          <SectionTitle eyebrow="Latest guides" title="最新ガイド" description="個別テーマを学ぶガイドだけを表示します。ロードマップや演習ツールは別の入口に分けています。" />
           <div className="mt-5 grid gap-6 lg:grid-cols-[1.1fr_.9fr]">
             <div className="rounded-lg border border-slate-200 bg-white p-5">
               <h3 className="font-bold">最新ガイド</h3>
