@@ -2,6 +2,7 @@ import Head from "next/head";
 import Link from "next/link";
 import type { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
 import { allGuides, type Guide } from "contentlayer/generated";
+import { classifyContent, classificationLabels, type ContentClassification } from "@/lib/content-classification";
 
 type ExamKey = "qc" | "stat" | "engineer";
 
@@ -156,6 +157,7 @@ type Card = {
   title: string;
   description?: string;
   section?: string;
+  classification: ContentClassification;
 };
 
 export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getStaticProps>) {
@@ -184,6 +186,7 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
       const title = String(values.title ?? "(no title)");
       const description = typeof values.description === "string" ? values.description : undefined;
       const section = typeof values.section === "string" ? values.section : undefined;
+      const classification = classifyContent({ slug: href.split("/").pop(), href });
 
       return {
         g,
@@ -191,12 +194,17 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
         tags,
         updatedYmd,
         title,
+        classification,
         ...(description ? { description } : {}),
         ...(section ? { section } : {}),
       };
     });
 
   const guides = uniqByHref<Card>(guidesEnriched);
+  const themeGuides = guides.filter((guide) => guide.classification === "guide");
+  const learningRoutes = guides.filter((guide) => guide.classification === "learning-route");
+  const tools = guides.filter((guide) => guide.classification === "tool");
+  const duplicateCandidates = guides.filter((guide) => guide.classification === "duplicate-candidate");
   const t = THEME[exam];
 
   return (
@@ -214,13 +222,26 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
         <section className={`mt-4 rounded-2xl border bg-white p-6 ${t.border}`}>
           <div className={`h-1 w-24 rounded-full ${t.accent}`} />
           <h1 className={`mt-4 text-2xl font-extrabold md:text-3xl ${t.title}`}>{EXAM_LABEL[exam]}ガイド一覧</h1>
-          <p className="mt-3 max-w-3xl text-sm leading-7 text-gray-700">{EXAM_DESCRIPTION[exam]}</p>
+          <p className="mt-3 max-w-3xl text-sm leading-7 text-gray-700">
+            {EXAM_DESCRIPTION[exam]} ここでは個別テーマを学ぶページを主表示にし、ロードマップや演習ツールは補助枠に分けています。
+          </p>
         </section>
 
         {exam === "stat" ? <StatLearningPath /> : null}
 
+        <section className="mt-6">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="text-sm font-semibold text-slate-500">Theme guides</p>
+              <h2 className="text-2xl font-bold text-slate-900">個別テーマガイド</h2>
+              <p className="mt-2 text-sm leading-7 text-slate-600">用語、手法、考え方を1テーマずつ学ぶコンテンツです。</p>
+            </div>
+            <span className="text-sm text-slate-500">{themeGuides.length}件</span>
+          </div>
+        </section>
+
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {guides.map(({ g, href, tags, updatedYmd, title, description, section }) => (
+          {themeGuides.map(({ g, href, tags, updatedYmd, title, description, section }) => (
             <article key={g._id} className={`rounded-2xl border bg-white shadow-sm ${t.border}`}>
               <div className={`h-1 w-full rounded-t-2xl ${t.accent}`} />
               <div className="p-5">
@@ -258,9 +279,44 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
           ))}
         </div>
 
-        {guides.length === 0 && <p className="mt-6 text-gray-500">公開中のガイドはまだありません。</p>}
+        {themeGuides.length === 0 && <p className="mt-6 text-gray-500">公開中の個別テーマガイドはまだありません。</p>}
+
+        {(learningRoutes.length > 0 || tools.length > 0 || duplicateCandidates.length > 0) && (
+          <section className="mt-10 grid gap-6 lg:grid-cols-3">
+            <AuxiliaryLinks title="学習方針" description="学ぶ順番や全体像を確認するページです。" items={learningRoutes} themeLink={t.title} />
+            <AuxiliaryLinks title="演習・ツール" description="入力、選択、可視化で理解する教材です。" items={tools} themeLink={t.title} />
+            <AuxiliaryLinks title="重複/統合候補" description="今回は削除せず、後で名称や統合方針を整理します。" items={duplicateCandidates} themeLink={t.title} />
+          </section>
+        )}
       </main>
     </>
+  );
+}
+
+function AuxiliaryLinks({ title, description, items, themeLink }: { title: string; description: string; items: Card[]; themeLink: string }) {
+  if (items.length === 0) {
+    return (
+      <section className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+        <h2 className="font-bold text-slate-900">{title}</h2>
+        <p className="mt-2 text-sm leading-6 text-slate-600">{description}</p>
+        <p className="mt-4 text-sm text-slate-500">該当ページはまだありません。</p>
+      </section>
+    );
+  }
+
+  return (
+    <section className="rounded-2xl border border-slate-200 bg-white p-5">
+      <h2 className="font-bold text-slate-900">{title}</h2>
+      <p className="mt-2 text-sm leading-6 text-slate-600">{description}</p>
+      <div className="mt-4 grid gap-3">
+        {items.map((item) => (
+          <Link key={item.href} href={item.href} className="rounded-xl border border-slate-200 p-4 hover:border-slate-400">
+            <span className="text-xs font-semibold text-slate-500">{classificationLabels[item.classification]}</span>
+            <span className={`mt-1 block text-sm font-bold ${themeLink}`}>{item.title}</span>
+          </Link>
+        ))}
+      </div>
+    </section>
   );
 }
 
