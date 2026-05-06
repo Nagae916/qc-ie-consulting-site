@@ -1,32 +1,74 @@
-// pages/guides/[exam]/[slug].tsx
-// 方針: MDX本文は "タグのみ"。実体化は registry.client.ts の GUIDE_COMPONENTS を useMDXComponent に渡して行う。
-// - Contentlayer: contentType:'mdx'（body.code を使用）
-// - 代替: body.code が無い場合のみ Markdown(+Math) → HTML フォールバック
-// - ISR: revalidate 60秒（必要に応じて調整）
-
 import type { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import * as React from "react";
 import { allGuides, type Guide } from "contentlayer/generated";
 import { useMDXComponent } from "next-contentlayer2/hooks";
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import remarkRehype from "remark-rehype";
+import rehypeKatex from "rehype-katex";
+import rehypeSanitize from "rehype-sanitize";
+import rehypeSlug from "rehype-slug";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import rehypeStringify from "rehype-stringify";
 
-// 許可コンポーネント辞書（SSR無効dynamicは registry 側で設定済み）
 import { GUIDE_COMPONENTS, type GuideComponentMap } from "@/components/guide/registry.client";
 
-/* ================= 共通ユーティリティ ================= */
-
 type ExamKey = "qc" | "stat" | "engineer";
+type GuideStatus = "published" | "draft" | "planned" | "needs-review" | "wip";
+
 const EXAM_LABEL: Record<ExamKey, string> = {
-  qc: "品質管理",
-  stat: "統計",
-  engineer: "技術士",
+  qc: "品質管理・QMS",
+  stat: "統計・データ分析",
+  engineer: "経営工学・技術士",
 };
 
-const THEME: Record<ExamKey, { accent: string; link: string; title: string }> = {
-  qc: { accent: "bg-amber-300/70", link: "text-amber-700 hover:text-amber-800", title: "text-amber-800" },
-  stat: { accent: "bg-sky-300/70", link: "text-sky-700 hover:text-sky-800", title: "text-sky-800" },
-  engineer: { accent: "bg-emerald-300/70", link: "text-emerald-700 hover:text-emerald-800", title: "text-emerald-800" },
+const THEME: Record<ExamKey, { accent: string; link: string; title: string; border: string; panel: string }> = {
+  qc: {
+    accent: "bg-amber-300/70",
+    link: "text-amber-700 hover:text-amber-800",
+    title: "text-amber-800",
+    border: "border-amber-200",
+    panel: "bg-amber-50",
+  },
+  stat: {
+    accent: "bg-sky-300/70",
+    link: "text-sky-700 hover:text-sky-800",
+    title: "text-sky-800",
+    border: "border-sky-200",
+    panel: "bg-sky-50",
+  },
+  engineer: {
+    accent: "bg-emerald-300/70",
+    link: "text-emerald-700 hover:text-emerald-800",
+    title: "text-emerald-800",
+    border: "border-emerald-200",
+    panel: "bg-emerald-50",
+  },
+};
+
+const statusLabels: Record<GuideStatus, string> = {
+  published: "公開済み",
+  draft: "下書き",
+  planned: "準備中",
+  "needs-review": "要レビュー",
+  wip: "作成中",
+};
+
+const statusClasses: Record<GuideStatus, string> = {
+  published: "bg-emerald-50 text-emerald-800 border-emerald-200",
+  draft: "bg-slate-50 text-slate-700 border-slate-200",
+  planned: "bg-amber-50 text-amber-800 border-amber-200",
+  "needs-review": "bg-rose-50 text-rose-800 border-rose-200",
+  wip: "bg-sky-50 text-sky-800 border-sky-200",
+};
+
+const normalizeStatus = (value: unknown): GuideStatus => {
+  if (value === "draft" || value === "planned" || value === "needs-review" || value === "wip") return value;
+  return "published";
 };
 
 const toExamKey = (v: unknown): ExamKey | null => {
@@ -38,12 +80,13 @@ const toExamKey = (v: unknown): ExamKey | null => {
 };
 
 function stablePath(g: Guide): { exam: ExamKey; slug: string; url: string } {
-  const raw = String(g._raw?.flattenedPath ?? ""); // 例: guides/qc/xxx
+  const raw = String(g._raw?.flattenedPath ?? "");
   const parts = raw.split("/");
   const rawExam = parts[1] ?? "";
   const rawSlug = parts[parts.length - 1] ?? "";
-  const exam = toExamKey((g as any).exam) ?? toExamKey(rawExam) ?? "qc";
-  const slug = String((g as any).slug ?? rawSlug).trim();
+  const values = g as { exam?: unknown; slug?: unknown };
+  const exam = toExamKey(values.exam) ?? toExamKey(rawExam) ?? "qc";
+  const slug = String(values.slug ?? rawSlug).trim();
   return { exam, slug, url: `/guides/${exam}/${slug}` };
 }
 
@@ -57,18 +100,6 @@ function formatYMD(v1?: unknown, v2?: unknown): string {
   const d = new Date(t);
   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
 }
-
-/* ============ Markdown(+Math) → HTML フォールバック（MDX code なし時のみ使用） ============ */
-import { unified } from "unified";
-import remarkParse from "remark-parse";
-import remarkGfm from "remark-gfm";
-import remarkMath from "remark-math";
-import remarkRehype from "remark-rehype";
-import rehypeKatex from "rehype-katex";
-import rehypeSanitize from "rehype-sanitize";
-import rehypeSlug from "rehype-slug";
-import rehypeAutolinkHeadings from "rehype-autolink-headings";
-import rehypeStringify from "rehype-stringify";
 
 async function mdToHtml(mdxRaw: string): Promise<string> {
   const file = await unified()
@@ -85,14 +116,17 @@ async function mdToHtml(mdxRaw: string): Promise<string> {
   return String(file);
 }
 
-/* ================= SSG ================= */
-
 export const getStaticPaths: GetStaticPaths = async () => {
   const seen = new Set<string>();
   const paths = allGuides
-    .filter((g) => (g as any).status !== "draft")
+    .filter((g) => (g as { status?: unknown }).status !== "draft")
     .map((g) => stablePath(g))
-    .filter(({ exam, slug }) => !!exam && !!slug && !seen.has(`${exam}/${slug}`) && seen.add(`${exam}/${slug}`))
+    .filter(({ exam, slug }) => {
+      const key = `${exam}/${slug}`;
+      if (!exam || !slug || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
     .map(({ exam, slug }) => ({ params: { exam, slug } }));
   return { paths, fallback: false };
 };
@@ -109,26 +143,21 @@ export const getStaticProps: GetStaticProps<{
   if (!examParam || !slugParam) return { notFound: true };
 
   const guide =
-    allGuides.find((gg) => {
-      if ((gg as any).status === "draft") return false;
-      const { exam, slug } = stablePath(gg);
+    allGuides.find((candidate) => {
+      if ((candidate as { status?: unknown }).status === "draft") return false;
+      const { exam, slug } = stablePath(candidate);
       return exam === examParam && slug.toLowerCase() === slugParam;
     }) ?? null;
 
   if (!guide) return { notFound: true };
 
-  // 優先：MDX（Reactコンポーネント利用可／本文はタグのみ）
-  const mdxCode = (guide as any)?.body?.code ?? null;
-
-  // フォールバック：HTML（MDXが無い場合のみ）
+  const mdxCode = (guide as { body?: { code?: string } })?.body?.code ?? null;
   const html = mdxCode ? null : await mdToHtml(guide.body.raw);
-
-  const updatedYmd = formatYMD((guide as any).updatedAtAuto ?? (guide as any).updatedAt, (guide as any).date);
+  const guideDates = guide as { updatedAtAuto?: unknown; updatedAt?: unknown; date?: unknown };
+  const updatedYmd = formatYMD(guideDates.updatedAtAuto ?? guideDates.updatedAt, guideDates.date);
 
   return { props: { guide, exam: examParam, mdxCode, html, updatedYmd }, revalidate: 60 };
 };
-
-/* ================= Page ================= */
 
 export default function GuidePage({
   guide,
@@ -139,57 +168,109 @@ export default function GuidePage({
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   const theme = THEME[exam];
   const { url } = stablePath(guide);
+  const guideMeta = guide as { slug?: unknown; description?: unknown; version?: unknown; status?: unknown };
+  const status = normalizeStatus(guideMeta.status);
 
   const sourcePath =
     (guide._raw?.sourceFilePath as string | undefined) ??
-    `${guide._raw?.flattenedPath ?? `${exam}/${(guide as any).slug}`}.mdx`;
+    `${guide._raw?.flattenedPath ?? `${exam}/${String(guideMeta.slug ?? "")}`}.mdx`;
   const editUrl = `https://github.com/Nagae916/qc-ie-consulting-site/edit/main/content/${sourcePath}`;
 
-  // Hooks の順序を安定化：常に useMDXComponent を呼ぶ（mdxCode が空でもOK）
   const MDX = useMDXComponent(mdxCode || "");
-
-  // 許可コンポーネント辞書をそのまま渡す（default/named 差異は registry 側で吸収）
   const components = React.useMemo(() => GUIDE_COMPONENTS as GuideComponentMap, []);
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
       <Head>
-        <title>{guide.title} | QC × IE LABO</title>
-        <meta name="description" content={(guide as any).description ?? ""} />
+        <title>{guide.title} | n-ie-qclab</title>
+        <meta name="description" content={typeof guideMeta.description === "string" ? guideMeta.description : ""} />
         <link rel="canonical" href={url} />
-        {/* guide.css を _app.tsx で import していない場合は下行を有効化 */}
-        {/* <link rel="stylesheet" href="/styles/guide.css" /> */}
       </Head>
 
-      <nav className="mb-4 text-sm text-gray-500">
-        <Link href="/guides" className="underline">
-          ガイド
-        </Link>
-        {" / "}
-        <Link href={`/guides/${exam}`} className={`underline ${theme.link}`}>
-          {EXAM_LABEL[exam]}
-        </Link>
-      </nav>
+      <Breadcrumb exam={exam} title={guide.title} themeLink={theme.link} />
 
-      <div className={`h-1 w-full rounded-t-2xl ${theme.accent} mb-3`} />
-      <h1 className={`text-2xl md:text-3xl font-extrabold ${theme.title}`}>{guide.title}</h1>
+      <div className={`mb-3 h-1 w-full rounded-t-2xl ${theme.accent}`} />
+      <h1 className={`text-2xl font-extrabold md:text-3xl ${theme.title}`}>{guide.title}</h1>
 
-      <div className="mt-2 text-xs text-gray-500">
+      <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-gray-500">
+        <StatusBadge status={status} />
         <span suppressHydrationWarning>{updatedYmd ? `更新: ${updatedYmd}` : ""}</span>
-        {guide.version ? <span className="ml-2">v{guide.version}</span> : null}
+        {guideMeta.version ? <span className="ml-2">v{String(guideMeta.version)}</span> : null}
         <a href={editUrl} target="_blank" rel="noreferrer" className="ml-3 underline">
           編集する
         </a>
       </div>
 
-      {/* 優先：MDX（Reactコンポーネント可）／ 代替：HTML */}
-      <article className="prose prose-neutral max-w-none mt-6">
-        {mdxCode ? (
-          <MDX components={components} />
-        ) : (
-          <div dangerouslySetInnerHTML={{ __html: html ?? "" }} />
-        )}
+      <article className="prose prose-neutral mt-6 max-w-none">
+        {mdxCode ? <MDX components={components} /> : <div dangerouslySetInnerHTML={{ __html: html ?? "" }} />}
       </article>
+
+      <GuideBackLinks exam={exam} theme={theme} />
     </main>
+  );
+}
+
+function Breadcrumb({ exam, title, themeLink }: { exam: ExamKey; title: string; themeLink: string }) {
+  return (
+    <nav className="mb-4 text-sm text-gray-500" aria-label="パンくず">
+      <Link href="/" className="underline">
+        ホーム
+      </Link>
+      <span aria-hidden="true"> / </span>
+      <Link href="/guides" className="underline">
+        ガイド
+      </Link>
+      <span aria-hidden="true"> / </span>
+      <Link href={`/guides/${exam}`} className={`underline ${themeLink}`}>
+        {EXAM_LABEL[exam]}
+      </Link>
+      <span aria-hidden="true"> / </span>
+      <span className="text-gray-700">{title}</span>
+    </nav>
+  );
+}
+
+function StatusBadge({ status }: { status: GuideStatus }) {
+  return (
+    <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${statusClasses[status]}`}>
+      {statusLabels[status]}
+    </span>
+  );
+}
+
+function GuideBackLinks({ exam, theme }: { exam: ExamKey; theme: { border: string; panel: string; link: string } }) {
+  const links = [
+    {
+      title: "経営工学 学習マップ",
+      description: "品質管理・統計・技術士演習のつながりを確認する",
+      href: "/guides/engineer/learning-map",
+    },
+    {
+      title: `${EXAM_LABEL[exam]}のガイド一覧`,
+      description: "同じカテゴリのガイドへ戻る",
+      href: `/guides/${exam}`,
+    },
+    {
+      title: "トップページ",
+      description: "n-ie-qclab の入口へ戻る",
+      href: "/",
+    },
+  ];
+
+  return (
+    <section className={`mt-10 rounded-2xl border ${theme.border} ${theme.panel} p-5`}>
+      <h2 className="text-lg font-bold text-slate-900">次に見るページ</h2>
+      <p className="mt-2 text-sm leading-6 text-slate-600">
+        学習中に迷ったら、学習マップ・カテゴリ一覧・トップページへ戻れます。
+      </p>
+      <div className="mt-4 grid gap-3 sm:grid-cols-3">
+        {links.map((item) => (
+          <Link key={item.href} href={item.href} className="rounded-xl border border-white/80 bg-white p-4 hover:shadow-sm">
+            <span className={`text-sm font-bold ${theme.link}`}>{item.title}</span>
+            <span className="mt-2 block text-xs leading-5 text-slate-600">{item.description}</span>
+          </Link>
+        ))}
+      </div>
+    </section>
   );
 }

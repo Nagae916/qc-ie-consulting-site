@@ -9,6 +9,7 @@ import "katex/dist/katex.min.css";  // 数式（KaTeX）
 import "@/styles/guide.css";        // ガイド統一様式（QAカード等）
 
 import ErrorBoundary from "@/components/common/ErrorBoundary";
+import { SiteHeader } from "@/components/layout/SiteHeader";
 
 // ページごとのレイアウト（getLayout）に対応する型
 export type NextPageWithLayout = NextPage & {
@@ -23,5 +24,10 @@ export default function MyApp({ Component, pageProps }: AppPropsWithLayout) {
   // ページ側に getLayout があれば優先、なければそのまま描画
   const getLayout = Component.getLayout ?? ((page: ReactElement) => page);
 
-  return <ErrorBoundary>{getLayout(<Component {...pageProps} />)}</ErrorBoundary>;
+  return (
+    <ErrorBoundary>
+      <SiteHeader />
+      {getLayout(<Component {...pageProps} />)}
+    </ErrorBoundary>
+  );
 }

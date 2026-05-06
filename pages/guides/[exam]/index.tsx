@@ -1,27 +1,93 @@
-// pages/guides/[exam]/index.tsx
 import Head from "next/head";
 import Link from "next/link";
 import type { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
 import { allGuides, type Guide } from "contentlayer/generated";
 
-/* ========= 基本 ========= */
 type ExamKey = "qc" | "stat" | "engineer";
-const EXAM_LABEL: Record<ExamKey, string> = { qc: "品質管理", stat: "統計", engineer: "技術士" };
+
+const EXAM_LABEL: Record<ExamKey, string> = {
+  qc: "品質管理",
+  stat: "統計",
+  engineer: "技術士",
+};
+
+const EXAM_DESCRIPTION: Record<ExamKey, string> = {
+  qc: "QC検定、品質管理、QMS改善、品質工学を学ぶためのガイド一覧です。",
+  stat: "データサイエンティスト検定、統計学習、品質管理、経営工学をつなげて学ぶためのガイド一覧です。",
+  engineer: "技術士第二次試験、経営工学、生産管理、QMS改善を学ぶためのガイド一覧です。",
+};
 
 const THEME: Record<
   ExamKey,
   { border: string; accent: string; title: string; pillBg: string; pillBorder: string; btn: string; btnHover: string }
 > = {
-  qc:       { border: "border-amber-200",   accent: "bg-amber-300/70",     title: "text-amber-800",
-              pillBg: "bg-amber-50 text-amber-800",   pillBorder: "border-amber-200",
-              btn: "bg-amber-500",   btnHover: "hover:bg-amber-600" },
-  stat:     { border: "border-sky-200",     accent: "bg-sky-300/70",       title: "text-sky-800",
-              pillBg: "bg-sky-50 text-sky-800",       pillBorder: "border-sky-200",
-              btn: "bg-sky-600",     btnHover: "hover:bg-sky-700" },
-  engineer: { border: "border-emerald-200", accent: "bg-emerald-300/70",   title: "text-emerald-800",
-              pillBg: "bg-emerald-50 text-emerald-800", pillBorder: "border-emerald-200",
-              btn: "bg-emerald-600", btnHover: "hover:bg-emerald-700" },
+  qc: {
+    border: "border-amber-200",
+    accent: "bg-amber-300/70",
+    title: "text-amber-800",
+    pillBg: "bg-amber-50 text-amber-800",
+    pillBorder: "border-amber-200",
+    btn: "bg-amber-500",
+    btnHover: "hover:bg-amber-600",
+  },
+  stat: {
+    border: "border-sky-200",
+    accent: "bg-sky-300/70",
+    title: "text-sky-800",
+    pillBg: "bg-sky-50 text-sky-800",
+    pillBorder: "border-sky-200",
+    btn: "bg-sky-600",
+    btnHover: "hover:bg-sky-700",
+  },
+  engineer: {
+    border: "border-emerald-200",
+    accent: "bg-emerald-300/70",
+    title: "text-emerald-800",
+    pillBg: "bg-emerald-50 text-emerald-800",
+    pillBorder: "border-emerald-200",
+    btn: "bg-emerald-600",
+    btnHover: "hover:bg-emerald-700",
+  },
 };
+
+const statLearningSteps = [
+  {
+    title: "統計学習ロードマップ",
+    description: "データサイエンス、品質管理、技術士答案をつなぐ全体像を確認する",
+    href: "/guides/stat/data-science-stat-roadmap",
+    status: "公開中",
+  },
+  {
+    title: "データの種類と尺度",
+    description: "観測値、変数、数値・カテゴリ、尺度水準を整理し、手法選択の土台を作る",
+    href: "/guides/stat/data-types-and-scales",
+    status: "公開中",
+  },
+  {
+    title: "記述統計",
+    description: "平均、中央値、標準偏差、ヒストグラムでデータの全体像を読む",
+    href: "/guides/stat/descriptive-statistics",
+    status: "公開中",
+  },
+  {
+    title: "ばらつきと分布",
+    description: "標準偏差、ヒストグラム、正規分布を品質管理の見方へ接続する",
+    href: "/guides/stat/variance-standard-deviation",
+    status: "学習候補",
+  },
+  {
+    title: "推定・検定",
+    description: "標本から母集団を推測し、改善効果や差を判断する考え方を学ぶ",
+    href: "/guides/stat/hypothesis-testing",
+    status: "学習候補",
+  },
+  {
+    title: "相関・回帰",
+    description: "関係性、予測、要因分析を品質改善やデータ分析へつなげる",
+    href: "/guides/stat/correlation",
+    status: "学習候補",
+  },
+];
 
 const toExamKey = (v: unknown): ExamKey | null => {
   const s = String(v ?? "").toLowerCase().trim();
@@ -31,14 +97,12 @@ const toExamKey = (v: unknown): ExamKey | null => {
   return null;
 };
 
-/* ========= 安全ユーティリティ ========= */
 const safeTags = (v: unknown): string[] => {
   if (Array.isArray(v)) return v.map((x) => String(x ?? "")).filter(Boolean);
   if (typeof v === "string") return v.split(/[,\s]+/).map((s) => s.trim()).filter(Boolean);
   return [];
 };
 
-// UTC固定の YYYY-MM-DD（SSR/CSR差の再発防止）
 const formatYMD = (v1?: unknown, v2?: unknown): string => {
   const s = String(v1 ?? v2 ?? "").trim();
   if (!s) return "";
@@ -51,23 +115,28 @@ const formatYMD = (v1?: unknown, v2?: unknown): string => {
 };
 
 const guideHref = (g: Guide, fallbackExam: ExamKey) => {
-  if (typeof (g as any).url === "string" && (g as any).url.startsWith("/guides/")) return (g as any).url as string;
-  const exam = toExamKey((g as any).exam) ?? fallbackExam;
-  const slug = String((g as any).slug ?? g._raw?.flattenedPath?.split("/").pop() ?? "").trim();
+  const maybeUrl = (g as { url?: unknown }).url;
+  if (typeof maybeUrl === "string" && maybeUrl.startsWith("/guides/")) return maybeUrl;
+  const exam = toExamKey((g as { exam?: unknown }).exam) ?? fallbackExam;
+  const rawSlug = (g as { slug?: unknown }).slug;
+  const slug = String(rawSlug ?? g._raw?.flattenedPath?.split("/").pop() ?? "").trim();
   return `/guides/${exam}/${slug}`;
 };
 
-// 並べ替えキー：updatedAtAuto > updatedAt > date
-const timeKey = (g: Guide): number =>
-  Date.parse(String((g as any).updatedAtAuto ?? (g as any).updatedAt ?? (g as any).date ?? "")) || 0;
-
-// ✅ ジェネリックで元の型を保持しつつ href 基準で重複排除
-const uniqByHref = <T extends { href: string }>(arr: T[]): T[] => {
-  const seen = new Set<string>();
-  return arr.filter((item) => (item.href && !seen.has(item.href) ? (seen.add(item.href), true) : false));
+const timeKey = (g: Guide): number => {
+  const values = g as { updatedAtAuto?: unknown; updatedAt?: unknown; date?: unknown };
+  return Date.parse(String(values.updatedAtAuto ?? values.updatedAt ?? values.date ?? "")) || 0;
 };
 
-/* ========= SSG ========= */
+const uniqByHref = <T extends { href: string }>(arr: T[]): T[] => {
+  const seen = new Set<string>();
+  return arr.filter((item) => {
+    if (!item.href || seen.has(item.href)) return false;
+    seen.add(item.href);
+    return true;
+  });
+};
+
 export const getStaticPaths: GetStaticPaths = async () => ({
   paths: (["qc", "stat", "engineer"] as ExamKey[]).map((exam) => ({ params: { exam } })),
   fallback: false,
@@ -76,38 +145,46 @@ export const getStaticPaths: GetStaticPaths = async () => ({
 export const getStaticProps: GetStaticProps<{ exam: ExamKey }> = async ({ params }) => {
   const exam = toExamKey(params?.exam);
   if (!exam) return { notFound: true };
-  return { props: { exam }, revalidate: 1800 }; // 30分ISR
+  return { props: { exam }, revalidate: 1800 };
 };
 
-/* ========= Page ========= */
 type Card = {
   g: Guide;
   href: string;
   tags: string[];
   updatedYmd: string;
   title: string;
-  description?: string; // optional（undefined は代入しない。プロパティごと省略）
-  section?: string;     // optional（同上）
+  description?: string;
+  section?: string;
 };
 
 export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getStaticProps>) {
-  // 下書き除外 → セクション優先 → 更新日降順（updatedAtAuto優先）
   const guidesEnriched = allGuides
-    .filter((g) => toExamKey((g as any).exam) === exam && (g as any).status !== "draft")
+    .filter((g) => toExamKey((g as { exam?: unknown }).exam) === exam && (g as { status?: unknown }).status !== "draft")
     .sort((a, b) => {
-      const secCmp = String((a as any).section ?? "").localeCompare(String((b as any).section ?? ""));
+      const aSection = String((a as { section?: unknown }).section ?? "");
+      const bSection = String((b as { section?: unknown }).section ?? "");
+      const secCmp = aSection.localeCompare(bSection);
       if (secCmp !== 0) return secCmp;
       return timeKey(b) - timeKey(a);
     })
     .map((g): Card => {
+      const values = g as {
+        tags?: unknown;
+        updatedAtAuto?: unknown;
+        updatedAt?: unknown;
+        date?: unknown;
+        title?: unknown;
+        description?: unknown;
+        section?: unknown;
+      };
       const href = guideHref(g, exam);
-      const tags = safeTags((g as any).tags).slice(0, 4);
-      const updatedYmd = formatYMD((g as any).updatedAtAuto ?? (g as any).updatedAt, (g as any).date);
-      const title = (g as any).title ?? "(no title)";
-      const description = (g as any).description as string | undefined;
-      const section = (g as any).section as string | undefined;
+      const tags = safeTags(values.tags).slice(0, 4);
+      const updatedYmd = formatYMD(values.updatedAtAuto ?? values.updatedAt, values.date);
+      const title = String(values.title ?? "(no title)");
+      const description = typeof values.description === "string" ? values.description : undefined;
+      const section = typeof values.section === "string" ? values.section : undefined;
 
-      // ⬇️ optional を「値があるときだけ追加」して exactOptionalPropertyTypes に対応
       return {
         g,
         href,
@@ -119,16 +196,14 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
       };
     });
 
-  // 重複ガード（href 基準）
   const guides = uniqByHref<Card>(guidesEnriched);
-
   const t = THEME[exam];
 
   return (
     <>
       <Head>
-        <title>{EXAM_LABEL[exam]}ガイド一覧 | QC × IE LABO</title>
-        <meta name="description" content={`${EXAM_LABEL[exam]}カテゴリのガイド一覧`} />
+        <title>{EXAM_LABEL[exam]}ガイド一覧 | n-ie-qclab</title>
+        <meta name="description" content={EXAM_DESCRIPTION[exam]} />
       </Head>
 
       <main className="mx-auto max-w-6xl px-4 py-10">
@@ -136,19 +211,24 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
           <Link href="/" className="underline">トップ</Link> / <Link href="/guides" className="underline">ガイド</Link> / {EXAM_LABEL[exam]}
         </div>
 
-        <h1 className={`mt-2 text-2xl md:text-3xl font-extrabold ${t.title}`}>{EXAM_LABEL[exam]} 一覧</h1>
+        <section className={`mt-4 rounded-2xl border bg-white p-6 ${t.border}`}>
+          <div className={`h-1 w-24 rounded-full ${t.accent}`} />
+          <h1 className={`mt-4 text-2xl font-extrabold md:text-3xl ${t.title}`}>{EXAM_LABEL[exam]}ガイド一覧</h1>
+          <p className="mt-3 max-w-3xl text-sm leading-7 text-gray-700">{EXAM_DESCRIPTION[exam]}</p>
+        </section>
 
-        {/* 2カラムのカードレイアウト（大画面は3カラムでも違和感なし） */}
+        {exam === "stat" ? <StatLearningPath /> : null}
+
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {guides.map(({ g, href, tags, updatedYmd, title, description, section }) => (
-            <article key={g._id} className={`rounded-2xl border shadow-sm bg-white ${t.border}`}>
+            <article key={g._id} className={`rounded-2xl border bg-white shadow-sm ${t.border}`}>
               <div className={`h-1 w-full rounded-t-2xl ${t.accent}`} />
               <div className="p-5">
                 <h2 className="text-lg font-bold leading-snug">
                   <Link href={href} className={`${t.title} hover:underline`}>{title}</Link>
                 </h2>
 
-                {(section || tags.length) && (
+                {(section || tags.length > 0) && (
                   <div className="mt-2 flex flex-wrap gap-2">
                     {section && (
                       <span className={`inline-flex items-center rounded-full ${t.pillBg} ${t.pillBorder} border px-2 py-0.5 text-xs`}>
@@ -163,13 +243,13 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
                   </div>
                 )}
 
-                {description && <p className="mt-3 text-sm text-gray-700 line-clamp-3">{description}</p>}
+                {description && <p className="mt-3 line-clamp-3 text-sm text-gray-700">{description}</p>}
 
                 <div className="mt-4 flex items-center justify-between">
                   <span className="text-xs text-gray-500" suppressHydrationWarning>
                     {updatedYmd ? `更新: ${updatedYmd}` : ""}
                   </span>
-                  <Link href={href} className={`inline-block rounded-full ${t.btn} ${t.btnHover} text-white text-sm font-semibold px-3 py-1.5`}>
+                  <Link href={href} className={`inline-block rounded-full ${t.btn} ${t.btnHover} px-3 py-1.5 text-sm font-semibold text-white`}>
                     開く
                   </Link>
                 </div>
@@ -178,8 +258,40 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
           ))}
         </div>
 
-        {guides.length === 0 && <p className="text-gray-500 mt-6">公開中のガイドはまだありません。</p>}
+        {guides.length === 0 && <p className="mt-6 text-gray-500">公開中のガイドはまだありません。</p>}
       </main>
     </>
+  );
+}
+
+function StatLearningPath() {
+  return (
+    <section className="mt-6 rounded-2xl border border-sky-200 bg-sky-50 p-5">
+      <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p className="text-sm font-semibold text-sky-700">おすすめ学習順</p>
+          <h2 className="mt-1 text-xl font-bold text-slate-900">データを読む力から、検定・回帰・品質改善へ進む</h2>
+          <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-700">
+            データサイエンティスト検定、統計検定、QC検定、技術士答案に共通する統計の土台を、迷わず進める順番に並べています。
+          </p>
+        </div>
+        <Link href="/guides/stat/data-science-stat-roadmap" className="text-sm font-semibold text-sky-800 underline">
+          ロードマップを見る
+        </Link>
+      </div>
+
+      <div className="mt-5 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+        {statLearningSteps.map((step, index) => (
+          <Link key={step.href} href={step.href} className="rounded-xl border border-sky-100 bg-white p-4 hover:border-sky-400">
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-xs font-bold text-sky-700">STEP {index + 1}</span>
+              <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">{step.status}</span>
+            </div>
+            <h3 className="mt-2 font-bold text-slate-900">{step.title}</h3>
+            <p className="mt-2 text-sm leading-6 text-slate-600">{step.description}</p>
+          </Link>
+        ))}
+      </div>
+    </section>
   );
 }
