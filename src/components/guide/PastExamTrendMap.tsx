@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import competenciesData from '../../../public/data/engineer/competencies.json';
 
 type PastExamQuestion = {
   id: string;
@@ -20,6 +21,8 @@ type PastExamQuestion = {
   lawTags: string[];
   answerFrameType: string;
   skeletonTemplateId: string;
+  assessedCompetencies?: string[];
+  competencyNotes?: string;
 };
 
 type PastExamData = {
@@ -36,11 +39,25 @@ type CountItem = {
   count: number;
 };
 
+type EngineerCompetency = {
+  id: string;
+  label: string;
+  shortLabel: string;
+  description: string;
+  answerSignals: string[];
+  weakSignals: string[];
+  relatedExamParts: string[];
+  relatedTools: string[];
+};
+
 const dataPath = '/data/engineer/past-exam-questions.json';
 const answerBuilderHref = '/guides/engineer/answer-structure-builder';
 const issueMatrixHref = '/guides/engineer/issue-decomposition-matrix';
 const learningMapHref = '/guides/engineer/learning-map';
 const requiredGeneratorId = 'required-exam-generator';
+const competencies = competenciesData as EngineerCompetency[];
+const competencyLabelById = new Map(competencies.map((competency) => [competency.id, competency.label]));
+const requiredExampleCompetencyIds = ['professionalKnowledge', 'problemSolving', 'evaluation', 'communication', 'engineeringEthics'];
 const contextOptions = ['製造業', 'サービス業', 'サプライチェーン', '品質マネジメント', '生産・物流マネジメント'];
 const skeletonGuide = [
   '問題文の背景、対象業務、自分の立場を先に整理する',
@@ -168,6 +185,10 @@ function TagList({ tags, tone = 'slate' }: { tags: string[]; tone?: 'slate' | 'e
       ))}
     </div>
   );
+}
+
+function competencyLabels(ids: string[]) {
+  return ids.map((id) => competencyLabelById.get(id) ?? id);
 }
 
 function SummaryCard({ label, value, note }: { label: string; value: string | number; note?: string }) {
@@ -449,6 +470,12 @@ export default function PastExamTrendMap() {
               value={generatedQuestionText || '必須科目Ⅰのメタデータを読み込み中です。'}
               className="mt-3 min-h-80 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-sm leading-7 text-slate-900"
             />
+            <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+              <h4 className="text-sm font-bold text-slate-950">この例題で意識するコンピテンシー</h4>
+              <div className="mt-3">
+                <TagList tags={competencyLabels(requiredExampleCompetencyIds)} tone="emerald" />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -498,6 +525,15 @@ export default function PastExamTrendMap() {
                   <div className="mt-2">
                     <TagList tags={[...selectedRequiredQuestion.policyTags, ...selectedRequiredQuestion.lawTags]} tone="amber" />
                   </div>
+                </div>
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-wide text-slate-500">assessedCompetencies</p>
+                  <div className="mt-2">
+                    <TagList tags={competencyLabels(selectedRequiredQuestion.assessedCompetencies ?? requiredExampleCompetencyIds)} tone="emerald" />
+                  </div>
+                  {selectedRequiredQuestion.competencyNotes ? (
+                    <p className="mt-2 text-sm leading-6 text-slate-700">{selectedRequiredQuestion.competencyNotes}</p>
+                  ) : null}
                 </div>
               </div>
             </div>
@@ -724,6 +760,13 @@ export default function PastExamTrendMap() {
                     <div className="mt-2">
                       <TagList tags={question.lawTags} tone="amber" />
                     </div>
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-wide text-slate-500">この問題で意識するコンピテンシー</p>
+                    <div className="mt-2">
+                      <TagList tags={competencyLabels(question.assessedCompetencies ?? [])} tone="emerald" />
+                    </div>
+                    {question.competencyNotes ? <p className="mt-2 text-sm leading-6 text-slate-700">{question.competencyNotes}</p> : null}
                   </div>
                 </div>
 
