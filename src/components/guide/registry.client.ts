@@ -10,6 +10,8 @@ import AnswerStructureBuilder from './AnswerStructureBuilder';
 import PastExamTrendMap from './PastExamTrendMap';
 import FirstExamRoadmap from './FirstExamRoadmap';
 import SecondExamRoadmap from './SecondExamRoadmap';
+import StatLearningMap from './StatLearningMap';
+import QcLearningMap from './QcLearningMap';
 const DescriptiveStatsExplorer = dynamic(() => import('./DescriptiveStatsExplorer'), { ssr: false });
 const DSQuizTrainer = dynamic(() => import('./DSQuizTrainer'), { ssr: false });
 const DataTypesExplorer = dynamic(() => import('./DataTypesExplorer'), { ssr: false });
@@ -45,6 +47,8 @@ export const GUIDE_COMPONENTS = {
   PastExamTrendMap,
   FirstExamRoadmap,
   SecondExamRoadmap,
+  StatLearningMap,
+  QcLearningMap,
   DescriptiveStatsExplorer,
   DSQuizTrainer,
   DataTypesExplorer,

@@ -55,6 +55,12 @@ const learningRoutes: LearningRoute[] = [
     description: '統計の基礎から品質データ分析まで、判断の根拠を作る流れです。',
     steps: [
       {
+        title: '統計・データ分析 学習ロードマップ',
+        description: '統計検定、データサイエンス、品質データ分析、技術士答案への接続を確認します。',
+        href: '/guides/stat/learning-map',
+        status: 'published',
+      },
+      {
         title: '統計の基本',
         description: '母集団、標本、平均、分散など、データを見るための土台を確認します。',
         href: '/guides/stat/descriptive-statistics',
@@ -84,6 +90,12 @@ const learningRoutes: LearningRoute[] = [
     title: 'QC検定ルート',
     description: '品質管理の基本から、工程管理とQMS改善へつなげるルートです。',
     steps: [
+      {
+        title: '品質管理・QMS 学習ロードマップ',
+        description: 'QC検定、品質管理、QMS改善、技術士答案への接続を確認します。',
+        href: '/guides/qc/learning-map',
+        status: 'published',
+      },
       {
         title: '品質管理の基本',
         description: '品質を作り込む考え方と、現場で見るべき管理対象を整理します。',
@@ -290,6 +302,18 @@ const engineerExamSteps: RouteStep[] = [
 ];
 
 const interactiveMaterials: RouteStep[] = [
+  {
+    title: '統計・データ分析 学習ロードマップ',
+    description: '統計を品質改善、経営工学、技術士答案の根拠づけへ接続する入口ページです。',
+    href: '/guides/stat/learning-map',
+    status: 'published',
+  },
+  {
+    title: '品質管理・QMS 学習ロードマップ',
+    description: 'QC検定、品質管理、QMS改善、技術士答案をつなげて学ぶ入口ページです。',
+    href: '/guides/qc/learning-map',
+    status: 'published',
+  },
   {
     title: 'Cp/Cpkシミュレーター',
     description: '規格幅、平均、ばらつきを動かして工程能力を確認します。',

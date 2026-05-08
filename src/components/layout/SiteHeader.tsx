@@ -10,6 +10,8 @@ const primaryLinks = [
 ];
 
 const engineerShortcutLinks = [
+  { href: "/guides/qc/learning-map", label: "QCロードマップ" },
+  { href: "/guides/stat/learning-map", label: "統計ロードマップ" },
   { href: "/guides/engineer/first-exam-roadmap", label: "一次ロードマップ" },
   { href: "/guides/engineer/second-exam-roadmap", label: "二次ロードマップ" },
   { href: "/guides/engineer/past-exam-trend-map", label: "過去問トレンド" },
