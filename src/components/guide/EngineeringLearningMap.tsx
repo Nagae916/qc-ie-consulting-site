@@ -157,6 +157,12 @@ const learningRoutes: LearningRoute[] = [
     description: '経営工学の全体像から、課題抽出、答案骨子、背景情報までつなげます。',
     steps: [
       {
+        title: '技術士第二次試験ロードマップ',
+        description: '過去問傾向、例題生成、課題分解、答案骨子作成をつなぐ学習順を確認します。',
+        href: '/guides/engineer/second-exam-roadmap',
+        status: 'published',
+      },
+      {
         title: '技術士第一次試験ロードマップ',
         description: '基礎科目・適性科目・専門科目を整理し、経営工学と第二次試験につなげる入口ページです。',
         href: '/guides/engineer/first-exam-roadmap',
@@ -234,6 +240,12 @@ const learningRoutes: LearningRoute[] = [
 
 const engineerExamSteps: RouteStep[] = [
   {
+    title: '技術士第二次試験ロードマップ',
+    description: '過去問傾向、例題生成、課題分解、答案骨子作成をつなぐ学習順を確認します。',
+    href: '/guides/engineer/second-exam-roadmap',
+    status: 'published',
+  },
+  {
     title: '経営工学の全体像を確認する',
     description: 'まず分野間のつながりを見て、どこから学ぶべきかを把握します。',
     href: '/guides/engineer/learning-map',
@@ -300,6 +312,12 @@ const interactiveMaterials: RouteStep[] = [
     title: '技術士第一次試験ロードマップ',
     description: '基礎科目・適性科目・専門科目を整理し、経営工学と第二次試験につなげる入口ページです。',
     href: '/guides/engineer/first-exam-roadmap',
+    status: 'published',
+  },
+  {
+    title: '技術士第二次試験ロードマップ',
+    description: '二次試験対策で使うページと演習順をまとめた入口ページです。',
+    href: '/guides/engineer/second-exam-roadmap',
     status: 'published',
   },
   {

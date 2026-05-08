@@ -85,13 +85,13 @@ const specialistCategories = [
 ];
 
 const connectionRows = [
-  ['品質管理', 'QMS再構築・品質課題・工程管理'],
-  ['生産管理', '生産性向上・物流改革・在庫最適化'],
-  ['IE', '作業改善・標準化・ラインバランシング'],
-  ['OR', '最適化・制約条件・全体最適'],
-  ['統計', 'データ活用・効果検証・品質改善'],
-  ['適性科目', '技術者倫理・公益確保・社会の持続可能性'],
-] as const;
+  { firstExamArea: '品質管理', secondExamUse: 'QMS再構築・品質課題・工程管理' },
+  { firstExamArea: '生産管理', secondExamUse: '生産性向上・物流改革・在庫最適化' },
+  { firstExamArea: 'IE', secondExamUse: '作業改善・標準化・ラインバランシング' },
+  { firstExamArea: 'OR', secondExamUse: '最適化・制約条件・全体最適' },
+  { firstExamArea: '統計', secondExamUse: 'データ活用・効果検証・品質改善' },
+  { firstExamArea: '適性科目', secondExamUse: '技術者倫理・公益確保・社会の持続可能性' },
+];
 
 const nextLinks = [
   { title: '経営工学 学習マップ', href: '/guides/engineer/learning-map' },
@@ -191,10 +191,10 @@ export default function FirstExamRoadmap() {
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <h2 className="text-2xl font-bold">一次試験から二次試験への接続表</h2>
         <div className="mt-4 grid gap-3 md:grid-cols-2">
-          {connectionRows.map(([first, second]) => (
-            <div key={first} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-              <p className="font-bold text-slate-950">{first}</p>
-              <p className="mt-2 text-sm leading-7 text-slate-700">{second}</p>
+          {connectionRows.map((row) => (
+            <div key={row.firstExamArea} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <p className="font-bold text-slate-950">{row.firstExamArea}</p>
+              <p className="mt-2 text-sm leading-7 text-slate-700">{row.secondExamUse}</p>
             </div>
           ))}
         </div>

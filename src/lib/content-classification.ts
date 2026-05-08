@@ -22,6 +22,7 @@ export const classificationLabels: Record<ContentClassification, string> = {
 const learningRouteSlugs = new Set([
   "learning-map",
   "first-exam-roadmap",
+  "second-exam-roadmap",
   "data-science-stat-roadmap",
   "ds-certification-roadmap",
 ]);

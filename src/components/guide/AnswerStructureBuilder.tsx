@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
+import competenciesData from '../../../public/data/engineer/competencies.json';
 
 type ProblemRequirements = {
   theme: string;
@@ -43,6 +44,17 @@ type EthicsInput = {
 };
 
 type OutputFormat = 'sheet' | 'outline' | 'shortMemo';
+
+type EngineerCompetency = {
+  id: string;
+  label: string;
+  shortLabel: string;
+  description: string;
+  answerSignals: string[];
+  weakSignals: string[];
+  relatedExamParts: string[];
+  relatedTools: string[];
+};
 
 const viewpointChips = ['人材・組織', '業務プロセス', '情報・データ', '設備・現場', '品質', '生産性', 'コスト', 'サプライチェーン', '経営判断', '安全・環境', '社会・制度'];
 const reasonChips = ['影響範囲が広い', '根本原因に近い', '他課題への波及効果が大きい', '緊急性が高い', '実現可能性がある', '経営効果・品質効果が大きい'];
@@ -96,6 +108,8 @@ const expressionExamples = [
     improved: 'データ入力が形骸化するリスクに対し、入力ルールの標準化、責任者設定、定期監査を行う',
   },
 ];
+
+const competencies = competenciesData as EngineerCompetency[];
 
 const initialRequirements: ProblemRequirements = {
   theme: '',
@@ -605,6 +619,28 @@ ${valueOrBlank(requirements.theme)}について、${valueOrBlank(requirements.co
                   </li>
                 ))}
               </ul>
+            </div>
+            <div className="mt-5 rounded-xl border border-slate-200 bg-white p-4">
+              <h3 className="text-base font-bold text-slate-950">コンピテンシー確認</h3>
+              <p className="mt-3 text-sm leading-7 text-slate-700">
+                このチェックは採点ではなく、答案骨子が技術士に求められる資質能力を表現できているかを確認するためのものです。
+              </p>
+              <div className="mt-4 space-y-3">
+                {competencies.map((competency) => (
+                  <details key={competency.id} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                    <summary className="cursor-pointer text-sm font-bold text-slate-950">{competency.label}</summary>
+                    <p className="mt-3 text-sm leading-6 text-slate-700">{competency.description}</p>
+                    <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-700">
+                      {competency.answerSignals.map((signal) => (
+                        <li key={`${competency.id}-${signal}`} className="flex gap-2">
+                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-600" />
+                          <span>{signal}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                ))}
+              </div>
             </div>
             <div className="mt-5 rounded-xl border border-slate-200 bg-white p-4">
               <h3 className="text-base font-bold text-slate-950">浅い表現と改善表現</h3>

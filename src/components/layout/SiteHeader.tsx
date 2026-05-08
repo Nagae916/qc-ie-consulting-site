@@ -11,6 +11,7 @@ const primaryLinks = [
 
 const engineerShortcutLinks = [
   { href: "/guides/engineer/first-exam-roadmap", label: "一次ロードマップ" },
+  { href: "/guides/engineer/second-exam-roadmap", label: "二次ロードマップ" },
   { href: "/guides/engineer/past-exam-trend-map", label: "過去問トレンド" },
   { href: "/guides/engineer/issue-decomposition-matrix", label: "課題分解" },
   { href: "/guides/engineer/answer-structure-builder", label: "答案骨子" },

@@ -9,6 +9,7 @@ import IssueDecompositionMatrix from './IssueDecompositionMatrix';
 import AnswerStructureBuilder from './AnswerStructureBuilder';
 import PastExamTrendMap from './PastExamTrendMap';
 import FirstExamRoadmap from './FirstExamRoadmap';
+import SecondExamRoadmap from './SecondExamRoadmap';
 const DescriptiveStatsExplorer = dynamic(() => import('./DescriptiveStatsExplorer'), { ssr: false });
 const DSQuizTrainer = dynamic(() => import('./DSQuizTrainer'), { ssr: false });
 const DataTypesExplorer = dynamic(() => import('./DataTypesExplorer'), { ssr: false });
@@ -43,6 +44,7 @@ export const GUIDE_COMPONENTS = {
   AnswerStructureBuilder,
   PastExamTrendMap,
   FirstExamRoadmap,
+  SecondExamRoadmap,
   DescriptiveStatsExplorer,
   DSQuizTrainer,
   DataTypesExplorer,

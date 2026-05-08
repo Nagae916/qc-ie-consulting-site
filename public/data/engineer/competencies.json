@@ -1,0 +1,146 @@
+[
+  {
+    "id": "professionalKnowledge",
+    "label": "専門的学識",
+    "shortLabel": "学識",
+    "description": "専門分野と関連制度を理解し、課題に応じて適切な手法や知識を使い分ける力。",
+    "answerSignals": [
+      "経営工学、品質管理、生産管理、統計などの専門用語を適切に使っている",
+      "手法名だけでなく、適用場面と目的を説明している",
+      "QCD、KPI、標準化、FMEA、管理図などを課題に応じて使い分けている"
+    ],
+    "weakSignals": [
+      "専門用語が一般論として並ぶだけで、課題との対応が弱い",
+      "手法の目的や適用条件が説明されていない",
+      "法令、制度、社会条件への接続がない"
+    ],
+    "relatedExamParts": ["必須科目Ⅰ", "選択科目Ⅱ-1", "選択科目Ⅱ-2", "選択科目Ⅲ"],
+    "relatedTools": ["AnswerStructureBuilder", "PastExamTrendMap", "ProblemMatrix"]
+  },
+  {
+    "id": "problemSolving",
+    "label": "問題解決",
+    "shortLabel": "問題解決",
+    "description": "複合的な問題を明確にし、制約や影響を踏まえて合理的な解決策へ展開する力。",
+    "answerSignals": [
+      "問題点を技術課題として定義できている",
+      "課題、最重要課題、解決策、リスクが一貫している",
+      "解決策が抽象論で終わらず、実施内容まで示されている"
+    ],
+    "weakSignals": [
+      "問題点、課題、解決策の区別が曖昧である",
+      "最重要課題の選定理由が弱い",
+      "解決策が課題に直接対応していない"
+    ],
+    "relatedExamParts": ["必須科目Ⅰ", "選択科目Ⅲ"],
+    "relatedTools": ["AnswerStructureBuilder", "IssueDecompositionMatrix", "PastExamTrendMap"]
+  },
+  {
+    "id": "management",
+    "label": "マネジメント",
+    "shortLabel": "管理",
+    "description": "品質、コスト、納期、リスク、資源配分を踏まえて施策を計画・実行する力。",
+    "answerSignals": [
+      "人員、設備、情報、費用、時間などの制約を踏まえている",
+      "QCDやKPIを用いて施策の管理対象を示している",
+      "実施体制、役割分担、進捗管理が具体化されている"
+    ],
+    "weakSignals": [
+      "施策の実行主体や資源配分が不明確である",
+      "品質、コスト、納期、リスクの観点が抜けている",
+      "計画だけで、実行や是正の視点がない"
+    ],
+    "relatedExamParts": ["必須科目Ⅰ", "選択科目Ⅱ-2", "選択科目Ⅲ"],
+    "relatedTools": ["AnswerStructureBuilder", "ProblemMatrix"]
+  },
+  {
+    "id": "evaluation",
+    "label": "評価",
+    "shortLabel": "評価",
+    "description": "施策の成果、波及効果、リスクを確認し、次の改善へつなげる力。",
+    "answerSignals": [
+      "効果確認のKPIや評価方法が示されている",
+      "波及効果と副作用の両方を見ている",
+      "評価結果を次の改善や標準化に反映する流れがある"
+    ],
+    "weakSignals": [
+      "効果が『改善する』など抽象語で終わっている",
+      "施策後リスクや副作用への視点がない",
+      "評価指標と課題・解決策の対応が弱い"
+    ],
+    "relatedExamParts": ["必須科目Ⅰ", "選択科目Ⅱ-2", "選択科目Ⅲ"],
+    "relatedTools": ["AnswerStructureBuilder", "PastExamTrendMap"]
+  },
+  {
+    "id": "communication",
+    "label": "コミュニケーション",
+    "shortLabel": "伝達",
+    "description": "多様な関係者と目的、根拠、手順、リスクを明確に共有し、合意形成する力。",
+    "answerSignals": [
+      "関係者への説明責任や情報共有の方法が示されている",
+      "現場、経営層、顧客、取引先など相手に応じた調整がある",
+      "データやKPIを使って意思疎通する流れがある"
+    ],
+    "weakSignals": [
+      "関係者が誰か不明確である",
+      "説明、合意形成、教育の観点がない",
+      "情報共有が一方通行で定着策がない"
+    ],
+    "relatedExamParts": ["必須科目Ⅰ", "選択科目Ⅱ-2", "選択科目Ⅲ"],
+    "relatedTools": ["AnswerStructureBuilder", "ProblemMatrix"]
+  },
+  {
+    "id": "leadership",
+    "label": "リーダーシップ",
+    "shortLabel": "推進",
+    "description": "関係者の利害を調整し、部門横断で改善を推進・定着させる力。",
+    "answerSignals": [
+      "部門横断の推進体制や役割分担が示されている",
+      "現場の納得感や定着に向けた働きかけがある",
+      "対立する要求を調整して全体最適へ導いている"
+    ],
+    "weakSignals": [
+      "施策の推進者や責任範囲が不明確である",
+      "部門間調整や利害調整の視点がない",
+      "現場定着のための働きかけがない"
+    ],
+    "relatedExamParts": ["必須科目Ⅰ", "選択科目Ⅲ"],
+    "relatedTools": ["AnswerStructureBuilder", "IssueDecompositionMatrix"]
+  },
+  {
+    "id": "engineeringEthics",
+    "label": "技術者倫理",
+    "shortLabel": "倫理",
+    "description": "安全、公益、法令順守、情報管理、持続可能性を踏まえて責任ある判断を行う力。",
+    "answerSignals": [
+      "安全、公益、法令順守、情報管理、不正防止を示している",
+      "テーマ固有の倫理上の留意点がある",
+      "取ってつけた表現で終わっていない"
+    ],
+    "weakSignals": [
+      "倫理が『法令順守に留意する』だけで終わっている",
+      "テーマ固有のリスクや公益への影響がない",
+      "責任範囲や説明責任が不明確である"
+    ],
+    "relatedExamParts": ["必須科目Ⅰ", "選択科目Ⅲ"],
+    "relatedTools": ["AnswerStructureBuilder", "PastExamTrendMap"]
+  },
+  {
+    "id": "continualDevelopment",
+    "label": "継続研さん",
+    "shortLabel": "研さん",
+    "description": "新しい知見、標準、法令、技術動向を継続的に学び、実務改善へ反映する力。",
+    "answerSignals": [
+      "白書、法令、標準、技術動向を継続的に確認する姿勢がある",
+      "教育訓練、振り返り、標準改定などの学習サイクルがある",
+      "新技術や社会変化を業務改善へ反映している"
+    ],
+    "weakSignals": [
+      "一度きりの対策で終わっている",
+      "知識更新や教育訓練の観点がない",
+      "社会変化や技術動向への追随が弱い"
+    ],
+    "relatedExamParts": ["必須科目Ⅰ", "選択科目Ⅲ", "口頭試験"],
+    "relatedTools": ["AnswerStructureBuilder", "PastExamTrendMap"]
+  }
+]
