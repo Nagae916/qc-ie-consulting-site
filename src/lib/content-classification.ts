@@ -23,6 +23,7 @@ const learningRouteSlugs = new Set([
   "learning-map",
   "first-exam-roadmap",
   "data-science-stat-roadmap",
+  "ds-certification-roadmap",
 ]);
 
 const toolSlugs = new Set([
@@ -30,6 +31,7 @@ const toolSlugs = new Set([
   "issue-decomposition-matrix",
   "past-exam-trend-map",
   "problem-matrix",
+  "ds-certification-practice",
 ]);
 
 const referenceSlugs = new Set([
