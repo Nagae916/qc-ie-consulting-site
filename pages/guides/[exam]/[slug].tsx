@@ -205,7 +205,7 @@ export default function GuidePage({
         {mdxCode ? <MDX components={components} /> : <div dangerouslySetInnerHTML={{ __html: html ?? "" }} />}
       </article>
 
-      <GuideBackLinks exam={exam} theme={theme} />
+      <GuideBackLinks exam={exam} currentUrl={url} theme={theme} />
     </main>
   );
 }
@@ -238,20 +238,30 @@ function StatusBadge({ status }: { status: GuideStatus }) {
   );
 }
 
-function GuideBackLinks({ exam, theme }: { exam: ExamKey; theme: { border: string; panel: string; link: string } }) {
+function GuideBackLinks({
+  exam,
+  currentUrl,
+  theme,
+}: {
+  exam: ExamKey;
+  currentUrl: string;
+  theme: { border: string; panel: string; link: string };
+}) {
+  const learningMapHref = "/guides/engineer/learning-map";
+  const isLearningMapPage = currentUrl === learningMapHref;
   const links = [
     {
-      title: "経営工学 学習マップ",
+      title: isLearningMapPage ? "経営工学 学習マップを見直す" : "経営工学 学習マップへ戻る",
       description: "品質管理・統計・技術士演習のつながりを確認する",
-      href: "/guides/engineer/learning-map",
+      href: learningMapHref,
     },
     {
-      title: `${EXAM_LABEL[exam]}のガイド一覧`,
+      title: `${EXAM_LABEL[exam]}のガイド一覧へ戻る`,
       description: "同じカテゴリのガイドへ戻る",
       href: `/guides/${exam}`,
     },
     {
-      title: "トップページ",
+      title: "トップページへ戻る",
       description: "n-ie-qclab の入口へ戻る",
       href: "/",
     },

@@ -5,6 +5,7 @@ import { allGuides, type Guide } from "contentlayer/generated";
 import { classifyContent, classificationLabels, type ContentClassification } from "@/lib/content-classification";
 
 type ExamKey = "qc" | "stat" | "engineer";
+type GuideStatus = "published" | "draft" | "planned" | "needs-review" | "wip";
 
 const EXAM_LABEL: Record<ExamKey, string> = {
   qc: "品質管理",
@@ -16,6 +17,22 @@ const EXAM_DESCRIPTION: Record<ExamKey, string> = {
   qc: "QC検定、品質管理、QMS改善、品質工学を学ぶためのガイド一覧です。",
   stat: "データサイエンティスト検定、統計学習、品質管理、経営工学をつなげて学ぶためのガイド一覧です。",
   engineer: "技術士第二次試験、経営工学、生産管理、QMS改善を学ぶためのガイド一覧です。",
+};
+
+const statusLabels: Record<GuideStatus, string> = {
+  published: "公開済み",
+  draft: "下書き",
+  planned: "準備中",
+  "needs-review": "要レビュー",
+  wip: "作成中",
+};
+
+const statusClasses: Record<GuideStatus, string> = {
+  published: "bg-emerald-50 text-emerald-800 border-emerald-200",
+  draft: "bg-slate-50 text-slate-700 border-slate-200",
+  planned: "bg-amber-50 text-amber-800 border-amber-200",
+  "needs-review": "bg-rose-50 text-rose-800 border-rose-200",
+  wip: "bg-sky-50 text-sky-800 border-sky-200",
 };
 
 const THEME: Record<
@@ -104,6 +121,11 @@ const safeTags = (v: unknown): string[] => {
   return [];
 };
 
+const normalizeStatus = (value: unknown): GuideStatus => {
+  if (value === "draft" || value === "planned" || value === "needs-review" || value === "wip") return value;
+  return "published";
+};
+
 const formatYMD = (v1?: unknown, v2?: unknown): string => {
   const s = String(v1 ?? v2 ?? "").trim();
   if (!s) return "";
@@ -157,6 +179,7 @@ type Card = {
   title: string;
   description?: string;
   section?: string;
+  status: GuideStatus;
   classification: ContentClassification;
 };
 
@@ -179,6 +202,7 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
         title?: unknown;
         description?: unknown;
         section?: unknown;
+        status?: unknown;
       };
       const href = guideHref(g, exam);
       const tags = safeTags(values.tags).slice(0, 4);
@@ -186,6 +210,7 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
       const title = String(values.title ?? "(no title)");
       const description = typeof values.description === "string" ? values.description : undefined;
       const section = typeof values.section === "string" ? values.section : undefined;
+      const status = normalizeStatus(values.status);
       const classification = classifyContent({ slug: href.split("/").pop(), href });
 
       return {
@@ -194,6 +219,7 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
         tags,
         updatedYmd,
         title,
+        status,
         classification,
         ...(description ? { description } : {}),
         ...(section ? { section } : {}),
@@ -241,7 +267,7 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
         </section>
 
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {themeGuides.map(({ g, href, tags, updatedYmd, title, description, section }) => (
+          {themeGuides.map(({ g, href, tags, updatedYmd, title, description, section, status }) => (
             <article key={g._id} className={`rounded-2xl border bg-white shadow-sm ${t.border}`}>
               <div className={`h-1 w-full rounded-t-2xl ${t.accent}`} />
               <div className="p-5">
@@ -249,8 +275,11 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
                   <Link href={href} className={`${t.title} hover:underline`}>{title}</Link>
                 </h2>
 
-                {(section || tags.length > 0) && (
+                {(section || tags.length > 0 || status) && (
                   <div className="mt-2 flex flex-wrap gap-2">
+                    <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold ${statusClasses[status]}`}>
+                      {statusLabels[status]}
+                    </span>
                     {section && (
                       <span className={`inline-flex items-center rounded-full ${t.pillBg} ${t.pillBorder} border px-2 py-0.5 text-xs`}>
                         {section}
@@ -311,7 +340,12 @@ function AuxiliaryLinks({ title, description, items, themeLink }: { title: strin
       <div className="mt-4 grid gap-3">
         {items.map((item) => (
           <Link key={item.href} href={item.href} className="rounded-xl border border-slate-200 p-4 hover:border-slate-400">
-            <span className="text-xs font-semibold text-slate-500">{classificationLabels[item.classification]}</span>
+            <span className="flex flex-wrap items-center gap-2">
+              <span className="text-xs font-semibold text-slate-500">{classificationLabels[item.classification]}</span>
+              <span className={`rounded-full border px-2 py-0.5 text-xs font-semibold ${statusClasses[item.status]}`}>
+                {statusLabels[item.status]}
+              </span>
+            </span>
             <span className={`mt-1 block text-sm font-bold ${themeLink}`}>{item.title}</span>
           </Link>
         ))}

@@ -2,17 +2,18 @@ import Link from "next/link";
 
 const primaryLinks = [
   { href: "/", label: "ホーム", description: "全体入口" },
-  { href: "/learn", label: "学習方針", description: "何から学ぶか" },
-  { href: "/guides", label: "ガイド", description: "個別テーマ" },
-  { href: "/tools", label: "演習・ツール", description: "操作して練習" },
-  { href: "/references", label: "参考資料", description: "白書・過去問" },
+  { href: "/guides/engineer/learning-map", label: "学習マップ", description: "全体像" },
+  { href: "/guides/engineer", label: "技術士", description: "経営工学" },
+  { href: "/guides/qc", label: "品質管理", description: "QC・QMS" },
+  { href: "/guides/stat", label: "統計", description: "データ分析" },
+  { href: "/guides", label: "サイトマップ", description: "一覧" },
 ];
 
-const guideLinks = [
-  { href: "/guides/qc", label: "QC" },
-  { href: "/guides/stat", label: "統計" },
-  { href: "/guides/engineer", label: "技術士" },
-  { href: "/guides/engineer/learning-map", label: "学習マップ" },
+const engineerShortcutLinks = [
+  { href: "/guides/engineer/first-exam-roadmap", label: "一次ロードマップ" },
+  { href: "/guides/engineer/past-exam-trend-map", label: "過去問トレンド" },
+  { href: "/guides/engineer/issue-decomposition-matrix", label: "課題分解" },
+  { href: "/guides/engineer/answer-structure-builder", label: "答案骨子" },
 ];
 
 export function SiteHeader() {
@@ -43,9 +44,9 @@ export function SiteHeader() {
       </div>
 
       <div className="border-t border-slate-100 bg-slate-50">
-        <nav className="mx-auto flex max-w-6xl flex-wrap gap-2 px-4 py-2 text-xs" aria-label="分野別ショートカット">
-          <span className="py-1.5 font-bold text-slate-700">分野別</span>
-          {guideLinks.map((item) => (
+        <nav className="mx-auto flex max-w-6xl flex-wrap gap-2 px-4 py-2 text-xs" aria-label="技術士ショートカット">
+          <span className="py-1.5 font-bold text-slate-700">技術士</span>
+          {engineerShortcutLinks.map((item) => (
             <Link
               key={item.href}
               href={item.href}

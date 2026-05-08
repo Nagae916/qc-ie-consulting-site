@@ -19,6 +19,18 @@ type GuideDoc = {
   classification: ContentClassification;
 };
 
+type SitemapItem = {
+  title: string;
+  href?: string;
+  description?: string;
+};
+
+type SitemapSection = {
+  title: string;
+  description: string;
+  items: SitemapItem[];
+};
+
 const examLabels: Record<ExamKey, string> = {
   qc: "QC・品質管理",
   stat: "統計",
@@ -57,6 +69,67 @@ const referenceItems = [
     title: "技術士 経営工学 過去問データ",
     description: "年度、テーマ、設問パターンを整理し、演習や答案構成へ接続します。",
     href: "/guides/engineer/past-exam-trend-map",
+  },
+];
+
+const sitemapSections: SitemapSection[] = [
+  {
+    title: "経営工学・技術士",
+    description: "一次試験の入口から、二次試験の傾向分析・課題分解・答案作成までの主要ページです。",
+    items: [
+      { title: "経営工学 学習マップ", href: "/guides/engineer/learning-map" },
+      { title: "技術士第一次試験ロードマップ", href: "/guides/engineer/first-exam-roadmap" },
+      { title: "技術士第二次試験ロードマップ", href: "/guides/engineer/second-exam-roadmap" },
+      {
+        title: "技術士第二次試験 過去問トレンドマップ",
+        href: "/guides/engineer/past-exam-trend-map",
+        description: "経営工学部門の過去問を、年度・科目・テーマ・設問パターンで整理し、答案骨子作成につなげるページです。",
+      },
+      { title: "課題分解マトリクス", href: "/guides/engineer/issue-decomposition-matrix" },
+      { title: "答案骨子ビルダー", href: "/guides/engineer/answer-structure-builder" },
+      { title: "必須Ⅰ型 例題生成MVP", href: "/guides/engineer/problem-matrix" },
+      { title: "白書・法令アップデートボード", href: "/guides/engineer/white-paper-board" },
+    ],
+  },
+  {
+    title: "品質管理・QMS",
+    description: "QC検定、品質改善、QMS運用で使う品質管理テーマです。",
+    items: [
+      { title: "品質管理・QMS 学習ロードマップ", href: "/guides/qc/learning-map" },
+      { title: "OC曲線", href: "/guides/qc/oc-curve" },
+      { title: "管理図", href: "/guides/stat/control-chart-basics" },
+      { title: "工程能力", href: "/guides/stat/process-capability" },
+      { title: "QC七つ道具", href: "/guides/qc/qc-seven-tools" },
+      { title: "QMS改善", href: "/guides/engineer/qms-improvement" },
+      { title: "内部監査", href: "/guides/engineer/internal-audit" },
+      { title: "是正処置", href: "/guides/engineer/capa" },
+    ],
+  },
+  {
+    title: "統計・データ分析",
+    description: "検定、回帰、分布、品質データ分析へつながる統計テーマです。",
+    items: [
+      { title: "統計・データ分析 学習ロードマップ", href: "/guides/stat/learning-map" },
+      { title: "統計ロードマップ", href: "/guides/stat/data-science-stat-roadmap" },
+      { title: "推定・検定", href: "/guides/stat/hypothesis-testing" },
+      { title: "χ二乗検定", href: "/guides/stat/chi-square-test" },
+      { title: "回帰分析", href: "/guides/stat/simple-linear-regression" },
+      { title: "分散分析", href: "/guides/stat/anova" },
+      { title: "信頼区間", href: "/guides/stat/confidence-interval" },
+      { title: "データサイエンティスト検定", href: "/guides/stat/data-science-stat-roadmap" },
+    ],
+  },
+  {
+    title: "生産管理・オペレーション",
+    description: "生産方式、在庫、物流、能力、制約条件を扱う経営工学テーマです。",
+    items: [
+      { title: "生産管理", href: "/guides/engineer/production-planning" },
+      { title: "在庫管理", href: "/guides/engineer/inventory-management" },
+      { title: "ラインバランシング", href: "/guides/engineer/line-balancing" },
+      { title: "TOC", href: "/guides/engineer/toc" },
+      { title: "物流管理", href: "/guides/engineer/logistics" },
+      { title: "需要予測", href: "/guides/engineer/demand-forecasting" },
+    ],
   },
 ];
 
@@ -125,6 +198,7 @@ export default function GuidesIndexPage({ guides }: InferGetStaticPropsType<type
   const learningRoutes = guides.filter((guide) => guide.classification === "learning-route");
   const tools = guides.filter((guide) => guide.classification === "tool");
   const duplicateCandidates = guides.filter((guide) => guide.classification === "duplicate-candidate");
+  const guideByHref = new Map(guides.map((guide) => [guide.href, guide]));
 
   return (
     <>
@@ -167,6 +241,18 @@ export default function GuidesIndexPage({ guides }: InferGetStaticPropsType<type
                 <h2 className="mt-2 text-xl font-bold">{examLabels[exam]}</h2>
                 <p className="mt-3 text-sm leading-6 text-slate-600">{examDescriptions[exam]}</p>
               </Link>
+            ))}
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-6xl px-4 pb-10">
+          <SectionHeader
+            title="サイトマップ"
+            description="主要ページを目的別に並べています。未作成のページはリンク化せず、準備中として表示します。"
+          />
+          <div className="mt-5 grid gap-5 lg:grid-cols-2">
+            {sitemapSections.map((section) => (
+              <SitemapSectionCard key={section.title} section={section} guideByHref={guideByHref} />
             ))}
           </div>
         </section>
@@ -233,8 +319,8 @@ function GroupedLinks({ title, description, items }: { title: string; descriptio
 }
 
 function GuideCard({ guide, compact = false }: { guide: GuideDoc; compact?: boolean }) {
-  return (
-    <Link href={guide.href} className="rounded-lg border border-slate-200 bg-white p-5 hover:border-teal-500 hover:shadow-sm">
+  const content = (
+    <>
       <div className="flex flex-wrap items-center gap-2">
         <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">{classificationLabels[guide.classification]}</span>
         <span className={`rounded-full border px-2 py-1 text-xs font-semibold ${statusClasses[guide.status]}`}>{statusLabels[guide.status]}</span>
@@ -242,6 +328,63 @@ function GuideCard({ guide, compact = false }: { guide: GuideDoc; compact?: bool
       </div>
       <h3 className="mt-3 font-bold leading-6">{guide.title}</h3>
       {!compact && guide.description ? <p className="mt-2 text-sm leading-6 text-slate-600">{guide.description}</p> : null}
+    </>
+  );
+
+  if (guide.status === "draft") {
+    return (
+      <div className="rounded-lg border border-slate-200 bg-slate-50 p-5 text-slate-600">
+        {content}
+      </div>
+    );
+  }
+
+  return (
+    <Link href={guide.href} className="rounded-lg border border-slate-200 bg-white p-5 hover:border-teal-500 hover:shadow-sm">
+      {content}
+    </Link>
+  );
+}
+
+function SitemapSectionCard({ section, guideByHref }: { section: SitemapSection; guideByHref: Map<string, GuideDoc> }) {
+  return (
+    <section className="rounded-lg border border-slate-200 bg-white p-5">
+      <h2 className="text-xl font-bold text-slate-900">{section.title}</h2>
+      <p className="mt-2 text-sm leading-6 text-slate-600">{section.description}</p>
+      <div className="mt-5 grid gap-3">
+        {section.items.map((item) => (
+          <SitemapLink key={`${section.title}-${item.title}`} item={item} guide={item.href ? guideByHref.get(item.href) : undefined} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function SitemapLink({ item, guide }: { item: SitemapItem; guide?: GuideDoc | undefined }) {
+  const canOpen = !!guide && guide.status !== "draft";
+  const content = (
+    <>
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="font-bold text-slate-900">{item.title}</span>
+        {guide ? (
+          <span className={`rounded-full border px-2 py-0.5 text-xs font-semibold ${statusClasses[guide.status]}`}>
+            {statusLabels[guide.status]}
+          </span>
+        ) : (
+          <span className={`rounded-full border px-2 py-0.5 text-xs font-semibold ${statusClasses.planned}`}>準備中</span>
+        )}
+      </div>
+      {item.description ? <p className="mt-2 text-sm leading-6 text-slate-600">{item.description}</p> : null}
+    </>
+  );
+
+  if (!item.href || !canOpen) {
+    return <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">{content}</div>;
+  }
+
+  return (
+    <Link href={item.href ?? "/guides"} className="rounded-lg border border-slate-200 bg-white p-4 hover:border-teal-500 hover:shadow-sm">
+      {content}
     </Link>
   );
 }
