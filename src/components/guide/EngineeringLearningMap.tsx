@@ -187,6 +187,12 @@ const learningRoutes: LearningRoute[] = [
         status: 'published',
       },
       {
+        title: '答案用途別キーワードマップ',
+        description: '課題抽出、解決策、リスク、倫理、持続可能性、白書背景のどこで使うかからキーワードを探します。',
+        href: '/guides/engineer/keyword-answer-uses',
+        status: 'published',
+      },
+      {
         title: '技術士第一次試験ロードマップ',
         description: '基礎科目・適性科目・専門科目を整理し、経営工学と第二次試験につなげる入口ページです。',
         href: '/guides/engineer/first-exam-roadmap',

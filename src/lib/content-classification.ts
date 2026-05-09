@@ -42,6 +42,7 @@ const referenceSlugs = new Set([
 
 const guideSlugs = new Set([
   "keywords",
+  "keyword-answer-uses",
   "keyword-themes",
   "theme-supply-constraint",
   "theme-dx-data",
