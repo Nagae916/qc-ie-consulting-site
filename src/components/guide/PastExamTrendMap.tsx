@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import answerFrameRulesData from '../../../public/data/engineer/answer-frame-rules.json';
 import competenciesData from '../../../public/data/engineer/competencies.json';
 
 type PastExamQuestion = {
@@ -50,6 +51,19 @@ type EngineerCompetency = {
   relatedTools: string[];
 };
 
+type AnswerFrameRule = {
+  id: string;
+  label: string;
+  examPart: string;
+  questionPatterns: string[];
+  answerBlocks: string[];
+  keyEvaluationPoints: string[];
+  usefulKeywords: string[];
+  commonWeaknesses: string[];
+  relatedCompetencies: string[];
+  recommendedTools: string[];
+};
+
 const dataPath = '/data/engineer/past-exam-questions.json';
 const answerBuilderHref = '/guides/engineer/answer-structure-builder';
 const issueMatrixHref = '/guides/engineer/issue-decomposition-matrix';
@@ -57,6 +71,8 @@ const learningMapHref = '/guides/engineer/learning-map';
 const requiredGeneratorId = 'required-exam-generator';
 const competencies = competenciesData as EngineerCompetency[];
 const competencyLabelById = new Map(competencies.map((competency) => [competency.id, competency.label]));
+const answerFrameRules = answerFrameRulesData as AnswerFrameRule[];
+const answerFrameRuleById = new Map(answerFrameRules.map((rule) => [rule.id, rule]));
 const requiredExampleCompetencyIds = ['professionalKnowledge', 'problemSolving', 'evaluation', 'communication', 'engineeringEthics'];
 const contextOptions = ['製造業', 'サービス業', 'サプライチェーン', '品質マネジメント', '生産・物流マネジメント'];
 const skeletonGuide = [
@@ -107,11 +123,11 @@ const patternGuides: Record<string, { feature: string; action: string; href: str
   },
 };
 
-const answerFrameNotes: Record<string, string> = {
-  必須科目Ⅰ型: '課題抽出、最重要課題、解決策、リスク、倫理までを整理する',
-  '選択科目Ⅱ-1型': '用語・手法を600字程度で簡潔に説明する',
-  '選択科目Ⅱ-2型': '実施手順、留意点、工夫点を整理する',
-  選択科目Ⅲ型: '多面的課題、解決策、将来展望を整理する',
+const answerBuilderLinkLabels: Record<string, string> = {
+  'required-i-standard': 'この必須Ⅰ型で答案骨子を作る',
+  'elective-ii-1-short': 'このⅡ-1型で短答骨子を作る',
+  'elective-ii-2-procedure': 'このⅡ-2型で手順骨子を作る',
+  'elective-iii-analysis': 'このⅢ型で課題解決骨子を作る',
 };
 
 function uniqueValues(values: string[]) {
@@ -143,7 +159,7 @@ function FilterSelect({
   label: string;
   value: string;
   options: string[];
-  onChange: (value: string) => void;
+  onChange: (_value: string) => void;
 }) {
   return (
     <label className="block">
@@ -191,12 +207,80 @@ function competencyLabels(ids: string[]) {
   return ids.map((id) => competencyLabelById.get(id) ?? id);
 }
 
+function answerFrameRuleFor(question: PastExamQuestion) {
+  return answerFrameRuleById.get(question.skeletonTemplateId);
+}
+
+function answerBuilderLabel(question: PastExamQuestion) {
+  return answerBuilderLinkLabels[question.skeletonTemplateId] ?? 'この型で答案骨子を作る';
+}
+
 function SummaryCard({ label, value, note }: { label: string; value: string | number; note?: string }) {
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
       <p className="text-xs font-bold uppercase tracking-wide text-slate-500">{label}</p>
       <p className="mt-2 text-lg font-bold text-slate-950">{value}</p>
       {note && <p className="mt-2 text-xs leading-5 text-slate-500">{note}</p>}
+    </div>
+  );
+}
+
+function AnswerFramePanel({ question }: { question: PastExamQuestion }) {
+  const rule = answerFrameRuleFor(question);
+  const competencyIds = rule?.relatedCompetencies ?? question.assessedCompetencies ?? [];
+
+  if (!rule) {
+    return (
+      <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
+        <p className="text-xs font-bold uppercase tracking-wide text-amber-700">答案フレーム</p>
+        <p className="mt-2 text-base font-bold text-amber-950">答案フレーム未設定</p>
+        <p className="mt-2 text-sm leading-6 text-amber-900">
+          skeletonTemplateId: <span className="font-mono text-xs">{question.skeletonTemplateId}</span>
+          。answerFrameType は「{question.answerFrameType}」です。
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+      <div className="flex flex-wrap items-center gap-2">
+        <p className="text-xs font-bold uppercase tracking-wide text-emerald-700">答案フレーム</p>
+        <span className="rounded-full border border-emerald-200 bg-white px-3 py-1 text-xs font-bold text-emerald-800">
+          {rule.examPart}
+        </span>
+      </div>
+      <h4 className="mt-2 text-lg font-bold text-slate-950">{rule.label}</h4>
+      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-wide text-slate-500">想定される設問パターン</p>
+          <ul className="mt-2 space-y-1 text-sm leading-6 text-slate-700">
+            {rule.questionPatterns.slice(0, 3).map((pattern) => (
+              <li key={`${rule.id}-pattern-${pattern}`}>・{pattern}</li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <p className="text-xs font-bold uppercase tracking-wide text-slate-500">この型で整理する内容</p>
+          <div className="mt-2">
+            <TagList tags={rule.answerBlocks.slice(0, 5)} />
+          </div>
+        </div>
+        <div>
+          <p className="text-xs font-bold uppercase tracking-wide text-slate-500">評価観点</p>
+          <ul className="mt-2 space-y-1 text-sm leading-6 text-slate-700">
+            {rule.keyEvaluationPoints.slice(0, 3).map((point) => (
+              <li key={`${rule.id}-point-${point}`}>・{point}</li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <p className="text-xs font-bold uppercase tracking-wide text-slate-500">意識するコンピテンシー</p>
+          <div className="mt-2">
+            <TagList tags={competencyLabels(competencyIds)} tone="emerald" />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -287,7 +371,7 @@ export default function PastExamTrendMap() {
     };
   }, []);
 
-  const questions = data?.questions ?? [];
+  const questions = useMemo(() => data?.questions ?? [], [data]);
 
   const yearOptions = useMemo(() => uniqueValues(questions.map((question) => question.eraYear)), [questions]);
   const subjectOptions = useMemo(() => uniqueValues(questions.map((question) => question.subjectType)), [questions]);
@@ -726,9 +810,9 @@ export default function PastExamTrendMap() {
                 <h3 className="mt-4 text-xl font-bold">{question.field} {question.questionNumber}</h3>
                 <p className="mt-1 text-sm font-semibold text-slate-500">{question.officialSourceLabel}</p>
                 <p className="mt-3 text-sm leading-7 text-slate-700">{question.summary}</p>
-                <p className="mt-3 rounded-lg bg-emerald-50 p-3 text-sm leading-7 text-emerald-900">
-                  {answerFrameNotes[question.answerFrameType] ?? '設問要求に合わせて答案骨子を整理する'}
-                </p>
+                <div className="mt-4">
+                  <AnswerFramePanel question={question} />
+                </div>
 
                 <div className="mt-4 space-y-3">
                   <div>
@@ -770,17 +854,6 @@ export default function PastExamTrendMap() {
                   </div>
                 </div>
 
-                <dl className="mt-4 grid gap-3 text-sm md:grid-cols-2">
-                  <div className="rounded-xl bg-slate-50 p-3">
-                    <dt className="font-bold text-slate-950">答案フレーム</dt>
-                    <dd className="mt-2 leading-7 text-slate-700">{question.answerFrameType}</dd>
-                  </div>
-                  <div className="rounded-xl bg-slate-50 p-3">
-                    <dt className="font-bold text-slate-950">骨子テンプレートID</dt>
-                    <dd className="mt-2 font-mono text-xs leading-7 text-slate-700">{question.skeletonTemplateId}</dd>
-                  </div>
-                </dl>
-
                 <div className="mt-5 flex flex-col gap-3 sm:flex-row">
                   {question.subjectType === '必須科目Ⅰ' && (
                     <button
@@ -803,7 +876,7 @@ export default function PastExamTrendMap() {
                     href={answerBuilderHref}
                     className="rounded-lg bg-emerald-700 px-4 py-2 text-center text-sm font-bold text-white transition hover:bg-emerald-800"
                   >
-                    この型で答案骨子を作る
+                    {answerBuilderLabel(question)}
                   </a>
                 </div>
               </article>
