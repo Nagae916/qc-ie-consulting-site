@@ -73,7 +73,10 @@ const competencies = competenciesData as EngineerCompetency[];
 const competencyLabelById = new Map(competencies.map((competency) => [competency.id, competency.label]));
 const answerFrameRules = answerFrameRulesData as AnswerFrameRule[];
 const answerFrameRuleById = new Map(answerFrameRules.map((rule) => [rule.id, rule]));
-const requiredExampleCompetencyIds = ['professionalKnowledge', 'problemSolving', 'evaluation', 'communication', 'engineeringEthics'];
+const requiredFrameId = 'required-i-standard';
+const requiredExampleRule = answerFrameRuleById.get(requiredFrameId);
+const requiredExampleCompetencyIds = requiredExampleRule?.relatedCompetencies ?? ['professionalKnowledge', 'problemSolving', 'evaluation', 'communication', 'engineeringEthics'];
+const requiredAnswerBuilderHref = `${answerBuilderHref}?frame=${requiredFrameId}`;
 const contextOptions = ['製造業', 'サービス業', 'サプライチェーン', '品質マネジメント', '生産・物流マネジメント'];
 const skeletonGuide = [
   '問題文の背景、対象業務、自分の立場を先に整理する',
@@ -207,6 +210,12 @@ function competencyLabels(ids: string[]) {
   return ids.map((id) => competencyLabelById.get(id) ?? id);
 }
 
+function competencyDetails(ids: string[]) {
+  return ids
+    .map((id) => competencies.find((competency) => competency.id === id))
+    .filter((competency): competency is EngineerCompetency => Boolean(competency));
+}
+
 function answerFrameRuleFor(question: PastExamQuestion) {
   return answerFrameRuleById.get(question.skeletonTemplateId);
 }
@@ -285,6 +294,64 @@ function AnswerFramePanel({ question }: { question: PastExamQuestion }) {
           <div className="mt-2">
             <TagList tags={competencyLabels(competencyIds)} tone="emerald" />
           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RequiredExampleFramePanel({ rule }: { rule: AnswerFrameRule }) {
+  const relatedCompetencies = competencyDetails(rule.relatedCompetencies);
+
+  return (
+    <div className="rounded-2xl border border-emerald-200 bg-white p-5 shadow-sm">
+      <div className="flex flex-wrap items-center gap-2">
+        <p className="text-sm font-semibold text-emerald-700">この例題の答案フレーム</p>
+        <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-800">
+          {rule.examPart}
+        </span>
+      </div>
+      <h3 className="mt-2 text-xl font-bold text-slate-950">{rule.label}</h3>
+      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-wide text-slate-500">整理する内容</p>
+          <div className="mt-2">
+            <TagList tags={rule.answerBlocks.slice(1, 6)} tone="emerald" />
+          </div>
+        </div>
+        <div>
+          <p className="text-xs font-bold uppercase tracking-wide text-slate-500">有用キーワード</p>
+          <div className="mt-2">
+            <TagList tags={rule.usefulKeywords.slice(0, 8)} tone="amber" />
+          </div>
+        </div>
+        <div>
+          <p className="text-xs font-bold uppercase tracking-wide text-slate-500">評価観点</p>
+          <ul className="mt-2 space-y-1 text-sm leading-6 text-slate-700">
+            {rule.keyEvaluationPoints.slice(0, 5).map((point) => (
+              <li key={`${rule.id}-required-point-${point}`}>・{point}</li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <p className="text-xs font-bold uppercase tracking-wide text-slate-500">よくある弱点</p>
+          <ul className="mt-2 space-y-1 text-sm leading-6 text-slate-700">
+            {rule.commonWeaknesses.slice(0, 5).map((weakness) => (
+              <li key={`${rule.id}-required-weakness-${weakness}`}>・{weakness}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <div className="mt-5 rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+        <h4 className="text-sm font-bold text-slate-950">この例題で意識するコンピテンシー</h4>
+        <div className="mt-3 grid gap-3 md:grid-cols-2">
+          {relatedCompetencies.map((competency) => (
+            <div key={`required-example-${competency.id}`} className="rounded-lg border border-emerald-200 bg-white p-3">
+              <p className="text-sm font-bold text-slate-950">{competency.label}</p>
+              <p className="mt-1 text-xs leading-5 text-slate-600">{competency.description}</p>
+            </div>
+          ))}
         </div>
       </div>
     </div>
@@ -509,6 +576,10 @@ export default function PastExamTrendMap() {
               登録済みの必須科目Ⅰメタデータをもとに、過去問の設問構造に倣ったオリジナル例題を作成します。
               公式過去問の再掲ではなく、課題抽出・最重要課題・解決策・リスク・倫理を練習するための例題です。
             </p>
+            <p className="mt-3 text-sm leading-7 text-slate-700">
+              この例題は、過去問メタデータの設問構造、テーマタグ、政策・法令タグをもとに、必須科目Ⅰ型の練習用として作成します。
+              答案作成時は、課題抽出、最重要課題、解決策、リスク、技術者倫理・社会の持続可能性を一貫して整理します。
+            </p>
             <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold leading-7 text-amber-900">
               この例題は、公式過去問の問題文を転載したものではありません。登録済みの過去問メタデータを参考に、設問構造とテーマを組み合わせて作成した学習用のオリジナル例題です。公式問題は日本技術士会の過去問題PDFを確認してください。
             </p>
@@ -561,13 +632,36 @@ export default function PastExamTrendMap() {
               className="mt-3 min-h-80 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-sm leading-7 text-slate-900"
             />
             <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 p-4">
-              <h4 className="text-sm font-bold text-slate-950">この例題で意識するコンピテンシー</h4>
-              <div className="mt-3">
-                <TagList tags={competencyLabels(requiredExampleCompetencyIds)} tone="emerald" />
-              </div>
+              <h4 className="text-sm font-bold text-slate-950">生成例題と答案フレームの対応</h4>
+              <dl className="mt-3 grid gap-3 text-sm md:grid-cols-2">
+                <div>
+                  <dt className="font-bold text-slate-950">設問パターン</dt>
+                  <dd className="mt-1 text-slate-700">課題抽出型</dd>
+                </div>
+                <div>
+                  <dt className="font-bold text-slate-950">答案フレーム</dt>
+                  <dd className="mt-1 text-slate-700">{requiredExampleRule?.label ?? '必須科目Ⅰ型'}</dd>
+                </div>
+                <div>
+                  <dt className="font-bold text-slate-950">skeletonTemplateId</dt>
+                  <dd className="mt-1 font-mono text-xs text-slate-700">{requiredFrameId}</dd>
+                </div>
+                <div>
+                  <dt className="font-bold text-slate-950">主に問われる行動</dt>
+                  <dd className="mt-2">
+                    <TagList tags={['課題抽出', '最重要課題選定', '解決策提示', 'リスク対策', '技術者倫理', '社会の持続可能性']} tone="emerald" />
+                  </dd>
+                </div>
+              </dl>
             </div>
           </div>
         </div>
+
+        {requiredExampleRule ? (
+          <div className="mt-6">
+            <RequiredExampleFramePanel rule={requiredExampleRule} />
+          </div>
+        ) : null}
 
         {selectedRequiredQuestion && (
           <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
@@ -638,8 +732,8 @@ export default function PastExamTrendMap() {
                   </li>
                 ))}
               </ol>
-              <a href={answerBuilderHref} className="mt-5 block rounded-lg bg-emerald-700 px-4 py-2 text-center text-sm font-bold text-white transition hover:bg-emerald-800">
-                この例題で答案骨子を作る
+              <a href={requiredAnswerBuilderHref} className="mt-5 block rounded-lg bg-emerald-700 px-4 py-2 text-center text-sm font-bold text-white transition hover:bg-emerald-800">
+                この必須Ⅰ型で答案骨子を作る
               </a>
             </div>
           </div>
