@@ -42,6 +42,13 @@ const referenceSlugs = new Set([
 
 const guideSlugs = new Set([
   "keywords",
+  "keyword-themes",
+  "theme-supply-constraint",
+  "theme-dx-data",
+  "theme-logistics",
+  "theme-quality-qms",
+  "theme-resilience",
+  "theme-carbon-neutral",
   "frequent-keywords-map",
   "qms-reconstruction",
   "scm",

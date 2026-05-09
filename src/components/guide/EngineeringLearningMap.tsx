@@ -181,6 +181,12 @@ const learningRoutes: LearningRoute[] = [
         status: 'published',
       },
       {
+        title: 'キーワードテーマ別マップ',
+        description: '供給制約、DX、物流、QMS、レジリエンス、脱炭素の答案テーマから関連キーワードを探します。',
+        href: '/guides/engineer/keyword-themes',
+        status: 'published',
+      },
+      {
         title: '技術士第一次試験ロードマップ',
         description: '基礎科目・適性科目・専門科目を整理し、経営工学と第二次試験につなげる入口ページです。',
         href: '/guides/engineer/first-exam-roadmap',
