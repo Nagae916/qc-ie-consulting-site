@@ -42,6 +42,7 @@ const referenceSlugs = new Set([
 
 const guideSlugs = new Set([
   "frequent-keywords-map",
+  "qms-reconstruction",
 ]);
 
 const duplicateCandidateSlugs = new Set([
