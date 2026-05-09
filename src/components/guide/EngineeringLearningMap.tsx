@@ -175,6 +175,12 @@ const learningRoutes: LearningRoute[] = [
         status: 'published',
       },
       {
+        title: '技術士 経営工学キーワードマップ',
+        description: 'SCM、DX、QMS、BCPなどを、答案に使うためのカードとして整理します。',
+        href: '/guides/engineer/keywords',
+        status: 'published',
+      },
+      {
         title: '技術士第一次試験ロードマップ',
         description: '基礎科目・適性科目・専門科目を整理し、経営工学と第二次試験につなげる入口ページです。',
         href: '/guides/engineer/first-exam-roadmap',
@@ -266,7 +272,7 @@ const engineerExamSteps: RouteStep[] = [
   {
     title: '頻出テーマを整理する',
     description: '生産管理、品質管理、統計、DX、サプライチェーンなどの頻出語を押さえます。',
-    href: '/guides/engineer/past-exam-trend-map',
+    href: '/guides/engineer/keywords',
     status: 'published',
   },
   {
