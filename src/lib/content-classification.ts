@@ -41,8 +41,18 @@ const referenceSlugs = new Set([
 ]);
 
 const guideSlugs = new Set([
+  "keywords",
   "frequent-keywords-map",
   "qms-reconstruction",
+  "scm",
+  "toc",
+  "kpi-management",
+  "dx",
+  "demand-supply-adjustment",
+  "lead-time-reduction",
+  "resilience",
+  "bcp",
+  "logistics-2024",
 ]);
 
 const duplicateCandidateSlugs = new Set([
