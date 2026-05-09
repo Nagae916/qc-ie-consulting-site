@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import answerFrameRulesData from '../../../public/data/engineer/answer-frame-rules.json';
 import competenciesData from '../../../public/data/engineer/competencies.json';
@@ -53,6 +53,7 @@ type FrameConfig = {
 
 const answerFrameRules = answerFrameRulesData as AnswerFrameRule[];
 const competencies = competenciesData as EngineerCompetency[];
+const answerFrameRuleIds = new Set(answerFrameRules.map((rule) => rule.id));
 
 const frameConfigs: Record<string, FrameConfig> = {
   'required-i-standard': {
@@ -427,6 +428,13 @@ export default function AnswerStructureBuilder() {
   const [handoffOpen, setHandoffOpen] = useState(true);
   const [copyMessage, setCopyMessage] = useState('');
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const frameParam = new URLSearchParams(window.location.search).get('frame');
+    if (!frameParam) return;
+    setSelectedFrameId(answerFrameRuleIds.has(frameParam) ? frameParam : defaultFrameId);
+  }, []);
+
   const selectedRule = useMemo(() => {
     return answerFrameRules.find((rule) => rule.id === selectedFrameId) ?? answerFrameRules.find((rule) => rule.id === defaultFrameId) ?? answerFrameRules[0];
   }, [selectedFrameId]);
@@ -501,7 +509,7 @@ export default function AnswerStructureBuilder() {
       <section className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm sm:p-6">
         <h2 className="text-xl font-bold text-slate-950">答案フレームを選択</h2>
         <p className="mt-3 text-sm leading-7 text-slate-700">
-          現在の答案型：<span className="font-bold text-emerald-800">{selectedRule.label}</span>（{selectedRule.examPart}）
+          現在の答案フレーム：<span className="font-bold text-emerald-800">{selectedRule.label}</span>（{selectedRule.examPart}）
         </p>
         <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
           {answerFrameRules.map((rule) => {

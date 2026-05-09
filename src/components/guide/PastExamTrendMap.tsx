@@ -215,6 +215,12 @@ function answerBuilderLabel(question: PastExamQuestion) {
   return answerBuilderLinkLabels[question.skeletonTemplateId] ?? 'この型で答案骨子を作る';
 }
 
+function answerBuilderHrefFor(question: PastExamQuestion) {
+  const rule = answerFrameRuleFor(question);
+  if (!rule) return answerBuilderHref;
+  return `${answerBuilderHref}?frame=${encodeURIComponent(rule.id)}`;
+}
+
 function SummaryCard({ label, value, note }: { label: string; value: string | number; note?: string }) {
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -873,7 +879,7 @@ export default function PastExamTrendMap() {
                     公式PDFを開く（外部）
                   </a>
                   <a
-                    href={answerBuilderHref}
+                    href={answerBuilderHrefFor(question)}
                     className="rounded-lg bg-emerald-700 px-4 py-2 text-center text-sm font-bold text-white transition hover:bg-emerald-800"
                   >
                     {answerBuilderLabel(question)}

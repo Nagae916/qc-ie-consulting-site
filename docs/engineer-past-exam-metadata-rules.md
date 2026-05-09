@@ -219,18 +219,20 @@ id は以下の形式に統一する。
 - summary が問題文全文の転載になっていないか
 - officialPdfUrl が入っているか
 
-## 13. AnswerStructureBuilder との将来連携
+## 13. AnswerStructureBuilder との URL 連携
 
-現時点では、過去問カードの `skeletonTemplateId` と `public/data/engineer/answer-frame-rules.json` を対応させ、どの答案フレームで整理するかを画面上に表示する。
+過去問カードの `skeletonTemplateId` と `public/data/engineer/answer-frame-rules.json` を対応させ、どの答案フレームで整理するかを画面上に表示する。
 
-将来的には、過去問カードから AnswerStructureBuilder へ遷移するときに、以下のような URL パラメータで初期フレームを指定する連携を検討する。
+PastExamTrendMap から AnswerStructureBuilder へ遷移するときは、以下のような `frame` URL パラメータで初期答案フレームを指定できる。
 
 - `/guides/engineer/answer-structure-builder?frame=required-i-standard`
 - `/guides/engineer/answer-structure-builder?frame=elective-ii-1-short`
 - `/guides/engineer/answer-structure-builder?frame=elective-ii-2-procedure`
 - `/guides/engineer/answer-structure-builder?frame=elective-iii-analysis`
 
-ただし、MVPでは URL パラメータによる自動選択や過去問メタデータの自動入力は行わない。まずは、過去問カード上で答案フレーム、評価観点、対応コンピテンシーを確認できる状態を優先する。
+対応値は `answer-frame-rules.json` の `id` と一致させる。`frame` が未指定、空、または未登録 ID の場合は `required-i-standard` に fallback する。
+
+MVPでは、過去問情報そのものの自動入力、URL と手動選択状態の完全同期は行わない。URL パラメータは、過去問トレンドマップから答案骨子作成へ自然につなげるための初期表示指定として扱う。
 
 ## 今回やらないこと
 
