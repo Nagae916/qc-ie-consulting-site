@@ -193,6 +193,12 @@ const learningRoutes: LearningRoute[] = [
         status: 'published',
       },
       {
+        title: '白書背景×キーワード対応表',
+        description: '人口減少、DX、物流、脱炭素などの白書背景を、経営工学キーワードと答案論点に接続します。',
+        href: '/guides/engineer/whitepaper-keyword-map',
+        status: 'published',
+      },
+      {
         title: '技術士第一次試験ロードマップ',
         description: '基礎科目・適性科目・専門科目を整理し、経営工学と第二次試験につなげる入口ページです。',
         href: '/guides/engineer/first-exam-roadmap',
