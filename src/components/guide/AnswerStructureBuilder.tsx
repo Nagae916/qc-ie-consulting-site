@@ -2,48 +2,21 @@
 
 import { useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
+import answerFrameRulesData from '../../../public/data/engineer/answer-frame-rules.json';
 import competenciesData from '../../../public/data/engineer/competencies.json';
 
-type ProblemRequirements = {
-  theme: string;
-  target: string;
-  role: string;
-  constraints: string;
-  questionOne: string;
-  questionTwo: string;
-  questionThree: string;
-  questionFour: string;
+type AnswerFrameRule = {
+  id: string;
+  label: string;
+  examPart: string;
+  questionPatterns: string[];
+  answerBlocks: string[];
+  keyEvaluationPoints: string[];
+  usefulKeywords: string[];
+  commonWeaknesses: string[];
+  relatedCompetencies: string[];
+  recommendedTools: string[];
 };
-
-type IssueInput = {
-  viewpoint: string;
-  problem: string;
-  technicalIssue: string;
-  detail: string;
-};
-
-type SolutionInput = {
-  solutionOne: string;
-  solutionTwo: string;
-  solutionThree: string;
-  methods: string;
-};
-
-type RiskInput = {
-  effect: string;
-  risk: string;
-  trouble: string;
-  countermeasure: string;
-};
-
-type EthicsInput = {
-  ethicsViewpoint: string;
-  ethicsDetail: string;
-  sustainabilityViewpoint: string;
-  sustainabilityDetail: string;
-};
-
-type OutputFormat = 'sheet' | 'outline' | 'shortMemo';
 
 type EngineerCompetency = {
   id: string;
@@ -56,112 +29,305 @@ type EngineerCompetency = {
   relatedTools: string[];
 };
 
-const viewpointChips = ['人材・組織', '業務プロセス', '情報・データ', '設備・現場', '品質', '生産性', 'コスト', 'サプライチェーン', '経営判断', '安全・環境', '社会・制度'];
-const reasonChips = ['影響範囲が広い', '根本原因に近い', '他課題への波及効果が大きい', '緊急性が高い', '実現可能性がある', '経営効果・品質効果が大きい'];
-const methodChips = ['QC七つ道具', '管理図', 'FMEA', 'ECRS', '標準化', 'KPI設計', '業務フロー分析', 'スキルマップ', 'S&OP', '在庫管理', 'TOC', '内部監査', '是正処置'];
-const riskChips = ['技術面', '運用面', '組織面', '人材面', '投資面', '情報セキュリティ', 'データ信頼性', 'ベンダーロックイン', '環境負荷'];
-const ethicsChips = ['安全性確保', '公益確保', '説明責任', '法令順守', '情報管理', 'プライバシー', 'データ改ざん防止', '環境負荷低減', '人材育成', 'レジリエンス'];
-const issueMatrixHref = '/guides/engineer/issue-decomposition-matrix';
+type FieldType = 'text' | 'textarea';
 
-const outputFormats: { id: OutputFormat; label: string; description: string }[] = [
-  {
-    id: 'sheet',
-    label: '構造整理シート形式',
-    description: '添削課題や答案作成前の整理に使う',
-  },
-  {
-    id: 'outline',
-    label: '答案骨子形式',
-    description: '1800字答案の章立てに使う',
-  },
-  {
-    id: 'shortMemo',
-    label: '600字答案メモ形式',
-    description: '短い答案練習や要約に使う',
-  },
-];
+type FrameField = {
+  id: string;
+  label: string;
+  type?: FieldType;
+  placeholder?: string;
+  rows?: number;
+};
 
-const qualityChecks = [
-  '設問(1)で課題3つが明確である',
-  '課題が抽象語だけで終わっていない',
-  '課題3つの観点が分かれている',
-  '最重要課題が課題3つの中から選ばれている',
-  '最重要課題の選定理由が、影響範囲・根本性・波及性などで説明されている',
-  '解決策が最重要課題に直接対応している',
-  '解決策が「誰が・何を・どのように・どの指標で」実施するかを意識している',
-  'リスクが施策実施後に新たに生じる副作用になっている',
-  '対策がリスクに一対一で対応している',
-  '技術者倫理・社会の持続可能性がテーマ固有の具体語で書かれている',
-];
+type FieldGroup = {
+  title: string;
+  description: string;
+  fields: FrameField[];
+};
 
-const expressionExamples = [
-  {
-    shallow: 'DXを推進する',
-    improved: '品質・生産・保全データを横断的に活用し、工程異常の早期把握と改善判断につなげる',
-  },
-  {
-    shallow: '人材育成を行う',
-    improved: '現場リーダーがデータを用いて改善判断できるよう、スキルマップと教育訓練体系を整備する',
-  },
-  {
-    shallow: 'リスクに注意する',
-    improved: 'データ入力が形骸化するリスクに対し、入力ルールの標準化、責任者設定、定期監査を行う',
-  },
-];
+type FrameConfig = {
+  note: string;
+  groups: FieldGroup[];
+  buildPreview: (_values: Record<string, string>) => string;
+};
 
+const answerFrameRules = answerFrameRulesData as AnswerFrameRule[];
 const competencies = competenciesData as EngineerCompetency[];
 
-const initialRequirements: ProblemRequirements = {
-  theme: '',
-  target: '',
-  role: '',
-  constraints: '',
-  questionOne: '',
-  questionTwo: '',
-  questionThree: '',
-  questionFour: '',
+const frameConfigs: Record<string, FrameConfig> = {
+  'required-i-standard': {
+    note: '必須Ⅰでは、問題文の要求、課題3つ、最重要課題、解決策、リスク、倫理・持続可能性を一貫させます。',
+    groups: [
+      {
+        title: 'Step 0：問題文の要求整理',
+        description: '問題文を読んだら、まず何を問われているかを分解します。',
+        fields: [
+          { id: 'theme', label: 'テーマ・問題名' },
+          { id: 'target', label: '対象企業・対象業務' },
+          { id: 'role', label: '自分の立場' },
+          { id: 'constraints', label: '制約条件・前提条件', type: 'textarea' },
+          { id: 'questionOne', label: '設問(1)で求められていること', type: 'textarea' },
+          { id: 'questionTwo', label: '設問(2)で求められていること', type: 'textarea' },
+          { id: 'questionThree', label: '設問(3)で求められていること', type: 'textarea' },
+          { id: 'questionFour', label: '設問(4)で求められていること', type: 'textarea' },
+        ],
+      },
+      {
+        title: 'Step 1：課題3つ',
+        description: '問題点は現状の困りごと、技術課題は技術者として取り組むべき改善対象として書きます。',
+        fields: [
+          { id: 'issueOneViewpoint', label: '課題1 観点' },
+          { id: 'issueOneProblem', label: '課題1 問題点', type: 'textarea' },
+          { id: 'issueOneTechnicalIssue', label: '課題1 技術課題' },
+          { id: 'issueOneDetail', label: '課題1 課題の内容', type: 'textarea' },
+          { id: 'issueTwoViewpoint', label: '課題2 観点' },
+          { id: 'issueTwoProblem', label: '課題2 問題点', type: 'textarea' },
+          { id: 'issueTwoTechnicalIssue', label: '課題2 技術課題' },
+          { id: 'issueTwoDetail', label: '課題2 課題の内容', type: 'textarea' },
+          { id: 'issueThreeViewpoint', label: '課題3 観点' },
+          { id: 'issueThreeProblem', label: '課題3 問題点', type: 'textarea' },
+          { id: 'issueThreeTechnicalIssue', label: '課題3 技術課題' },
+          { id: 'issueThreeDetail', label: '課題3 課題の内容', type: 'textarea' },
+        ],
+      },
+      {
+        title: 'Step 2：最重要課題',
+        description: '最重要課題は、抽出した課題の中から選び、影響範囲、根本性、波及性などで理由を示します。',
+        fields: [
+          { id: 'priorityIssue', label: '最重要課題' },
+          { id: 'priorityReason', label: '選定理由', type: 'textarea' },
+        ],
+      },
+      {
+        title: 'Step 3：解決策',
+        description: '解決策は、最重要課題に直接対応させます。',
+        fields: [
+          { id: 'solutionOne', label: '解決策1', type: 'textarea' },
+          { id: 'solutionTwo', label: '解決策2', type: 'textarea' },
+          { id: 'solutionThree', label: '解決策3', type: 'textarea' },
+          { id: 'methods', label: '使用する経営工学・品質管理手法', type: 'textarea' },
+        ],
+      },
+      {
+        title: 'Step 4：リスクと対策',
+        description: 'リスクは、解決策を実施した後に新たに生じる副作用として書きます。',
+        fields: [
+          { id: 'effect', label: '期待される波及効果', type: 'textarea' },
+          { id: 'risk', label: '新たに生じうるリスク', type: 'textarea' },
+          { id: 'trouble', label: '発生しうるトラブル', type: 'textarea' },
+          { id: 'countermeasure', label: 'リスクへの対策', type: 'textarea' },
+        ],
+      },
+      {
+        title: 'Step 5：技術者倫理・社会の持続可能性',
+        description: '倫理・持続可能性は、テーマ固有の具体語で書きます。',
+        fields: [
+          { id: 'ethicsViewpoint', label: '技術者倫理の観点' },
+          { id: 'ethicsDetail', label: '技術者倫理上の具体的な留意点', type: 'textarea' },
+          { id: 'sustainabilityViewpoint', label: '社会の持続可能性の観点' },
+          { id: 'sustainabilityDetail', label: '社会の持続可能性上の具体的な留意点', type: 'textarea' },
+        ],
+      },
+    ],
+    buildPreview: (values) => `【問題文の要求整理】
+テーマ：${valueOrBlank(values.theme)}
+対象：${valueOrBlank(values.target)}
+立場：${valueOrBlank(values.role)}
+制約条件：${valueOrBlank(values.constraints)}
+
+【設問(1)：課題抽出】
+1. 観点：${valueOrBlank(values.issueOneViewpoint)}
+   問題点：${valueOrBlank(values.issueOneProblem)}
+   技術課題：${valueOrBlank(values.issueOneTechnicalIssue)}
+   内容：${valueOrBlank(values.issueOneDetail)}
+
+2. 観点：${valueOrBlank(values.issueTwoViewpoint)}
+   問題点：${valueOrBlank(values.issueTwoProblem)}
+   技術課題：${valueOrBlank(values.issueTwoTechnicalIssue)}
+   内容：${valueOrBlank(values.issueTwoDetail)}
+
+3. 観点：${valueOrBlank(values.issueThreeViewpoint)}
+   問題点：${valueOrBlank(values.issueThreeProblem)}
+   技術課題：${valueOrBlank(values.issueThreeTechnicalIssue)}
+   内容：${valueOrBlank(values.issueThreeDetail)}
+
+【設問(2)：最重要課題と解決策】
+最重要課題：${valueOrBlank(values.priorityIssue)}
+選定理由：${valueOrBlank(values.priorityReason)}
+
+解決策：
+1. ${valueOrBlank(values.solutionOne)}
+2. ${valueOrBlank(values.solutionTwo)}
+3. ${valueOrBlank(values.solutionThree)}
+
+使用する経営工学・品質管理手法：${valueOrBlank(values.methods)}
+
+【設問(3)：波及効果・リスク・対策】
+期待される波及効果：${valueOrBlank(values.effect)}
+新たに生じうるリスク：${valueOrBlank(values.risk)}
+発生しうるトラブル：${valueOrBlank(values.trouble)}
+対策：${valueOrBlank(values.countermeasure)}
+
+【設問(4)：技術者倫理・社会の持続可能性】
+技術者倫理：${valueOrBlank(values.ethicsViewpoint)} / ${valueOrBlank(values.ethicsDetail)}
+社会の持続可能性：${valueOrBlank(values.sustainabilityViewpoint)} / ${valueOrBlank(values.sustainabilityDetail)}`,
+  },
+  'elective-ii-1-short': {
+    note: 'Ⅱ-1では、定義だけでなく、特徴、適用場面、留意点を簡潔に整理します。600字程度の答案に展開できる骨子を作ります。',
+    groups: [
+      {
+        title: '選択科目Ⅱ-1：短答・用語説明型',
+        description: '専門用語や手法を、定義、目的、具体例、留意点まで短く整理します。',
+        fields: [
+          { id: 'term', label: 'テーマ・用語' },
+          { id: 'definition', label: '定義', type: 'textarea' },
+          { id: 'purpose', label: '目的', type: 'textarea' },
+          { id: 'example', label: '具体例', type: 'textarea' },
+          { id: 'procedureOrElements', label: '手順または構成要素', type: 'textarea' },
+          { id: 'caution', label: '留意点', type: 'textarea' },
+          { id: 'application', label: '経営工学上の活用場面', type: 'textarea' },
+          { id: 'keywords', label: '関連する手法・キーワード', type: 'textarea' },
+        ],
+      },
+    ],
+    buildPreview: (values) => `【テーマ・用語】
+${valueOrBlank(values.term)}
+
+【定義】
+${valueOrBlank(values.definition)}
+
+【目的】
+${valueOrBlank(values.purpose)}
+
+【具体例】
+${valueOrBlank(values.example)}
+
+【手順または構成要素】
+${valueOrBlank(values.procedureOrElements)}
+
+【留意点】
+${valueOrBlank(values.caution)}
+
+【経営工学上の活用場面】
+${valueOrBlank(values.application)}
+
+【関連キーワード】
+${valueOrBlank(values.keywords)}`,
+  },
+  'elective-ii-2-procedure': {
+    note: 'Ⅱ-2では、業務遂行の手順、管理項目、留意点、関係者調整を具体的に整理します。単なる手法説明ではなく、実務でどう進めるかを示します。',
+    groups: [
+      {
+        title: '選択科目Ⅱ-2：手順説明・留意点型',
+        description: '現状把握から実施、管理、調整、効果確認までの流れを作ります。',
+        fields: [
+          { id: 'workTheme', label: 'テーマ・業務' },
+          { id: 'backgroundPurpose', label: '背景・目的', type: 'textarea' },
+          { id: 'currentState', label: '現状把握', type: 'textarea' },
+          { id: 'procedureOne', label: '実施手順1', type: 'textarea' },
+          { id: 'procedureTwo', label: '実施手順2', type: 'textarea' },
+          { id: 'procedureThree', label: '実施手順3', type: 'textarea' },
+          { id: 'controlItems', label: '管理項目', type: 'textarea' },
+          { id: 'cautions', label: '留意点・工夫点', type: 'textarea' },
+          { id: 'stakeholderCoordination', label: '関係者との調整', type: 'textarea' },
+          { id: 'effectCheck', label: '効果確認', type: 'textarea' },
+        ],
+      },
+    ],
+    buildPreview: (values) => `【テーマ・業務】
+${valueOrBlank(values.workTheme)}
+
+【背景・目的】
+${valueOrBlank(values.backgroundPurpose)}
+
+【現状把握】
+${valueOrBlank(values.currentState)}
+
+【実施手順】
+1. ${valueOrBlank(values.procedureOne)}
+2. ${valueOrBlank(values.procedureTwo)}
+3. ${valueOrBlank(values.procedureThree)}
+
+【管理項目】
+${valueOrBlank(values.controlItems)}
+
+【留意点・工夫点】
+${valueOrBlank(values.cautions)}
+
+【関係者との調整】
+${valueOrBlank(values.stakeholderCoordination)}
+
+【効果確認】
+${valueOrBlank(values.effectCheck)}`,
+  },
+  'elective-iii-analysis': {
+    note: 'Ⅲでは、専門領域における多面的な課題、解決策、リスク、将来展望を整理します。必須Ⅰよりも選択科目の専門性を意識します。',
+    groups: [
+      {
+        title: '選択科目Ⅲ：課題解決・将来展望型',
+        description: '専門領域の大きな課題を、多面的課題、解決策、将来展望へ展開します。',
+        fields: [
+          { id: 'theme', label: 'テーマ' },
+          { id: 'background', label: '背景', type: 'textarea' },
+          { id: 'issueOne', label: '多面的課題1', type: 'textarea' },
+          { id: 'issueTwo', label: '多面的課題2', type: 'textarea' },
+          { id: 'issueThree', label: '多面的課題3', type: 'textarea' },
+          { id: 'priorityIssue', label: '最重要課題', type: 'textarea' },
+          { id: 'solutionOne', label: '解決策1', type: 'textarea' },
+          { id: 'solutionTwo', label: '解決策2', type: 'textarea' },
+          { id: 'solutionThree', label: '解決策3', type: 'textarea' },
+          { id: 'riskResponse', label: 'リスクと対応', type: 'textarea' },
+          { id: 'futureView', label: '将来展望', type: 'textarea' },
+          { id: 'sustainability', label: '社会の持続可能性', type: 'textarea' },
+        ],
+      },
+    ],
+    buildPreview: (values) => `【背景】
+${valueOrBlank(values.background)}
+
+【多面的課題】
+1. ${valueOrBlank(values.issueOne)}
+2. ${valueOrBlank(values.issueTwo)}
+3. ${valueOrBlank(values.issueThree)}
+
+【最重要課題】
+${valueOrBlank(values.priorityIssue)}
+
+【解決策】
+1. ${valueOrBlank(values.solutionOne)}
+2. ${valueOrBlank(values.solutionTwo)}
+3. ${valueOrBlank(values.solutionThree)}
+
+【リスクと対応】
+${valueOrBlank(values.riskResponse)}
+
+【将来展望】
+${valueOrBlank(values.futureView)}
+
+【社会の持続可能性】
+${valueOrBlank(values.sustainability)}`,
+  },
 };
 
-const initialIssues: IssueInput[] = [
-  { viewpoint: '', problem: '', technicalIssue: '', detail: '' },
-  { viewpoint: '', problem: '', technicalIssue: '', detail: '' },
-  { viewpoint: '', problem: '', technicalIssue: '', detail: '' },
-];
+const issueMatrixHref = '/guides/engineer/issue-decomposition-matrix';
+const defaultFrameId = answerFrameRules.find((rule) => rule.id === 'required-i-standard')?.id ?? answerFrameRules[0]?.id ?? '';
 
-const initialSolution: SolutionInput = {
-  solutionOne: '',
-  solutionTwo: '',
-  solutionThree: '',
-  methods: '',
-};
-
-const initialRisk: RiskInput = {
-  effect: '',
-  risk: '',
-  trouble: '',
-  countermeasure: '',
-};
-
-const initialEthics: EthicsInput = {
-  ethicsViewpoint: '',
-  ethicsDetail: '',
-  sustainabilityViewpoint: '',
-  sustainabilityDetail: '',
-};
-
-function valueOrBlank(value: string) {
-  return value.trim() || '未入力';
+function valueOrBlank(value: string | undefined) {
+  return value?.trim() || '未入力';
 }
 
-function ChipList({ chips }: { chips: string[] }) {
+function fieldValue(values: Record<string, string>, fieldId: string) {
+  return values[fieldId] ?? '';
+}
+
+function SectionCard({ step, title, note, children }: { step: string; title: string; note: string; children: ReactNode }) {
   return (
-    <div className="mt-3 flex flex-wrap gap-2">
-      {chips.map((chip) => (
-        <span key={chip} className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700">
-          {chip}
-        </span>
-      ))}
-    </div>
+    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <p className="text-xs font-bold uppercase tracking-wide text-emerald-700">{step}</p>
+      <h2 className="mt-2 text-xl font-bold text-slate-950">{title}</h2>
+      <p className="mt-3 text-sm leading-7 text-slate-700">{note}</p>
+      <div className="mt-5 space-y-4">{children}</div>
+    </section>
   );
 }
 
@@ -175,8 +341,8 @@ function TextField({
   id: string;
   label: string;
   value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
+  onChange: (_value: string) => void;
+  placeholder?: string | undefined;
 }) {
   return (
     <label className="block" htmlFor={id}>
@@ -203,9 +369,9 @@ function TextAreaField({
   id: string;
   label: string;
   value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-  rows?: number;
+  onChange: (_value: string) => void;
+  placeholder?: string | undefined;
+  rows?: number | undefined;
 }) {
   return (
     <label className="block" htmlFor={id}>
@@ -222,155 +388,76 @@ function TextAreaField({
   );
 }
 
-function SectionCard({ step, title, note, children }: { step: string; title: string; note: string; children: ReactNode }) {
+function BadgeList({ items, color = 'slate' }: { items: string[]; color?: 'slate' | 'emerald' | 'amber' }) {
+  const colorClass =
+    color === 'emerald'
+      ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+      : color === 'amber'
+        ? 'border-amber-200 bg-amber-50 text-amber-800'
+        : 'border-slate-200 bg-slate-50 text-slate-700';
+
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-      <p className="text-xs font-bold uppercase tracking-wide text-emerald-700">{step}</p>
-      <h2 className="mt-2 text-xl font-bold text-slate-950">{title}</h2>
-      <p className="mt-3 text-sm leading-7 text-slate-700">{note}</p>
-      <div className="mt-5 space-y-4">{children}</div>
-    </section>
+    <div className="mt-3 flex flex-wrap gap-2">
+      {items.map((item) => (
+        <span key={item} className={`rounded-full border px-3 py-1 text-xs font-semibold ${colorClass}`}>
+          {item}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function BulletList({ items }: { items: string[] }) {
+  return (
+    <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-700">
+      {items.map((item) => (
+        <li key={item} className="flex gap-2">
+          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-600" />
+          <span>{item}</span>
+        </li>
+      ))}
+    </ul>
   );
 }
 
 export default function AnswerStructureBuilder() {
-  const [requirements, setRequirements] = useState<ProblemRequirements>(initialRequirements);
-  const [issues, setIssues] = useState<IssueInput[]>(initialIssues);
-  const [priorityIssue, setPriorityIssue] = useState('');
-  const [priorityReason, setPriorityReason] = useState('');
-  const [solution, setSolution] = useState<SolutionInput>(initialSolution);
-  const [risk, setRisk] = useState<RiskInput>(initialRisk);
-  const [ethics, setEthics] = useState<EthicsInput>(initialEthics);
+  const [selectedFrameId, setSelectedFrameId] = useState(defaultFrameId);
+  const [frameValues, setFrameValues] = useState<Record<string, Record<string, string>>>({});
   const [handoffMemo, setHandoffMemo] = useState('');
   const [handoffOpen, setHandoffOpen] = useState(true);
-  const [outputFormat, setOutputFormat] = useState<OutputFormat>('sheet');
   const [copyMessage, setCopyMessage] = useState('');
 
-  const structureSheetText = useMemo(() => {
-    const issueLines = issues
-      .map((issue, index) => {
-        return `観点${index + 1}：${valueOrBlank(issue.viewpoint)}
-問題点${index + 1}：${valueOrBlank(issue.problem)}
-技術課題${index + 1}：${valueOrBlank(issue.technicalIssue)}
-課題${index + 1}の内容：${valueOrBlank(issue.detail)}`;
-      })
-      .join('\n\n');
+  const selectedRule = useMemo(() => {
+    return answerFrameRules.find((rule) => rule.id === selectedFrameId) ?? answerFrameRules.find((rule) => rule.id === defaultFrameId) ?? answerFrameRules[0];
+  }, [selectedFrameId]);
 
-    return `【問題文の要求整理】
-テーマ：${valueOrBlank(requirements.theme)}
-対象企業・対象業務：${valueOrBlank(requirements.target)}
-自分の立場：${valueOrBlank(requirements.role)}
-制約条件・前提条件：${valueOrBlank(requirements.constraints)}
+  const selectedConfig = selectedRule ? frameConfigs[selectedRule.id] : undefined;
+  const selectedValues = useMemo(() => {
+    if (!selectedRule) return {};
+    return frameValues[selectedRule.id] ?? {};
+  }, [frameValues, selectedRule]);
 
-【設問(1)：課題抽出】
-${issueLines}
+  const relatedCompetencies = useMemo(() => {
+    if (!selectedRule) return [];
+    return selectedRule.relatedCompetencies
+      .map((competencyId) => competencies.find((competency) => competency.id === competencyId))
+      .filter((competency): competency is EngineerCompetency => Boolean(competency));
+  }, [selectedRule]);
 
-【設問(2)：最重要課題と解決策】
-最重要課題：${valueOrBlank(priorityIssue)}
-選定理由：${valueOrBlank(priorityReason)}
-解決策1：${valueOrBlank(solution.solutionOne)}
-解決策2：${valueOrBlank(solution.solutionTwo)}
-解決策3：${valueOrBlank(solution.solutionThree)}
-使用する経営工学・品質管理手法：${valueOrBlank(solution.methods)}
+  const previewText = useMemo(() => {
+    if (!selectedConfig) return '';
+    return selectedConfig.buildPreview(selectedValues);
+  }, [selectedConfig, selectedValues]);
 
-【設問(3)：波及効果・リスク・対策】
-期待される波及効果：${valueOrBlank(risk.effect)}
-新たに生じうるリスク：${valueOrBlank(risk.risk)}
-発生しうるトラブル：${valueOrBlank(risk.trouble)}
-リスクへの対策：${valueOrBlank(risk.countermeasure)}
-
-【設問(4)：技術者倫理・社会の持続可能性】
-技術者倫理の観点：${valueOrBlank(ethics.ethicsViewpoint)}
-技術者倫理上の具体的な留意点：${valueOrBlank(ethics.ethicsDetail)}
-社会の持続可能性の観点：${valueOrBlank(ethics.sustainabilityViewpoint)}
-社会の持続可能性上の具体的な留意点：${valueOrBlank(ethics.sustainabilityDetail)}`;
-  }, [ethics, issues, priorityIssue, priorityReason, requirements, risk, solution]);
-
-  const outlineText = useMemo(() => {
-    return `1. 課題
-本テーマに対して、以下の3つの技術課題がある。
-
-第一に、${valueOrBlank(issues[0]?.technicalIssue ?? '')}である。
-これは、${valueOrBlank(issues[0]?.problem ?? '')}が問題点であり、${valueOrBlank(issues[0]?.detail ?? '')}につながるためである。
-
-第二に、${valueOrBlank(issues[1]?.technicalIssue ?? '')}である。
-これは、${valueOrBlank(issues[1]?.problem ?? '')}が問題点であり、${valueOrBlank(issues[1]?.detail ?? '')}につながるためである。
-
-第三に、${valueOrBlank(issues[2]?.technicalIssue ?? '')}である。
-これは、${valueOrBlank(issues[2]?.problem ?? '')}が問題点であり、${valueOrBlank(issues[2]?.detail ?? '')}につながるためである。
-
-2. 最重要課題と解決策
-最重要課題は、${valueOrBlank(priorityIssue)}である。
-理由は、${valueOrBlank(priorityReason)}である。
-
-解決策として、以下の3点を実施する。
-第一に、${valueOrBlank(solution.solutionOne)}。
-第二に、${valueOrBlank(solution.solutionTwo)}。
-第三に、${valueOrBlank(solution.solutionThree)}。
-
-これらの施策では、${valueOrBlank(solution.methods)}などの経営工学・品質管理手法を活用する。
-
-3. リスクと対策
-上記施策により、${valueOrBlank(risk.effect)}の効果が期待できる。
-一方で、${valueOrBlank(risk.risk)}のリスクがある。
-これに対して、${valueOrBlank(risk.countermeasure)}により対策する。
-
-4. 技術者倫理・社会の持続可能性
-技術者倫理上、${valueOrBlank(ethics.ethicsDetail)}に留意する。
-また、社会の持続可能性の観点から、${valueOrBlank(ethics.sustainabilityDetail)}を重視する。`;
-  }, [ethics.ethicsDetail, ethics.sustainabilityDetail, issues, priorityIssue, priorityReason, risk.countermeasure, risk.effect, risk.risk, solution]);
-
-  const shortMemoText = useMemo(() => {
-    return `背景：
-${valueOrBlank(requirements.theme)}について、${valueOrBlank(requirements.constraints)}
-
-課題：
-課題は、①${valueOrBlank(issues[0]?.technicalIssue ?? '')}、②${valueOrBlank(issues[1]?.technicalIssue ?? '')}、③${valueOrBlank(issues[2]?.technicalIssue ?? '')}である。
-
-最重要課題：
-最重要課題は${valueOrBlank(priorityIssue)}である。理由は${valueOrBlank(priorityReason)}である。
-
-解決策：
-解決策として、①${valueOrBlank(solution.solutionOne)}、②${valueOrBlank(solution.solutionTwo)}、③${valueOrBlank(solution.solutionThree)}を行う。
-
-リスクと対策：
-ただし、${valueOrBlank(risk.risk)}のリスクがあるため、${valueOrBlank(risk.countermeasure)}により対策する。
-
-倫理・持続可能性：
-技術者として${valueOrBlank(ethics.ethicsDetail)}に留意し、${valueOrBlank(ethics.sustainabilityDetail)}に配慮する。`;
-  }, [ethics.ethicsDetail, ethics.sustainabilityDetail, issues, priorityIssue, priorityReason, requirements.constraints, requirements.theme, risk.countermeasure, risk.risk, solution]);
-
-  const selectedPreviewText = useMemo(() => {
-    if (outputFormat === 'outline') return outlineText;
-    if (outputFormat === 'shortMemo') return shortMemoText;
-    return structureSheetText;
-  }, [outlineText, outputFormat, shortMemoText, structureSheetText]);
-
-  const selectedFormat =
-    outputFormats.find((format) => format.id === outputFormat) ?? {
-      id: 'sheet' as const,
-      label: '構造整理シート形式',
-      description: '添削課題や答案作成前の整理に使う',
-    };
-
-  function updateRequirement(key: keyof ProblemRequirements, value: string) {
-    setRequirements((current) => ({ ...current, [key]: value }));
-  }
-
-  function updateIssue(index: number, key: keyof IssueInput, value: string) {
-    setIssues((current) => current.map((issue, issueIndex) => (issueIndex === index ? { ...issue, [key]: value } : issue)));
-  }
-
-  function updateSolution(key: keyof SolutionInput, value: string) {
-    setSolution((current) => ({ ...current, [key]: value }));
-  }
-
-  function updateRisk(key: keyof RiskInput, value: string) {
-    setRisk((current) => ({ ...current, [key]: value }));
-  }
-
-  function updateEthics(key: keyof EthicsInput, value: string) {
-    setEthics((current) => ({ ...current, [key]: value }));
+  function updateField(fieldId: string, value: string) {
+    if (!selectedRule) return;
+    setFrameValues((current) => ({
+      ...current,
+      [selectedRule.id]: {
+        ...(current[selectedRule.id] ?? {}),
+        [fieldId]: value,
+      },
+    }));
   }
 
   async function copyPreview() {
@@ -381,11 +468,21 @@ ${valueOrBlank(requirements.theme)}について、${valueOrBlank(requirements.co
     }
 
     try {
-      await navigator.clipboard.writeText(selectedPreviewText);
-      setCopyMessage('コピーしました。');
+      await navigator.clipboard.writeText(previewText);
+      setCopyMessage('コピーしました');
     } catch {
       setCopyMessage('コピーに失敗しました。プレビュー欄から手動でコピーしてください。');
     }
+  }
+
+  if (!selectedRule || !selectedConfig) {
+    return (
+      <div className="mx-auto max-w-4xl px-4 py-8">
+        <p className="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm font-semibold text-amber-900">
+          答案フレームルールを読み込めませんでした。
+        </p>
+      </div>
+    );
   }
 
   return (
@@ -394,12 +491,45 @@ ${valueOrBlank(requirements.theme)}について、${valueOrBlank(requirements.co
         <p className="text-sm font-semibold text-emerald-700">技術士二次試験向け</p>
         <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">技術士 答案骨子ビルダー</h1>
         <p className="mt-4 max-w-4xl text-base leading-8 text-slate-700">
-          問題文の要求を分解し、課題、最重要課題、解決策、リスク、倫理・持続可能性までを一貫して整理するためのツールです。
-          いきなり本文を書くのではなく、答案の骨格を先に作ることを目的とします。
+          問題種別ごとの答案フレームを選び、必要な入力項目だけを整理できます。解答例本文の転載ではなく、答案の構成、評価観点、キーワードの使い方を骨子作成に利用します。
         </p>
         <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold leading-7 text-amber-900">
           このツールは答案本文の自動作成ではなく、答案構成を整理するための補助ツールです。
         </p>
+      </section>
+
+      <section className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm sm:p-6">
+        <h2 className="text-xl font-bold text-slate-950">答案フレームを選択</h2>
+        <p className="mt-3 text-sm leading-7 text-slate-700">
+          現在の答案型：<span className="font-bold text-emerald-800">{selectedRule.label}</span>（{selectedRule.examPart}）
+        </p>
+        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          {answerFrameRules.map((rule) => {
+            const isSelected = rule.id === selectedRule.id;
+            return (
+              <button
+                key={rule.id}
+                type="button"
+                onClick={() => {
+                  setSelectedFrameId(rule.id);
+                  setCopyMessage('');
+                }}
+                className={`rounded-xl border p-4 text-left transition ${
+                  isSelected
+                    ? 'border-emerald-600 bg-white text-emerald-950 shadow-sm'
+                    : 'border-emerald-200 bg-emerald-50 text-slate-700 hover:border-emerald-400 hover:bg-white'
+                }`}
+              >
+                <span className="block text-base font-bold">{rule.label}</span>
+                <span className="mt-2 block text-sm leading-6">{rule.examPart}</span>
+              </button>
+            );
+          })}
+        </div>
+        <div className="mt-5 rounded-xl border border-emerald-200 bg-white p-4">
+          <p className="text-sm leading-7 text-slate-700">{selectedConfig.note}</p>
+          <BadgeList items={selectedRule.answerBlocks} color="emerald" />
+        </div>
       </section>
 
       <section className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm sm:p-6">
@@ -408,9 +538,6 @@ ${valueOrBlank(requirements.theme)}について、${valueOrBlank(requirements.co
             <h2 className="text-xl font-bold text-slate-950">課題分解マトリクスから続ける場合</h2>
             <p className="mt-3 text-sm leading-7 text-slate-700">
               課題分解マトリクスで作成した内容をコピーしている場合は、下のメモ欄に貼り付けてから、各入力欄に整理してください。
-            </p>
-            <p className="mt-3 text-sm leading-7 text-slate-700">
-              今回は自動入力ではなく、内容を確認しながら手動で整理する方式にしています。問題文の要求と課題の対応を確認しながら、答案骨子へ展開してください。
             </p>
           </div>
           <div className="flex items-start lg:justify-end">
@@ -446,7 +573,7 @@ ${valueOrBlank(requirements.theme)}について、${valueOrBlank(requirements.co
                 value={handoffMemo}
                 onChange={(event) => setHandoffMemo(event.target.value)}
                 placeholder="課題分解マトリクスでコピーした内容をここに貼り付けます。"
-                rows={8}
+                rows={6}
                 className="w-full rounded-lg border border-emerald-200 bg-white px-3 py-2 text-sm leading-7 text-slate-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100"
               />
             </label>
@@ -454,180 +581,76 @@ ${valueOrBlank(requirements.theme)}について、${valueOrBlank(requirements.co
         </div>
       </section>
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_420px]">
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_440px]">
         <div className="space-y-6">
-          <SectionCard
-            step="Step 0"
-            title="問題文の要求整理"
-            note="問題文を読んだら、まず何を問われているかを分解します。ここがずれると、答案全体が題意から外れます。"
-          >
-            <div className="grid gap-4 md:grid-cols-2">
-              <TextField id="theme" label="テーマ・問題名" value={requirements.theme} onChange={(value) => updateRequirement('theme', value)} />
-              <TextField id="target" label="対象企業・対象業務" value={requirements.target} onChange={(value) => updateRequirement('target', value)} />
-              <TextField id="role" label="自分の立場" value={requirements.role} onChange={(value) => updateRequirement('role', value)} />
-              <TextField id="constraints" label="制約条件・前提条件" value={requirements.constraints} onChange={(value) => updateRequirement('constraints', value)} />
-            </div>
-            <div className="grid gap-4 md:grid-cols-2">
-              <TextAreaField id="q1" label="設問(1)で求められていること" value={requirements.questionOne} onChange={(value) => updateRequirement('questionOne', value)} />
-              <TextAreaField id="q2" label="設問(2)で求められていること" value={requirements.questionTwo} onChange={(value) => updateRequirement('questionTwo', value)} />
-              <TextAreaField id="q3" label="設問(3)で求められていること" value={requirements.questionThree} onChange={(value) => updateRequirement('questionThree', value)} />
-              <TextAreaField id="q4" label="設問(4)で求められていること" value={requirements.questionFour} onChange={(value) => updateRequirement('questionFour', value)} />
-            </div>
-          </SectionCard>
-
-          <SectionCard
-            step="Step 1"
-            title="課題3つの抽出"
-            note="問題点は現状の困りごと、技術課題は技術者として取り組むべき管理・改善対象として書きます。抽象語だけで終わらせないことが重要です。"
-          >
-            <div>
-              <p className="text-sm font-bold text-slate-800">観点候補</p>
-              <ChipList chips={viewpointChips} />
-            </div>
-            {issues.map((issue, index) => (
-              <div key={`issue-${index + 1}`} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                <h3 className="text-base font-bold">課題 {index + 1}</h3>
-                <div className="mt-4 grid gap-4 md:grid-cols-2">
-                  <TextField id={`issue-${index}-viewpoint`} label="観点" value={issue.viewpoint} onChange={(value) => updateIssue(index, 'viewpoint', value)} />
-                  <TextField id={`issue-${index}-technical`} label="技術課題" value={issue.technicalIssue} onChange={(value) => updateIssue(index, 'technicalIssue', value)} />
-                  <TextAreaField id={`issue-${index}-problem`} label="問題点" value={issue.problem} onChange={(value) => updateIssue(index, 'problem', value)} />
-                  <TextAreaField id={`issue-${index}-detail`} label="課題の内容" value={issue.detail} onChange={(value) => updateIssue(index, 'detail', value)} />
-                </div>
+          {selectedConfig.groups.map((group, groupIndex) => (
+            <SectionCard key={group.title} step={`Frame ${groupIndex + 1}`} title={group.title} note={group.description}>
+              <div className="grid gap-4 md:grid-cols-2">
+                {group.fields.map((field) =>
+                  field.type === 'textarea' ? (
+                    <TextAreaField
+                      key={field.id}
+                      id={`${selectedRule.id}-${field.id}`}
+                      label={field.label}
+                      value={fieldValue(selectedValues, field.id)}
+                      onChange={(value) => updateField(field.id, value)}
+                      placeholder={field.placeholder}
+                      rows={field.rows}
+                    />
+                  ) : (
+                    <TextField
+                      key={field.id}
+                      id={`${selectedRule.id}-${field.id}`}
+                      label={field.label}
+                      value={fieldValue(selectedValues, field.id)}
+                      onChange={(value) => updateField(field.id, value)}
+                      placeholder={field.placeholder}
+                    />
+                  )
+                )}
               </div>
-            ))}
-          </SectionCard>
-
-          <SectionCard
-            step="Step 2"
-            title="最重要課題の選定"
-            note="最重要課題は、Step 1で抽出した3課題の中から選びます。選定理由は、影響範囲、根本性、波及性、緊急性、実現可能性、経営効果などで説明します。"
-          >
-            <ChipList chips={reasonChips} />
-            <TextField id="priority" label="最重要課題" value={priorityIssue} onChange={setPriorityIssue} />
-            <TextAreaField id="priority-reason" label="選定理由" value={priorityReason} onChange={setPriorityReason} rows={4} />
-          </SectionCard>
-
-          <SectionCard
-            step="Step 3"
-            title="解決策"
-            note="解決策は最重要課題に直接対応させます。誰が、何を、どのように、どの指標で管理するかを意識します。"
-          >
-            <div>
-              <p className="text-sm font-bold text-slate-800">手法候補</p>
-              <ChipList chips={methodChips} />
-            </div>
-            <div className="grid gap-4 md:grid-cols-3">
-              <TextAreaField id="solution-1" label="解決策1" value={solution.solutionOne} onChange={(value) => updateSolution('solutionOne', value)} />
-              <TextAreaField id="solution-2" label="解決策2" value={solution.solutionTwo} onChange={(value) => updateSolution('solutionTwo', value)} />
-              <TextAreaField id="solution-3" label="解決策3" value={solution.solutionThree} onChange={(value) => updateSolution('solutionThree', value)} />
-            </div>
-            <TextAreaField id="methods" label="使用する経営工学・品質管理手法" value={solution.methods} onChange={(value) => updateSolution('methods', value)} />
-          </SectionCard>
-
-          <SectionCard
-            step="Step 4"
-            title="リスクと対策"
-            note="リスクは現状課題の繰り返しではなく、解決策を実施した後に新たに生じる副作用として書きます。対策はリスクに一対一で対応させます。"
-          >
-            <div>
-              <p className="text-sm font-bold text-slate-800">リスク観点候補</p>
-              <ChipList chips={riskChips} />
-            </div>
-            <div className="grid gap-4 md:grid-cols-2">
-              <TextAreaField id="effect" label="期待される波及効果" value={risk.effect} onChange={(value) => updateRisk('effect', value)} />
-              <TextAreaField id="risk" label="新たに生じうるリスク" value={risk.risk} onChange={(value) => updateRisk('risk', value)} />
-              <TextAreaField id="trouble" label="発生しうるトラブル" value={risk.trouble} onChange={(value) => updateRisk('trouble', value)} />
-              <TextAreaField id="countermeasure" label="リスクへの対策" value={risk.countermeasure} onChange={(value) => updateRisk('countermeasure', value)} />
-            </div>
-          </SectionCard>
-
-          <SectionCard
-            step="Step 5"
-            title="技術者倫理・社会の持続可能性"
-            note="倫理・持続可能性は取ってつけた表現にせず、テーマ固有の具体語で書きます。"
-          >
-            <div>
-              <p className="text-sm font-bold text-slate-800">観点候補</p>
-              <ChipList chips={ethicsChips} />
-            </div>
-            <div className="grid gap-4 md:grid-cols-2">
-              <TextField id="ethics-viewpoint" label="技術者倫理の観点" value={ethics.ethicsViewpoint} onChange={(value) => updateEthics('ethicsViewpoint', value)} />
-              <TextAreaField id="ethics-detail" label="技術者倫理上の具体的な留意点" value={ethics.ethicsDetail} onChange={(value) => updateEthics('ethicsDetail', value)} />
-              <TextField id="sustainability-viewpoint" label="社会の持続可能性の観点" value={ethics.sustainabilityViewpoint} onChange={(value) => updateEthics('sustainabilityViewpoint', value)} />
-              <TextAreaField id="sustainability-detail" label="社会の持続可能性上の具体的な留意点" value={ethics.sustainabilityDetail} onChange={(value) => updateEthics('sustainabilityDetail', value)} />
-            </div>
-          </SectionCard>
+            </SectionCard>
+          ))}
         </div>
 
         <aside className="xl:sticky xl:top-6 xl:self-start">
           <section className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm">
             <h2 className="text-xl font-bold">答案骨子プレビュー</h2>
-            <p className="mt-2 text-sm leading-7 text-slate-700">入力内容を、目的に応じた形式で確認できます。</p>
-            <div className="mt-4 grid gap-2">
-              {outputFormats.map((format) => (
-                <button
-                  key={format.id}
-                  type="button"
-                  onClick={() => {
-                    setOutputFormat(format.id);
-                    setCopyMessage('');
-                  }}
-                  className={`rounded-lg border px-3 py-2 text-left text-sm font-bold transition ${
-                    outputFormat === format.id
-                      ? 'border-emerald-700 bg-emerald-700 text-white'
-                      : 'border-emerald-200 bg-white text-slate-800 hover:border-emerald-500 hover:bg-emerald-50'
-                  }`}
-                >
-                  {format.label}
-                </button>
-              ))}
-            </div>
-            <p className="mt-3 rounded-lg border border-emerald-200 bg-white p-3 text-sm leading-7 text-slate-700">
-              {selectedFormat.label}：{selectedFormat.description}
-            </p>
-            <div className="mt-4 rounded-xl border border-emerald-200 bg-white p-4">
-              <h3 className="text-sm font-bold text-slate-950">この出力の使い方</h3>
-              <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-700">
-                <li>構造整理シート形式：答案を書く前の設問対応確認に使う</li>
-                <li>答案骨子形式：1800字答案の章立てに使う</li>
-                <li>600字答案メモ形式：短い答案練習や論点整理に使う</li>
-              </ul>
-            </div>
+            <p className="mt-2 text-sm leading-7 text-slate-700">選択中の答案フレームに合わせて、出力形式が切り替わります。</p>
             <textarea
               readOnly
-              value={selectedPreviewText}
-              className="mt-4 min-h-[560px] w-full rounded-lg border border-emerald-200 bg-white px-3 py-2 font-mono text-sm leading-6 text-slate-900"
+              value={previewText}
+              className="mt-4 min-h-[520px] w-full rounded-lg border border-emerald-200 bg-white px-3 py-2 font-mono text-sm leading-6 text-slate-900"
             />
             <button type="button" onClick={copyPreview} className="mt-4 w-full rounded-lg bg-emerald-700 px-4 py-2 text-sm font-bold text-white transition hover:bg-emerald-800">
-              選択中の形式でコピー
+              この答案骨子をコピー
             </button>
             {copyMessage && <p className="mt-3 text-sm font-semibold text-emerald-800">{copyMessage}</p>}
-            <div className="mt-5 rounded-xl border border-slate-200 bg-white p-4">
-              <h3 className="text-base font-bold text-slate-950">なぜこの構成にするか</h3>
-              <p className="mt-3 text-sm leading-7 text-slate-700">
-                答案は、問題点 → 技術課題 → 最重要課題 → 解決策 → 施策後リスク → 倫理・持続可能性の順に一貫して展開する必要があります。
-                単なる模範解答を読むのではなく、この構造を理解して別テーマに転用できることを目的とします。
-              </p>
-            </div>
-            <div className="mt-5 rounded-xl border border-slate-200 bg-white p-4">
-              <h3 className="text-base font-bold text-slate-950">答案品質の確認ポイント</h3>
-              <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-700">
-                {qualityChecks.map((check) => (
-                  <li key={check} className="flex gap-2">
-                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-600" />
-                    <span>{check}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="mt-5 rounded-xl border border-slate-200 bg-white p-4">
-              <h3 className="text-base font-bold text-slate-950">コンピテンシー確認</h3>
-              <p className="mt-3 text-sm leading-7 text-slate-700">
-                このチェックは採点ではなく、答案骨子が技術士に求められる資質能力を表現できているかを確認するためのものです。
-              </p>
+
+            <InfoPanel title="この答案フレームの確認ポイント">
+              <BulletList items={selectedRule.keyEvaluationPoints} />
+            </InfoPanel>
+
+            <InfoPanel title="よくある弱点">
+              <BulletList items={selectedRule.commonWeaknesses} />
+            </InfoPanel>
+
+            <InfoPanel title="使いやすいキーワード">
+              <BadgeList items={selectedRule.usefulKeywords} color="amber" />
+            </InfoPanel>
+
+            <InfoPanel title="想定される問題パターン">
+              <BulletList items={selectedRule.questionPatterns} />
+            </InfoPanel>
+
+            <InfoPanel title="推奨ツール">
+              <BadgeList items={selectedRule.recommendedTools} />
+            </InfoPanel>
+
+            <InfoPanel title="この答案フレームで意識するコンピテンシー">
               <div className="mt-4 space-y-3">
-                {competencies.map((competency) => (
-                  <details key={competency.id} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                {relatedCompetencies.map((competency) => (
+                  <details key={competency.id} className="rounded-lg border border-slate-200 bg-slate-50 p-3" open>
                     <summary className="cursor-pointer text-sm font-bold text-slate-950">{competency.label}</summary>
                     <p className="mt-3 text-sm leading-6 text-slate-700">{competency.description}</p>
                     <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-700">
@@ -641,27 +664,19 @@ ${valueOrBlank(requirements.theme)}について、${valueOrBlank(requirements.co
                   </details>
                 ))}
               </div>
-            </div>
-            <div className="mt-5 rounded-xl border border-slate-200 bg-white p-4">
-              <h3 className="text-base font-bold text-slate-950">浅い表現と改善表現</h3>
-              <div className="mt-3 space-y-3">
-                {expressionExamples.map((example) => (
-                  <div key={example.shallow} className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm leading-6">
-                    <p>
-                      <span className="font-bold text-slate-950">浅い表現：</span>
-                      <span className="text-slate-700">{example.shallow}</span>
-                    </p>
-                    <p className="mt-2">
-                      <span className="font-bold text-emerald-800">改善表現：</span>
-                      <span className="text-slate-700">{example.improved}</span>
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
+            </InfoPanel>
           </section>
         </aside>
       </div>
+    </div>
+  );
+}
+
+function InfoPanel({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <div className="mt-5 rounded-xl border border-slate-200 bg-white p-4">
+      <h3 className="text-base font-bold text-slate-950">{title}</h3>
+      {children}
     </div>
   );
 }

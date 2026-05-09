@@ -1,0 +1,220 @@
+[
+  {
+    "id": "required-i-standard",
+    "label": "必須科目Ⅰ型",
+    "examPart": "必須科目Ⅰ",
+    "questionPatterns": [
+      "社会的背景から課題を多面的に抽出する問題",
+      "最重要課題を選び、理由を説明する問題",
+      "解決策、施策後リスク、倫理・持続可能性まで問う問題"
+    ],
+    "answerBlocks": [
+      "背景整理",
+      "多面的な課題抽出",
+      "最重要課題と選定理由",
+      "解決策",
+      "施策後リスクと対策",
+      "技術者倫理・社会の持続可能性"
+    ],
+    "keyEvaluationPoints": [
+      "課題が3つ以上の異なる観点で整理されている",
+      "最重要課題が課題抽出で示した内容と対応している",
+      "解決策が最重要課題に直接対応している",
+      "施策後リスクが解決策の副作用として書かれている",
+      "倫理・持続可能性がテーマ固有の表現になっている"
+    ],
+    "usefulKeywords": [
+      "QCD",
+      "KPI",
+      "標準化",
+      "FMEA",
+      "CAPA",
+      "リスクアセスメント",
+      "公益確保",
+      "説明責任",
+      "持続可能性"
+    ],
+    "commonWeaknesses": [
+      "問題点と課題が混同されている",
+      "最重要課題の選定理由が抽象的である",
+      "解決策が一般論で、実施内容が見えない",
+      "リスクが施策後の副作用ではなく、既存課題の繰り返しになっている",
+      "倫理が法令順守だけで終わっている"
+    ],
+    "relatedCompetencies": [
+      "professionalKnowledge",
+      "problemSolving",
+      "management",
+      "evaluation",
+      "communication",
+      "engineeringEthics"
+    ],
+    "recommendedTools": [
+      "AnswerStructureBuilder",
+      "IssueDecompositionMatrix",
+      "PastExamTrendMap",
+      "ProblemMatrix"
+    ]
+  },
+  {
+    "id": "elective-ii-1-short",
+    "label": "選択科目Ⅱ-1型",
+    "examPart": "選択科目Ⅱ-1",
+    "questionPatterns": [
+      "専門用語や手法の概要を説明する問題",
+      "目的、構成要素、適用場面を短く説明する問題",
+      "留意点や活用上の注意を問う問題"
+    ],
+    "answerBlocks": [
+      "定義",
+      "目的",
+      "具体例",
+      "手順または構成要素",
+      "留意点",
+      "活用場面"
+    ],
+    "keyEvaluationPoints": [
+      "定義が簡潔で正確である",
+      "目的と適用場面が対応している",
+      "構成要素や手順が過不足なく整理されている",
+      "経営工学の実務例に接続されている",
+      "留意点が手法の弱点や適用条件に触れている"
+    ],
+    "usefulKeywords": [
+      "定義",
+      "目的",
+      "適用場面",
+      "構成要素",
+      "留意点",
+      "品質管理",
+      "生産管理",
+      "IE",
+      "統計"
+    ],
+    "commonWeaknesses": [
+      "用語の丸暗記で、目的や使いどころがない",
+      "具体例がなく、実務への接続が弱い",
+      "留意点が一般論で、手法固有の弱点になっていない",
+      "説明が長くなり、短答としての焦点がぼやけている"
+    ],
+    "relatedCompetencies": [
+      "professionalKnowledge",
+      "evaluation",
+      "communication"
+    ],
+    "recommendedTools": [
+      "PastExamTrendMap",
+      "EngineerKeywordMap"
+    ]
+  },
+  {
+    "id": "elective-ii-2-procedure",
+    "label": "選択科目Ⅱ-2型",
+    "examPart": "選択科目Ⅱ-2",
+    "questionPatterns": [
+      "業務で実施する手順を説明する問題",
+      "管理項目、留意点、関係者調整を問う問題",
+      "効果確認や定着方法を問う問題"
+    ],
+    "answerBlocks": [
+      "背景",
+      "現状把握",
+      "実施手順",
+      "管理項目",
+      "留意点",
+      "関係者調整",
+      "効果確認"
+    ],
+    "keyEvaluationPoints": [
+      "現状把握から実施、評価までの流れが明確である",
+      "管理項目がQCD、KPI、リスクと対応している",
+      "関係者と役割分担が示されている",
+      "留意点が実務上の制約や副作用に触れている",
+      "効果確認と標準化まで含まれている"
+    ],
+    "usefulKeywords": [
+      "現状把握",
+      "業務フロー",
+      "KPI",
+      "役割分担",
+      "進捗管理",
+      "関係者調整",
+      "標準化",
+      "効果確認"
+    ],
+    "commonWeaknesses": [
+      "手順が箇条書きだけで、目的や順序が分かりにくい",
+      "管理項目が成果確認につながっていない",
+      "関係者調整や説明責任が抜けている",
+      "実施後の確認や定着策がない"
+    ],
+    "relatedCompetencies": [
+      "professionalKnowledge",
+      "problemSolving",
+      "management",
+      "communication",
+      "evaluation"
+    ],
+    "recommendedTools": [
+      "AnswerStructureBuilder",
+      "EngineerKeywordMap",
+      "PastExamTrendMap"
+    ]
+  },
+  {
+    "id": "elective-iii-analysis",
+    "label": "選択科目Ⅲ型",
+    "examPart": "選択科目Ⅲ",
+    "questionPatterns": [
+      "専門領域の大きな課題を分析する問題",
+      "将来展望や社会変化を踏まえて解決策を述べる問題",
+      "持続可能性やリスクを含めて論じる問題"
+    ],
+    "answerBlocks": [
+      "背景",
+      "多面的課題",
+      "最重要課題",
+      "解決策",
+      "リスク",
+      "将来展望",
+      "持続可能性"
+    ],
+    "keyEvaluationPoints": [
+      "社会・産業・組織の背景が具体的である",
+      "課題が品質、生産性、物流、DX、人材、環境など多面的である",
+      "最重要課題と解決策の対応が明確である",
+      "将来展望が単なる希望ではなく、技術動向や制約と結びついている",
+      "持続可能性と技術者倫理が答案全体に接続している"
+    ],
+    "usefulKeywords": [
+      "DX",
+      "サプライチェーン強靭化",
+      "カーボンニュートラル",
+      "人材育成",
+      "品質不正防止",
+      "データ活用",
+      "全体最適",
+      "持続可能性"
+    ],
+    "commonWeaknesses": [
+      "背景説明が長く、課題が薄い",
+      "多面的課題が同じ内容の言い換えになっている",
+      "将来展望が抽象的で、経営工学の手段が見えない",
+      "リスクや倫理が最後に付け足しただけになっている"
+    ],
+    "relatedCompetencies": [
+      "professionalKnowledge",
+      "problemSolving",
+      "management",
+      "evaluation",
+      "leadership",
+      "engineeringEthics"
+    ],
+    "recommendedTools": [
+      "AnswerStructureBuilder",
+      "IssueDecompositionMatrix",
+      "PastExamTrendMap",
+      "EngineerKeywordMap"
+    ]
+  }
+]
