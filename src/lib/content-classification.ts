@@ -40,6 +40,10 @@ const referenceSlugs = new Set([
   "white-paper-board",
 ]);
 
+const guideSlugs = new Set([
+  "frequent-keywords-map",
+]);
+
 const duplicateCandidateSlugs = new Set([
   "psi-management",
   "psi",
@@ -70,6 +74,7 @@ export function classifyContent(input: ClassifiableContent): ContentClassificati
   if (learningRouteSlugs.has(slug)) return "learning-route";
   if (toolSlugs.has(slug)) return "tool";
   if (referenceSlugs.has(slug)) return "reference";
+  if (guideSlugs.has(slug)) return "guide";
   if (duplicateCandidateSlugs.has(slug)) return "duplicate-candidate";
   return "guide";
 }

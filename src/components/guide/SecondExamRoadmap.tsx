@@ -128,6 +128,12 @@ const resourceLinks: ResourceLink[] = [
     status: "published",
   },
   {
+    title: "頻出キーワードマップ",
+    description: "品質管理、生産管理、物流、DXなどの頻出論点を答案作成に使える形で整理します。",
+    href: "/guides/engineer/frequent-keywords-map",
+    status: "published",
+  },
+  {
     title: "白書・法令アップデートボード",
     description: "答案背景に使う一次情報を整理するための入口です。",
     status: "planned",

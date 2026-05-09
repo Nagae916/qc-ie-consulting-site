@@ -14,6 +14,7 @@ import StatLearningMap from './StatLearningMap';
 import QcLearningMap from './QcLearningMap';
 const DescriptiveStatsExplorer = dynamic(() => import('./DescriptiveStatsExplorer'), { ssr: false });
 const DSQuizTrainer = dynamic(() => import('./DSQuizTrainer'), { ssr: false });
+const EngineerKeywordMap = dynamic(() => import('./EngineerKeywordMap'), { ssr: false });
 const DataTypesExplorer = dynamic(() => import('./DataTypesExplorer'), { ssr: false });
 const HistogramExplorer = dynamic(() => import('./HistogramExplorer'), { ssr: false });
 import ProblemMatrix from './ProblemMatrix';
@@ -51,6 +52,7 @@ export const GUIDE_COMPONENTS = {
   QcLearningMap,
   DescriptiveStatsExplorer,
   DSQuizTrainer,
+  EngineerKeywordMap,
   DataTypesExplorer,
   HistogramExplorer,
   ProblemMatrix,
