@@ -181,6 +181,12 @@ const learningRoutes: LearningRoute[] = [
         status: 'published',
       },
       {
+        title: '最重要キーワード100',
+        description: '過去問傾向、関連語、質問形式、白書背景から、優先して理解すべき100語を確認します。',
+        href: '/guides/engineer/keyword-priority-100',
+        status: 'published',
+      },
+      {
         title: 'キーワードテーマ別マップ',
         description: '供給制約、DX、物流、QMS、レジリエンス、脱炭素の答案テーマから関連キーワードを探します。',
         href: '/guides/engineer/keyword-themes',

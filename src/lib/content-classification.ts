@@ -42,6 +42,7 @@ const referenceSlugs = new Set([
 
 const guideSlugs = new Set([
   "keywords",
+  "keyword-priority-100",
   "keyword-answer-uses",
   "whitepaper-keyword-map",
   "keyword-themes",
