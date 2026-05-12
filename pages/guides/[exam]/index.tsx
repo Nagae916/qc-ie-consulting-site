@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Image from "next/image";
 import Link from "next/link";
 import type { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
 import { allGuides, type Guide } from "contentlayer/generated";
@@ -253,6 +254,8 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
           </p>
         </section>
 
+        {exam === "engineer" ? <EngineerLearningFlow /> : null}
+
         {exam === "stat" ? <StatLearningPath /> : null}
 
         <section className="mt-6">
@@ -319,6 +322,32 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
         )}
       </main>
     </>
+  );
+}
+
+function EngineerLearningFlow() {
+  return (
+    <section className="mt-6 rounded-2xl border border-emerald-100 bg-white p-5 shadow-sm">
+      <h2 className="text-xl font-bold text-emerald-900">このページで分かること</h2>
+      <ul className="mt-3 grid gap-2 text-sm leading-7 text-gray-700 md:grid-cols-3">
+        <li>まず過去問トレンドで出題領域を把握する</li>
+        <li>設問形式ごとに必要な答案要素を確認する</li>
+        <li>キーワードを答案骨子へ配置して練習する</li>
+      </ul>
+      <Image
+        src="/images/guides/engineer/engineer-learning-flow.svg"
+        alt="技術士 経営工学部門の学習フロー"
+        width={960}
+        height={360}
+        className="mt-5 w-full rounded-xl border border-slate-100 bg-slate-50"
+      />
+      <div className="mt-4 rounded-xl bg-emerald-50 p-4 text-sm leading-7 text-emerald-950">
+        <p className="font-bold">この図の使い方</p>
+        <p className="mt-1">
+          技術士 経営工学部門の学習を「過去問分析 → キーワード理解 → 答案骨子 → 答案作成」の順に整理しています。最初は過去問トレンドを確認し、次に設問形式と重要キーワードを結びつけて学習します。
+        </p>
+      </div>
+    </section>
   );
 }
 
