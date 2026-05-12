@@ -14,6 +14,7 @@
     "check:routes": "node ./scripts/check-routes.js",
     "check:dup": "node ./scripts/check-duplicate-urls.js",
     "check:audit": "node ./scripts/audit-guides.js",
+    "analyze:engineer-exams": "node scripts/analyze-engineer-past-exam-trends.js",
     "check:fast": "npm run lint:fast && npm run check:routes && npm run check:dup && npm run check:audit",
     "check:ci": "npm run gen && npm run lint:all && npm run check:fast && next build",
     "guard": "node scripts/check-frontmatter.js && node scripts/guard-mdx.js",
