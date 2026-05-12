@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="420" viewBox="0 0 960 420" role="img" aria-labelledby="title desc">
+  <title id="title">技術士 経営工学 最重要キーワード100の優先順位ピラミッド</title>
+  <desc id="desc">Sランク、Aランク、Bランクの3層でキーワード100語の学習優先度を示す図</desc>
+  <rect width="960" height="420" rx="24" fill="#f8fbff"/>
+  <text x="48" y="52" font-family="system-ui, sans-serif" font-size="26" font-weight="700" fill="#0f2742">最重要キーワード100の優先順位</text>
+  <g font-family="system-ui, sans-serif" text-anchor="middle">
+    <polygon points="480,92 330,190 630,190" fill="#0f3a5f"/>
+    <text x="480" y="136" font-size="23" font-weight="700" fill="#fff">Sランク20語</text>
+    <text x="480" y="164" font-size="14" fill="#dbeafe">過去問・答案・白書の中核語</text>
+    <polygon points="330,202 230,286 730,286 630,202" fill="#f7c66b"/>
+    <text x="480" y="238" font-size="23" font-weight="700" fill="#0f2742">Aランク30語</text>
+    <text x="480" y="266" font-size="14" fill="#3f4d5a">生産管理・SCM・DX・QMSを補強</text>
+    <polygon points="230,298 150,374 810,374 730,298" fill="#ffffff" stroke="#b9cde2"/>
+    <text x="480" y="332" font-size="23" font-weight="700" fill="#0f2742">Bランク50語</text>
+    <text x="480" y="360" font-size="14" fill="#526475">答案の具体性・専門性を高める補強語</text>
+  </g>
+</svg>

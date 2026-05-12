@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="520" viewBox="0 0 960 520" role="img" aria-labelledby="title desc">
+  <title id="title">技術士 経営工学部門の過去問トレンド地図</title>
+  <desc id="desc">過去問トレンドを中心に、主要10領域と代表キーワードを配置した図</desc>
+  <rect width="960" height="520" rx="24" fill="#f8fbff"/>
+  <circle cx="480" cy="260" r="82" fill="#0f3a5f"/>
+  <text x="480" y="250" text-anchor="middle" font-family="system-ui, sans-serif" font-size="22" font-weight="700" fill="#fff">過去問</text>
+  <text x="480" y="279" text-anchor="middle" font-family="system-ui, sans-serif" font-size="22" font-weight="700" fill="#fff">トレンド</text>
+  <g font-family="system-ui, sans-serif" font-size="13" fill="#0f2742">
+    <g transform="translate(45 44)"><rect width="250" height="74" rx="14" fill="#fff" stroke="#b9cde2"/><text x="16" y="28" font-weight="700">供給制約・人手不足</text><text x="16" y="52" fill="#526475">KPI / 標準化 / 力量管理</text></g>
+    <g transform="translate(355 30)"><rect width="250" height="74" rx="14" fill="#fff7e6" stroke="#e3ba72"/><text x="16" y="28" font-weight="700">SCM・需給調整</text><text x="16" y="52" fill="#526475">SCM / S&amp;OP / 需給調整</text></g>
+    <g transform="translate(665 44)"><rect width="250" height="74" rx="14" fill="#fff" stroke="#b9cde2"/><text x="16" y="28" font-weight="700">物流2024年問題</text><text x="16" y="52" fill="#526475">TMS / WMS / CLO</text></g>
+    <g transform="translate(45 160)"><rect width="250" height="74" rx="14" fill="#fff" stroke="#b9cde2"/><text x="16" y="28" font-weight="700">DX・データ活用</text><text x="16" y="52" fill="#526475">DX / ERP / MES</text></g>
+    <g transform="translate(665 160)"><rect width="250" height="74" rx="14" fill="#fff" stroke="#b9cde2"/><text x="16" y="28" font-weight="700">QMS再構築</text><text x="16" y="52" fill="#526475">QMS / 品質不正 / 倫理</text></g>
+    <g transform="translate(45 286)"><rect width="250" height="74" rx="14" fill="#fff" stroke="#b9cde2"/><text x="16" y="28" font-weight="700">レジリエンス・BCP</text><text x="16" y="52" fill="#526475">BCP / SCM / リスク管理</text></g>
+    <g transform="translate(665 286)"><rect width="250" height="74" rx="14" fill="#fff" stroke="#b9cde2"/><text x="16" y="28" font-weight="700">脱炭素・GX</text><text x="16" y="52" fill="#526475">LCA / KPI / モーダルシフト</text></g>
+    <g transform="translate(45 402)"><rect width="250" height="74" rx="14" fill="#fff" stroke="#b9cde2"/><text x="16" y="28" font-weight="700">生産性向上・工程改善</text><text x="16" y="52" fill="#526475">IE / QCD / OEE</text></g>
+    <g transform="translate(355 416)"><rect width="250" height="74" rx="14" fill="#fff" stroke="#b9cde2"/><text x="16" y="28" font-weight="700">設計開発・社会実装</text><text x="16" y="52" fill="#526475">PLM / QMS / デジタルツイン</text></g>
+    <g transform="translate(665 402)"><rect width="250" height="74" rx="14" fill="#fff" stroke="#b9cde2"/><text x="16" y="28" font-weight="700">人材育成・技能継承</text><text x="16" y="52" fill="#526475">力量管理 / 標準化</text></g>
+  </g>
+  <g stroke="#8aa9c5" stroke-width="2" opacity=".6">
+    <path d="M398 230L295 90"/><path d="M480 178L480 104"/><path d="M562 230L665 90"/><path d="M398 254L295 198"/><path d="M562 254L665 198"/><path d="M398 286L295 324"/><path d="M562 286L665 324"/><path d="M410 332L295 438"/><path d="M480 342L480 416"/><path d="M550 332L665 438"/>
+  </g>
+</svg>

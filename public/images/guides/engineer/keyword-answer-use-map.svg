@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="420" viewBox="0 0 960 420" role="img" aria-labelledby="title desc">
+  <title id="title">キーワードを答案に配置するマップ</title>
+  <desc id="desc">キーワードを課題抽出、解決策、リスク、倫理、持続可能性、白書背景へ配置する図</desc>
+  <rect width="960" height="420" rx="24" fill="#f8fbff"/>
+  <circle cx="480" cy="210" r="76" fill="#0f3a5f"/>
+  <text x="480" y="204" text-anchor="middle" font-family="system-ui, sans-serif" font-size="24" font-weight="700" fill="#fff">キーワード</text>
+  <text x="480" y="232" text-anchor="middle" font-family="system-ui, sans-serif" font-size="14" fill="#dbeafe">答案のどこに置くか</text>
+  <g font-family="system-ui, sans-serif" font-size="15" font-weight="700" fill="#0f2742">
+    <g transform="translate(92 64)"><rect width="210" height="72" rx="16" fill="#fff" stroke="#b9cde2"/><text x="105" y="42" text-anchor="middle">白書背景</text></g>
+    <g transform="translate(375 36)"><rect width="210" height="72" rx="16" fill="#fff7e6" stroke="#e3ba72"/><text x="105" y="42" text-anchor="middle">課題抽出</text></g>
+    <g transform="translate(658 64)"><rect width="210" height="72" rx="16" fill="#fff" stroke="#b9cde2"/><text x="105" y="42" text-anchor="middle">解決策</text></g>
+    <g transform="translate(92 284)"><rect width="210" height="72" rx="16" fill="#fff" stroke="#b9cde2"/><text x="105" y="42" text-anchor="middle">リスクと対策</text></g>
+    <g transform="translate(375 312)"><rect width="210" height="72" rx="16" fill="#fff" stroke="#b9cde2"/><text x="105" y="42" text-anchor="middle">技術者倫理</text></g>
+    <g transform="translate(658 284)"><rect width="210" height="72" rx="16" fill="#fff" stroke="#b9cde2"/><text x="105" y="42" text-anchor="middle">社会の持続可能性</text></g>
+  </g>
+  <g stroke="#8aa9c5" stroke-width="2" opacity=".7"><path d="M430 157L302 112"/><path d="M480 134v-26"/><path d="M530 157l128-45"/><path d="M430 263L302 320"/><path d="M480 286v26"/><path d="M530 263l128 57"/></g>
+</svg>

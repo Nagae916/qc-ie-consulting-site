@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="420" viewBox="0 0 960 420" role="img" aria-labelledby="title desc">
+  <title id="title">設問形式から答案要素への変換フロー</title>
+  <desc id="desc">問題文を読んで設問形式を判定し、キーワードを答案骨子に配置する流れ</desc>
+  <rect width="960" height="420" rx="24" fill="#f8fbff"/>
+  <text x="48" y="52" font-family="system-ui, sans-serif" font-size="26" font-weight="700" fill="#0f2742">設問形式から答案要素へ変換する</text>
+  <g font-family="system-ui, sans-serif">
+    <g transform="translate(60 118)"><rect width="160" height="86" rx="16" fill="#fff" stroke="#b9cde2"/><text x="80" y="38" text-anchor="middle" font-size="17" font-weight="700" fill="#0f2742">問題文を読む</text><text x="80" y="62" text-anchor="middle" font-size="13" fill="#526475">背景と要求を確認</text></g>
+    <path d="M230 161h55" stroke="#8aa9c5" stroke-width="3" marker-end="url(#arrow)"/>
+    <g transform="translate(295 92)"><rect width="250" height="140" rx="16" fill="#fff7e6" stroke="#e3ba72"/><text x="125" y="34" text-anchor="middle" font-size="17" font-weight="700" fill="#0f2742">問われ方を判定</text><text x="28" y="66" font-size="13" fill="#526475">課題抽出 / 最重要課題</text><text x="28" y="88" font-size="13" fill="#526475">解決策 / リスクと対策</text><text x="28" y="110" font-size="13" fill="#526475">技術者倫理 / 持続可能性</text><text x="28" y="132" font-size="13" fill="#526475">KPI評価</text></g>
+    <path d="M555 161h55" stroke="#8aa9c5" stroke-width="3" marker-end="url(#arrow)"/>
+    <g transform="translate(620 118)"><rect width="160" height="86" rx="16" fill="#fff" stroke="#b9cde2"/><text x="80" y="38" text-anchor="middle" font-size="17" font-weight="700" fill="#0f2742">キーワード選択</text><text x="80" y="62" text-anchor="middle" font-size="13" fill="#526475">テーマと手法を選ぶ</text></g>
+    <path d="M700 214v48" stroke="#8aa9c5" stroke-width="3" marker-end="url(#arrow)"/>
+    <g transform="translate(560 270)"><rect width="280" height="86" rx="16" fill="#fff" stroke="#b9cde2"/><text x="140" y="38" text-anchor="middle" font-size="17" font-weight="700" fill="#0f2742">答案骨子に配置する</text><text x="140" y="62" text-anchor="middle" font-size="13" fill="#526475">背景・課題・解決策・倫理へ</text></g>
+    <path d="M548 313H382" stroke="#8aa9c5" stroke-width="3" marker-end="url(#arrow)"/>
+    <g transform="translate(160 270)"><rect width="210" height="86" rx="16" fill="#0f3a5f"/><text x="105" y="38" text-anchor="middle" font-size="17" font-weight="700" fill="#fff">答案本文へ展開</text><text x="105" y="62" text-anchor="middle" font-size="13" fill="#dbeafe">600字・1600字へ</text></g>
+  </g>
+  <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#8aa9c5"/></marker></defs>
+</svg>

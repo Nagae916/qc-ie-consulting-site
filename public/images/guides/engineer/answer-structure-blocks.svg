@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="360" viewBox="0 0 960 360" role="img" aria-labelledby="title desc">
+  <title id="title">答案骨子の6ブロック構造</title>
+  <desc id="desc">背景、課題、最重要課題、解決策、リスクと対策、倫理・持続可能性の6ブロック</desc>
+  <rect width="960" height="360" rx="24" fill="#f8fbff"/>
+  <text x="48" y="52" font-family="system-ui, sans-serif" font-size="26" font-weight="700" fill="#0f2742">答案骨子の6ブロック</text>
+  <g font-family="system-ui, sans-serif">
+    <g transform="translate(42 122)"><rect width="130" height="120" rx="16" fill="#fff" stroke="#b9cde2"/><text x="20" y="34" font-size="16" font-weight="700" fill="#0f2742">1. 背景</text><text x="20" y="66" font-size="13" fill="#526475">白書</text><text x="20" y="88" font-size="13" fill="#526475">社会課題</text></g>
+    <path d="M180 182h28" stroke="#8aa9c5" stroke-width="3" marker-end="url(#arrow)"/>
+    <g transform="translate(216 122)"><rect width="130" height="120" rx="16" fill="#fff" stroke="#b9cde2"/><text x="20" y="34" font-size="16" font-weight="700" fill="#0f2742">2. 課題</text><text x="20" y="66" font-size="13" fill="#526475">管理対象</text><text x="20" y="88" font-size="13" fill="#526475">3観点</text></g>
+    <path d="M354 182h28" stroke="#8aa9c5" stroke-width="3" marker-end="url(#arrow)"/>
+    <g transform="translate(390 122)"><rect width="130" height="120" rx="16" fill="#fff7e6" stroke="#e3ba72"/><text x="20" y="34" font-size="16" font-weight="700" fill="#0f2742">3. 最重要</text><text x="20" y="66" font-size="13" fill="#526475">理由</text><text x="20" y="88" font-size="13" fill="#526475">優先度</text></g>
+    <path d="M528 182h28" stroke="#8aa9c5" stroke-width="3" marker-end="url(#arrow)"/>
+    <g transform="translate(564 122)"><rect width="130" height="120" rx="16" fill="#fff" stroke="#b9cde2"/><text x="20" y="34" font-size="16" font-weight="700" fill="#0f2742">4. 解決策</text><text x="20" y="66" font-size="13" fill="#526475">施策化</text><text x="20" y="88" font-size="13" fill="#526475">KPI</text></g>
+    <path d="M702 182h28" stroke="#8aa9c5" stroke-width="3" marker-end="url(#arrow)"/>
+    <g transform="translate(738 122)"><rect width="178" height="120" rx="16" fill="#0f3a5f"/><text x="20" y="34" font-size="16" font-weight="700" fill="#fff">5. リスクと対策</text><text x="20" y="66" font-size="13" fill="#dbeafe">副作用</text><text x="20" y="88" font-size="13" fill="#dbeafe">再発防止</text></g>
+    <rect x="300" y="280" width="360" height="44" rx="22" fill="#fff7e6" stroke="#e3ba72"/>
+    <text x="480" y="308" text-anchor="middle" font-size="16" font-weight="700" fill="#0f2742">6. 技術者倫理・社会の持続可能性へ接続</text>
+  </g>
+  <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#8aa9c5"/></marker></defs>
+</svg>

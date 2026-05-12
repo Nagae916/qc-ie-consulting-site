@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="420" viewBox="0 0 960 420" role="img" aria-labelledby="title desc">
+  <title id="title">白書背景から答案論点への変換図</title>
+  <desc id="desc">白書背景を経営工学上の課題、キーワード、答案要素へ変換する流れ</desc>
+  <rect width="960" height="420" rx="24" fill="#f8fbff"/>
+  <text x="48" y="52" font-family="system-ui, sans-serif" font-size="26" font-weight="700" fill="#0f2742">白書背景を答案へ変換する</text>
+  <g font-family="system-ui, sans-serif">
+    <g transform="translate(50 110)"><rect width="190" height="190" rx="18" fill="#fff" stroke="#b9cde2"/><text x="24" y="36" font-size="18" font-weight="700" fill="#0f2742">白書背景</text><text x="24" y="72" font-size="13" fill="#526475">人口減少 / DX</text><text x="24" y="98" font-size="13" fill="#526475">物流制約</text><text x="24" y="124" font-size="13" fill="#526475">脱炭素</text><text x="24" y="150" font-size="13" fill="#526475">レジリエンス</text></g>
+    <path d="M250 205h54" stroke="#8aa9c5" stroke-width="3" marker-end="url(#arrow)"/>
+    <g transform="translate(314 110)"><rect width="190" height="190" rx="18" fill="#fff7e6" stroke="#e3ba72"/><text x="24" y="36" font-size="18" font-weight="700" fill="#0f2742">経営工学の課題</text><text x="24" y="72" font-size="13" fill="#526475">供給能力</text><text x="24" y="98" font-size="13" fill="#526475">データ品質</text><text x="24" y="124" font-size="13" fill="#526475">在庫配置</text><text x="24" y="150" font-size="13" fill="#526475">品質保証</text></g>
+    <path d="M514 205h54" stroke="#8aa9c5" stroke-width="3" marker-end="url(#arrow)"/>
+    <g transform="translate(578 110)"><rect width="150" height="190" rx="18" fill="#fff" stroke="#b9cde2"/><text x="24" y="36" font-size="18" font-weight="700" fill="#0f2742">使う語</text><text x="24" y="72" font-size="13" fill="#526475">SCM / S&amp;OP</text><text x="24" y="98" font-size="13" fill="#526475">DX / QMS</text><text x="24" y="124" font-size="13" fill="#526475">BCP / KPI</text></g>
+    <path d="M738 205h54" stroke="#8aa9c5" stroke-width="3" marker-end="url(#arrow)"/>
+    <g transform="translate(802 110)"><rect width="110" height="190" rx="18" fill="#0f3a5f"/><text x="55" y="36" text-anchor="middle" font-size="18" font-weight="700" fill="#fff">答案</text><text x="22" y="72" font-size="13" fill="#dbeafe">背景</text><text x="22" y="98" font-size="13" fill="#dbeafe">課題</text><text x="22" y="124" font-size="13" fill="#dbeafe">解決策</text><text x="22" y="150" font-size="13" fill="#dbeafe">リスク</text><text x="22" y="176" font-size="13" fill="#dbeafe">倫理</text></g>
+  </g>
+  <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#8aa9c5"/></marker></defs>
+</svg>
