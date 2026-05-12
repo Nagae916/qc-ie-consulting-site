@@ -45,6 +45,8 @@ const guideSlugs = new Set([
   "keyword-priority-100",
   "keyword-answer-uses",
   "whitepaper-keyword-map",
+  "past-exam-question-patterns",
+  "answer-structure-guide",
   "s-and-op",
   "data-driven",
   "erp",
