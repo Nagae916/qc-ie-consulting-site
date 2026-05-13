@@ -347,8 +347,9 @@ function EngineerLearningFlow() {
           技術士 経営工学部門の学習を「過去問分析 → キーワード理解 → 答案骨子 → 答案作成」の順に整理しています。最初は過去問トレンドを確認し、次に設問形式と重要キーワードを結びつけて学習します。
         </p>
       </div>
-      <div className="mt-4 grid gap-3 md:grid-cols-4">
+      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         {[
+          { href: "/guides/engineer/how-to-study", label: "まず全体の使い方を確認する" },
           { href: "/guides/engineer/past-exam-trend-map", label: "過去問トレンドを見る" },
           { href: "/guides/engineer/past-exam-question-patterns", label: "設問形式を理解する" },
           { href: "/guides/engineer/keyword-priority-100", label: "重要キーワードを学ぶ" },
