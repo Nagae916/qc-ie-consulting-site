@@ -95,6 +95,7 @@ const sitemapSections: SitemapSection[] = [
       },
       { title: "課題分解マトリクス", href: "/guides/engineer/issue-decomposition-matrix" },
       { title: "答案骨子ビルダー", href: "/guides/engineer/answer-structure-builder" },
+      { title: "技術士 経営工学 問題演習", href: "/guides/engineer/practice" },
       { title: "必須Ⅰ型 例題生成MVP", href: "/guides/engineer/problem-matrix" },
       { title: "白書・法令アップデートボード", href: "/guides/engineer/white-paper-board" },
     ],

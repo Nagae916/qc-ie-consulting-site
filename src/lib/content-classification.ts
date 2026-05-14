@@ -31,7 +31,7 @@ const learningRouteSlugs = new Set([
 const toolSlugs = new Set([
   "answer-structure-builder",
   "issue-decomposition-matrix",
-  "past-exam-trend-map",
+  "practice",
   "problem-matrix",
   "ds-certification-practice",
 ]);
@@ -42,6 +42,7 @@ const referenceSlugs = new Set([
 ]);
 
 const guideSlugs = new Set([
+  "past-exam-trend-map",
   "keywords",
   "keyword-priority-100",
   "keyword-answer-uses",

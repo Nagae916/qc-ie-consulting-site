@@ -113,6 +113,7 @@ const engineerEntranceHrefs = [
   "/guides/engineer/past-exam-trend-map",
   "/guides/engineer/past-exam-question-patterns",
   "/guides/engineer/answer-structure-guide",
+  "/guides/engineer/practice",
 ];
 
 const engineerMapHrefs = [
@@ -396,6 +397,7 @@ function EngineerLearningFlow() {
           { href: "/guides/engineer/past-exam-question-patterns", label: "設問形式を理解する" },
           { href: "/guides/engineer/keyword-priority-100", label: "重要キーワードを学ぶ" },
           { href: "/guides/engineer/answer-structure-guide", label: "答案骨子へ進む" },
+          { href: "/guides/engineer/practice", label: "問題演習へ進む" },
         ].map((item) => (
           <Link key={item.href} href={item.href} className="rounded-xl border border-emerald-200 bg-white px-4 py-3 text-sm font-bold text-emerald-900 hover:border-emerald-500">
             {item.label}
