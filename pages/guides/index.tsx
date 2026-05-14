@@ -38,9 +38,16 @@ const examLabels: Record<ExamKey, string> = {
 };
 
 const examDescriptions: Record<ExamKey, string> = {
-  qc: "QC七つ道具、OC曲線、実験計画法、信頼性、QMS改善など、品質管理の個別テーマを学べます。",
-  stat: "記述統計、データ型、検定、回帰、分布、機械学習評価など、データを読むためのテーマを学べます。",
-  engineer: "生産管理、IE、在庫、物流、保全、プロジェクト管理など、経営工学のテーマを学べます。",
+  qc: "品質保証、品質改善、QMS、QC検定、管理図、工程能力、実験計画法などを、経営工学における品質改善・品質保証の実践領域として学ぶ入口です。",
+  stat: "記述統計、確率分布、推定、検定、回帰分析、分散分析などを、経営工学の意思決定・品質管理・生産管理を支える数理基盤として学ぶ入口です。",
+  engineer: "過去問分析、設問形式、経営工学キーワード、答案骨子、白書背景を通じて、経営工学の知識を技術士答案に展開する入口です。",
+};
+
+const productionPillar = {
+  title: "生産管理",
+  href: "/guides/engineer/keyword-themes",
+  description:
+    "生産計画、工程管理、在庫管理、IE、リードタイム短縮、設備効率、SCMなどを、経営工学における中核的な実務領域として学ぶ入口です。現在コンテンツを拡充予定です。",
 };
 
 const statusLabels: Record<GuideStatus, string> = {
@@ -120,8 +127,8 @@ const sitemapSections: SitemapSection[] = [
     ],
   },
   {
-    title: "生産管理・オペレーション",
-    description: "生産方式、在庫、物流、能力、制約条件を扱う経営工学テーマです。",
+    title: "生産管理",
+    description: "生産計画、工程管理、在庫管理、IE、設備効率、SCM、物流管理を扱う経営工学の中核領域です。今後、専用導線を拡充します。",
     items: [
       { title: "生産管理", href: "/guides/engineer/production-planning" },
       { title: "在庫管理", href: "/guides/engineer/inventory-management" },
@@ -195,6 +202,11 @@ export const getStaticProps: GetStaticProps<{ guides: GuideDoc[] }> = async () =
 
 export default function GuidesIndexPage({ guides }: InferGetStaticPropsType<typeof getStaticProps>) {
   const themeGuides = guides.filter((guide) => guide.classification === "guide");
+  const themeGuidesByExam: Record<ExamKey, GuideDoc[]> = {
+    qc: themeGuides.filter((guide) => guide.exam === "qc"),
+    stat: themeGuides.filter((guide) => guide.exam === "stat"),
+    engineer: themeGuides.filter((guide) => guide.exam === "engineer"),
+  };
   const learningRoutes = guides.filter((guide) => guide.classification === "learning-route");
   const tools = guides.filter((guide) => guide.classification === "tool");
   const duplicateCandidates = guides.filter((guide) => guide.classification === "duplicate-candidate");
@@ -213,28 +225,32 @@ export default function GuidesIndexPage({ guides }: InferGetStaticPropsType<type
             <p className="text-sm font-semibold tracking-[0.18em] text-teal-700">GUIDES</p>
             <h1 className="mt-3 text-4xl font-black md:text-5xl">ガイド</h1>
             <p className="mt-4 max-w-3xl leading-8 text-slate-600">
-              このサイトでの「ガイド」は、個別テーマを学ぶ学習コンテンツです。
-              ロードマップ、学習マップ、演習ツール、参考資料は別枠に分けて探せるようにしています。
+              n-ie-qclab は、経営工学を中心に、QC・品質管理、統計・データ分析、技術士 経営工学部門、生産管理を学ぶサイトです。
+              まず4本柱から入口を選び、下位ページで関連分野を横断します。
             </p>
             <div className="mt-5 grid gap-3 md:grid-cols-3">
               <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-                <h2 className="text-sm font-bold text-slate-900">ガイド</h2>
-                <p className="mt-2 text-sm leading-6 text-slate-600">用語や手法を1テーマずつ理解するページです。</p>
+                <h2 className="text-sm font-bold text-slate-900">経営工学を中心に学ぶ</h2>
+                <p className="mt-2 text-sm leading-6 text-slate-600">品質、統計、生産管理、技術士答案を別々にせず、経営工学の実務知として接続します。</p>
               </div>
               <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-                <h2 className="text-sm font-bold text-slate-900">学習方針</h2>
-                <p className="mt-2 text-sm leading-6 text-slate-600">何から学ぶか、どの順で進むかを決めるページです。</p>
+                <h2 className="text-sm font-bold text-slate-900">4本柱で入口を分ける</h2>
+                <p className="mt-2 text-sm leading-6 text-slate-600">QC・統計・技術士・生産管理を最初の階層で分け、必要な場面で横断します。</p>
               </div>
               <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-                <h2 className="text-sm font-bold text-slate-900">演習・ツール</h2>
-                <p className="mt-2 text-sm leading-6 text-slate-600">ガイドで学んだ考え方を操作して確認する教材です。</p>
+                <h2 className="text-sm font-bold text-slate-900">学習順を迷わない</h2>
+                <p className="mt-2 text-sm leading-6 text-slate-600">ロードマップ、個別テーマ、演習ツール、参考資料を役割別に整理します。</p>
               </div>
             </div>
           </div>
         </section>
 
         <section className="mx-auto max-w-6xl px-4 py-10">
-          <div className="grid gap-4 md:grid-cols-3">
+          <SectionHeader
+            title="経営工学を4本柱で学ぶ"
+            description="最初の入口では、QC・品質管理、統計・データ分析、技術士 経営工学部門、生産管理を混ぜずに分けています。横断リンクは下位ページで必要に応じて扱います。"
+          />
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             {(["qc", "stat", "engineer"] as ExamKey[]).map((exam) => (
               <Link key={exam} href={`/guides/${exam}`} className="rounded-lg border border-slate-200 bg-white p-5 hover:border-teal-500">
                 <div className="text-xs font-semibold uppercase text-teal-700">{exam}</div>
@@ -242,13 +258,18 @@ export default function GuidesIndexPage({ guides }: InferGetStaticPropsType<type
                 <p className="mt-3 text-sm leading-6 text-slate-600">{examDescriptions[exam]}</p>
               </Link>
             ))}
+            <Link href={productionPillar.href} className="rounded-lg border border-slate-200 bg-white p-5 hover:border-teal-500">
+              <div className="text-xs font-semibold uppercase text-teal-700">production</div>
+              <h2 className="mt-2 text-xl font-bold">{productionPillar.title}</h2>
+              <p className="mt-3 text-sm leading-6 text-slate-600">{productionPillar.description}</p>
+            </Link>
           </div>
         </section>
 
         <section className="mx-auto max-w-6xl px-4 pb-10">
           <SectionHeader
             title="サイトマップ"
-            description="主要ページを目的別に並べています。未作成のページはリンク化せず、準備中として表示します。"
+            description="主要ページを4本柱ごとに並べています。未作成のページはリンク化せず、準備中として表示します。"
           />
           <div className="mt-5 grid gap-5 lg:grid-cols-2">
             {sitemapSections.map((section) => (
@@ -258,10 +279,25 @@ export default function GuidesIndexPage({ guides }: InferGetStaticPropsType<type
         </section>
 
         <section className="mx-auto max-w-6xl px-4 pb-10">
-          <SectionHeader title="個別テーマガイド" description="用語、手法、考え方を1テーマずつ学ぶページです。" count={themeGuides.length} />
-          <div className="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {themeGuides.map((guide) => (
-              <GuideCard key={guide.href} guide={guide} />
+          <SectionHeader title="個別テーマガイド" description="QC・統計・技術士の各カテゴリで、用語、手法、考え方を1テーマずつ学ぶページです。生産管理は技術士・経営工学内の関連ページから順次拡充します。" count={themeGuides.length} />
+          <div className="mt-5 grid gap-6">
+            {(["qc", "stat", "engineer"] as ExamKey[]).map((exam) => (
+              <div key={exam} className="rounded-lg border border-slate-200 bg-white p-5">
+                <div className="flex flex-wrap items-end justify-between gap-3">
+                  <div>
+                    <h3 className="text-xl font-bold text-slate-900">{examLabels[exam]}</h3>
+                    <p className="mt-2 text-sm leading-6 text-slate-600">{examDescriptions[exam]}</p>
+                  </div>
+                  <Link href={`/guides/${exam}`} className="text-sm font-semibold text-teal-700 underline">
+                    一覧を見る
+                  </Link>
+                </div>
+                <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {themeGuidesByExam[exam].slice(0, 9).map((guide) => (
+                    <GuideCard key={guide.href} guide={guide} compact />
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         </section>
