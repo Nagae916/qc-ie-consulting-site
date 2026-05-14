@@ -23,6 +23,7 @@ type SitemapItem = {
   title: string;
   href?: string;
   description?: string;
+  available?: boolean;
 };
 
 type SitemapSection = {
@@ -45,9 +46,9 @@ const examDescriptions: Record<ExamKey, string> = {
 
 const productionPillar = {
   title: "生産管理",
-  href: "/guides/engineer/keyword-themes",
+  href: "/guides/production",
   description:
-    "生産計画、工程管理、在庫管理、IE、リードタイム短縮、設備効率、SCMなどを、経営工学における中核的な実務領域として学ぶ入口です。現在コンテンツを拡充予定です。",
+    "生産計画、工程管理、在庫管理、IE、設備効率、SCM、物流管理を、経営工学の中核領域として学びます。",
 };
 
 const statusLabels: Record<GuideStatus, string> = {
@@ -128,9 +129,9 @@ const sitemapSections: SitemapSection[] = [
   },
   {
     title: "生産管理",
-    description: "生産計画、工程管理、在庫管理、IE、設備効率、SCM、物流管理を扱う経営工学の中核領域です。今後、専用導線を拡充します。",
+    description: "生産計画、工程管理、在庫管理、IE、設備効率、SCM、物流管理を扱う経営工学の中核領域です。",
     items: [
-      { title: "生産管理", href: "/guides/engineer/production-planning" },
+      { title: "生産管理を学ぶ", href: "/guides/production", available: true },
       { title: "在庫管理", href: "/guides/engineer/inventory-management" },
       { title: "ラインバランシング", href: "/guides/engineer/line-balancing" },
       { title: "TOC", href: "/guides/engineer/toc" },
@@ -397,14 +398,15 @@ function SitemapSectionCard({ section, guideByHref }: { section: SitemapSection;
 }
 
 function SitemapLink({ item, guide }: { item: SitemapItem; guide?: GuideDoc | undefined }) {
-  const canOpen = !!guide && guide.status !== "draft";
+  const canOpen = item.available || (!!guide && guide.status !== "draft");
+  const shownStatus = guide?.status ?? "published";
   const content = (
     <>
       <div className="flex flex-wrap items-center gap-2">
         <span className="font-bold text-slate-900">{item.title}</span>
-        {guide ? (
-          <span className={`rounded-full border px-2 py-0.5 text-xs font-semibold ${statusClasses[guide.status]}`}>
-            {statusLabels[guide.status]}
+        {guide || item.available ? (
+          <span className={`rounded-full border px-2 py-0.5 text-xs font-semibold ${statusClasses[shownStatus]}`}>
+            {statusLabels[shownStatus]}
           </span>
         ) : (
           <span className={`rounded-full border px-2 py-0.5 text-xs font-semibold ${statusClasses.planned}`}>準備中</span>
