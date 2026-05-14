@@ -108,6 +108,21 @@ const statLearningSteps = [
   },
 ];
 
+const engineerEntranceHrefs = [
+  "/guides/engineer/how-to-study",
+  "/guides/engineer/past-exam-trend-map",
+  "/guides/engineer/past-exam-question-patterns",
+  "/guides/engineer/answer-structure-guide",
+];
+
+const engineerMapHrefs = [
+  "/guides/engineer/keyword-priority-100",
+  "/guides/engineer/keywords",
+  "/guides/engineer/keyword-themes",
+  "/guides/engineer/keyword-answer-uses",
+  "/guides/engineer/whitepaper-keyword-map",
+];
+
 const toExamKey = (v: unknown): ExamKey | null => {
   const s = String(v ?? "").toLowerCase().trim();
   if (s === "qc") return "qc";
@@ -232,6 +247,13 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
   const learningRoutes = guides.filter((guide) => guide.classification === "learning-route");
   const tools = guides.filter((guide) => guide.classification === "tool");
   const duplicateCandidates = guides.filter((guide) => guide.classification === "duplicate-candidate");
+  const guideByHref = new Map(guides.map((guide) => [guide.href, guide]));
+  const engineerPrimaryLinks = new Set([...engineerEntranceHrefs, ...engineerMapHrefs]);
+  const engineerEntranceItems = engineerEntranceHrefs.map((href) => guideByHref.get(href)).filter((item): item is Card => !!item);
+  const engineerMapItems = engineerMapHrefs.map((href) => guideByHref.get(href)).filter((item): item is Card => !!item);
+  const visibleThemeGuides = exam === "engineer"
+    ? themeGuides.filter((guide) => !engineerPrimaryLinks.has(guide.href)).slice(0, 12)
+    : themeGuides;
   const t = THEME[exam];
 
   return (
@@ -250,11 +272,17 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
           <div className={`h-1 w-24 rounded-full ${t.accent}`} />
           <h1 className={`mt-4 text-2xl font-extrabold md:text-3xl ${t.title}`}>{EXAM_LABEL[exam]}ガイド一覧</h1>
           <p className="mt-3 max-w-3xl text-sm leading-7 text-gray-700">
-            {EXAM_DESCRIPTION[exam]} ここでは個別テーマを学ぶページを主表示にし、ロードマップや演習ツールは補助枠に分けています。
+            {exam === "engineer"
+              ? "このページは、技術士 経営工学部門対策の入口です。経営工学の中でも、過去問分析・設問形式・答案骨子・重要キーワードを扱い、QC・統計・生産管理は技術士答案に使う関連知識として接続します。"
+              : `${EXAM_DESCRIPTION[exam]} ここでは個別テーマを学ぶページを主表示にし、ロードマップや演習ツールは補助枠に分けています。`}
           </p>
         </section>
 
         {exam === "engineer" ? <EngineerLearningFlow /> : null}
+
+        {exam === "engineer" ? (
+          <EngineerLayeredNavigation entranceItems={engineerEntranceItems} mapItems={engineerMapItems} />
+        ) : null}
 
         {exam === "stat" ? <StatLearningPath /> : null}
 
@@ -262,15 +290,19 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
               <p className="text-sm font-semibold text-slate-500">Theme guides</p>
-              <h2 className="text-2xl font-bold text-slate-900">個別テーマガイド</h2>
-              <p className="mt-2 text-sm leading-7 text-slate-600">用語、手法、考え方を1テーマずつ学ぶコンテンツです。</p>
+              <h2 className="text-2xl font-bold text-slate-900">{exam === "engineer" ? "個別キーワードの例" : "個別テーマガイド"}</h2>
+              <p className="mt-2 text-sm leading-7 text-slate-600">
+                {exam === "engineer"
+                  ? "個別キーワードは大量に並べず、まずキーワードマップから探す構成にしています。ここでは代表例だけを表示します。"
+                  : "用語、手法、考え方を1テーマずつ学ぶコンテンツです。"}
+              </p>
             </div>
             <span className="text-sm text-slate-500">{themeGuides.length}件</span>
           </div>
         </section>
 
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {themeGuides.map(({ g, href, tags, updatedYmd, title, description, section, status }) => (
+          {visibleThemeGuides.map(({ g, href, tags, updatedYmd, title, description, section, status }) => (
             <article key={g._id} className={`rounded-2xl border bg-white shadow-sm ${t.border}`}>
               <div className={`h-1 w-full rounded-t-2xl ${t.accent}`} />
               <div className="p-5">
@@ -310,6 +342,16 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
             </article>
           ))}
         </div>
+
+        {exam === "engineer" ? (
+          <div className="mt-4 rounded-2xl border border-emerald-100 bg-emerald-50 p-5 text-sm leading-7 text-emerald-950">
+            個別キーワードをすべて探す場合は、まず
+            <Link href="/guides/engineer/keywords" className="font-bold underline">キーワードマップ</Link>
+            または
+            <Link href="/guides/engineer/keyword-priority-100" className="font-bold underline">最重要キーワード100</Link>
+            から確認してください。
+          </div>
+        ) : null}
 
         {themeGuides.length === 0 && <p className="mt-6 text-gray-500">公開中の個別テーマガイドはまだありません。</p>}
 
@@ -357,6 +399,40 @@ function EngineerLearningFlow() {
         ].map((item) => (
           <Link key={item.href} href={item.href} className="rounded-xl border border-emerald-200 bg-white px-4 py-3 text-sm font-bold text-emerald-900 hover:border-emerald-500">
             {item.label}
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function EngineerLayeredNavigation({ entranceItems, mapItems }: { entranceItems: Card[]; mapItems: Card[] }) {
+  return (
+    <section className="mt-6 grid gap-6 lg:grid-cols-2">
+      <LayerCard
+        title="第1階層：学習入口"
+        description="まずここから確認します。過去問、設問形式、答案骨子の順に、技術士答案へ進む流れを作ります。"
+        items={entranceItems}
+      />
+      <LayerCard
+        title="第2階層：マップ・索引"
+        description="キーワードを名前、優先順位、テーマ、答案用途、白書背景から探すための入口です。"
+        items={mapItems}
+      />
+    </section>
+  );
+}
+
+function LayerCard({ title, description, items }: { title: string; description: string; items: Card[] }) {
+  return (
+    <section className="rounded-2xl border border-emerald-100 bg-white p-5 shadow-sm">
+      <h2 className="text-xl font-bold text-emerald-900">{title}</h2>
+      <p className="mt-2 text-sm leading-7 text-slate-600">{description}</p>
+      <div className="mt-4 grid gap-3">
+        {items.map((item) => (
+          <Link key={item.href} href={item.href} className="rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 hover:border-emerald-400">
+            <span className="block text-sm font-bold text-emerald-950">{item.title}</span>
+            {item.description ? <span className="mt-1 line-clamp-2 block text-xs leading-5 text-emerald-900">{item.description}</span> : null}
           </Link>
         ))}
       </div>
