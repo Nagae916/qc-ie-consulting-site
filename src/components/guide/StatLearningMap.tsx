@@ -39,8 +39,8 @@ const learningSteps: Step[] = [
   {
     step: "STEP 4",
     title: "回帰分析・分散分析",
-    description: "要因と結果の関係を整理し、品質改善や経営工学の仮説検証に使います。",
-    href: "/guides/stat/simple-linear-regression",
+    description: "要因と結果の関係、複数群の差、共変量調整を品質改善や経営工学の仮説検証に使います。",
+    href: "/guides/stat/anova",
     status: "published",
   },
   {
@@ -87,6 +87,8 @@ const interactiveMaterials: Step[] = [
   { step: "教材", title: "信頼区間", description: "推定値の不確かさを幅で理解します。", href: "/guides/stat/confidence-interval", status: "published" },
   { step: "教材", title: "回帰分析", description: "要因と結果の関係をモデルで見ます。", href: "/tools/simple-linear-regression", status: "published" },
   { step: "教材", title: "分散分析", description: "複数群の差を整理します。", href: "/guides/stat/anova", status: "published" },
+  { step: "教材", title: "共分散分析", description: "共変量を調整して群間差を比較します。", href: "/guides/stat/ancova", status: "published" },
+  { step: "教材", title: "MMRM", description: "複数時点データの群間差を整理します。", href: "/guides/stat/mmrm", status: "published" },
   { step: "教材", title: "混同行列・ROC", description: "分類モデルの良し悪しを評価します。", href: "/guides/stat/confusion-matrix", status: "published" },
   { step: "教材", title: "品質データ分析ワーク", description: "工程データから改善仮説を作る教材です。", status: "planned" },
 ];
