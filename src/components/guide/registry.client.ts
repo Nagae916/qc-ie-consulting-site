@@ -17,6 +17,9 @@ const DSQuizTrainer = dynamic(() => import('./DSQuizTrainer'), { ssr: false });
 const EngineerKeywordMap = dynamic(() => import('./EngineerKeywordMap'), { ssr: false });
 const DataTypesExplorer = dynamic(() => import('./DataTypesExplorer'), { ssr: false });
 const HistogramExplorer = dynamic(() => import('./HistogramExplorer'), { ssr: false });
+const ANOVAVarianceExplorer = dynamic(() => import('./ANOVAVarianceExplorer'), { ssr: false });
+const ANCOVAAdjustmentExplorer = dynamic(() => import('./ANCOVAAdjustmentExplorer'), { ssr: false });
+const MMRMRepeatedMeasuresExplorer = dynamic(() => import('./MMRMRepeatedMeasuresExplorer'), { ssr: false });
 import ProblemMatrix from './ProblemMatrix';
 
 /**
@@ -55,6 +58,9 @@ export const GUIDE_COMPONENTS = {
   EngineerKeywordMap,
   DataTypesExplorer,
   HistogramExplorer,
+  ANOVAVarianceExplorer,
+  ANCOVAAdjustmentExplorer,
+  MMRMRepeatedMeasuresExplorer,
   ProblemMatrix,
   // ファイルパスをコメントで明記し、人的ミスを予防
 
