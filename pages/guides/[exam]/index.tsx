@@ -112,8 +112,8 @@ const engineerEntranceHrefs = [
   "/guides/engineer/how-to-study",
   "/guides/engineer/past-exam-trend-map",
   "/guides/engineer/past-exam-question-patterns",
-  "/guides/engineer/answer-structure-guide",
   "/guides/engineer/practice",
+  "/guides/engineer/answer-structure-guide",
 ];
 
 const engineerMapHrefs = [
@@ -371,7 +371,7 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
 function EngineerLearningFlow() {
   return (
     <section className="mt-6 rounded-2xl border border-emerald-100 bg-white p-5 shadow-sm">
-      <h2 className="text-xl font-bold text-emerald-900">このページで分かること</h2>
+      <h2 className="text-xl font-bold text-emerald-900">まずこの順で進める</h2>
       <ul className="mt-3 grid gap-2 text-sm leading-7 text-gray-700 md:grid-cols-3">
         <li>まず過去問トレンドで出題領域を把握する</li>
         <li>設問形式ごとに必要な答案要素を確認する</li>
@@ -390,14 +390,14 @@ function EngineerLearningFlow() {
           技術士 経営工学部門の学習を「過去問分析 → キーワード理解 → 答案骨子 → 答案作成」の順に整理しています。最初は過去問トレンドを確認し、次に設問形式と重要キーワードを結びつけて学習します。
         </p>
       </div>
-      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         {[
           { href: "/guides/engineer/how-to-study", label: "まず全体の使い方を確認する" },
           { href: "/guides/engineer/past-exam-trend-map", label: "過去問トレンドを見る" },
           { href: "/guides/engineer/past-exam-question-patterns", label: "設問形式を理解する" },
           { href: "/guides/engineer/keyword-priority-100", label: "重要キーワードを学ぶ" },
-          { href: "/guides/engineer/answer-structure-guide", label: "答案骨子へ進む" },
-          { href: "/guides/engineer/practice", label: "問題演習へ進む" },
+          { href: "/guides/engineer/practice", label: "テーマを選んで答案練習する" },
+          { href: "/guides/engineer/answer-structure-guide", label: "答案骨子を作る" },
         ].map((item) => (
           <Link key={item.href} href={item.href} className="rounded-xl border border-emerald-200 bg-white px-4 py-3 text-sm font-bold text-emerald-900 hover:border-emerald-500">
             {item.label}
@@ -412,12 +412,12 @@ function EngineerLayeredNavigation({ entranceItems, mapItems }: { entranceItems:
   return (
     <section className="mt-6 grid gap-6 lg:grid-cols-2">
       <LayerCard
-        title="第1階層：学習入口"
-        description="まずここから確認します。過去問、設問形式、答案骨子の順に、技術士答案へ進む流れを作ります。"
+        title="学習の入口"
+        description="まずここから確認します。過去問でテーマを選び、設問形式を読み、問題演習から答案骨子へ進みます。"
         items={entranceItems}
       />
       <LayerCard
-        title="第2階層：マップ・索引"
+        title="キーワードを探す"
         description="キーワードを名前、優先順位、テーマ、答案用途、白書背景から探すための入口です。"
         items={mapItems}
       />
