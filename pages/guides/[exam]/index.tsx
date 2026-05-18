@@ -394,7 +394,7 @@ function EngineerLearningFlow() {
         {[
           { href: "/guides/engineer/how-to-study", label: "まず全体の使い方を確認する" },
           { href: "/guides/engineer/past-exam-trend-map", label: "過去問トレンドを見る" },
-          { href: "/guides/engineer/past-exam-question-patterns", label: "設問形式を理解する" },
+          { href: "/guides/engineer/past-exam-question-patterns", label: "設問形式ごとの書き方を確認する" },
           { href: "/guides/engineer/keyword-priority-100", label: "重要キーワードを学ぶ" },
           { href: "/guides/engineer/practice", label: "テーマを選んで答案練習する" },
           { href: "/guides/engineer/answer-structure-guide", label: "答案骨子を作る" },
@@ -412,12 +412,12 @@ function EngineerLayeredNavigation({ entranceItems, mapItems }: { entranceItems:
   return (
     <section className="mt-6 grid gap-6 lg:grid-cols-2">
       <LayerCard
-        title="学習の入口"
+        title="まず進むページ"
         description="まずここから確認します。過去問でテーマを選び、設問形式を読み、問題演習から答案骨子へ進みます。"
         items={entranceItems}
       />
       <LayerCard
-        title="キーワードを探す"
+        title="キーワードを探すページ"
         description="キーワードを名前、優先順位、テーマ、答案用途、白書背景から探すための入口です。"
         items={mapItems}
       />
