@@ -42,6 +42,7 @@ const toolSlugs = new Set([
   "practice-sales-production-inventory-planning",
   "problem-matrix",
   "ds-certification-practice",
+  "statistics-exam-level2-practice",
 ]);
 
 const referenceSlugs = new Set([
