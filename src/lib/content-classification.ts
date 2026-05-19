@@ -33,6 +33,7 @@ const toolSlugs = new Set([
   "issue-decomposition-matrix",
   "practice",
   "practice-ii-2",
+  "practice-inventory-reduction",
   "problem-matrix",
   "ds-certification-practice",
 ]);
