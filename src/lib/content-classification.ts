@@ -37,6 +37,9 @@ const toolSlugs = new Set([
   "practice-productivity-improvement",
   "practice-defect-reduction",
   "practice-inventory-reduction",
+  "practice-lead-time-reduction",
+  "practice-demand-forecast-accuracy",
+  "practice-sales-production-inventory-planning",
   "problem-matrix",
   "ds-certification-practice",
 ]);
