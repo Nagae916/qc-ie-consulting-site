@@ -20,6 +20,7 @@ const HistogramExplorer = dynamic(() => import('./HistogramExplorer'), { ssr: fa
 const ANOVAVarianceExplorer = dynamic(() => import('./ANOVAVarianceExplorer'), { ssr: false });
 const ANCOVAAdjustmentExplorer = dynamic(() => import('./ANCOVAAdjustmentExplorer'), { ssr: false });
 const MMRMRepeatedMeasuresExplorer = dynamic(() => import('./MMRMRepeatedMeasuresExplorer'), { ssr: false });
+const StatisticsExamLevel2Map = dynamic(() => import('./StatisticsExamLevel2Map'), { ssr: false });
 import ProblemMatrix from './ProblemMatrix';
 
 /**
@@ -61,6 +62,7 @@ export const GUIDE_COMPONENTS = {
   ANOVAVarianceExplorer,
   ANCOVAAdjustmentExplorer,
   MMRMRepeatedMeasuresExplorer,
+  StatisticsExamLevel2Map,
   ProblemMatrix,
   // ファイルパスをコメントで明記し、人的ミスを予防
 
