@@ -14,7 +14,7 @@ export type StatReference = {
 
 export const STAT_ANALYSIS_REFERENCES: StatReference[] = [
   {
-    id: "covariate-adjustment-ds-202506",
+    id: "covariate-adjustment-fda-review",
     title: "共変量調整とRCT解析の実務論点",
     fileName: "DS_202506_CovAd_Main.pdf",
     sourceType: "report",
@@ -30,10 +30,10 @@ export const STAT_ANALYSIS_REFERENCES: StatReference[] = [
     ],
     relatedGuides: ["/guides/stat/ancova", "/guides/stat/anova", "/guides/stat/mmrm"],
     usageNote:
-      "ANCOVAページのFDAガイダンス背景、共変量調整、統計的効率、事前規定の説明に使う。",
+      "ANCOVAページで、共変量調整、統計的効率、事前規定、estimandとestimatorの区別を説明する根拠資料として使う。",
   },
   {
-    id: "small-sample-rct-covariate-adjustment-2023",
+    id: "small-sample-rct-covariate-adjustment",
     title: "小標本RCTにおける共変量調整手法の比較",
     fileName: "s13063-022-06967-6.pdf",
     sourceType: "paper",
@@ -51,7 +51,7 @@ export const STAT_ANALYSIS_REFERENCES: StatReference[] = [
       "ANCOVAの頑健性、限界、代替手法の位置づけを説明する補足資料として使う。",
   },
   {
-    id: "sas-ancova-usergroup-2009",
+    id: "sas-ancova-anova-seminar",
     title: "SASによる分散分析・共分散分析の実務整理",
     fileName: "usergroups09-a-17.pdf",
     sourceType: "slide",
@@ -67,10 +67,10 @@ export const STAT_ANALYSIS_REFERENCES: StatReference[] = [
     ],
     relatedGuides: ["/guides/stat/anova", "/guides/stat/ancova"],
     usageNote:
-      "ANOVA/ANCOVAの初学者向け説明、交絡、調整平均、未調整差と調整後差の図解に使う。",
+      "ANOVAを「ばらつきの分解」、ANCOVAを「共変量を考慮した群間比較」として初学者向けに説明する基礎資料として使う。",
   },
   {
-    id: "ancova-multiple-comparison-himichi",
+    id: "ancova-lecture-himichi",
     title: "ANCOVAと多重比較の論点整理",
     fileName: "himichi.pdf",
     sourceType: "slide",
@@ -86,7 +86,7 @@ export const STAT_ANALYSIS_REFERENCES: StatReference[] = [
       "ANOVAとANCOVAの関連、Bonferroniなど多重比較の補足に使う。",
   },
   {
-    id: "cluster-randomized-mixed-model-ancova-2023",
+    id: "mixed-model-ancova-cluster-rct",
     title: "クラスターランダム化試験におけるmixed-model ANCOVA",
     fileName: "2112.00832.pdf",
     sourceType: "paper",
@@ -104,7 +104,7 @@ export const STAT_ANALYSIS_REFERENCES: StatReference[] = [
       "混合モデル、クラスター構造、MMRMやmixed modelの発展的理解に使う。",
   },
   {
-    id: "sisaqol-initial-recommendations-pro-qol",
+    id: "sisaqol-repeated-measures-recommendations",
     title: "PRO/QOL解析における統計手法選択の初期推奨",
     fileName: "SISAQOL-Initial-Recommendations-pre-print.pdf",
     sourceType: "paper",
@@ -120,5 +120,51 @@ export const STAT_ANALYSIS_REFERENCES: StatReference[] = [
     relatedGuides: ["/guides/stat/mmrm", "/guides/stat/ancova"],
     usageNote:
       "MMRMページの中核資料として、複数時点データ、欠測、PRO/QOL解析の説明に使う。",
+  },
+  {
+    id: "soumu-stat-ds-advanced",
+    title: "高校からの統計・データサイエンス活用 ～上級編～",
+    fileName: "000607858.pdf",
+    sourceType: "report",
+    year: "2017",
+    language: "ja",
+    topics: [
+      "統計的探究",
+      "PPDAC",
+      "記述統計",
+      "確率",
+      "推測統計",
+      "相関分析",
+      "回帰分析",
+      "統計的検定",
+      "公的統計",
+      "データサイエンス",
+    ],
+    methods: [
+      "descriptive statistics",
+      "data visualization",
+      "correlation analysis",
+      "regression analysis",
+      "hypothesis testing",
+      "sampling",
+      "PPDAC",
+    ],
+    keyPoints: [
+      "統計的探究の流れをPPDACとして整理できる",
+      "記述統計、可視化、推測統計を初学者向けに接続できる",
+      "公的統計や身近なデータを用いたデータサイエンス学習の構成参考になる",
+    ],
+    relatedGuides: [
+      "/guides/stat/learning-map",
+      "/guides/stat/data-science-stat-roadmap",
+      "/guides/stat/descriptive-statistics",
+      "/guides/stat/correlation-causation",
+      "/guides/stat/regression-analysis",
+      "/guides/stat/hypothesis-testing",
+      "/guides/stat/anova",
+      "/guides/stat/ds-certification-roadmap",
+    ],
+    usageNote:
+      "統計部門の基礎学習マップ、基本の勉強、統計検定、DS検定の3導線設計、初学者向け統計ガイドの構成参考として使う。",
   },
 ];
