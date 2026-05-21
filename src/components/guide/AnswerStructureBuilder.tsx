@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import answerFrameRulesData from '../../../public/data/engineer/answer-frame-rules.json';
 import competenciesData from '../../../public/data/engineer/competencies.json';
+import correctionExamplesData from '../../../public/data/engineer/correction-examples.json';
+import ManuscriptAnswerPreview from './ManuscriptAnswerPreview';
 
 type AnswerFrameRule = {
   id: string;
@@ -29,6 +31,22 @@ type EngineerCompetency = {
   relatedTools: string[];
 };
 
+type CorrectionExample = {
+  id: string;
+  source: string;
+  examPart: string;
+  field: string;
+  theme: string;
+  questionPattern: string;
+  answerFrameId: string;
+  relatedCompetencies: string[];
+  keyPoints: string[];
+  userStrengths: string[];
+  userWeaknesses: string[];
+  recommendedStudyTopics: string[];
+  builderHints: string[];
+};
+
 type FieldType = 'text' | 'textarea';
 
 type FrameField = {
@@ -51,8 +69,11 @@ type FrameConfig = {
   buildPreview: (_values: Record<string, string>) => string;
 };
 
+type PreviewMode = 'text' | 'manuscript';
+
 const answerFrameRules = answerFrameRulesData as AnswerFrameRule[];
 const competencies = competenciesData as EngineerCompetency[];
+const correctionExamples = correctionExamplesData as CorrectionExample[];
 const answerFrameRuleIds = new Set(answerFrameRules.map((rule) => rule.id));
 
 const frameConfigs: Record<string, FrameConfig> = {
@@ -174,7 +195,7 @@ const frameConfigs: Record<string, FrameConfig> = {
 社会の持続可能性：${valueOrBlank(values.sustainabilityViewpoint)} / ${valueOrBlank(values.sustainabilityDetail)}`,
   },
   'elective-ii-1-short': {
-    note: 'Ⅱ-1では、定義だけでなく、特徴、適用場面、留意点を簡潔に整理します。600字程度の答案に展開できる骨子を作ります。',
+    note: 'Ⅱ-1では、定義だけでなく、特徴、適用場面、留意点を簡潔に整理します。比較説明型では、共通点、相違点、メリット・デメリット、有効な段階まで分けて書きます。',
     groups: [
       {
         title: '選択科目Ⅱ-1：短答・用語説明型',
@@ -188,6 +209,19 @@ const frameConfigs: Record<string, FrameConfig> = {
           { id: 'caution', label: '留意点', type: 'textarea' },
           { id: 'application', label: '経営工学上の活用場面', type: 'textarea' },
           { id: 'keywords', label: '関連する手法・キーワード', type: 'textarea' },
+        ],
+      },
+      {
+        title: '比較説明型で使う整理項目',
+        description: 'ガントチャートとアローダイアグラムのように比較対象がある場合は、違いと使い分けを明示します。',
+        fields: [
+          { id: 'comparisonTargets', label: '比較対象' },
+          { id: 'commonPoints', label: '共通点', type: 'textarea' },
+          { id: 'differences', label: '相違点', type: 'textarea' },
+          { id: 'merits', label: 'メリット', type: 'textarea' },
+          { id: 'demerits', label: 'デメリット', type: 'textarea' },
+          { id: 'suitableUse', label: '適用場面', type: 'textarea' },
+          { id: 'effectiveStage', label: '有効な段階', type: 'textarea' },
         ],
       },
     ],
@@ -213,25 +247,63 @@ ${valueOrBlank(values.caution)}
 ${valueOrBlank(values.application)}
 
 【関連キーワード】
-${valueOrBlank(values.keywords)}`,
+${valueOrBlank(values.keywords)}
+
+【比較対象】
+${valueOrBlank(values.comparisonTargets)}
+
+【共通点】
+${valueOrBlank(values.commonPoints)}
+
+【相違点】
+${valueOrBlank(values.differences)}
+
+【メリット】
+${valueOrBlank(values.merits)}
+
+【デメリット】
+${valueOrBlank(values.demerits)}
+
+【適用場面】
+${valueOrBlank(values.suitableUse)}
+
+【有効な段階】
+${valueOrBlank(values.effectiveStage)}`,
   },
   'elective-ii-2-procedure': {
-    note: 'Ⅱ-2では、業務遂行の手順、管理項目、留意点、関係者調整を具体的に整理します。単なる手法説明ではなく、実務でどう進めるかを示します。',
+    note: 'Ⅱ-2では、調査・検討事項、実施手順、留意点・工夫点、関係者調整、KPI・効果確認を分けて整理します。単なる手法説明ではなく、実務でどう進めるかを示します。',
     groups: [
       {
-        title: '選択科目Ⅱ-2：手順説明・留意点型',
-        description: '現状把握から実施、管理、調整、効果確認までの流れを作ります。',
+        title: '設問(1)：調査・検討事項',
+        description: '現状把握、データ収集、問題要因、対象範囲を整理します。',
         fields: [
           { id: 'workTheme', label: 'テーマ・業務' },
           { id: 'backgroundPurpose', label: '背景・目的', type: 'textarea' },
-          { id: 'currentState', label: '現状把握', type: 'textarea' },
+          { id: 'investigationItems', label: '調査・検討事項', type: 'textarea' },
+          { id: 'currentState', label: '現状把握・データ収集', type: 'textarea' },
+          { id: 'analysisPolicy', label: '分析・方針設定', type: 'textarea' },
+        ],
+      },
+      {
+        title: '設問(2)：進め方・留意点',
+        description: '改善手順、使用する手法、管理指標、留意点を時系列で整理します。',
+        fields: [
           { id: 'procedureOne', label: '実施手順1', type: 'textarea' },
           { id: 'procedureTwo', label: '実施手順2', type: 'textarea' },
           { id: 'procedureThree', label: '実施手順3', type: 'textarea' },
-          { id: 'controlItems', label: '管理項目', type: 'textarea' },
+          { id: 'managementMethods', label: '使用する経営工学手法', type: 'textarea' },
+          { id: 'controlItems', label: '管理項目・KPI', type: 'textarea' },
           { id: 'cautions', label: '留意点・工夫点', type: 'textarea' },
-          { id: 'stakeholderCoordination', label: '関係者との調整', type: 'textarea' },
-          { id: 'effectCheck', label: '効果確認', type: 'textarea' },
+        ],
+      },
+      {
+        title: '設問(3)：関係者調整と効果確認',
+        description: '誰と何を調整するか、どの指標で確認するかを具体化します。',
+        fields: [
+          { id: 'stakeholders', label: '関係者' },
+          { id: 'stakeholderCoordination', label: '関係者との調整方策', type: 'textarea' },
+          { id: 'sharedInformation', label: '共有すべき情報・会議体', type: 'textarea' },
+          { id: 'effectCheck', label: 'KPI・効果確認', type: 'textarea' },
         ],
       },
     ],
@@ -244,10 +316,19 @@ ${valueOrBlank(values.backgroundPurpose)}
 【現状把握】
 ${valueOrBlank(values.currentState)}
 
+【調査・検討事項】
+${valueOrBlank(values.investigationItems)}
+
+【分析・方針設定】
+${valueOrBlank(values.analysisPolicy)}
+
 【実施手順】
 1. ${valueOrBlank(values.procedureOne)}
 2. ${valueOrBlank(values.procedureTwo)}
 3. ${valueOrBlank(values.procedureThree)}
+
+【使用する経営工学手法】
+${valueOrBlank(values.managementMethods)}
 
 【管理項目】
 ${valueOrBlank(values.controlItems)}
@@ -256,7 +337,11 @@ ${valueOrBlank(values.controlItems)}
 ${valueOrBlank(values.cautions)}
 
 【関係者との調整】
+関係者：${valueOrBlank(values.stakeholders)}
 ${valueOrBlank(values.stakeholderCoordination)}
+
+【共有すべき情報・会議体】
+${valueOrBlank(values.sharedInformation)}
 
 【効果確認】
 ${valueOrBlank(values.effectCheck)}`,
@@ -319,6 +404,12 @@ function valueOrBlank(value: string | undefined) {
 
 function fieldValue(values: Record<string, string>, fieldId: string) {
   return values[fieldId] ?? '';
+}
+
+function targetPagesForFrame(examPart: string) {
+  if (examPart.includes('Ⅱ-1')) return 1;
+  if (examPart.includes('Ⅱ-2')) return 2;
+  return 3;
 }
 
 function SectionCard({ step, title, note, children }: { step: string; title: string; note: string; children: ReactNode }) {
@@ -427,6 +518,7 @@ export default function AnswerStructureBuilder() {
   const [handoffMemo, setHandoffMemo] = useState('');
   const [handoffOpen, setHandoffOpen] = useState(true);
   const [copyMessage, setCopyMessage] = useState('');
+  const [previewMode, setPreviewMode] = useState<PreviewMode>('text');
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -452,10 +544,17 @@ export default function AnswerStructureBuilder() {
       .filter((competency): competency is EngineerCompetency => Boolean(competency));
   }, [selectedRule]);
 
+  const relatedCorrectionExamples = useMemo(() => {
+    if (!selectedRule) return [];
+    return correctionExamples.filter((example) => example.answerFrameId === selectedRule.id);
+  }, [selectedRule]);
+
   const previewText = useMemo(() => {
     if (!selectedConfig) return '';
     return selectedConfig.buildPreview(selectedValues);
   }, [selectedConfig, selectedValues]);
+
+  const targetPages = targetPagesForFrame(selectedRule?.examPart ?? '');
 
   function updateField(fieldId: string, value: string) {
     if (!selectedRule) return;
@@ -625,11 +724,39 @@ export default function AnswerStructureBuilder() {
           <section className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm">
             <h2 className="text-xl font-bold">答案骨子プレビュー</h2>
             <p className="mt-2 text-sm leading-7 text-slate-700">選択中の答案フレームに合わせて、出力形式が切り替わります。</p>
-            <textarea
-              readOnly
-              value={previewText}
-              className="mt-4 min-h-[520px] w-full rounded-lg border border-emerald-200 bg-white px-3 py-2 font-mono text-sm leading-6 text-slate-900"
-            />
+
+            <div className="mt-4 grid grid-cols-2 rounded-xl border border-emerald-200 bg-white p-1">
+              <button
+                type="button"
+                onClick={() => setPreviewMode('text')}
+                className={`rounded-lg px-3 py-2 text-sm font-bold transition ${
+                  previewMode === 'text' ? 'bg-emerald-700 text-white' : 'text-slate-700 hover:bg-emerald-50'
+                }`}
+              >
+                通常テキスト
+              </button>
+              <button
+                type="button"
+                onClick={() => setPreviewMode('manuscript')}
+                className={`rounded-lg px-3 py-2 text-sm font-bold transition ${
+                  previewMode === 'manuscript' ? 'bg-emerald-700 text-white' : 'text-slate-700 hover:bg-emerald-50'
+                }`}
+              >
+                24×25原稿用紙
+              </button>
+            </div>
+
+            {previewMode === 'text' ? (
+              <textarea
+                readOnly
+                value={previewText}
+                className="mt-4 min-h-[520px] w-full rounded-lg border border-emerald-200 bg-white px-3 py-2 font-mono text-sm leading-6 text-slate-900"
+              />
+            ) : (
+              <div className="mt-4 rounded-xl border border-emerald-200 bg-white p-4">
+                <ManuscriptAnswerPreview text={previewText} targetPages={targetPages} />
+              </div>
+            )}
             <button type="button" onClick={copyPreview} className="mt-4 w-full rounded-lg bg-emerald-700 px-4 py-2 text-sm font-bold text-white transition hover:bg-emerald-800">
               この答案骨子をコピー
             </button>
@@ -650,6 +777,22 @@ export default function AnswerStructureBuilder() {
             <InfoPanel title="想定される問題パターン">
               <BulletList items={selectedRule.questionPatterns} />
             </InfoPanel>
+
+            {relatedCorrectionExamples.length > 0 && (
+              <InfoPanel title="添削課題からの補助ヒント">
+                <div className="mt-4 space-y-4">
+                  {relatedCorrectionExamples.map((example) => (
+                    <div key={example.id} className="rounded-lg border border-emerald-200 bg-emerald-50 p-3">
+                      <p className="text-sm font-bold text-slate-950">{example.theme}</p>
+                      <p className="mt-1 text-xs font-semibold text-emerald-800">
+                        {example.source} / {example.questionPattern}
+                      </p>
+                      <BulletList items={example.builderHints} />
+                    </div>
+                  ))}
+                </div>
+              </InfoPanel>
+            )}
 
             <InfoPanel title="推奨ツール">
               <BadgeList items={selectedRule.recommendedTools} />
