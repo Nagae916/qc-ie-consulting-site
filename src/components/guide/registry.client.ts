@@ -23,6 +23,7 @@ const MMRMRepeatedMeasuresExplorer = dynamic(() => import('./MMRMRepeatedMeasure
 const StatisticsExamLevel2Map = dynamic(() => import('./StatisticsExamLevel2Map'), { ssr: false });
 const StatisticsExamQuizTrainer = dynamic(() => import('./StatisticsExamQuizTrainer'), { ssr: false });
 const ModelAnswerExamples = dynamic(() => import('./ModelAnswerExamples'), { ssr: false });
+const PSISimulator = dynamic(() => import('./PSISimulator'), { ssr: false });
 import ProblemMatrix from './ProblemMatrix';
 
 /**
@@ -67,6 +68,7 @@ export const GUIDE_COMPONENTS = {
   StatisticsExamLevel2Map,
   StatisticsExamQuizTrainer,
   ModelAnswerExamples,
+  PSISimulator,
   ProblemMatrix,
   // ファイルパスをコメントで明記し、人的ミスを予防
 
