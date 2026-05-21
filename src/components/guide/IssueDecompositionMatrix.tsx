@@ -1,588 +1,354 @@
 'use client';
 
+import Link from 'next/link';
 import { useMemo, useState } from 'react';
 
-const viewpoints = [
-  '人材・組織',
-  '業務プロセス',
-  '情報・データ',
-  '設備・現場',
-  '品質',
-  'サプライチェーン',
-  '経営',
-  '社会・制度',
-] as const;
+type FieldKey =
+  | 'background'
+  | 'currentProblem'
+  | 'cause'
+  | 'impact'
+  | 'issue'
+  | 'priorityIssue'
+  | 'solution'
+  | 'effect'
+  | 'risk'
+  | 'riskCountermeasure'
+  | 'ethics'
+  | 'sustainability';
 
-type Viewpoint = (typeof viewpoints)[number];
-type AnswerUsefulness = '高' | '中';
-type Filter = Viewpoint | 'すべて';
-
-type IssueCard = {
-  id: string;
-  viewpoint: Viewpoint;
-  title: string;
-  background: string;
-  impact: string;
-  methods: string;
-  answerUsefulness: AnswerUsefulness;
+type MatrixField = {
+  key: FieldKey;
+  label: string;
+  placeholder: string;
+  answerUse: string;
 };
 
-type IssueTheme = {
-  id: string;
-  title: string;
-  description: string;
-  questionText: string;
-  examTags: string[];
-  sourceTags: string[];
-  lawOrPolicyTags: string[];
-  issueCards: IssueCard[];
-};
-
-const themes: IssueTheme[] = [
+const fields: MatrixField[] = [
   {
-    id: 'manufacturing-dx',
-    title: '製造業の持続的発展に向けたDX',
-    description:
-      '製造業におけるDXを、単なるIT導入ではなく、品質・生産・人材・データ・サプライチェーンをつなぐ経営工学上の課題として整理する。',
-    questionText:
-      '近年、製造業では人手不足、熟練技能の継承、品質保証体制の高度化、サプライチェーンの不確実性への対応が求められている。このような状況の中、製造業の持続的発展に向けてDXを推進するにあたり、技術者として多面的な観点から課題を3つ抽出し、最重要課題を1つ選定せよ。',
-    examTags: ['必須科目Ⅰ', '選択科目Ⅲ', '経営工学', '生産マネジメント', 'サービスマネジメント'],
-    sourceTags: ['ものづくり白書', 'DX白書', '労働経済白書'],
-    lawOrPolicyTags: ['デジタルガバナンス', '経済安全保障', '人材育成', 'サプライチェーン強靭化'],
-    issueCards: [
-      {
-        id: 'dx-talent',
-        viewpoint: '人材・組織',
-        title: 'DX推進人材の不足',
-        background: '品質・生産・情報を横断して扱える人材が不足している',
-        impact: 'DXが一部門のツール導入で終わり、現場改善に定着しない',
-        methods: 'スキルマップ、教育訓練体系、標準化',
-        answerUsefulness: '高',
-      },
-      {
-        id: 'process-standardization',
-        viewpoint: '業務プロセス',
-        title: '業務標準化の不足',
-        background: '紙・Excel・個人依存の業務が残り、データ取得の前提が整っていない',
-        impact: '分析可能なデータが蓄積されず、改善活動が属人化する',
-        methods: '業務フロー分析、ECRS、標準作業',
-        answerUsefulness: '高',
-      },
-      {
-        id: 'data-silo',
-        viewpoint: '情報・データ',
-        title: 'データの部門分断',
-        background: '品質・生産・在庫・購買のデータが別々に管理されている',
-        impact: '全体最適の判断ができず、部分最適の改善に留まる',
-        methods: 'KPI設計、データ標準化、マスタ統一',
-        answerUsefulness: '高',
-      },
-      {
-        id: 'equipment-data',
-        viewpoint: '設備・現場',
-        title: '設備データ取得基盤の不足',
-        background: '旧設備が多く、稼働・停止・異常の情報を自動取得できない',
-        impact: '設備停止や品質異常の予兆を把握できない',
-        methods: 'IoT、TPM、予防保全',
-        answerUsefulness: '中',
-      },
-      {
-        id: 'quality-data',
-        viewpoint: '品質',
-        title: '品質データの活用不足',
-        background: '不良記録はあるが、原因分析や未然防止に十分活用されていない',
-        impact: '慢性不良や再発不良が残り、QMSが形骸化する',
-        methods: 'QC七つ道具、管理図、FMEA、是正処置',
-        answerUsefulness: '高',
-      },
-      {
-        id: 'supply-chain-data',
-        viewpoint: 'サプライチェーン',
-        title: '社外連携データの不足',
-        background: '需要、在庫、納期、調達リスクの情報共有が不十分である',
-        impact: '欠品、過剰在庫、納期遅延が発生する',
-        methods: 'S&OP、在庫管理、サプライヤ管理',
-        answerUsefulness: '中',
-      },
-      {
-        id: 'investment-priority',
-        viewpoint: '経営',
-        title: 'DX投資の優先順位が不明確',
-        background: '投資判断に必要なKPIや費用対効果が整理されていない',
-        impact: 'PoC止まりとなり、継続的な改善に結びつかない',
-        methods: 'KPI設計、投資評価、ロードマップ管理',
-        answerUsefulness: '高',
-      },
-      {
-        id: 'security-compliance',
-        viewpoint: '社会・制度',
-        title: '情報セキュリティ・法規対応の不足',
-        background: 'データ連携が進む一方で、情報管理や権限設計が追いついていない',
-        impact: '情報漏えいや顧客信頼の低下につながる',
-        methods: 'リスク管理、内部統制、情報管理',
-        answerUsefulness: '中',
-      },
-    ],
+    key: 'background',
+    label: '問題背景',
+    placeholder: '例）人手不足により、熟練者依存の生産管理が限界に近づいている',
+    answerUse: '答案の冒頭で、なぜこのテーマが重要かを示します。',
+  },
+  {
+    key: 'currentProblem',
+    label: '現状の問題',
+    placeholder: '例）作業実績や設備停止のデータが部門ごとに分断されている',
+    answerUse: '課題抽出の前提として、現場で起きている困りごとを示します。',
+  },
+  {
+    key: 'cause',
+    label: '原因',
+    placeholder: '例）標準作業、データ定義、教育計画が整備されていない',
+    answerUse: '課題が表面的な指摘で終わらないよう、根本要因を補強します。',
+  },
+  {
+    key: 'impact',
+    label: '影響',
+    placeholder: '例）品質ばらつき、納期遅延、現場負荷増大につながる',
+    answerUse: '課題の重要性と、放置した場合の影響を説明します。',
+  },
+  {
+    key: 'issue',
+    label: '課題',
+    placeholder: '例）作業標準と実績データを整備し、属人化を低減すること',
+    answerUse: '多面的な課題として答案の中心に置きます。',
+  },
+  {
+    key: 'priorityIssue',
+    label: '最重要課題',
+    placeholder: '例）データに基づく現場改善の仕組みを構築すること',
+    answerUse: '設問で最重要課題を求められたときの中心になります。',
+  },
+  {
+    key: 'solution',
+    label: '解決策',
+    placeholder: '例）標準作業、OEE、教育計画を連動させて改善する',
+    answerUse: '経営工学の手法を、実行可能な施策として説明します。',
+  },
+  {
+    key: 'effect',
+    label: '効果',
+    placeholder: '例）設備停止時間、不良率、教育完了率をKPIで確認する',
+    answerUse: '施策の有効性を、KPIやQCDへの効果で示します。',
+  },
+  {
+    key: 'risk',
+    label: 'リスク',
+    placeholder: '例）データ入力負荷が増え、現場に定着しないおそれがある',
+    answerUse: '解決策の副作用や失敗要因を答案後半で示します。',
+  },
+  {
+    key: 'riskCountermeasure',
+    label: 'リスク対策',
+    placeholder: '例）入力項目を絞り、日次レビューと教育で運用を定着させる',
+    answerUse: 'リスクを放置せず、具体的な対策まで説明します。',
+  },
+  {
+    key: 'ethics',
+    label: '技術者倫理',
+    placeholder: '例）データ改ざんを防ぎ、顧客と社会への説明責任を果たす',
+    answerUse: '必須科目Ⅰや選択科目Ⅲで、技術者としての判断を示します。',
+  },
+  {
+    key: 'sustainability',
+    label: '社会の持続可能性',
+    placeholder: '例）安定供給、労働負荷低減、環境負荷低減を両立する',
+    answerUse: '答案の締めで、社会への影響と持続可能性に接続します。',
   },
 ];
 
-const futureThemes = [
-  '物流2024年問題・物流効率化',
-  '下請法・価格転嫁・取引適正化',
-  'QMS再構築',
-  '人材育成・技能伝承',
-  'サプライチェーン強靭化',
-  'カーボンニュートラル・GX',
-  '生産性向上',
+const initialValues = fields.reduce<Record<FieldKey, string>>((acc, field) => {
+  acc[field.key] = '';
+  return acc;
+}, {} as Record<FieldKey, string>);
+
+const sampleThemes = [
+  {
+    title: '供給制約・人手不足',
+    hint: '人材、標準化、OEE、技能継承を組み合わせやすいテーマです。',
+  },
+  {
+    title: '物流2024年問題',
+    hint: '荷待ち、輸送能力、SCM、モーダルシフトへ展開しやすいテーマです。',
+  },
+  {
+    title: 'QMS再構築',
+    hint: '品質不正、記録、内部監査、CAPA、技術者倫理へ接続しやすいテーマです。',
+  },
 ];
 
-const reasonHints = ['影響範囲が広い', '根本原因に近い', '他課題への波及効果が大きい', '緊急性が高い', '実現可能性が高い'];
-const answerBuilderHref = '/guides/engineer/answer-structure-builder';
-
-function usefulnessClassName(value: AnswerUsefulness) {
-  if (value === '高') return 'border-emerald-200 bg-emerald-50 text-emerald-800';
-  return 'border-amber-200 bg-amber-50 text-amber-800';
-}
-
-function TagGroup({ title, tags }: { title: string; tags: string[] }) {
-  return (
-    <div>
-      <p className="text-xs font-bold uppercase tracking-wide text-slate-500">{title}</p>
-      <div className="mt-2 flex flex-wrap gap-2">
-        {tags.map((tag) => (
-          <span key={`${title}-${tag}`} className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-700">
-            {tag}
-          </span>
-        ))}
-      </div>
-    </div>
-  );
+function filledOrPlaceholder(value: string, placeholder: string) {
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : `（${placeholder.replace(/^例）/, '')}）`;
 }
 
 export default function IssueDecompositionMatrix() {
-  const theme = themes[0]!;
-  const [activeFilter, setActiveFilter] = useState<Filter>('すべて');
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [priorityId, setPriorityId] = useState('');
-  const [reason, setReason] = useState('');
-  const [notice, setNotice] = useState('');
+  const [values, setValues] = useState<Record<FieldKey, string>>(initialValues);
   const [copyMessage, setCopyMessage] = useState('');
 
-  const displayedCards = useMemo(() => {
-    if (activeFilter === 'すべて') return theme.issueCards;
-    return theme.issueCards.filter((card) => card.viewpoint === activeFilter);
-  }, [activeFilter, theme.issueCards]);
+  const filledCount = fields.filter((field) => values[field.key].trim().length > 0).length;
 
-  const selectedCards = useMemo(() => {
-    return selectedIds
-      .map((id) => theme.issueCards.find((card) => card.id === id))
-      .filter((card): card is IssueCard => Boolean(card));
-  }, [selectedIds, theme.issueCards]);
+  const previewText = useMemo(() => {
+    return `1. 背景
+${filledOrPlaceholder(values.background, fields.find((field) => field.key === 'background')?.placeholder ?? '')}
 
-  const priorityCard = selectedCards.find((card) => card.id === priorityId);
-  const selectedViewpoints = selectedCards.map((card) => card.viewpoint);
-  const uniqueViewpoints = Array.from(new Set(selectedViewpoints));
+2. 抽出した課題
+現状の問題：${filledOrPlaceholder(values.currentProblem, fields.find((field) => field.key === 'currentProblem')?.placeholder ?? '')}
+原因：${filledOrPlaceholder(values.cause, fields.find((field) => field.key === 'cause')?.placeholder ?? '')}
+影響：${filledOrPlaceholder(values.impact, fields.find((field) => field.key === 'impact')?.placeholder ?? '')}
+課題：${filledOrPlaceholder(values.issue, fields.find((field) => field.key === 'issue')?.placeholder ?? '')}
 
-  const balanceComment = useMemo(() => {
-    if (selectedCards.length === 0) return 'まずは気になる課題を最大3つ選び、多面的に見えているか確認しましょう。';
-    if (selectedCards.length === 1) return '1つ目の課題を選べました。答案では、別観点の課題を加えると厚みが出ます。';
-    if (uniqueViewpoints.length >= 3) return `${uniqueViewpoints.join(' / ')} の観点が含まれており、多面的な構成になっています。`;
-    if (uniqueViewpoints.length === 1) return '同じ観点に偏っています。経営・社会・サプライチェーンなど別観点も検討してください。';
-    return `${uniqueViewpoints.join(' / ')} の観点が含まれています。もう1つ別観点を加えると、課題抽出の説得力が増します。`;
-  }, [selectedCards.length, uniqueViewpoints]);
+3. 最重要課題
+${filledOrPlaceholder(values.priorityIssue, fields.find((field) => field.key === 'priorityIssue')?.placeholder ?? '')}
 
-  const outlineText = useMemo(() => {
-    const issueLines = selectedCards.length
-      ? selectedCards.map((card, index) => `${index + 1}. ${card.title}（${card.viewpoint}）`).join('\n')
-      : '1. 未選択\n2. 未選択\n3. 未選択';
+4. 解決策
+${filledOrPlaceholder(values.solution, fields.find((field) => field.key === 'solution')?.placeholder ?? '')}
 
-    return `【テーマ】
-${theme.title}
+5. 期待効果
+${filledOrPlaceholder(values.effect, fields.find((field) => field.key === 'effect')?.placeholder ?? '')}
 
-【設問】
-${theme.questionText}
+6. リスクと対策
+リスク：${filledOrPlaceholder(values.risk, fields.find((field) => field.key === 'risk')?.placeholder ?? '')}
+対策：${filledOrPlaceholder(values.riskCountermeasure, fields.find((field) => field.key === 'riskCountermeasure')?.placeholder ?? '')}
 
-【課題】
-${issueLines}
+7. 技術者倫理・社会の持続可能性
+倫理：${filledOrPlaceholder(values.ethics, fields.find((field) => field.key === 'ethics')?.placeholder ?? '')}
+持続可能性：${filledOrPlaceholder(values.sustainability, fields.find((field) => field.key === 'sustainability')?.placeholder ?? '')}`;
+  }, [values]);
 
-【最重要課題】
-${priorityCard?.title ?? '未選択'}
-
-【選定理由】
-${reason || '未入力'}
-
-【使える手法・観点】
-${priorityCard?.methods ?? '未選択'}
-
-【技術士答案での展開メモ】
-この課題を中心に、解決策・リスク・倫理・持続可能性へ展開する。`;
-  }, [priorityCard, reason, selectedCards, theme.questionText, theme.title]);
-
-  const handoffText = useMemo(() => {
-    const issueLines = selectedCards
-      .map((card, index) => {
-        return `${index + 1}. 観点：${card.viewpoint}
-   課題：${card.title}
-   背景・根本要因：${card.background}
-   放置した場合の影響：${card.impact}
-   使える手法：${card.methods}`;
-      })
-      .join('\n\n');
-
-    return `【課題分解マトリクスからの引き継ぎ】
-
-【テーマ】
-${theme.title}
-
-【設問(1)：課題抽出】
-${issueLines || '1. 未選択\n\n2. 未選択\n\n3. 未選択'}
-
-【設問(2)：最重要課題】
-最重要課題：${priorityCard?.title ?? '未選択'}
-選定理由：${reason || '未入力'}
-
-【次に検討すること】
-- 解決策1〜3
-- 施策実施後に新たに生じるリスク
-- リスクへの対策
-- 技術者倫理・社会の持続可能性`;
-  }, [priorityCard?.title, reason, selectedCards, theme.title]);
-
-  function toggleCard(cardId: string) {
-    setNotice('');
+  function updateValue(key: FieldKey, nextValue: string) {
     setCopyMessage('');
-
-    if (selectedIds.includes(cardId)) {
-      const nextIds = selectedIds.filter((id) => id !== cardId);
-      setSelectedIds(nextIds);
-      if (priorityId === cardId) setPriorityId('');
-      return;
-    }
-
-    if (selectedIds.length >= 3) {
-      setNotice('課題は最大3つまで選択できます。答案では広げすぎず、比較して絞り込むことが大切です。');
-      return;
-    }
-
-    setSelectedIds([...selectedIds, cardId]);
+    setValues((current) => ({ ...current, [key]: nextValue }));
   }
 
-  async function copyOutline() {
+  function applySampleTheme(title: string) {
+    setCopyMessage('');
+    if (title === '供給制約・人手不足') {
+      setValues({
+        background: '生産年齢人口の減少により、製造現場では熟練者依存と人員不足が進んでいる。',
+        currentProblem: '作業方法や判断基準が属人化し、品質ばらつきと納期遅延が発生している。',
+        cause: '標準作業、教育計画、設備稼働データの整備が不十分である。',
+        impact: '供給能力が低下し、顧客への安定供給と現場の安全性に影響する。',
+        issue: '標準化とデータ活用により、属人化を低減すること。',
+        priorityIssue: '作業標準と実績データを連動させた改善基盤を構築すること。',
+        solution: '標準作業、OEE、教育計画を整備し、KPIで改善状況を確認する。',
+        effect: '不良率、停止時間、教育完了率を改善し、供給能力を安定させる。',
+        risk: '記録負荷が増え、現場に定着しないおそれがある。',
+        riskCountermeasure: '入力項目を絞り、日次確認と教育により運用を定着させる。',
+        ethics: 'データを適正に扱い、品質と安全に関する説明責任を果たす。',
+        sustainability: '安定供給と労働負荷低減を両立し、持続的な生産体制を作る。',
+      });
+      return;
+    }
+
+    if (title === '物流2024年問題') {
+      setValues({
+        background: '時間外労働規制により、物流能力の制約と輸送コスト上昇が顕在化している。',
+        currentProblem: '荷待ち、低積載率、出荷頻度の多さにより、輸送効率が低下している。',
+        cause: '販売、生産、物流の計画が分断され、出荷平準化と共同配送の検討が不足している。',
+        impact: '納期遅延、物流費増加、CO2排出増加が生じる。',
+        issue: '荷主側の計画と物流運用を連動させ、輸送効率を高めること。',
+        priorityIssue: 'SCM全体で出荷計画と輸送能力を整合させること。',
+        solution: 'TMS、WMS、共同配送、モーダルシフトを組み合わせて改善する。',
+        effect: '積載率、納期遵守率、物流費、CO2排出量を確認する。',
+        risk: '効率化を急ぐと欠品や顧客サービス低下を招くおそれがある。',
+        riskCountermeasure: '重点顧客、重要品目を区分し、段階的に運用を切り替える。',
+        ethics: '取引先やドライバーに過度な負荷をかけない運用を設計する。',
+        sustainability: '安定供給と環境負荷低減を両立する物流体制へつなげる。',
+      });
+      return;
+    }
+
+    setValues({
+      background: '品質不正や顧客要求の高度化により、QMSの実効性が問われている。',
+      currentProblem: '文書や記録はあるが、現場改善や再発防止に十分つながっていない。',
+      cause: 'プロセス管理、内部監査、CAPA、品質KPIの連動が弱い。',
+      impact: '不良再発、顧客信頼低下、説明責任不足につながる。',
+      issue: 'QMSを形式運用から、改善と再発防止に使える仕組みに変えること。',
+      priorityIssue: '品質KPIとCAPAを連動させ、再発防止を定着させること。',
+      solution: 'プロセスアプローチ、FMEA、内部監査、CAPAを組み合わせて改善する。',
+      effect: '不良率、CAPA完了率、再発率、監査指摘の改善状況を確認する。',
+      risk: '手続きが増え、現場が形式対応に流れるおそれがある。',
+      riskCountermeasure: '重要リスクに絞って運用し、監査を改善提案型にする。',
+      ethics: '記録改ざんを防ぎ、顧客安全と公益を優先する。',
+      sustainability: '信頼される品質保証体制により、長期的な事業継続へつなげる。',
+    });
+  }
+
+  async function copyPreview() {
     setCopyMessage('');
     if (typeof navigator === 'undefined' || !navigator.clipboard) {
-      setCopyMessage('コピー機能が使えない環境です。下のテキスト欄から手動でコピーしてください。');
+      setCopyMessage('コピー機能が使えない環境です。プレビュー欄から手動でコピーしてください。');
       return;
     }
 
     try {
-      await navigator.clipboard.writeText(outlineText);
-      setCopyMessage('答案骨子をコピーしました。');
+      await navigator.clipboard.writeText(previewText);
+      setCopyMessage('答案骨子プレビューをコピーしました。');
     } catch {
-      setCopyMessage('コピーに失敗しました。下のテキスト欄から手動でコピーしてください。');
-    }
-  }
-
-  async function copyHandoffText() {
-    setCopyMessage('');
-    if (typeof navigator === 'undefined' || !navigator.clipboard) {
-      setCopyMessage('コピー機能が使えない環境です。表示されたテキスト欄から手動でコピーしてください。');
-      return;
-    }
-
-    try {
-      await navigator.clipboard.writeText(handoffText);
-      setCopyMessage('答案骨子用テキストをコピーしました。');
-    } catch {
-      setCopyMessage('コピーに失敗しました。表示されたテキスト欄から手動でコピーしてください。');
+      setCopyMessage('コピーに失敗しました。プレビュー欄から手動でコピーしてください。');
     }
   }
 
   return (
-    <div className="mx-auto max-w-7xl space-y-10 px-4 py-8 text-slate-900 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl space-y-8 px-4 py-8 text-slate-900 sm:px-6 lg:px-8">
       <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-        <p className="text-sm font-semibold text-emerald-700">技術士二次試験向け 中核教材</p>
-        <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">課題分解マトリクス</h1>
+        <p className="text-sm font-semibold text-emerald-700">課題抽出から答案骨子へ</p>
+        <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">課題を答案骨子に変えるページ</h1>
         <p className="mt-4 max-w-3xl text-base leading-8 text-slate-700">
-          過去問で問われやすい「多面的な課題抽出」と「最重要課題の選定」を、テーマ別に練習するためのページです。
-          MVPでは製造業DXを扱い、将来は物流、取引適正化、QMS、GXなどのテーマを追加できる構造にしています。
+          問題文から読み取った背景をもとに、課題、原因、解決策、リスク、倫理・持続可能性を整理します。
+          入力した内容は、必須科目Ⅰや選択科目Ⅲの答案骨子に使えます。
         </p>
-      </section>
-
-      <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <p className="text-sm font-semibold text-emerald-700">対象テーマ</p>
-          <h2 className="mt-2 text-2xl font-bold">{theme.title}</h2>
-          <p className="mt-4 text-sm leading-7 text-slate-700">{theme.description}</p>
-          <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-4">
-            <p className="text-sm font-bold text-slate-950">本番風の設問文</p>
-            <p className="mt-3 text-sm leading-7 text-slate-700">{theme.questionText}</p>
-          </div>
-        </div>
-        <div className="space-y-4 rounded-2xl border border-slate-200 bg-slate-50 p-5">
-          <TagGroup title="出題接続" tags={theme.examTags} />
-          <TagGroup title="参照しやすい一次情報" tags={theme.sourceTags} />
-          <TagGroup title="政策・法令接続" tags={theme.lawOrPolicyTags} />
+        <div className="mt-6 rounded-xl border border-emerald-100 bg-emerald-50 p-4">
+          <h2 className="text-base font-bold text-slate-950">このページでできること</h2>
+          <p className="mt-2 text-sm leading-7 text-slate-700">
+            問題背景を入力し、課題を分解し、解決策とリスクまで整理して、答案骨子としてコピーできます。
+          </p>
         </div>
       </section>
 
       <section className="grid gap-4 md:grid-cols-3">
         <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-lg font-bold">1. このテーマの位置づけ</h2>
-          <p className="mt-3 text-sm leading-7 text-slate-700">DXをIT導入で終わらせず、品質・生産・人材・データを横断する経営工学の課題として扱います。</p>
+          <p className="text-sm font-bold text-emerald-700">Step 1</p>
+          <h2 className="mt-2 text-lg font-bold">問題の背景を入れる</h2>
+          <p className="mt-3 text-sm leading-7 text-slate-700">社会背景、業界課題、自社・現場の状況を短く書きます。</p>
         </div>
         <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-lg font-bold">2. 試験での出題場面</h2>
-          <p className="mt-3 text-sm leading-7 text-slate-700">必須科目Ⅰや選択科目Ⅲで、課題抽出、最重要課題、解決策、リスクへの展開が問われます。</p>
+          <p className="text-sm font-bold text-emerald-700">Step 2</p>
+          <h2 className="mt-2 text-lg font-bold">課題を分解する</h2>
+          <p className="mt-3 text-sm leading-7 text-slate-700">何が問題か、なぜ起きているか、誰に影響するかを整理します。</p>
         </div>
         <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-lg font-bold">今回は実装しないもの</h2>
-          <p className="mt-3 text-sm leading-7 text-slate-700">難易度設定、タイマー、採点、AI添削、保存、ランダム生成、モード切替は次回以降の拡張対象です。</p>
+          <p className="text-sm font-bold text-emerald-700">Step 3</p>
+          <h2 className="mt-2 text-lg font-bold">答案骨子に変える</h2>
+          <p className="mt-3 text-sm leading-7 text-slate-700">最重要課題、解決策、効果、リスク、倫理・持続可能性へ展開します。</p>
         </div>
       </section>
 
-      <section className="space-y-5">
-        <div>
-          <h2 className="text-2xl font-bold">3. 観点別の課題カード</h2>
-          <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-700">
-            観点を切り替えながら課題を比較し、答案で使う3課題を選びます。公開答案では、観点が偏っていないことが説得力につながります。
-          </p>
+      <section className="rounded-2xl border border-slate-200 bg-slate-50 p-5 shadow-sm">
+        <h2 className="text-xl font-bold">入力の流れ</h2>
+        <div className="mt-4 flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-700">
+          {['問題背景', '現状の問題', '原因', '課題', '解決策', 'リスク', '倫理・持続可能性', '答案骨子'].map((item, index) => (
+            <span key={item} className="flex items-center gap-2">
+              <span className={index === 7 ? 'rounded-full bg-emerald-700 px-3 py-1 text-white' : 'rounded-full border border-slate-200 bg-white px-3 py-1'}>
+                {item}
+              </span>
+              {index < 7 && <span className="text-slate-400">→</span>}
+            </span>
+          ))}
         </div>
+      </section>
 
-        <div className="grid gap-5 lg:grid-cols-[220px_minmax(0,1fr)_320px]">
-          <aside className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-            <h3 className="text-sm font-bold text-slate-700">観点フィルタ</h3>
-            <div className="mt-4 flex flex-wrap gap-2 lg:flex-col">
-              {(['すべて', ...viewpoints] as Filter[]).map((viewpoint) => (
+      <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_420px]">
+        <div className="space-y-5">
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h2 className="text-xl font-bold">テーマ例から始める</h2>
+            <p className="mt-2 text-sm leading-7 text-slate-700">空欄から始めにくい場合は、テーマ例を入れてから自分の問題に合わせて直してください。</p>
+            <div className="mt-4 grid gap-3 md:grid-cols-3">
+              {sampleThemes.map((theme) => (
                 <button
-                  key={viewpoint}
+                  key={theme.title}
                   type="button"
-                  onClick={() => setActiveFilter(viewpoint)}
-                  className={`rounded-full border px-3 py-2 text-left text-sm font-semibold transition ${
-                    activeFilter === viewpoint
-                      ? 'border-emerald-700 bg-emerald-700 text-white'
-                      : 'border-slate-200 bg-white text-slate-700 hover:border-emerald-300 hover:bg-emerald-50'
-                  }`}
+                  onClick={() => applySampleTheme(theme.title)}
+                  className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-left transition hover:border-emerald-400 hover:bg-emerald-50"
                 >
-                  {viewpoint}
+                  <span className="font-bold text-slate-950">{theme.title}</span>
+                  <span className="mt-2 block text-xs leading-6 text-slate-600">{theme.hint}</span>
                 </button>
               ))}
             </div>
-          </aside>
+          </div>
 
           <div className="grid gap-4 md:grid-cols-2">
-            {displayedCards.map((card) => {
-              const isSelected = selectedIds.includes(card.id);
-              return (
-                <article
-                  key={card.id}
-                  className={`rounded-xl border bg-white p-5 shadow-sm transition ${
-                    isSelected ? 'border-emerald-500 ring-2 ring-emerald-100' : 'border-slate-200'
-                  }`}
-                >
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">{card.viewpoint}</span>
-                    <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${usefulnessClassName(card.answerUsefulness)}`}>
-                      答案での使いやすさ：{card.answerUsefulness}
-                    </span>
-                  </div>
-                  <h3 className="mt-4 text-lg font-bold">{card.title}</h3>
-                  <dl className="mt-4 space-y-3 text-sm leading-7">
-                    <div>
-                      <dt className="font-semibold text-slate-900">背景・根本要因</dt>
-                      <dd className="text-slate-700">{card.background}</dd>
-                    </div>
-                    <div>
-                      <dt className="font-semibold text-slate-900">放置した場合の影響</dt>
-                      <dd className="text-slate-700">{card.impact}</dd>
-                    </div>
-                    <div>
-                      <dt className="font-semibold text-slate-900">使える経営工学・QC手法</dt>
-                      <dd className="text-slate-700">{card.methods}</dd>
-                    </div>
-                  </dl>
-                  <button
-                    type="button"
-                    onClick={() => toggleCard(card.id)}
-                    className={`mt-5 w-full rounded-lg border px-4 py-2 text-sm font-bold transition ${
-                      isSelected
-                        ? 'border-emerald-700 bg-emerald-700 text-white hover:bg-emerald-800'
-                        : 'border-slate-300 bg-white text-slate-800 hover:border-emerald-500 hover:bg-emerald-50'
-                    }`}
-                  >
-                    {isSelected ? '選択を解除する' : 'この課題を選ぶ'}
-                  </button>
-                </article>
-              );
-            })}
-          </div>
-
-          <aside className="space-y-4">
-            <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-              <h3 className="text-lg font-bold">選択済み課題</h3>
-              <p className="mt-2 text-sm text-slate-600">最大3つまで選択できます。</p>
-              {notice && <p className="mt-3 rounded-lg bg-amber-50 p-3 text-sm font-semibold text-amber-800">{notice}</p>}
-              <div className="mt-4 space-y-3">
-                {selectedCards.length === 0 ? (
-                  <p className="rounded-lg border border-dashed border-slate-300 p-4 text-sm text-slate-500">課題カードから選択してください。</p>
-                ) : (
-                  selectedCards.map((card) => (
-                    <div key={card.id} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-                      <p className="text-xs font-semibold text-slate-500">{card.viewpoint}</p>
-                      <p className="mt-1 font-bold">{card.title}</p>
-                      <button type="button" onClick={() => toggleCard(card.id)} className="mt-2 text-sm font-semibold text-emerald-700 underline">
-                        解除する
-                      </button>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-
-            <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-              <h3 className="text-lg font-bold">観点の偏り</h3>
-              <p className="mt-3 text-sm leading-7 text-slate-700">{balanceComment}</p>
-            </div>
-          </aside>
-        </div>
-      </section>
-
-      <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_420px]">
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-2xl font-bold">4. 最重要課題の選定</h2>
-          <p className="mt-3 text-sm leading-7 text-slate-700">
-            選んだ3課題を比較し、影響範囲・根本原因・波及効果の観点から最重要課題を1つに絞ります。
-            ここで書いた理由が、答案の説得力の土台になります。
-          </p>
-
-          <div className="mt-5">
-            <label className="text-sm font-bold text-slate-800" htmlFor="priority-issue">
-              最重要課題
-            </label>
-            <select
-              id="priority-issue"
-              value={priorityId}
-              onChange={(event) => setPriorityId(event.target.value)}
-              className="mt-2 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
-            >
-              <option value="">選択してください</option>
-              {selectedCards.map((card) => (
-                <option key={card.id} value={card.id}>
-                  {card.title}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="mt-5 rounded-lg bg-slate-50 p-4">
-            <p className="text-sm font-bold text-slate-800">選定理由のヒント</p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {reasonHints.map((hint) => (
-                <span key={hint} className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-700">
-                  {hint}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <div className="mt-5">
-            <label className="text-sm font-bold text-slate-800" htmlFor="priority-reason">
-              選定理由
-            </label>
-            <textarea
-              id="priority-reason"
-              value={reason}
-              onChange={(event) => setReason(event.target.value)}
-              placeholder="例：品質データの活用不足は、慢性不良の再発だけでなく、現場改善やQMSの有効性にも影響するため。"
-              className="mt-2 min-h-28 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm leading-7"
-            />
-          </div>
-        </div>
-
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm">
-          <h2 className="text-xl font-bold">答案骨子としてコピー</h2>
-          <p className="mt-2 text-sm leading-7 text-slate-700">設問、課題、最重要課題、選定理由を答案の下書きに使いやすい形で出力します。</p>
-          <textarea readOnly value={outlineText} className="mt-4 min-h-80 w-full rounded-lg border border-emerald-200 bg-white px-3 py-2 font-mono text-sm leading-6" />
-          <button type="button" onClick={copyOutline} className="mt-4 w-full rounded-lg bg-emerald-700 px-4 py-2 text-sm font-bold text-white transition hover:bg-emerald-800">
-            答案骨子をコピーする
-          </button>
-          {copyMessage && <p className="mt-3 text-sm font-semibold text-emerald-800">{copyMessage}</p>}
-        </div>
-      </section>
-
-      {selectedCards.length === 3 && priorityCard && (
-        <section className="rounded-2xl border border-emerald-200 bg-white p-5 shadow-sm sm:p-6">
-          <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_420px]">
-            <div>
-              <p className="text-sm font-semibold text-emerald-700">課題抽出から答案骨子へ</p>
-              <h2 className="mt-2 text-2xl font-bold">次は答案骨子に整理する</h2>
-              <p className="mt-3 text-sm leading-7 text-slate-700">
-                選択した課題、最重要課題、選定理由をもとに、AnswerStructureBuilder で解決策・リスク・倫理・持続可能性まで展開できます。
-              </p>
-
-              <div className="mt-5 grid gap-3 md:grid-cols-3">
-                {selectedCards.map((card) => (
-                  <div key={`handoff-${card.id}`} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-xs font-semibold text-slate-500">{card.viewpoint}</p>
-                    <p className="mt-1 font-bold text-slate-950">{card.title}</p>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-5 rounded-xl border border-emerald-100 bg-emerald-50 p-4">
-                <p className="text-sm font-bold text-slate-950">最重要課題</p>
-                <p className="mt-1 text-sm leading-7 text-slate-700">{priorityCard.title}</p>
-                <p className="mt-3 text-sm font-bold text-slate-950">選定理由</p>
-                <p className="mt-1 text-sm leading-7 text-slate-700">{reason || '未入力'}</p>
-              </div>
-
-              <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-                <button
-                  type="button"
-                  onClick={copyHandoffText}
-                  className="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-bold text-white transition hover:bg-emerald-800"
-                >
-                  答案骨子用テキストをコピー
-                </button>
-                <a
-                  href={answerBuilderHref}
-                  className="rounded-lg border border-emerald-700 bg-white px-4 py-2 text-center text-sm font-bold text-emerald-700 transition hover:bg-emerald-50"
-                >
-                  答案骨子ビルダーへ進む
-                </a>
-              </div>
-            </div>
-
-            <div>
-              <p className="text-sm font-bold text-slate-800">AnswerStructureBuilder に貼り付けやすいテキスト</p>
-              <textarea
-                readOnly
-                value={handoffText}
-                className="mt-3 min-h-96 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 font-mono text-sm leading-6 text-slate-900"
-              />
-            </div>
-          </div>
-        </section>
-      )}
-
-      <section className="grid gap-5 md:grid-cols-3">
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-xl font-bold">5. 技術士答案での使い方</h2>
-          <p className="mt-3 text-sm leading-7 text-slate-700">課題を3つ出した後、最重要課題を中心に解決策、実施上のリスク、倫理、持続可能性へ展開します。</p>
-        </div>
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-xl font-bold">6. 実務・QMS改善に向けた活用</h2>
-          <p className="mt-3 text-sm leading-7 text-slate-700">実務では、DX課題を人材、プロセス、データ、品質に分けることで、改善テーマとKPIを整理しやすくなります。</p>
-        </div>
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-xl font-bold">今後追加しやすいテーマ</h2>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {futureThemes.map((futureTheme) => (
-              <span key={futureTheme} className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700">
-                {futureTheme}
-              </span>
+            {fields.map((field) => (
+              <label key={field.key} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                <span className="text-sm font-bold text-slate-950">{field.label}</span>
+                <span className="mt-1 block text-xs leading-6 text-slate-500">答案での使い道：{field.answerUse}</span>
+                <textarea
+                  value={values[field.key]}
+                  onChange={(event) => updateValue(field.key, event.target.value)}
+                  placeholder={field.placeholder}
+                  className="mt-3 min-h-28 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm leading-7 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+                />
+              </label>
             ))}
           </div>
         </div>
+
+        <aside className="space-y-5 lg:sticky lg:top-4 lg:self-start">
+          <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm">
+            <h2 className="text-xl font-bold">答案骨子プレビュー</h2>
+            <p className="mt-2 text-sm leading-7 text-slate-700">
+              入力済み項目：{filledCount} / {fields.length}。このプレビューで、入力内容が最終答案のどこに使われるかを確認します。
+            </p>
+            <textarea
+              readOnly
+              value={previewText}
+              className="mt-4 min-h-[34rem] w-full rounded-lg border border-emerald-200 bg-white px-3 py-2 font-mono text-sm leading-6 text-slate-900"
+            />
+            <button type="button" onClick={copyPreview} className="mt-4 w-full rounded-lg bg-emerald-700 px-4 py-2 text-sm font-bold text-white transition hover:bg-emerald-800">
+              答案骨子をコピーする
+            </button>
+            {copyMessage && <p className="mt-3 text-sm font-semibold text-emerald-800">{copyMessage}</p>}
+          </div>
+
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h2 className="text-lg font-bold">次に進む</h2>
+            <div className="mt-4 space-y-3 text-sm font-semibold">
+              <Link className="block rounded-lg border border-slate-200 px-4 py-3 text-emerald-700 hover:bg-emerald-50" href="/guides/engineer/answer-structure-builder">
+                答案骨子ビルダーで型に当てはめる
+              </Link>
+              <Link className="block rounded-lg border border-slate-200 px-4 py-3 text-emerald-700 hover:bg-emerald-50" href="/guides/engineer/model-answer-examples">
+                模範答案例で書き方を確認する
+              </Link>
+              <Link className="block rounded-lg border border-slate-200 px-4 py-3 text-emerald-700 hover:bg-emerald-50" href="/guides/engineer/practice">
+                問題演習へ進む
+              </Link>
+            </div>
+          </div>
+        </aside>
       </section>
     </div>
   );
