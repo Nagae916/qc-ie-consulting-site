@@ -284,7 +284,8 @@ ${filledOrPlaceholder(values.effect, fields.find((field) => field.key === 'effec
       <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_420px]">
         <div className="space-y-5">
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 className="text-xl font-bold">テーマ例から始める</h2>
+            <p className="text-sm font-semibold text-emerald-700">入力する</p>
+            <h2 className="mt-1 text-xl font-bold">テーマ例から始める</h2>
             <p className="mt-2 text-sm leading-7 text-slate-700">空欄から始めにくい場合は、テーマ例を入れてから自分の問題に合わせて直してください。</p>
             <div className="mt-4 grid gap-3 md:grid-cols-3">
               {sampleThemes.map((theme) => (
@@ -319,9 +320,10 @@ ${filledOrPlaceholder(values.effect, fields.find((field) => field.key === 'effec
 
         <aside className="space-y-5 lg:sticky lg:top-4 lg:self-start">
           <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm">
-            <h2 className="text-xl font-bold">答案骨子プレビュー</h2>
+            <p className="text-sm font-semibold text-emerald-700">答案骨子を見る</p>
+            <h2 className="mt-1 text-xl font-bold">答案骨子プレビュー</h2>
             <p className="mt-2 text-sm leading-7 text-slate-700">
-              入力済み項目：{filledCount} / {fields.length}。このプレビューで、入力内容が最終答案のどこに使われるかを確認します。
+              入力済み項目：{filledCount} / {fields.length}。左の入力欄を埋めると、ここに答案骨子として表示されます。
             </p>
             <textarea
               readOnly

@@ -21,14 +21,48 @@ status: "published"
 
 ## このページでできること
 
-キーワードを次の4つの使い方に分けて整理します。
+<div className="grid gap-4 md:grid-cols-4">
+  <div className="rounded-2xl border border-orange-200 bg-orange-50 p-5 shadow-sm">
+    <p className="text-sm font-semibold text-orange-700">課題</p>
+    <h3 className="mt-1 text-lg font-bold">問題を示す</h3>
+    <p className="mt-2 text-sm text-slate-700">属人化、在庫過多、物流制約などを説明します。</p>
+  </div>
+  <div className="rounded-2xl border border-green-200 bg-green-50 p-5 shadow-sm">
+    <p className="text-sm font-semibold text-green-700">解決策</p>
+    <h3 className="mt-1 text-lg font-bold">改善策にする</h3>
+    <p className="mt-2 text-sm text-slate-700">標準化、S&OP、WMS、FMEAなどを施策にします。</p>
+  </div>
+  <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <p className="text-sm font-semibold text-slate-600">リスク</p>
+    <h3 className="mt-1 text-lg font-bold">副作用を見る</h3>
+    <p className="mt-2 text-sm text-slate-700">欠品、現場負荷、データ品質などを確認します。</p>
+  </div>
+  <div className="rounded-2xl border border-blue-200 bg-blue-50 p-5 shadow-sm">
+    <p className="text-sm font-semibold text-blue-700">倫理・持続可能性</p>
+    <h3 className="mt-1 text-lg font-bold">判断を補強する</h3>
+    <p className="mt-2 text-sm text-slate-700">安全、説明責任、環境、供給責任へつなげます。</p>
+  </div>
+</div>
 
-- 課題を説明する
-- 解決策として使う
-- リスクや副作用を説明する
-- 倫理・持続可能性につなげる
+凡例：オレンジ＝課題、緑＝解決策、青＝倫理・持続可能性、白＝補足・注意。
 
 用語を覚えるだけで終わらせず、答案のどの段落で使うかを決めるためのページです。
+
+## キーワード変換の流れ
+
+<div className="rounded-2xl border bg-slate-50 p-5 shadow-sm">
+  <div className="flex flex-col gap-2 text-sm font-semibold text-slate-700 md:flex-row md:flex-wrap md:items-center">
+    <span className="rounded-full bg-white px-3 py-1">S&OP</span>
+    <span>→</span>
+    <span className="rounded-full bg-orange-100 px-3 py-1">課題：販売計画と生産計画がずれる</span>
+    <span>→</span>
+    <span className="rounded-full bg-green-100 px-3 py-1">解決策：販売・生産・在庫計画を統合する</span>
+    <span>→</span>
+    <span className="rounded-full bg-white px-3 py-1">リスク：会議だけで形骸化する</span>
+    <span>→</span>
+    <span className="rounded-full bg-blue-100 px-3 py-1">倫理・持続可能性：供給安定と過剰在庫削減を両立する</span>
+  </div>
+</div>
 
 ## キーワードの使い方は4種類
 

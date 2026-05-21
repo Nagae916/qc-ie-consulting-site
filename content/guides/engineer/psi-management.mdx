@@ -18,10 +18,41 @@ PSI管理は、販売計画、生産計画、在庫計画をつなげて、需�
 
 このページでは、PSI管理を次の観点で整理します。
 
-- 販売・生産・在庫を同じ前提で見る
-- 欠品、過剰在庫、生産負荷の偏りを防ぐ
-- S&OP、MRP、在庫管理との関係を理解する
-- 技術士二次試験の答案で、計画連携の解決策として使う
+<div className="grid gap-4 md:grid-cols-3">
+  <div className="rounded-2xl border bg-white p-5 shadow-sm">
+    <p className="text-sm font-semibold text-blue-700">S：Sales</p>
+    <h3 className="mt-1 text-lg font-bold">販売計画</h3>
+    <p className="mt-2 text-sm text-slate-700">需要予測、受注、販促、顧客要求を整理します。</p>
+  </div>
+  <div className="rounded-2xl border bg-white p-5 shadow-sm">
+    <p className="text-sm font-semibold text-green-700">P：Production</p>
+    <h3 className="mt-1 text-lg font-bold">生産計画</h3>
+    <p className="mt-2 text-sm text-slate-700">能力、負荷、調達、MRP条件を確認します。</p>
+  </div>
+  <div className="rounded-2xl border bg-white p-5 shadow-sm">
+    <p className="text-sm font-semibold text-orange-700">I：Inventory</p>
+    <h3 className="mt-1 text-lg font-bold">在庫計画</h3>
+    <p className="mt-2 text-sm text-slate-700">安全在庫、欠品、過剰在庫を見ます。</p>
+  </div>
+</div>
+
+凡例：青＝販売計画、緑＝生産計画、オレンジ＝在庫計画。
+
+## PSIの関係
+
+<div className="rounded-2xl border bg-slate-50 p-5 shadow-sm">
+  <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-700">
+    <span className="rounded-full bg-blue-100 px-3 py-1">販売計画</span>
+    <span>→</span>
+    <span className="rounded-full bg-white px-3 py-1">必要数量</span>
+    <span>→</span>
+    <span className="rounded-full bg-green-100 px-3 py-1">生産計画</span>
+    <span>→</span>
+    <span className="rounded-full bg-orange-100 px-3 py-1">在庫水準</span>
+    <span>→</span>
+    <span className="rounded-full bg-white px-3 py-1">欠品・過剰在庫の調整</span>
+  </div>
+</div>
 
 ## PSI管理とは
 

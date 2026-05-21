@@ -15,27 +15,62 @@ status: "published"
 
 ## このページでできること
 
-- 答案練習の始め方を確認する
-- まず使うページを選ぶ
-- 練習テーマと設問形式を選ぶ
-- 1回分の練習手順を確認する
+<div className="grid gap-4 md:grid-cols-4">
+  <div className="rounded-2xl border bg-white p-5 shadow-sm">
+    <h3 className="text-lg font-bold">流れを見る</h3>
+    <p className="mt-2 text-sm text-slate-700">答案練習の始め方を確認します。</p>
+  </div>
+  <div className="rounded-2xl border bg-white p-5 shadow-sm">
+    <h3 className="text-lg font-bold">ページを選ぶ</h3>
+    <p className="mt-2 text-sm text-slate-700">最初に使うページを決めます。</p>
+  </div>
+  <div className="rounded-2xl border bg-white p-5 shadow-sm">
+    <h3 className="text-lg font-bold">テーマを選ぶ</h3>
+    <p className="mt-2 text-sm text-slate-700">頻出テーマと設問形式を選びます。</p>
+  </div>
+  <div className="rounded-2xl border bg-white p-5 shadow-sm">
+    <h3 className="text-lg font-bold">1回分を回す</h3>
+    <p className="mt-2 text-sm text-slate-700">読み取り、骨子、答案、見直しを行います。</p>
+  </div>
+</div>
 
 ## 答案練習の流れ
 
-過去問を読む  
-→ 課題を分解する  
-→ 答案骨子を作る  
-→ 600字または1200字で書く  
-→ 原稿用紙で確認する  
-→ 改善点を次に反映する
+<div className="rounded-2xl border bg-slate-50 p-5 shadow-sm">
+  <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-700">
+    <span className="rounded-full bg-white px-3 py-1">過去問を読む</span>
+    <span>→</span>
+    <span className="rounded-full bg-white px-3 py-1">課題を分解する</span>
+    <span>→</span>
+    <span className="rounded-full bg-white px-3 py-1">答案骨子を作る</span>
+    <span>→</span>
+    <span className="rounded-full bg-white px-3 py-1">600字または1200字で書く</span>
+    <span>→</span>
+    <span className="rounded-full bg-white px-3 py-1">原稿用紙で確認する</span>
+    <span>→</span>
+    <span className="rounded-full bg-white px-3 py-1">改善点を次に反映する</span>
+  </div>
+</div>
 
 ## まず使う3つのページ
 
-| 使うページ | 役割 | 次にすること |
-|---|---|---|
-| [過去問トレンドマップ](/guides/engineer/past-exam-trend-map) | 何が問われるかを知る | テーマと設問形式を選ぶ |
-| [課題分解マトリクス](/guides/engineer/issue-decomposition-matrix) | 問題文から課題と解決策を整理する | 背景、課題、解決策、リスクを書き出す |
-| [答案骨子ビルダー](/guides/engineer/answer-structure-builder) | 答案型に沿って骨子を作る | 必須Ⅰ、Ⅱ-1、Ⅱ-2、Ⅲの型に当てはめる |
+<div className="grid gap-4 md:grid-cols-3">
+  <a className="rounded-2xl border bg-white p-5 shadow-sm no-underline hover:border-blue-300 hover:bg-blue-50" href="/guides/engineer/past-exam-trend-map">
+    <p className="text-sm font-semibold text-blue-700">何が問われるかを知る</p>
+    <h3 className="mt-1 text-lg font-bold text-slate-950">過去問トレンドマップ</h3>
+    <p className="mt-2 text-sm text-slate-700">テーマと設問形式を選びます。</p>
+  </a>
+  <a className="rounded-2xl border bg-white p-5 shadow-sm no-underline hover:border-blue-300 hover:bg-blue-50" href="/guides/engineer/issue-decomposition-matrix">
+    <p className="text-sm font-semibold text-blue-700">課題と解決策を整理する</p>
+    <h3 className="mt-1 text-lg font-bold text-slate-950">課題分解マトリクス</h3>
+    <p className="mt-2 text-sm text-slate-700">背景、課題、解決策、リスクを書き出します。</p>
+  </a>
+  <a className="rounded-2xl border bg-white p-5 shadow-sm no-underline hover:border-blue-300 hover:bg-blue-50" href="/guides/engineer/answer-structure-builder">
+    <p className="text-sm font-semibold text-blue-700">型に当てはめる</p>
+    <h3 className="mt-1 text-lg font-bold text-slate-950">答案骨子ビルダー</h3>
+    <p className="mt-2 text-sm text-slate-700">必須Ⅰ、Ⅱ-1、Ⅱ-2、Ⅲの型に変換します。</p>
+  </a>
+</div>
 
 答案の見え方を確認したい場合は、[模範答案例](/guides/engineer/model-answer-examples) で通常テキストと24字×25行の原稿用紙プレビューを見比べます。
 
@@ -52,13 +87,13 @@ status: "published"
 
 ## 1回分の練習手順
 
-1. 過去問トレンドマップでテーマを1つ選ぶ
-2. 設問形式別の問われ方で、答案に必要な要素を確認する
-3. 課題分解マトリクスで、背景、課題、解決策、リスクを整理する
-4. 答案骨子ビルダーで、設問形式に合う骨子へ変換する
-5. 600字または1200字を目安に本文を書く
-6. 原稿用紙プレビューで、文字量と改行の見え方を確認する
-7. 模範答案例と比べて、足りない観点を次回に反映する
+| 時間 | やること |
+|---|---|
+| 10分 | 問題文を読み、テーマと設問形式を確認する |
+| 15分 | 課題分解マトリクスで背景、課題、リスクを整理する |
+| 20分 | 答案骨子ビルダーで設問形式に合う骨子へ変換する |
+| 40分 | 600字または1200字を目安に本文を書く |
+| 15分 | 原稿用紙プレビューと模範答案例で見直す |
 
 ## 設問形式を選ぶ
 
