@@ -58,6 +58,7 @@ const guideSlugs = new Set([
   "whitepaper-keyword-map",
   "past-exam-question-patterns",
   "answer-structure-guide",
+  "model-answer-examples",
   "statistics-exam-level2-map",
   "anova",
   "ancova",
