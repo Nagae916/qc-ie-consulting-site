@@ -77,6 +77,9 @@ const requiredFrameId = 'required-i-standard';
 const requiredExampleRule = answerFrameRuleById.get(requiredFrameId);
 const requiredExampleCompetencyIds = requiredExampleRule?.relatedCompetencies ?? ['professionalKnowledge', 'problemSolving', 'evaluation', 'communication', 'engineeringEthics'];
 const requiredAnswerBuilderHref = `${answerBuilderHref}?frame=${requiredFrameId}`;
+const electiveIi1AnswerBuilderHref = `${answerBuilderHref}?frame=elective-ii-1-short`;
+const electiveIi2AnswerBuilderHref = `${answerBuilderHref}?frame=elective-ii-2-procedure`;
+const electiveIiiAnswerBuilderHref = `${answerBuilderHref}?frame=elective-iii-analysis`;
 const contextOptions = ['製造業', 'サービス業', 'サプライチェーン', '品質マネジメント', '生産・物流マネジメント'];
 const skeletonGuide = [
   '問題文の背景、対象業務、自分の立場を先に整理する',
@@ -97,32 +100,32 @@ const patternGuides: Record<string, { feature: string; action: string; href: str
   手順説明型: {
     feature: '実施手順、管理項目、留意点を整理する必要がある。',
     action: '選択科目Ⅱ-2型の構成で、手順と留意点をセットで練習する。',
-    href: answerBuilderHref,
+    href: electiveIi2AnswerBuilderHref,
   },
   留意点型: {
     feature: '適用条件、実施上の注意点、工夫点を具体化する必要がある。',
     action: '手法のメリットだけでなく、現場導入時の制約も整理する。',
-    href: answerBuilderHref,
+    href: electiveIi2AnswerBuilderHref,
   },
   用語説明型: {
     feature: '定義だけでなく、特徴、適用場面、留意点を短く整理する必要がある。',
     action: '選択科目Ⅱ-1型の600字答案で練習する。',
-    href: answerBuilderHref,
+    href: electiveIi1AnswerBuilderHref,
   },
   比較評価型: {
     feature: '複数案の評価軸、選定理由、トレードオフ整理が必要。',
     action: '評価軸、採用理由、代替案の弱点をセットで整理する。',
-    href: answerBuilderHref,
+    href: electiveIi1AnswerBuilderHref,
   },
   リスク対応型: {
     feature: '施策実施後の副作用と対策を一対一で整理する必要がある。',
     action: 'リスクと対策の対応関係を崩さずに骨子化する。',
-    href: answerBuilderHref,
+    href: requiredAnswerBuilderHref,
   },
   将来展望型: {
     feature: '社会変化、技術動向、経営工学的対応をつなげる必要がある。',
     action: '白書・政策タグを見ながら、今後の方向性と実務対応を結びつける。',
-    href: answerBuilderHref,
+    href: electiveIiiAnswerBuilderHref,
   },
 };
 
@@ -874,7 +877,7 @@ export default function PastExamTrendMap() {
           <h2 className="text-lg font-bold">課題抽出型の問題を練習する</h2>
           <p className="mt-2 text-sm leading-7 text-slate-700">多面的な課題抽出、最重要課題、選定理由を整理します。</p>
         </a>
-        <a href={answerBuilderHref} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-emerald-400 hover:shadow-md">
+        <a href={requiredAnswerBuilderHref} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-emerald-400 hover:shadow-md">
           <h2 className="text-lg font-bold">答案骨子を作成する</h2>
           <p className="mt-2 text-sm leading-7 text-slate-700">設問要求、課題、解決策、リスク、倫理を一貫して骨子化します。</p>
         </a>
