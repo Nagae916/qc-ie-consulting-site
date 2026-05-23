@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from 'react';
 import worksheetTemplates from '../../../public/data/engineer/answer-worksheet-templates.json';
+import worksheetExamples from '../../../public/data/engineer/answer-worksheet-examples.json';
+import whitepaperFacts from '../../../public/data/engineer/whitepaper-facts.json';
 
 type WorksheetBlock = {
   id: string;
@@ -28,7 +30,47 @@ type WorksheetTemplate = {
   };
 };
 
+type WorksheetExampleBlock = {
+  blockId: string;
+  label: string;
+  sample?: string;
+  samples?: string[];
+  viewpoint?: string;
+  target?: string;
+  issue?: string;
+  content?: string;
+  reason?: string;
+};
+
+type WorksheetExample = {
+  id: string;
+  answerType: string;
+  title: string;
+  theme: string;
+  targetChars: number;
+  manuscriptPages: number;
+  practicalCharRange: string;
+  blocks: WorksheetExampleBlock[];
+};
+
+type WhitepaperFact = {
+  id: string;
+  theme: string;
+  sourceFamily: string;
+  latestSourceName: string;
+  latestYear: number;
+  priority: 'high' | 'medium' | 'low';
+  factSummary: string;
+  numericValue: number | null;
+  valueStatus: string;
+  usableExamTypes: string[];
+  answerUse: string;
+  worksheetUse: string;
+};
+
 const templates = worksheetTemplates as WorksheetTemplate[];
+const examples = worksheetExamples as WorksheetExample[];
+const facts = whitepaperFacts as WhitepaperFact[];
 
 const labelByAnswerType: Record<string, string> = {
   'required-i-standard': '必須Ⅰ',
@@ -44,6 +86,18 @@ export default function AnswerWorksheetGuide() {
     () => templates.find((template) => template.id === selectedId) ?? templates[0],
     [selectedId]
   );
+
+  const selectedExamples = useMemo(
+    () => examples.filter((example) => example.answerType === selectedTemplate?.answerType),
+    [selectedTemplate?.answerType]
+  );
+
+  const selectedFacts = useMemo(() => {
+    return facts
+      .filter((fact) => fact.usableExamTypes.includes(selectedTemplate?.answerType ?? ''))
+      .sort((a, b) => priorityRank(a.priority) - priorityRank(b.priority))
+      .slice(0, 3);
+  }, [selectedTemplate?.answerType]);
 
   if (!selectedTemplate) {
     return null;
@@ -125,6 +179,73 @@ export default function AnswerWorksheetGuide() {
               </ul>
             </div>
           ) : null}
+
+          {selectedExamples.length > 0 ? (
+            <div className="rounded-2xl border border-slate-200 bg-white p-4">
+              <h3 className="text-base font-bold text-slate-950">記入例を見る</h3>
+              <p className="mt-2 text-sm leading-6 text-slate-700">
+                同じ答案型のテーマを、ワークシートの各欄に入れるとどう整理できるかを確認します。
+              </p>
+              <div className="mt-4 space-y-3">
+                {selectedExamples.map((example) => (
+                  <details key={example.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <summary className="cursor-pointer text-sm font-bold text-slate-950">{example.title}</summary>
+                    <p className="mt-2 text-xs font-semibold text-blue-700">{example.theme}</p>
+                    <div className="mt-3 space-y-3">
+                      {example.blocks.map((block) => (
+                        <div key={`${example.id}-${block.blockId}-${block.label}`} className="rounded-xl border border-slate-200 bg-white p-3">
+                          <p className="text-xs font-semibold text-slate-500">{block.label}</p>
+                          {block.viewpoint ? <p className="mt-1 text-sm text-slate-700">観点：{block.viewpoint}</p> : null}
+                          {block.target ? <p className="mt-1 text-sm text-slate-700">対象：{block.target}</p> : null}
+                          {block.issue ? <p className="mt-1 text-sm font-semibold text-slate-900">{block.issue}</p> : null}
+                          {block.reason ? <p className="mt-1 text-sm leading-6 text-slate-700">理由：{block.reason}</p> : null}
+                          {block.content ? <p className="mt-1 text-sm leading-6 text-slate-700">{block.content}</p> : null}
+                          {block.sample ? <p className="mt-1 text-sm leading-6 text-slate-700">{block.sample}</p> : null}
+                          {block.samples ? (
+                            <ul className="mt-2 space-y-1 text-sm leading-6 text-slate-700">
+                              {block.samples.map((sample) => (
+                                <li key={sample} className="flex gap-2">
+                                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400" />
+                                  <span>{sample}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          ) : null}
+                        </div>
+                      ))}
+                    </div>
+                  </details>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          {selectedFacts.length > 0 ? (
+            <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
+              <h3 className="text-base font-bold text-slate-950">背景・根拠に使える白書ファクト</h3>
+              <p className="mt-2 text-sm leading-6 text-slate-700">
+                背景や選定理由に使える情報です。数値が未確認の項目は、答案に書く前に最新版を確認してください。
+              </p>
+              <div className="mt-4 space-y-3">
+                {selectedFacts.map((fact) => (
+                  <article key={fact.id} className="rounded-xl border border-amber-100 bg-white p-3">
+                    <div className="flex flex-wrap items-start justify-between gap-2">
+                      <div>
+                        <p className="text-xs font-semibold text-amber-700">{fact.sourceFamily}</p>
+                        <h4 className="mt-1 text-sm font-bold text-slate-950">{fact.theme}</h4>
+                      </div>
+                      <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800">
+                        {fact.numericValue === null ? '数値は最新版確認が必要' : `${fact.numericValue}`}
+                      </span>
+                    </div>
+                    <p className="mt-2 text-sm leading-6 text-slate-700">{fact.factSummary}</p>
+                    <p className="mt-2 text-xs leading-5 text-slate-600">答案での使い方：{fact.answerUse}</p>
+                    <p className="mt-1 text-xs leading-5 text-slate-600">ワークシートでの使い方：{fact.worksheetUse}</p>
+                  </article>
+                ))}
+              </div>
+            </div>
+          ) : null}
         </div>
 
         <div>
@@ -158,6 +279,16 @@ export default function AnswerWorksheetGuide() {
       </section>
     </section>
   );
+}
+
+function priorityRank(priority: WhitepaperFact['priority']) {
+  if (priority === 'high') {
+    return 0;
+  }
+  if (priority === 'medium') {
+    return 1;
+  }
+  return 2;
 }
 
 function MetaCard({ label, value }: { label: string; value: string }) {
