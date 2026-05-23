@@ -24,6 +24,7 @@ const StatisticsExamLevel2Map = dynamic(() => import('./StatisticsExamLevel2Map'
 const StatisticsExamQuizTrainer = dynamic(() => import('./StatisticsExamQuizTrainer'), { ssr: false });
 const ModelAnswerExamples = dynamic(() => import('./ModelAnswerExamples'), { ssr: false });
 const PSISimulator = dynamic(() => import('./PSISimulator'), { ssr: false });
+const RequiredIWorksheet = dynamic(() => import('./RequiredIWorksheet'), { ssr: false });
 import ProblemMatrix from './ProblemMatrix';
 
 /**
@@ -69,6 +70,7 @@ export const GUIDE_COMPONENTS = {
   StatisticsExamQuizTrainer,
   ModelAnswerExamples,
   PSISimulator,
+  RequiredIWorksheet,
   ProblemMatrix,
   // ファイルパスをコメントで明記し、人的ミスを予防
 
