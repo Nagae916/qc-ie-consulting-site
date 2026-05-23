@@ -68,6 +68,7 @@ type WhitepaperFact = {
   usableExamTypes: string[];
   answerUse: string;
   worksheetUse: string;
+  answerSentenceExamples?: string[];
 };
 
 const templates = worksheetTemplates as WorksheetTemplate[];
@@ -112,9 +113,16 @@ export default function AnswerWorksheetGuide() {
           <p className="text-sm font-semibold text-blue-700">答案型別ワークシート</p>
           <h2 className="mt-1 text-2xl font-bold tracking-normal text-slate-950">答案型に合わせて骨子を作る</h2>
           <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-700">
-            必須Ⅰ、Ⅱ-1、Ⅱ-2、Ⅲでは、問われ方と答案構造が異なります。
-            解く問題の形式を選び、対応するワークシートで書く内容を整理します。
+            このページでは、技術士第二次試験の答案を問題形式ごとのワークシートで整理します。
+            問題形式を選び、書く項目、記入例、背景に使える情報を確認します。
           </p>
+        </div>
+
+        <div className="grid gap-3 md:grid-cols-4">
+          <FlowCard title="1. 型を選ぶ" body="必須Ⅰ、Ⅱ-1、Ⅱ-2、Ⅲから問題形式を選びます。" />
+          <FlowCard title="2. 項目を見る" body="答案に入れる内容と書く順番を確認します。" />
+          <FlowCard title="3. 記入例を見る" body="どの粒度で骨子にすればよいか確認します。" />
+          <FlowCard title="4. 根拠を補う" body="必要な場合だけ白書ファクトを背景や理由に使います。" />
         </div>
 
         <div className="grid gap-3 md:grid-cols-4">
@@ -152,6 +160,13 @@ export default function AnswerWorksheetGuide() {
       <section className="rounded-2xl border border-blue-100 bg-blue-50 p-4">
         <h3 className="text-base font-bold text-slate-950">{selectedTemplate.title}</h3>
         <p className="mt-2 text-sm leading-7 text-slate-700">{selectedTemplate.purpose}</p>
+      </section>
+
+      <section className="grid gap-3 md:grid-cols-4">
+        <MetaCard label="必須Ⅰ型" value="課題、解決策、リスク、倫理、持続可能性" />
+        <MetaCard label="Ⅱ-1型" value="定義、特徴、長所短所、適用場面" />
+        <MetaCard label="Ⅱ-2型" value="調査、手順、関係者調整、留意点、KPI" />
+        <MetaCard label="Ⅲ型" value="複数課題、最重要課題、理由、解決策、リスク対策" />
       </section>
 
       <section className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
@@ -249,6 +264,19 @@ export default function AnswerWorksheetGuide() {
                     <p className="mt-2 text-sm leading-6 text-slate-700">{fact.factSummary}</p>
                     <p className="mt-2 text-xs leading-5 text-slate-600">答案での使い方：{fact.answerUse}</p>
                     <p className="mt-1 text-xs leading-5 text-slate-600">ワークシートでの使い方：{fact.worksheetUse}</p>
+                    {fact.answerSentenceExamples && fact.answerSentenceExamples.length > 0 ? (
+                      <div className="mt-3 rounded-lg bg-amber-50 p-3">
+                        <p className="text-xs font-bold text-slate-800">答案での使い方例</p>
+                        <ul className="mt-2 space-y-1 text-xs leading-5 text-slate-700">
+                          {fact.answerSentenceExamples.map((example) => (
+                            <li key={example} className="flex gap-2">
+                              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500" />
+                              <span>{example}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : null}
                   </article>
                 ))}
               </div>
@@ -304,6 +332,15 @@ function MetaCard({ label, value }: { label: string; value: string }) {
     <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
       <p className="text-xs font-semibold text-slate-500">{label}</p>
       <p className="mt-1 text-base font-bold text-slate-950">{value}</p>
+    </div>
+  );
+}
+
+function FlowCard({ title, body }: { title: string; body: string }) {
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+      <p className="text-sm font-bold text-slate-950">{title}</p>
+      <p className="mt-2 text-xs leading-5 text-slate-600">{body}</p>
     </div>
   );
 }

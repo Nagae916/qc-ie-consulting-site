@@ -30,22 +30,37 @@ type ModelAnswerExample = {
 const modelAnswerExamples = modelAnswerExamplesData as ModelAnswerExample[];
 
 const answerFrameLabels: Record<string, string> = {
-  'required-i-standard': '必須Ⅰ型答案',
-  'elective-ii-1-short': 'Ⅱ-1型答案',
-  'elective-ii-2-procedure': 'Ⅱ-2型答案',
-  'elective-iii-analysis': 'Ⅲ型答案',
+  'required-i-standard': '必須Ⅰ型',
+  'elective-ii-1-short': 'Ⅱ-1型',
+  'elective-ii-2-procedure': 'Ⅱ-2型',
+  'elective-iii-analysis': 'Ⅲ型',
 };
+
+const answerFrameOrder = ['required-i-standard', 'elective-ii-1-short', 'elective-ii-2-procedure', 'elective-iii-analysis'];
 
 function answerFrameLabel(example: ModelAnswerExample) {
   return answerFrameLabels[example.answerFrameId] ?? example.examPart;
 }
 
 export default function ModelAnswerExamples() {
-  const [selectedId, setSelectedId] = useState(modelAnswerExamples[0]?.id ?? '');
+  const [activeFrame, setActiveFrame] = useState(answerFrameOrder[0]);
+  const [selectedId, setSelectedId] = useState('');
+
+  const activeExamples = useMemo(
+    () => modelAnswerExamples.filter((example) => example.answerFrameId === activeFrame),
+    [activeFrame]
+  );
+
+  const frameCounts = useMemo(() => {
+    return answerFrameOrder.reduce<Record<string, number>>((counts, frameId) => {
+      counts[frameId] = modelAnswerExamples.filter((example) => example.answerFrameId === frameId).length;
+      return counts;
+    }, {});
+  }, []);
 
   const selectedExample = useMemo(
-    () => modelAnswerExamples.find((example) => example.id === selectedId) ?? modelAnswerExamples[0],
-    [selectedId]
+    () => activeExamples.find((example) => example.id === selectedId) ?? activeExamples[0] ?? modelAnswerExamples[0],
+    [activeExamples, selectedId]
   );
 
   if (!selectedExample) {
@@ -63,9 +78,39 @@ export default function ModelAnswerExamples() {
 
   return (
     <section className="space-y-8">
+      <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+        <p className="text-sm font-semibold text-blue-700">答案型を選ぶ</p>
+        <div className="mt-3 grid gap-3 md:grid-cols-4">
+          {answerFrameOrder.map((frameId) => {
+            const isActive = frameId === activeFrame;
+            return (
+              <button
+                key={frameId}
+                type="button"
+                onClick={() => {
+                  setActiveFrame(frameId);
+                  setSelectedId('');
+                }}
+                className={`rounded-2xl border p-4 text-left transition ${
+                  isActive ? 'border-blue-500 bg-blue-50 shadow-sm' : 'border-slate-200 bg-slate-50 hover:border-blue-200 hover:bg-blue-50'
+                }`}
+                aria-pressed={isActive}
+              >
+                <p className={`text-base font-bold ${isActive ? 'text-blue-800' : 'text-slate-950'}`}>
+                  {answerFrameLabels[frameId]}
+                </p>
+                <p className="mt-1 text-xs text-slate-600">{frameCounts[frameId] ?? 0}件の答案例</p>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       <div className="grid gap-3 md:grid-cols-2">
-        {modelAnswerExamples.map((example) => {
+        {activeExamples.map((example) => {
           const isSelected = example.id === selectedExample.id;
+          const exampleCharCount = countManuscriptChars(example.normalText);
+          const exampleRange = getRecommendedCharRange(example.targetManuscriptPages);
           return (
             <button
               key={example.id}
@@ -77,11 +122,18 @@ export default function ModelAnswerExamples() {
                   : 'border-slate-200 bg-white hover:border-blue-200 hover:bg-blue-50/40'
               }`}
             >
-              <p className="text-xs font-semibold text-blue-700">{example.examPart}</p>
+              <p className="text-xs font-semibold text-blue-700">{answerFrameLabel(example)} / {example.examPart}</p>
               <h3 className="mt-1 text-base font-bold text-slate-950">{example.title ?? example.theme}</h3>
               <p className="mt-2 text-sm leading-6 text-slate-600">
-                {answerFrameLabel(example)} / {example.questionPattern}
+                {example.targetManuscriptPages}枚 / {exampleCharCount}字 / 実用目安{exampleRange.min}〜{exampleRange.max}字
               </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {example.usedKeywords.slice(0, 4).map((keyword) => (
+                  <span key={keyword} className="rounded-full border border-slate-200 bg-white px-2 py-1 text-xs font-semibold text-slate-600">
+                    {keyword}
+                  </span>
+                ))}
+              </div>
             </button>
           );
         })}
@@ -96,7 +148,7 @@ export default function ModelAnswerExamples() {
 
           <div className="grid gap-3 md:grid-cols-4">
             <MetaCard label="試験区分" value={selectedExample.examPart} />
-            <MetaCard label="答案型" value={answerFrameLabel(selectedExample)} />
+            <MetaCard label="答案型" value={`${answerFrameLabel(selectedExample)}答案`} />
             <MetaCard label="目標原稿用紙" value={`${selectedExample.targetManuscriptPages}枚`} />
             <MetaCard label="上限文字数" value={`${charLimit}字以内`} />
             <MetaCard label="本文文字数" value={`${bodyCharCount}字`} />
@@ -105,20 +157,23 @@ export default function ModelAnswerExamples() {
           </div>
         </header>
 
-        <section className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-          <h3 className="text-lg font-bold text-slate-950">通常テキスト版</h3>
+        <details className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+          <summary className="cursor-pointer text-lg font-bold text-slate-950">通常テキスト版を見る</summary>
           <div className="mt-4 whitespace-pre-wrap rounded-xl border border-slate-200 bg-white p-4 text-sm leading-8 text-slate-800">
             {selectedExample.normalText}
           </div>
-        </section>
+        </details>
 
-        <section className="rounded-2xl border border-slate-200 bg-white p-4">
+        <details className="rounded-2xl border border-slate-200 bg-white p-4">
+          <summary className="cursor-pointer text-lg font-bold text-slate-950">原稿用紙プレビュー版を見る</summary>
+          <div className="mt-4">
           <ManuscriptAnswerPreview
             text={selectedExample.normalText}
             targetPages={selectedExample.targetManuscriptPages}
             title="24×25原稿用紙プレビュー版"
           />
-        </section>
+          </div>
+        </details>
 
         <div className="grid gap-4 lg:grid-cols-3">
           <InfoBlock title="評価観点" items={selectedExample.keyEvaluationPoints} />

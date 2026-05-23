@@ -32,7 +32,11 @@
     "nextReview": "2026-08",
     "sourceOfficialUrl": "https://www.meti.go.jp/report/whitepaper/mono/2025/index.html",
     "sourcePageOrSection": "2025年版ものづくり白書 第1部・第4章のDX関連論点",
-    "valueLabel": null
+    "valueLabel": null,
+    "answerSentenceExamples": [
+      "製造業では人手不足や競争環境の変化を背景に、DXを単なるシステム導入ではなく、生産性向上や現場改善に結び付ける必要がある。",
+      "OEEやリードタイムなどのKPIとデジタル技術を結び付けることで、経験依存の改善からデータに基づく改善へ移行できる。"
+    ]
   },
   {
     "id": "mono-gx-decarbonization",
@@ -66,7 +70,11 @@
     "nextReview": "2026-08",
     "sourceOfficialUrl": "https://www.meti.go.jp/report/whitepaper/mono/2025/index.html",
     "sourcePageOrSection": "2025年版ものづくり白書 GX・脱炭素関連論点",
-    "valueLabel": null
+    "valueLabel": null,
+    "answerSentenceExamples": [
+      "製造業では、エネルギー効率向上やCO2排出削減が、環境対応だけでなく競争力維持の観点からも重要になっている。",
+      "設備更新や工程改善では、生産性向上と省エネを同時に評価することで、経済性と持続可能性を両立できる。"
+    ]
   },
   {
     "id": "mlit-logistics-driver-shortage",
@@ -101,7 +109,11 @@
     "nextReview": "2026-08",
     "sourceOfficialUrl": "https://www.mlit.go.jp/hakusyo/mlit/r06/hakusho/r07/html/n1112000.html",
     "sourcePageOrSection": "令和7年版国土交通白書 第1部第1章第2節 担い手側の供給量に関する将来推計と需給ギャップ",
-    "valueLabel": "対策を講じない場合の2030年度輸送力不足見込み"
+    "valueLabel": "対策を講じない場合の2030年度輸送力不足見込み",
+    "answerSentenceExamples": [
+      "物流分野では輸送力不足が懸念されており、共同輸配送、モーダルシフト、積載率向上などによる輸送効率化が重要である。",
+      "輸送力不足への対応では、物流部門単独ではなく、荷主、物流事業者、販売部門を含めた全体最適の設計が必要である。"
+    ]
   },
   {
     "id": "env-climate-circular-economy",
@@ -135,7 +147,11 @@
     "nextReview": "2026-08",
     "sourceOfficialUrl": "https://www.env.go.jp/policy/hakusyo/r07/html/hj25020101.html",
     "sourcePageOrSection": "令和7年版環境白書 第2部第1章第1節 地球温暖化対策",
-    "valueLabel": "2023年度の我が国の温室効果ガス排出量"
+    "valueLabel": "2023年度の我が国の温室効果ガス排出量",
+    "answerSentenceExamples": [
+      "気候変動や資源循環への対応は、企業活動における環境負荷低減と社会的責任の観点から重要である。",
+      "工程改善や在庫削減は、コスト低減だけでなく、廃棄削減やCO2排出削減にもつながる。"
+    ]
   },
   {
     "id": "sme-labor-shortage-productivity",
@@ -170,6 +186,10 @@
     "nextReview": "2026-08",
     "sourceOfficialUrl": "https://www.meti.go.jp/press/2025/04/20250425001/20250425001.html",
     "sourcePageOrSection": "2025年版中小企業白書・小規模企業白書 閣議決定資料 方向性",
-    "valueLabel": "中小企業・小規模事業者が占める雇用規模の目安"
+    "valueLabel": "中小企業・小規模事業者が占める雇用規模の目安",
+    "answerSentenceExamples": [
+      "中小企業では人手不足が深刻であり、省人化、標準化、DXによる生産性向上が重要な経営課題である。",
+      "限られた人員で競争力を維持するには、属人的作業を標準化し、データや設備を活用した業務効率化を進める必要がある。"
+    ]
   }
 ]
