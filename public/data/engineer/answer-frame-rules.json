@@ -54,6 +54,15 @@
       "IssueDecompositionMatrix",
       "PastExamTrendMap",
       "ProblemMatrix"
+    ],
+    "examType": "必須科目Ⅰ",
+    "targetChars": 1800,
+    "manuscriptPages": 3,
+    "writingFocus": "課題抽出、最重要課題、解決策、リスク、技術者倫理・社会の持続可能性を1800字以内で一貫させる",
+    "commonPitfalls": [
+      "600字答案の延長で書こうとして論点が不足する",
+      "課題と解決策の対応が弱い",
+      "倫理・持続可能性が最後の定型句になる"
     ]
   },
   {
@@ -119,6 +128,15 @@
     "recommendedTools": [
       "PastExamTrendMap",
       "EngineerKeywordMap"
+    ],
+    "examType": "選択科目Ⅱ-1",
+    "targetChars": 600,
+    "manuscriptPages": 1,
+    "writingFocus": "用語、手法、特徴、留意点、適用場面を600字以内で簡潔に説明する",
+    "commonPitfalls": [
+      "定義だけで終わる",
+      "比較問題で相違点や適用場面が曖昧になる",
+      "600字以内に収まらず焦点がぼやける"
     ]
   },
   {
@@ -197,6 +215,15 @@
       "AnswerStructureBuilder",
       "EngineerKeywordMap",
       "PastExamTrendMap"
+    ],
+    "examType": "選択科目Ⅱ-2",
+    "targetChars": 1200,
+    "manuscriptPages": 2,
+    "writingFocus": "調査・検討事項、業務手順、留意点、関係者調整、効果確認を1200字以内で整理する",
+    "commonPitfalls": [
+      "調査事項と実施手順が混在する",
+      "関係者調整が抽象的になる",
+      "KPIや効果確認が抜ける"
     ]
   },
   {
@@ -253,6 +280,15 @@
       "IssueDecompositionMatrix",
       "PastExamTrendMap",
       "EngineerKeywordMap"
+    ],
+    "examType": "選択科目Ⅲ",
+    "targetChars": 1800,
+    "manuscriptPages": 3,
+    "writingFocus": "専門分野の課題、最重要課題、解決策、リスク、将来展望を1800字以内で論じる",
+    "commonPitfalls": [
+      "背景説明が長くなり課題が薄くなる",
+      "将来展望が抽象的になる",
+      "必須Ⅰとの違いが曖昧になる"
     ]
   }
 ]

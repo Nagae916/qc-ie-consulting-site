@@ -58,7 +58,11 @@
       "competencyNotes": "必須科目Ⅰ型として、課題抽出から解決策、施策後リスク、倫理・持続可能性までを一貫して表現することを重視する。",
       "fieldCode": "common",
       "sourcePdfUrl": "https://www.engineer.or.jp/c_topics/011/attached/attach_11175_1.pdf",
-      "sourceChecked": true
+      "sourceChecked": true,
+      "examPart": "必須科目Ⅰ",
+      "answerType": "必須Ⅰ型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r07-i-02",
@@ -114,7 +118,11 @@
       "competencyNotes": "必須科目Ⅰ型として、課題抽出から解決策、施策後リスク、倫理・持続可能性までを一貫して表現することを重視する。",
       "fieldCode": "common",
       "sourcePdfUrl": "https://www.engineer.or.jp/c_topics/011/attached/attach_11175_1.pdf",
-      "sourceChecked": true
+      "sourceChecked": true,
+      "examPart": "必須科目Ⅰ",
+      "answerType": "必須Ⅰ型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r07-ii1-plm-01",
@@ -156,7 +164,11 @@
       "competencyNotes": "選択科目Ⅱ-1型として、専門用語・手法を短く正確に説明し、適用場面と留意点を示すことを重視する。",
       "fieldCode": "1501",
       "sourcePdfUrl": "https://www.engineer.or.jp/c_topics/011/attached/attach_11175_2.pdf",
-      "sourceChecked": true
+      "sourceChecked": true,
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r07-ii1-plm-02",
@@ -209,7 +221,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r07-ii1-plm-03",
@@ -254,7 +270,11 @@
       "competencyNotes": "選択科目Ⅱ-1型として、専門用語・手法を短く正確に説明し、適用場面と留意点を示すことを重視する。",
       "fieldCode": "1501",
       "sourcePdfUrl": "https://www.engineer.or.jp/c_topics/011/attached/attach_11175_2.pdf",
-      "sourceChecked": true
+      "sourceChecked": true,
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r07-ii1-plm-04",
@@ -307,7 +327,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r07-ii1-sm-01",
@@ -353,7 +377,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r07-ii1-sm-02",
@@ -399,7 +427,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r07-ii1-sm-03",
@@ -446,7 +478,11 @@
       "competencyNotes": "選択科目Ⅱ-1型として、専門用語・手法を短く正確に説明し、適用場面と留意点を示すことを重視する。",
       "fieldCode": "1502",
       "sourcePdfUrl": "https://www.engineer.or.jp/c_topics/011/attached/attach_11175_3.pdf",
-      "sourceChecked": true
+      "sourceChecked": true,
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r07-ii1-sm-04",
@@ -492,7 +528,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r07-ii2-plm-01",
@@ -543,7 +583,11 @@
       "competencyNotes": "選択科目Ⅱ-2型として、実施手順、関係者調整、留意点、効果確認を整理することを重視する。",
       "fieldCode": "1501",
       "sourcePdfUrl": "https://www.engineer.or.jp/c_topics/011/attached/attach_11175_2.pdf",
-      "sourceChecked": true
+      "sourceChecked": true,
+      "examPart": "選択科目Ⅱ-2",
+      "answerType": "業務遂行手順型",
+      "targetChars": 1200,
+      "manuscriptPages": 2
     },
     {
       "id": "r07-ii2-plm-02",
@@ -593,7 +637,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-2",
+      "answerType": "業務遂行手順型",
+      "targetChars": 1200,
+      "manuscriptPages": 2
     },
     {
       "id": "r07-ii2-sm-01",
@@ -654,7 +702,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-2",
+      "answerType": "業務遂行手順型",
+      "targetChars": 1200,
+      "manuscriptPages": 2
     },
     {
       "id": "r07-ii2-sm-02",
@@ -715,7 +767,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-2",
+      "answerType": "業務遂行手順型",
+      "targetChars": 1200,
+      "manuscriptPages": 2
     },
     {
       "id": "r07-iii-plm-01",
@@ -774,7 +830,11 @@
         "leadership",
         "engineeringEthics"
       ],
-      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅲ",
+      "answerType": "課題解決提案型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r07-iii-plm-02",
@@ -833,7 +893,11 @@
         "leadership",
         "engineeringEthics"
       ],
-      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅲ",
+      "answerType": "課題解決提案型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r07-iii-sm-01",
@@ -896,7 +960,11 @@
         "leadership",
         "engineeringEthics"
       ],
-      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅲ",
+      "answerType": "課題解決提案型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r07-iii-sm-02",
@@ -960,7 +1028,11 @@
         "leadership",
         "engineeringEthics"
       ],
-      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅲ",
+      "answerType": "課題解決提案型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r06-i-01",
@@ -1016,7 +1088,11 @@
       "competencyNotes": "必須科目Ⅰ型として、課題抽出から解決策、施策後リスク、倫理・持続可能性までを一貫して表現することを重視する。",
       "fieldCode": "common",
       "sourcePdfUrl": "https://www.engineer.or.jp/c_topics/010/attached/attach_10367_1.pdf",
-      "sourceChecked": true
+      "sourceChecked": true,
+      "examPart": "必須科目Ⅰ",
+      "answerType": "必須Ⅰ型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r06-i-02",
@@ -1073,7 +1149,11 @@
       "competencyNotes": "必須科目Ⅰ型として、課題抽出から解決策、施策後リスク、倫理・持続可能性までを一貫して表現することを重視する。",
       "fieldCode": "common",
       "sourcePdfUrl": "https://www.engineer.or.jp/c_topics/010/attached/attach_10367_1.pdf",
-      "sourceChecked": true
+      "sourceChecked": true,
+      "examPart": "必須科目Ⅰ",
+      "answerType": "必須Ⅰ型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r06-ii1-plm-01",
@@ -1116,7 +1196,11 @@
       "competencyNotes": "選択科目Ⅱ-1型として、専門用語・手法を短く正確に説明し、適用場面と留意点を示すことを重視する。",
       "fieldCode": "1501",
       "sourcePdfUrl": "https://www.engineer.or.jp/c_topics/010/attached/attach_10367_2.pdf",
-      "sourceChecked": true
+      "sourceChecked": true,
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r06-ii1-plm-02",
@@ -1163,7 +1247,11 @@
       "competencyNotes": "選択科目Ⅱ-1型として、専門用語・手法を短く正確に説明し、適用場面と留意点を示すことを重視する。",
       "fieldCode": "1501",
       "sourcePdfUrl": "https://www.engineer.or.jp/c_topics/010/attached/attach_10367_2.pdf",
-      "sourceChecked": true
+      "sourceChecked": true,
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r06-ii1-plm-03",
@@ -1215,7 +1303,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r06-ii1-plm-04",
@@ -1267,7 +1359,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r06-ii1-sm-01",
@@ -1311,7 +1407,11 @@
       "competencyNotes": "選択科目Ⅱ-1型として、専門用語・手法を短く正確に説明し、適用場面と留意点を示すことを重視する。",
       "fieldCode": "1502",
       "sourcePdfUrl": "https://www.engineer.or.jp/c_topics/010/attached/attach_10367_3.pdf",
-      "sourceChecked": true
+      "sourceChecked": true,
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r06-ii1-sm-02",
@@ -1357,7 +1457,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r06-ii1-sm-03",
@@ -1403,7 +1507,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r06-ii1-sm-04",
@@ -1449,7 +1557,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r06-ii2-plm-01",
@@ -1500,7 +1612,11 @@
       "competencyNotes": "選択科目Ⅱ-2型として、実施手順、関係者調整、留意点、効果確認を整理することを重視する。",
       "fieldCode": "1501",
       "sourcePdfUrl": "https://www.engineer.or.jp/c_topics/010/attached/attach_10367_2.pdf",
-      "sourceChecked": true
+      "sourceChecked": true,
+      "examPart": "選択科目Ⅱ-2",
+      "answerType": "業務遂行手順型",
+      "targetChars": 1200,
+      "manuscriptPages": 2
     },
     {
       "id": "r06-ii2-plm-02",
@@ -1561,7 +1677,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-2",
+      "answerType": "業務遂行手順型",
+      "targetChars": 1200,
+      "manuscriptPages": 2
     },
     {
       "id": "r06-ii2-sm-01",
@@ -1612,7 +1732,11 @@
       "competencyNotes": "選択科目Ⅱ-2型として、実施手順、関係者調整、留意点、効果確認を整理することを重視する。",
       "fieldCode": "1502",
       "sourcePdfUrl": "https://www.engineer.or.jp/c_topics/010/attached/attach_10367_3.pdf",
-      "sourceChecked": true
+      "sourceChecked": true,
+      "examPart": "選択科目Ⅱ-2",
+      "answerType": "業務遂行手順型",
+      "targetChars": 1200,
+      "manuscriptPages": 2
     },
     {
       "id": "r06-ii2-sm-02",
@@ -1663,7 +1787,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-2",
+      "answerType": "業務遂行手順型",
+      "targetChars": 1200,
+      "manuscriptPages": 2
     },
     {
       "id": "r06-iii-plm-01",
@@ -1715,7 +1843,11 @@
         "leadership",
         "engineeringEthics"
       ],
-      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅲ",
+      "answerType": "課題解決提案型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r06-iii-plm-02",
@@ -1771,7 +1903,11 @@
         "leadership",
         "engineeringEthics"
       ],
-      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅲ",
+      "answerType": "課題解決提案型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r06-iii-sm-01",
@@ -1830,7 +1966,11 @@
         "leadership",
         "engineeringEthics"
       ],
-      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅲ",
+      "answerType": "課題解決提案型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r06-iii-sm-02",
@@ -1889,7 +2029,11 @@
         "leadership",
         "engineeringEthics"
       ],
-      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅲ",
+      "answerType": "課題解決提案型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r05-i-01",
@@ -1944,7 +2088,11 @@
       "competencyNotes": "必須科目Ⅰ型として、課題抽出から解決策、施策後リスク、倫理・持続可能性までを一貫して表現することを重視する。",
       "fieldCode": "common",
       "sourcePdfUrl": "https://www.engineer.or.jp/c_topics/009/attached/attach_9645_1.pdf",
-      "sourceChecked": true
+      "sourceChecked": true,
+      "examPart": "必須科目Ⅰ",
+      "answerType": "必須Ⅰ型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r05-i-02",
@@ -2001,7 +2149,11 @@
       "competencyNotes": "必須科目Ⅰ型として、課題抽出から解決策、施策後リスク、倫理・持続可能性までを一貫して表現することを重視する。",
       "fieldCode": "common",
       "sourcePdfUrl": "https://www.engineer.or.jp/c_topics/009/attached/attach_9645_1.pdf",
-      "sourceChecked": true
+      "sourceChecked": true,
+      "examPart": "必須科目Ⅰ",
+      "answerType": "必須Ⅰ型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r05-ii1-plm-01",
@@ -2044,7 +2196,11 @@
       "competencyNotes": "選択科目Ⅱ-1型として、専門用語・手法を短く正確に説明し、適用場面と留意点を示すことを重視する。",
       "fieldCode": "1501",
       "sourcePdfUrl": "https://www.engineer.or.jp/c_topics/009/attached/attach_9645_2.pdf",
-      "sourceChecked": true
+      "sourceChecked": true,
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r05-ii1-plm-02",
@@ -2093,7 +2249,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r05-ii1-plm-03",
@@ -2142,7 +2302,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r05-ii1-plm-04",
@@ -2191,7 +2355,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r05-ii1-sm-01",
@@ -2236,7 +2404,11 @@
       "competencyNotes": "選択科目Ⅱ-1型として、専門用語・手法を短く正確に説明し、適用場面と留意点を示すことを重視する。",
       "fieldCode": "1502",
       "sourcePdfUrl": "https://www.engineer.or.jp/c_topics/009/attached/attach_9645_3.pdf",
-      "sourceChecked": true
+      "sourceChecked": true,
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r05-ii1-sm-02",
@@ -2282,7 +2454,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r05-ii1-sm-03",
@@ -2328,7 +2504,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r05-ii1-sm-04",
@@ -2374,7 +2554,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r05-ii2-plm-01",
@@ -2436,7 +2620,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-2",
+      "answerType": "業務遂行手順型",
+      "targetChars": 1200,
+      "manuscriptPages": 2
     },
     {
       "id": "r05-ii2-plm-02",
@@ -2498,7 +2686,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-2",
+      "answerType": "業務遂行手順型",
+      "targetChars": 1200,
+      "manuscriptPages": 2
     },
     {
       "id": "r05-ii2-sm-01",
@@ -2552,7 +2744,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-2",
+      "answerType": "業務遂行手順型",
+      "targetChars": 1200,
+      "manuscriptPages": 2
     },
     {
       "id": "r05-ii2-sm-02",
@@ -2606,7 +2802,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-2",
+      "answerType": "業務遂行手順型",
+      "targetChars": 1200,
+      "manuscriptPages": 2
     },
     {
       "id": "r05-iii-plm-01",
@@ -2659,7 +2859,11 @@
       "competencyNotes": "選択科目Ⅲ型として、専門領域の課題解決、将来展望、波及効果、倫理を整理することを重視する。",
       "fieldCode": "1501",
       "sourcePdfUrl": "https://www.engineer.or.jp/c_topics/009/attached/attach_9645_2.pdf",
-      "sourceChecked": true
+      "sourceChecked": true,
+      "examPart": "選択科目Ⅲ",
+      "answerType": "課題解決提案型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r05-iii-plm-02",
@@ -2723,7 +2927,11 @@
         "leadership",
         "engineeringEthics"
       ],
-      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅲ",
+      "answerType": "課題解決提案型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r05-iii-sm-01",
@@ -2777,7 +2985,11 @@
       "competencyNotes": "選択科目Ⅲ型として、専門領域の課題解決、将来展望、波及効果、倫理を整理することを重視する。",
       "fieldCode": "1502",
       "sourcePdfUrl": "https://www.engineer.or.jp/c_topics/009/attached/attach_9645_3.pdf",
-      "sourceChecked": true
+      "sourceChecked": true,
+      "examPart": "選択科目Ⅲ",
+      "answerType": "課題解決提案型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r05-iii-sm-02",
@@ -2833,7 +3045,11 @@
         "leadership",
         "engineeringEthics"
       ],
-      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅲ",
+      "answerType": "課題解決提案型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r04-i-01",
@@ -2888,7 +3104,11 @@
       "competencyNotes": "必須科目Ⅰ型として、課題抽出から解決策、施策後リスク、倫理・持続可能性までを一貫して表現することを重視する。",
       "fieldCode": "common",
       "sourcePdfUrl": "https://www.engineer.or.jp/c_topics/008/attached/attach_8861_1.pdf",
-      "sourceChecked": true
+      "sourceChecked": true,
+      "examPart": "必須科目Ⅰ",
+      "answerType": "必須Ⅰ型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r04-i-02",
@@ -2944,7 +3164,11 @@
       "competencyNotes": "必須科目Ⅰ型として、課題抽出から解決策、施策後リスク、倫理・持続可能性までを一貫して表現することを重視する。",
       "fieldCode": "common",
       "sourcePdfUrl": "https://www.engineer.or.jp/c_topics/008/attached/attach_8861_1.pdf",
-      "sourceChecked": true
+      "sourceChecked": true,
+      "examPart": "必須科目Ⅰ",
+      "answerType": "必須Ⅰ型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r04-ii1-plm-01",
@@ -3000,7 +3224,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r04-ii1-plm-02",
@@ -3056,7 +3284,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r04-ii1-plm-03",
@@ -3112,7 +3344,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r04-ii1-plm-04",
@@ -3168,7 +3404,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r04-ii1-sm-01",
@@ -3214,7 +3454,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r04-ii1-sm-02",
@@ -3260,7 +3504,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r04-ii1-sm-03",
@@ -3306,7 +3554,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r04-ii1-sm-04",
@@ -3352,7 +3604,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r04-ii2-plm-01",
@@ -3399,7 +3655,11 @@
       "competencyNotes": "選択科目Ⅱ-2型として、実施手順、関係者調整、留意点、効果確認を整理することを重視する。",
       "fieldCode": "1501",
       "sourcePdfUrl": "https://www.engineer.or.jp/c_topics/008/attached/attach_8861_2.pdf",
-      "sourceChecked": true
+      "sourceChecked": true,
+      "examPart": "選択科目Ⅱ-2",
+      "answerType": "業務遂行手順型",
+      "targetChars": 1200,
+      "manuscriptPages": 2
     },
     {
       "id": "r04-ii2-plm-02",
@@ -3456,7 +3716,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-2",
+      "answerType": "業務遂行手順型",
+      "targetChars": 1200,
+      "manuscriptPages": 2
     },
     {
       "id": "r04-ii2-sm-01",
@@ -3510,7 +3774,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-2",
+      "answerType": "業務遂行手順型",
+      "targetChars": 1200,
+      "manuscriptPages": 2
     },
     {
       "id": "r04-ii2-sm-02",
@@ -3564,7 +3832,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-2",
+      "answerType": "業務遂行手順型",
+      "targetChars": 1200,
+      "manuscriptPages": 2
     },
     {
       "id": "r04-iii-plm-01",
@@ -3623,7 +3895,11 @@
         "leadership",
         "engineeringEthics"
       ],
-      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅲ",
+      "answerType": "課題解決提案型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r04-iii-plm-02",
@@ -3686,7 +3962,11 @@
         "leadership",
         "engineeringEthics"
       ],
-      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅲ",
+      "answerType": "課題解決提案型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r04-iii-sm-01",
@@ -3749,7 +4029,11 @@
         "leadership",
         "engineeringEthics"
       ],
-      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅲ",
+      "answerType": "課題解決提案型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r04-iii-sm-02",
@@ -3812,7 +4096,11 @@
         "leadership",
         "engineeringEthics"
       ],
-      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅲ",
+      "answerType": "課題解決提案型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r03-i-01",
@@ -3867,7 +4155,11 @@
       "competencyNotes": "必須科目Ⅰ型として、課題抽出から解決策、施策後リスク、倫理・持続可能性までを一貫して表現することを重視する。",
       "fieldCode": "common",
       "sourcePdfUrl": "https://www.engineer.or.jp/c_topics/007/attached/attach_7927_1.pdf",
-      "sourceChecked": true
+      "sourceChecked": true,
+      "examPart": "必須科目Ⅰ",
+      "answerType": "必須Ⅰ型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r03-i-02",
@@ -3925,7 +4217,11 @@
       "competencyNotes": "必須科目Ⅰ型として、課題抽出から解決策、施策後リスク、倫理・持続可能性までを一貫して表現することを重視する。",
       "fieldCode": "common",
       "sourcePdfUrl": "https://www.engineer.or.jp/c_topics/007/attached/attach_7927_1.pdf",
-      "sourceChecked": true
+      "sourceChecked": true,
+      "examPart": "必須科目Ⅰ",
+      "answerType": "必須Ⅰ型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r03-ii1-plm-01",
@@ -3974,7 +4270,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r03-ii1-plm-02",
@@ -4023,7 +4323,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r03-ii1-plm-03",
@@ -4072,7 +4376,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r03-ii1-plm-04",
@@ -4121,7 +4429,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r03-ii1-sm-01",
@@ -4171,7 +4483,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r03-ii1-sm-02",
@@ -4221,7 +4537,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r03-ii1-sm-03",
@@ -4271,7 +4591,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r03-ii1-sm-04",
@@ -4321,7 +4645,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r03-ii2-plm-01",
@@ -4383,7 +4711,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-2",
+      "answerType": "業務遂行手順型",
+      "targetChars": 1200,
+      "manuscriptPages": 2
     },
     {
       "id": "r03-ii2-plm-02",
@@ -4445,7 +4777,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-2",
+      "answerType": "業務遂行手順型",
+      "targetChars": 1200,
+      "manuscriptPages": 2
     },
     {
       "id": "r03-ii2-sm-01",
@@ -4507,7 +4843,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-2",
+      "answerType": "業務遂行手順型",
+      "targetChars": 1200,
+      "manuscriptPages": 2
     },
     {
       "id": "r03-ii2-sm-02",
@@ -4569,7 +4909,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-2",
+      "answerType": "業務遂行手順型",
+      "targetChars": 1200,
+      "manuscriptPages": 2
     },
     {
       "id": "r03-iii-plm-01",
@@ -4628,7 +4972,11 @@
         "leadership",
         "engineeringEthics"
       ],
-      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅲ",
+      "answerType": "課題解決提案型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r03-iii-plm-02",
@@ -4687,7 +5035,11 @@
         "leadership",
         "engineeringEthics"
       ],
-      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅲ",
+      "answerType": "課題解決提案型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r03-iii-sm-01",
@@ -4751,7 +5103,11 @@
         "leadership",
         "engineeringEthics"
       ],
-      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅲ",
+      "answerType": "課題解決提案型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r03-iii-sm-02",
@@ -4815,7 +5171,11 @@
         "leadership",
         "engineeringEthics"
       ],
-      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅲ",
+      "answerType": "課題解決提案型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r02-i-01",
@@ -4869,7 +5229,11 @@
       "competencyNotes": "必須科目Ⅰ型として、課題抽出から解決策、施策後リスク、倫理・持続可能性までを一貫して表現することを重視する。",
       "fieldCode": "common",
       "sourcePdfUrl": "https://www.engineer.or.jp/c_topics/007/attached/attach_7389_1.pdf",
-      "sourceChecked": true
+      "sourceChecked": true,
+      "examPart": "必須科目Ⅰ",
+      "answerType": "必須Ⅰ型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r02-i-02",
@@ -4926,7 +5290,11 @@
       "competencyNotes": "必須科目Ⅰ型として、課題抽出から解決策、施策後リスク、倫理・持続可能性までを一貫して表現することを重視する。",
       "fieldCode": "common",
       "sourcePdfUrl": "https://www.engineer.or.jp/c_topics/007/attached/attach_7389_1.pdf",
-      "sourceChecked": true
+      "sourceChecked": true,
+      "examPart": "必須科目Ⅰ",
+      "answerType": "必須Ⅰ型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r02-ii1-plm-01",
@@ -4978,7 +5346,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r02-ii1-plm-02",
@@ -5030,7 +5402,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r02-ii1-plm-03",
@@ -5082,7 +5458,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r02-ii1-plm-04",
@@ -5134,7 +5514,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r02-ii1-sm-01",
@@ -5184,7 +5568,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r02-ii1-sm-02",
@@ -5234,7 +5622,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r02-ii1-sm-03",
@@ -5284,7 +5676,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r02-ii1-sm-04",
@@ -5334,7 +5730,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r02-ii2-plm-01",
@@ -5387,7 +5787,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-2",
+      "answerType": "業務遂行手順型",
+      "targetChars": 1200,
+      "manuscriptPages": 2
     },
     {
       "id": "r02-ii2-plm-02",
@@ -5440,7 +5844,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-2",
+      "answerType": "業務遂行手順型",
+      "targetChars": 1200,
+      "manuscriptPages": 2
     },
     {
       "id": "r02-ii2-sm-01",
@@ -5494,7 +5902,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-2",
+      "answerType": "業務遂行手順型",
+      "targetChars": 1200,
+      "manuscriptPages": 2
     },
     {
       "id": "r02-ii2-sm-02",
@@ -5548,7 +5960,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-2",
+      "answerType": "業務遂行手順型",
+      "targetChars": 1200,
+      "manuscriptPages": 2
     },
     {
       "id": "r02-iii-plm-01",
@@ -5606,7 +6022,11 @@
         "leadership",
         "engineeringEthics"
       ],
-      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅲ",
+      "answerType": "課題解決提案型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r02-iii-plm-02",
@@ -5664,7 +6084,11 @@
         "leadership",
         "engineeringEthics"
       ],
-      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅲ",
+      "answerType": "課題解決提案型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r02-iii-sm-01",
@@ -5723,7 +6147,11 @@
         "leadership",
         "engineeringEthics"
       ],
-      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅲ",
+      "answerType": "課題解決提案型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r02-iii-sm-02",
@@ -5782,7 +6210,11 @@
         "leadership",
         "engineeringEthics"
       ],
-      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅲ",
+      "answerType": "課題解決提案型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r01-i-01",
@@ -5836,7 +6268,11 @@
       "competencyNotes": "必須科目Ⅰ型として、課題抽出から解決策、施策後リスク、倫理・持続可能性までを一貫して表現することを重視する。",
       "fieldCode": "common",
       "sourcePdfUrl": "https://www.engineer.or.jp/c_topics/006/attached/attach_6654_1.pdf",
-      "sourceChecked": true
+      "sourceChecked": true,
+      "examPart": "必須科目Ⅰ",
+      "answerType": "必須Ⅰ型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r01-i-02",
@@ -5891,7 +6327,11 @@
       "competencyNotes": "必須科目Ⅰ型として、課題抽出から解決策、施策後リスク、倫理・持続可能性までを一貫して表現することを重視する。",
       "fieldCode": "common",
       "sourcePdfUrl": "https://www.engineer.or.jp/c_topics/006/attached/attach_6654_1.pdf",
-      "sourceChecked": true
+      "sourceChecked": true,
+      "examPart": "必須科目Ⅰ",
+      "answerType": "必須Ⅰ型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r01-ii1-plm-01",
@@ -5944,7 +6384,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r01-ii1-plm-02",
@@ -5997,7 +6441,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r01-ii1-plm-03",
@@ -6050,7 +6498,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r01-ii1-plm-04",
@@ -6103,7 +6555,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r01-ii1-sm-01",
@@ -6159,7 +6615,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r01-ii1-sm-02",
@@ -6215,7 +6675,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r01-ii1-sm-03",
@@ -6271,7 +6735,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r01-ii1-sm-04",
@@ -6327,7 +6795,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-1型として、公式PDFの設問構造を要約し、用語説明、留意点整理、比較評価を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "短答説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1
     },
     {
       "id": "r01-ii2-plm-01",
@@ -6388,7 +6860,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-2",
+      "answerType": "業務遂行手順型",
+      "targetChars": 1200,
+      "manuscriptPages": 2
     },
     {
       "id": "r01-ii2-plm-02",
@@ -6449,7 +6925,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-2",
+      "answerType": "業務遂行手順型",
+      "targetChars": 1200,
+      "manuscriptPages": 2
     },
     {
       "id": "r01-ii2-sm-01",
@@ -6496,7 +6976,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-2",
+      "answerType": "業務遂行手順型",
+      "targetChars": 1200,
+      "manuscriptPages": 2
     },
     {
       "id": "r01-ii2-sm-02",
@@ -6543,7 +7027,11 @@
         "evaluation",
         "communication"
       ],
-      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅱ-2型として、公式PDFの設問構造を要約し、手順説明、留意点整理、関係者調整を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅱ-2",
+      "answerType": "業務遂行手順型",
+      "targetChars": 1200,
+      "manuscriptPages": 2
     },
     {
       "id": "r01-iii-plm-01",
@@ -6599,7 +7087,11 @@
         "leadership",
         "engineeringEthics"
       ],
-      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅲ",
+      "answerType": "課題解決提案型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r01-iii-plm-02",
@@ -6655,7 +7147,11 @@
         "leadership",
         "engineeringEthics"
       ],
-      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅲ",
+      "answerType": "課題解決提案型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r01-iii-sm-01",
@@ -6718,7 +7214,11 @@
         "leadership",
         "engineeringEthics"
       ],
-      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅲ",
+      "answerType": "課題解決提案型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     },
     {
       "id": "r01-iii-sm-02",
@@ -6781,7 +7281,11 @@
         "leadership",
         "engineeringEthics"
       ],
-      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。"
+      "competencyNotes": "選択科目Ⅲ型として、公式PDFの設問構造を要約し、課題抽出、最重要課題選定、解決策提示を中心に答案骨子へ接続する。",
+      "examPart": "選択科目Ⅲ",
+      "answerType": "課題解決提案型",
+      "targetChars": 1800,
+      "manuscriptPages": 3
     }
   ]
 }

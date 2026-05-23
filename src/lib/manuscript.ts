@@ -75,10 +75,21 @@ export function splitTextToManuscriptPages(text: string, charsPerLine = 24, line
 
 export function getRecommendedCharRange(targetPages: number) {
   const safeTargetPages = Math.max(1, targetPages);
+  if (safeTargetPages === 1) {
+    return {
+      min: 520,
+      max: 575,
+    };
+  }
+
   return {
     min: 550 * safeTargetPages,
     max: 575 * safeTargetPages,
   };
+}
+
+export function getManuscriptCharLimit(targetPages: number, charsPerLine = 24, linesPerPage = 25) {
+  return Math.max(1, targetPages) * charsPerLine * linesPerPage;
 }
 
 export function getManuscriptVolumeStatus(bodyCharCount: number, targetPages: number): ManuscriptVolumeStatus {

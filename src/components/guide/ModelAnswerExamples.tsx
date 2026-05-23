@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import modelAnswerExamplesData from '../../../public/data/engineer/model-answer-examples.json';
-import { countManuscriptChars } from '../../lib/manuscript';
+import { countManuscriptChars, getManuscriptCharLimit, getManuscriptVolumeStatus, getRecommendedCharRange } from '../../lib/manuscript';
 import ManuscriptAnswerPreview from './ManuscriptAnswerPreview';
 
 type ModelAnswerExample = {
@@ -45,6 +45,9 @@ export default function ModelAnswerExamples() {
   }
 
   const bodyCharCount = countManuscriptChars(selectedExample.normalText);
+  const charLimit = getManuscriptCharLimit(selectedExample.targetManuscriptPages);
+  const practicalRange = getRecommendedCharRange(selectedExample.targetManuscriptPages);
+  const volumeStatus = getManuscriptVolumeStatus(bodyCharCount, selectedExample.targetManuscriptPages);
 
   return (
     <section className="space-y-8">
@@ -83,7 +86,10 @@ export default function ModelAnswerExamples() {
             <MetaCard label="試験区分" value={selectedExample.examPart} />
             <MetaCard label="答案型" value={selectedExample.questionPattern} />
             <MetaCard label="目標原稿用紙" value={`${selectedExample.targetManuscriptPages}枚`} />
+            <MetaCard label="上限文字数" value={`${charLimit}字以内`} />
             <MetaCard label="本文文字数" value={`${bodyCharCount}字`} />
+            <MetaCard label="実用目安" value={`${practicalRange.min}〜${practicalRange.max}字`} />
+            <MetaCard label="文字量判定" value={volumeStatus} />
           </div>
         </header>
 

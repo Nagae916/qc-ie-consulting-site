@@ -5,17 +5,23 @@ import type { ReactNode } from 'react';
 import answerFrameRulesData from '../../../public/data/engineer/answer-frame-rules.json';
 import competenciesData from '../../../public/data/engineer/competencies.json';
 import correctionExamplesData from '../../../public/data/engineer/correction-examples.json';
+import { getManuscriptCharLimit, getRecommendedCharRange } from '../../lib/manuscript';
 import ManuscriptAnswerPreview from './ManuscriptAnswerPreview';
 
 type AnswerFrameRule = {
   id: string;
   label: string;
   examPart: string;
+  examType?: string;
+  targetChars?: number;
+  manuscriptPages?: number;
+  writingFocus?: string;
   questionPatterns: string[];
   answerBlocks: string[];
   keyEvaluationPoints: string[];
   usefulKeywords: string[];
   commonWeaknesses: string[];
+  commonPitfalls?: string[];
   relatedCompetencies: string[];
   recommendedTools: string[];
 };
@@ -412,6 +418,15 @@ function targetPagesForFrame(examPart: string) {
   return 3;
 }
 
+function FrameMetaCard({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-xl border border-emerald-200 bg-white p-3">
+      <p className="text-xs font-semibold text-slate-500">{label}</p>
+      <p className="mt-1 text-sm font-bold text-slate-950">{value}</p>
+    </div>
+  );
+}
+
 function SectionCard({ step, title, note, children }: { step: string; title: string; note: string; children: ReactNode }) {
   return (
     <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -554,7 +569,9 @@ export default function AnswerStructureBuilder() {
     return selectedConfig.buildPreview(selectedValues);
   }, [selectedConfig, selectedValues]);
 
-  const targetPages = targetPagesForFrame(selectedRule?.examPart ?? '');
+  const targetPages = selectedRule?.manuscriptPages ?? targetPagesForFrame(selectedRule?.examPart ?? '');
+  const targetChars = selectedRule?.targetChars ?? getManuscriptCharLimit(targetPages);
+  const practicalRange = getRecommendedCharRange(targetPages);
 
   function updateField(fieldId: string, value: string) {
     if (!selectedRule) return;
@@ -637,6 +654,17 @@ export default function AnswerStructureBuilder() {
           <p className="text-sm leading-7 text-slate-700">{selectedConfig.note}</p>
           <BadgeList items={selectedRule.answerBlocks} color="emerald" />
         </div>
+        <div className="mt-5 grid gap-3 md:grid-cols-4">
+          <FrameMetaCard label="試験区分" value={selectedRule.examType ?? selectedRule.examPart} />
+          <FrameMetaCard label="原稿用紙" value={`${targetPages}枚`} />
+          <FrameMetaCard label="上限文字数" value={`${targetChars}字以内`} />
+          <FrameMetaCard label="実用目安" value={`${practicalRange.min}〜${practicalRange.max}字`} />
+        </div>
+        {selectedRule.writingFocus && (
+          <p className="mt-4 rounded-xl border border-slate-200 bg-white p-4 text-sm leading-7 text-slate-700">
+            {selectedRule.writingFocus}
+          </p>
+        )}
       </section>
 
       <section className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm sm:p-6">
@@ -767,7 +795,7 @@ export default function AnswerStructureBuilder() {
             </InfoPanel>
 
             <InfoPanel title="よくある弱点">
-              <BulletList items={selectedRule.commonWeaknesses} />
+              <BulletList items={selectedRule.commonPitfalls ?? selectedRule.commonWeaknesses} />
             </InfoPanel>
 
             <InfoPanel title="使いやすいキーワード">
