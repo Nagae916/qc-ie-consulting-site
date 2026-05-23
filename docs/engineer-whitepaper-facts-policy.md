@@ -18,6 +18,7 @@
 - updatePolicy: annual のものだけ年1回確認する
 - updatePolicy: triggered のものは、教材作成時に確認する
 - 数値未確認のものは valueStatus: needs-current-check とする
+- 数値確認済みのものは numericValue、unit、valueYear、valueLabel、sourceOfficialUrl、sourcePageOrSection、lastChecked を持たせる
 - 7〜8月に白書更新レビューを行う
 
 ## 4. 答案での使い方

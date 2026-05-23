@@ -6,20 +6,33 @@
     "sourceFamily": "ものづくり白書",
     "latestSourceName": "2025年版ものづくり白書",
     "latestYear": 2025,
-    "officialUrl": "",
+    "officialUrl": "https://www.meti.go.jp/report/whitepaper/mono/2025/index.html",
     "updatePolicy": "annual",
     "priority": "high",
-    "factSummary": "製造業では、DX、人材確保、設備投資、競争力強化が重要な論点として扱われる。",
+    "factSummary": "製造業では、DX、人材確保、設備投資、競争力強化が重要な論点として扱われる。答案では数値を断定せず、最新版のデータ資料で確認して使う。",
     "numericValue": null,
-    "unit": "",
+    "unit": null,
     "valueYear": null,
     "valueStatus": "needs-current-check",
-    "usableExamTypes": ["required-i-standard", "elective-iii-analysis"],
-    "relatedKeywords": ["DX", "IoT", "OEE", "生産性向上", "人材不足", "設備投資"],
+    "usableExamTypes": [
+      "required-i-standard",
+      "elective-iii-analysis"
+    ],
+    "relatedKeywords": [
+      "DX",
+      "IoT",
+      "OEE",
+      "生産性向上",
+      "人材不足",
+      "設備投資"
+    ],
     "answerUse": "DXや生産性向上を、企業競争力や人材活用と結び付けて論じる背景に使う。",
     "worksheetUse": "必須Ⅰ型の背景、技術課題、選定理由に使う。",
     "lastChecked": "2026-05-23",
-    "nextReview": "2026-08"
+    "nextReview": "2026-08",
+    "sourceOfficialUrl": "https://www.meti.go.jp/report/whitepaper/mono/2025/index.html",
+    "sourcePageOrSection": "2025年版ものづくり白書 第1部・第4章のDX関連論点",
+    "valueLabel": null
   },
   {
     "id": "mono-gx-decarbonization",
@@ -28,20 +41,32 @@
     "sourceFamily": "ものづくり白書",
     "latestSourceName": "2025年版ものづくり白書",
     "latestYear": 2025,
-    "officialUrl": "",
+    "officialUrl": "https://www.meti.go.jp/report/whitepaper/mono/2025/index.html",
     "updatePolicy": "annual",
     "priority": "medium",
-    "factSummary": "製造業では、脱炭素、エネルギー効率、省エネ投資が競争力と持続可能性の両面で重要となる。",
+    "factSummary": "製造業では、脱炭素、エネルギー効率、省エネ投資が競争力と持続可能性の両面で重要となる。答案に数値を入れる場合は最新版のデータ資料で確認する。",
     "numericValue": null,
-    "unit": "",
+    "unit": null,
     "valueYear": null,
     "valueStatus": "needs-current-check",
-    "usableExamTypes": ["required-i-standard", "elective-iii-analysis"],
-    "relatedKeywords": ["脱炭素", "GX", "省エネ", "CO2削減", "設備投資"],
+    "usableExamTypes": [
+      "required-i-standard",
+      "elective-iii-analysis"
+    ],
+    "relatedKeywords": [
+      "脱炭素",
+      "GX",
+      "省エネ",
+      "CO2削減",
+      "設備投資"
+    ],
     "answerUse": "社会の持続可能性や環境負荷低減を論じる根拠に使う。",
     "worksheetUse": "倫理・持続可能性、リスク対策、効果に使う。",
     "lastChecked": "2026-05-23",
-    "nextReview": "2026-08"
+    "nextReview": "2026-08",
+    "sourceOfficialUrl": "https://www.meti.go.jp/report/whitepaper/mono/2025/index.html",
+    "sourcePageOrSection": "2025年版ものづくり白書 GX・脱炭素関連論点",
+    "valueLabel": null
   },
   {
     "id": "mlit-logistics-driver-shortage",
@@ -50,20 +75,33 @@
     "sourceFamily": "国土交通白書",
     "latestSourceName": "令和7年版国土交通白書",
     "latestYear": 2025,
-    "officialUrl": "",
+    "officialUrl": "https://www.mlit.go.jp/hakusyo/mlit/r06/hakusho/r07/html/n1112000.html",
     "updatePolicy": "annual",
     "priority": "high",
-    "factSummary": "物流分野では、人手不足や輸送力不足を背景に、共同輸配送、モーダルシフト、輸送集約などの必要性が高まっている。",
-    "numericValue": null,
-    "unit": "",
-    "valueYear": null,
-    "valueStatus": "needs-current-check",
-    "usableExamTypes": ["required-i-standard", "elective-iii-analysis"],
-    "relatedKeywords": ["共同輸配送", "モーダルシフト", "輸送集約", "TMS", "積載率", "物流効率化"],
+    "factSummary": "物流分野では、何も対策を講じなければ2030年度に約34%の輸送力不足が見込まれており、共同輸配送、モーダルシフト、輸送集約などの必要性が高まっている。",
+    "numericValue": 34,
+    "unit": "%",
+    "valueYear": 2030,
+    "valueStatus": "verified",
+    "usableExamTypes": [
+      "required-i-standard",
+      "elective-iii-analysis"
+    ],
+    "relatedKeywords": [
+      "共同輸配送",
+      "モーダルシフト",
+      "輸送集約",
+      "TMS",
+      "積載率",
+      "物流効率化"
+    ],
     "answerUse": "物流効率化や輸送ネットワーク再設計の背景説明に使う。",
     "worksheetUse": "Ⅲ型の背景・制約条件、技術課題、選定理由に使う。",
     "lastChecked": "2026-05-23",
-    "nextReview": "2026-08"
+    "nextReview": "2026-08",
+    "sourceOfficialUrl": "https://www.mlit.go.jp/hakusyo/mlit/r06/hakusho/r07/html/n1112000.html",
+    "sourcePageOrSection": "令和7年版国土交通白書 第1部第1章第2節 担い手側の供給量に関する将来推計と需給ギャップ",
+    "valueLabel": "対策を講じない場合の2030年度輸送力不足見込み"
   },
   {
     "id": "env-climate-circular-economy",
@@ -72,20 +110,32 @@
     "sourceFamily": "環境白書・循環型社会白書・生物多様性白書",
     "latestSourceName": "令和7年版環境白書・循環型社会白書・生物多様性白書",
     "latestYear": 2025,
-    "officialUrl": "",
+    "officialUrl": "https://www.env.go.jp/policy/hakusyo/r07/html/hj25020101.html",
     "updatePolicy": "annual",
     "priority": "high",
-    "factSummary": "気候変動、資源循環、生物多様性は、企業活動における環境負荷低減と持続可能性の重要論点である。",
-    "numericValue": null,
-    "unit": "",
-    "valueYear": null,
-    "valueStatus": "needs-current-check",
-    "usableExamTypes": ["required-i-standard", "elective-iii-analysis"],
-    "relatedKeywords": ["気候変動", "循環経済", "資源循環", "CO2削減", "環境負荷低減"],
+    "factSummary": "2023年度の我が国の温室効果ガス排出量は10.71億トンCO2換算であり、環境負荷低減や省エネ、CO2削減を論じる背景に使える。",
+    "numericValue": 10.71,
+    "unit": "億トンCO2換算",
+    "valueYear": 2023,
+    "valueStatus": "verified",
+    "usableExamTypes": [
+      "required-i-standard",
+      "elective-iii-analysis"
+    ],
+    "relatedKeywords": [
+      "気候変動",
+      "循環経済",
+      "資源循環",
+      "CO2削減",
+      "環境負荷低減"
+    ],
     "answerUse": "倫理・持続可能性、環境負荷低減、社会的責任の説明に使う。",
     "worksheetUse": "必須Ⅰ型の社会の持続可能性、Ⅲ型のリスク対策・留意点に使う。",
     "lastChecked": "2026-05-23",
-    "nextReview": "2026-08"
+    "nextReview": "2026-08",
+    "sourceOfficialUrl": "https://www.env.go.jp/policy/hakusyo/r07/html/hj25020101.html",
+    "sourcePageOrSection": "令和7年版環境白書 第2部第1章第1節 地球温暖化対策",
+    "valueLabel": "2023年度の我が国の温室効果ガス排出量"
   },
   {
     "id": "sme-labor-shortage-productivity",
@@ -94,19 +144,32 @@
     "sourceFamily": "中小企業白書",
     "latestSourceName": "2025年版中小企業白書",
     "latestYear": 2025,
-    "officialUrl": "",
+    "officialUrl": "https://www.meti.go.jp/press/2025/04/20250425001/20250425001.html",
     "updatePolicy": "annual",
     "priority": "medium",
-    "factSummary": "中小企業では、人手不足、価格転嫁、生産性向上、DX導入が重要課題となる。",
-    "numericValue": null,
-    "unit": "",
-    "valueYear": null,
-    "valueStatus": "needs-current-check",
-    "usableExamTypes": ["required-i-standard", "elective-iii-analysis"],
-    "relatedKeywords": ["中小企業", "人手不足", "価格転嫁", "生産性向上", "DX", "省人化"],
+    "factSummary": "中小企業・小規模事業者は雇用の約7割を占めるため、人手不足、生産性向上、DX、省人化を論じる背景として重要である。",
+    "numericValue": 70,
+    "unit": "%相当",
+    "valueYear": 2025,
+    "valueStatus": "verified",
+    "usableExamTypes": [
+      "required-i-standard",
+      "elective-iii-analysis"
+    ],
+    "relatedKeywords": [
+      "中小企業",
+      "人手不足",
+      "価格転嫁",
+      "生産性向上",
+      "DX",
+      "省人化"
+    ],
     "answerUse": "中小企業の経営課題や省人化・DX導入の背景に使う。",
     "worksheetUse": "必須Ⅰ型・Ⅲ型の背景、技術課題、選定理由に使う。",
     "lastChecked": "2026-05-23",
-    "nextReview": "2026-08"
+    "nextReview": "2026-08",
+    "sourceOfficialUrl": "https://www.meti.go.jp/press/2025/04/20250425001/20250425001.html",
+    "sourcePageOrSection": "2025年版中小企業白書・小規模企業白書 閣議決定資料 方向性",
+    "valueLabel": "中小企業・小規模事業者が占める雇用規模の目安"
   }
 ]

@@ -62,6 +62,8 @@ type WhitepaperFact = {
   priority: 'high' | 'medium' | 'low';
   factSummary: string;
   numericValue: number | null;
+  unit?: string | null;
+  valueLabel?: string | null;
   valueStatus: string;
   usableExamTypes: string[];
   answerUse: string;
@@ -235,9 +237,15 @@ export default function AnswerWorksheetGuide() {
                         <h4 className="mt-1 text-sm font-bold text-slate-950">{fact.theme}</h4>
                       </div>
                       <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800">
-                        {fact.numericValue === null ? '数値は最新版確認が必要' : `${fact.numericValue}`}
+                        {fact.numericValue === null ? '数値は最新版確認が必要' : '数値確認済み'}
                       </span>
                     </div>
+                    {fact.numericValue !== null ? (
+                      <p className="mt-2 text-sm font-semibold text-slate-900">
+                        {fact.valueLabel ?? '確認済み数値'}：{fact.numericValue}
+                        {fact.unit ?? ''}
+                      </p>
+                    ) : null}
                     <p className="mt-2 text-sm leading-6 text-slate-700">{fact.factSummary}</p>
                     <p className="mt-2 text-xs leading-5 text-slate-600">答案での使い方：{fact.answerUse}</p>
                     <p className="mt-1 text-xs leading-5 text-slate-600">ワークシートでの使い方：{fact.worksheetUse}</p>
