@@ -1,0 +1,163 @@
+[
+  {
+    "id": "required-i-standard-worksheet",
+    "answerType": "required-i-standard",
+    "examPart": "必須科目Ⅰ",
+    "title": "必須Ⅰ型 答案作成ワークシート",
+    "targetChars": 1800,
+    "manuscriptPages": 3,
+    "practicalCharRange": "1650〜1725字",
+    "purpose": "社会的・複合的な課題について、技術課題、最重要課題、解決策、リスク、倫理、社会の持続可能性まで論じる。",
+    "guidance": [
+      "設問（1）では、3つの技術課題を異なる観点で抽出する",
+      "設問（2）では、最重要課題を選び、理由と解決策を示す",
+      "設問（3）では、解決策に伴うリスクと対策を示す",
+      "設問（4）では、倫理と持続可能性をテーマに接続する"
+    ],
+    "blocks": [
+      { "id": "title", "label": "問題タイトル", "purpose": "答案全体のテーマを一言で定める", "answerUse": "答案全体の主題をぶらさないために使う" },
+      { "id": "issue-1", "label": "技術課題1", "purpose": "1つ目の観点から技術課題を抽出する", "fields": ["観点", "課題", "課題の内容"], "answerUse": "設問（1）の課題抽出で使う" },
+      { "id": "issue-2", "label": "技術課題2", "purpose": "2つ目の観点から技術課題を抽出する", "fields": ["観点", "課題", "課題の内容"], "answerUse": "設問（1）の課題抽出で使う" },
+      { "id": "issue-3", "label": "技術課題3", "purpose": "3つ目の観点から技術課題を抽出する", "fields": ["観点", "課題", "課題の内容"], "answerUse": "設問（1）の課題抽出で使う" },
+      { "id": "key-issue", "label": "最重要課題", "purpose": "3つの技術課題から最も重要な課題を1つ選ぶ", "answerUse": "設問（2）の中心主張として使う" },
+      { "id": "reason", "label": "選定理由", "purpose": "影響度、実現性、波及効果などから理由を説明する", "answerUse": "最重要課題を選んだ根拠として使う" },
+      { "id": "solution-1", "label": "解決策1", "purpose": "最重要課題に対する1つ目の解決策を示す", "answerUse": "設問（2）の解決策パートで使う" },
+      { "id": "solution-2", "label": "解決策2", "purpose": "別観点から2つ目の解決策を示す", "answerUse": "設問（2）の解決策パートで使う" },
+      { "id": "solution-3", "label": "解決策3", "purpose": "定着や展開まで含めた3つ目の解決策を示す", "answerUse": "設問（2）の解決策パートで使う" },
+      { "id": "effect", "label": "効果", "purpose": "解決策の実施により期待される効果を示す", "answerUse": "解決策の妥当性を示す根拠として使う" },
+      { "id": "risk", "label": "新たに生じるリスク", "purpose": "解決策の実施によって発生する技術的・経済的・組織的リスクを示す", "answerUse": "設問（3）のリスク整理で使う" },
+      { "id": "risk-countermeasure", "label": "リスク対策", "purpose": "リスクに対応する具体策を示す", "answerUse": "設問（3）の対策として使う" },
+      { "id": "ethics", "label": "技術者倫理", "purpose": "透明性、公平性、安全、説明責任、秘密情報保護などを示す", "answerUse": "設問（4）の倫理要件として使う" },
+      { "id": "sustainability", "label": "社会の持続可能性", "purpose": "環境負荷低減、省エネ、人材活用、地域社会への貢献などを示す", "answerUse": "設問（4）の持続可能性の観点として使う" }
+    ],
+    "sample": {
+      "theme": "既存サービスを活用したDXの早期立上げ",
+      "points": [
+        "OEEを稼働率、性能、良品率に分解する",
+        "既存設備からデータを取得し、ボトルネックを見える化する",
+        "現場教育と小集団活動で改善を定着させる"
+      ]
+    }
+  },
+  {
+    "id": "elective-ii-1-short-worksheet",
+    "answerType": "elective-ii-1-short",
+    "examPart": "選択科目Ⅱ-1",
+    "title": "Ⅱ-1型 短答説明ワークシート",
+    "targetChars": 600,
+    "manuscriptPages": 1,
+    "practicalCharRange": "520〜575字",
+    "purpose": "専門用語、手法、考え方を、定義、特徴、長所・短所、適用場面、留意点で簡潔に説明する。",
+    "guidance": [
+      "冒頭で定義を明確にする",
+      "類似手法と比較する場合は、違いを書く",
+      "長所だけでなく短所・留意点も書く",
+      "どの業務場面で有効かを書く",
+      "600字なので、詳細説明より要点整理を優先する"
+    ],
+    "blocks": [
+      { "id": "term", "label": "問われている用語・手法", "purpose": "説明対象を明確にする", "answerUse": "答案冒頭の主題として使う" },
+      { "id": "definition", "label": "定義", "purpose": "用語や手法を一文で説明する", "answerUse": "答案の導入で使う" },
+      { "id": "feature", "label": "原理・特徴", "purpose": "仕組みや構成要素を整理する", "answerUse": "本文前半の説明で使う" },
+      { "id": "merit", "label": "長所", "purpose": "実務上の効果や使いやすさを示す", "answerUse": "評価される理由として使う" },
+      { "id": "demerit", "label": "短所・留意点", "purpose": "適用条件や弱点を示す", "answerUse": "一面的な説明を避けるために使う" },
+      { "id": "use-case", "label": "適用場面", "purpose": "どの業務場面で有効かを示す", "answerUse": "経営工学上の使いどころとして使う" },
+      { "id": "example", "label": "具体例", "purpose": "必要に応じて短い実務例を添える", "answerUse": "説明の具体性を補うために使う" },
+      { "id": "summary", "label": "まとめの一文", "purpose": "手法の使い分けや要点を締める", "answerUse": "答案の結論として使う" }
+    ],
+    "sample": {
+      "theme": "ガントチャートとアローダイアグラム",
+      "points": [
+        "ガントチャートは時間軸で進捗を見やすい",
+        "アローダイアグラムは作業順序とクリティカルパスを把握しやすい",
+        "計画段階ではアローダイアグラム、進捗管理ではガントチャートが有効"
+      ]
+    }
+  },
+  {
+    "id": "elective-ii-2-procedure-worksheet",
+    "answerType": "elective-ii-2-procedure",
+    "examPart": "選択科目Ⅱ-2",
+    "title": "Ⅱ-2型 業務遂行ワークシート",
+    "targetChars": 1200,
+    "manuscriptPages": 2,
+    "practicalCharRange": "1100〜1150字",
+    "purpose": "担当者として、何を調査し、どのような手順で進め、誰と調整し、何に留意するかを説明する。",
+    "guidance": [
+      "自分が担当者ならどう進めるかを書く",
+      "調査事項を具体的にする",
+      "手順は時系列で整理する",
+      "関係者調整を必ず入れる",
+      "効果確認はKPIで示す",
+      "1200字なので、調査・手順・留意点の配分を意識する"
+    ],
+    "blocks": [
+      { "id": "theme", "label": "業務テーマ", "purpose": "担当する業務や改善テーマを定める", "answerUse": "答案冒頭の前提として使う" },
+      { "id": "purpose", "label": "業務の前提・目的", "purpose": "なぜその業務を進めるのかを示す", "answerUse": "調査や手順の目的として使う" },
+      { "id": "survey", "label": "事前に調査すべき事項", "purpose": "現状把握に必要なデータや現場情報を整理する", "answerUse": "設問の調査・検討事項で使う" },
+      { "id": "analysis", "label": "現状分析の観点", "purpose": "問題構造や重点対象を分析する観点を示す", "answerUse": "方針設定の根拠として使う" },
+      { "id": "policy", "label": "実施方針", "purpose": "改善の方向性と優先順位を定める", "answerUse": "手順に入る前の方針として使う" },
+      { "id": "procedure-1", "label": "実施手順1", "purpose": "最初に行う具体的な行動を書く", "answerUse": "業務手順の前半で使う" },
+      { "id": "procedure-2", "label": "実施手順2", "purpose": "分析結果に基づく改善施策を書く", "answerUse": "業務手順の中盤で使う" },
+      { "id": "procedure-3", "label": "実施手順3", "purpose": "展開、標準化、定着までを書く", "answerUse": "業務手順の後半で使う" },
+      { "id": "stakeholders", "label": "関係者・調整先", "purpose": "誰と何を調整するかを明確にする", "answerUse": "関係者調整の設問で使う" },
+      { "id": "attention", "label": "留意点", "purpose": "実務上注意すべき制約や副作用を示す", "answerUse": "留意点・工夫点で使う" },
+      { "id": "risk", "label": "リスク", "purpose": "実施時に起こり得る問題を示す", "answerUse": "留意点を具体化するために使う" },
+      { "id": "countermeasure", "label": "リスク対策", "purpose": "リスクに対する対応策を書く", "answerUse": "実行可能性を示すために使う" },
+      { "id": "kpi", "label": "効果確認KPI", "purpose": "改善効果を確認する指標を定める", "answerUse": "効果確認で使う" },
+      { "id": "summary", "label": "まとめ", "purpose": "業務の進め方と効果確認を短く締める", "answerUse": "答案の結論として使う" }
+    ],
+    "sample": {
+      "theme": "見込み生産型企業の在庫削減プロジェクト",
+      "points": [
+        "品目別在庫、需要変動、リードタイム、欠品率、在庫回転率を調査する",
+        "ABC分析、安全在庫、需要予測精度で重点対象を整理する",
+        "営業、生産、購買、物流、経営層と調整する"
+      ]
+    }
+  },
+  {
+    "id": "elective-iii-analysis-worksheet",
+    "answerType": "elective-iii-analysis",
+    "examPart": "選択科目Ⅲ",
+    "title": "Ⅲ型 課題解決提案ワークシート",
+    "targetChars": 1800,
+    "manuscriptPages": 3,
+    "practicalCharRange": "1650〜1725字",
+    "purpose": "複数の技術課題や施策を整理し、最重要課題または最重要手段を選び、理由、解決策、リスク対策を示す。",
+    "guidance": [
+      "問題文の背景・制約条件を拾う",
+      "複数課題を並べるだけでなく、違いを明確にする",
+      "最重要課題の理由を、影響度・実現性・波及効果で示す",
+      "解決策は複数提示する",
+      "リスクと対策を対応させる",
+      "経営工学用語を使う",
+      "Ⅲ型は必須Ⅰ型と似ているが、より課題解決・提案に重点がある"
+    ],
+    "blocks": [
+      { "id": "theme", "label": "問題テーマ", "purpose": "解くテーマを一言で定める", "answerUse": "答案全体の主題として使う" },
+      { "id": "background", "label": "背景・制約条件", "purpose": "問題文の背景、前提、制約を整理する", "answerUse": "冒頭の背景整理で使う" },
+      { "id": "issue-1", "label": "技術課題1", "purpose": "1つ目の対象・課題・理由を示す", "fields": ["対象", "課題", "理由"], "answerUse": "課題抽出で使う" },
+      { "id": "issue-2", "label": "技術課題2", "purpose": "2つ目の対象・課題・理由を示す", "fields": ["対象", "課題", "理由"], "answerUse": "課題抽出で使う" },
+      { "id": "issue-3", "label": "技術課題3", "purpose": "3つ目の対象・課題・理由を示す", "fields": ["対象", "課題", "理由"], "answerUse": "課題抽出で使う" },
+      { "id": "key-issue", "label": "最重要課題または最重要手段", "purpose": "最も重視する課題や手段を1つ選ぶ", "answerUse": "答案の中心主張として使う" },
+      { "id": "reason", "label": "選定理由", "purpose": "影響度、実現性、波及効果から理由を示す", "fields": ["影響度", "実現性", "波及効果"], "answerUse": "選定の根拠として使う" },
+      { "id": "solution-1", "label": "解決策1", "purpose": "中心課題に対する1つ目の解決策を示す", "answerUse": "解決策パートで使う" },
+      { "id": "solution-2", "label": "解決策2", "purpose": "別観点から2つ目の解決策を示す", "answerUse": "解決策パートで使う" },
+      { "id": "solution-3", "label": "解決策3", "purpose": "定着・展開を含む3つ目の解決策を示す", "answerUse": "解決策パートで使う" },
+      { "id": "risk", "label": "実施時リスク", "purpose": "解決策を実施したときに新たに生じるリスクを示す", "answerUse": "リスク整理で使う" },
+      { "id": "countermeasure", "label": "リスク対策", "purpose": "リスクと対応する対策を示す", "answerUse": "リスク対策で使う" },
+      { "id": "engineer-note", "label": "技術者としての留意点", "purpose": "安全、合意形成、責任分担などの留意点を示す", "answerUse": "答案後半の評価観点として使う" },
+      { "id": "kpi", "label": "効果確認KPI", "purpose": "施策の効果を確認する指標を定める", "answerUse": "効果確認や継続改善で使う" },
+      { "id": "summary", "label": "まとめ", "purpose": "提案の狙いと全体最適の観点で締める", "answerUse": "答案の結論として使う" }
+    ],
+    "sample": {
+      "theme": "物流・輸送効率化",
+      "points": [
+        "モーダルシフトはリードタイムと在庫水準の再設計が課題になる",
+        "共同輸配送は荷姿・納品条件・情報共有の標準化が課題になる",
+        "輸送集約は拠点配置・積載率・サービス水準の調整が課題になる"
+      ]
+    }
+  }
+]

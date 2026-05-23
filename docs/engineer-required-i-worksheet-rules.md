@@ -4,6 +4,8 @@
 
 必須Ⅰ型では、課題抽出、最重要課題、解決策、リスク、倫理、持続可能性を一貫して整理する必要がある。第二回添削課題の答案作成表をもとに、今後の必須Ⅰ型問題を同じ手順で構造化する。
 
+答案型別の共通運用は `docs/engineer-answer-worksheet-rules.md` に整理する。本ドキュメントは、必須Ⅰ型に限定した詳細ルールとして扱う。
+
 ## 2. 基本フロー
 
 問題タイトル
@@ -44,5 +46,6 @@
 
 - answer-frame-rules.json は標準構造を持つ
 - required-i-worksheet-template.json はワークシート項目を持つ
+- answer-worksheet-templates.json は4答案型のワークシート項目を持つ
 - correction-examples.json は問題固有情報を持つ
 - model-answer-examples.json は答案例を持つ
