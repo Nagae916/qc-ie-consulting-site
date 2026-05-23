@@ -7,6 +7,7 @@ import ManuscriptAnswerPreview from './ManuscriptAnswerPreview';
 
 type ModelAnswerExample = {
   id: string;
+  title?: string;
   source: string;
   examPart: string;
   field: string;
@@ -27,6 +28,17 @@ type ModelAnswerExample = {
 };
 
 const modelAnswerExamples = modelAnswerExamplesData as ModelAnswerExample[];
+
+const answerFrameLabels: Record<string, string> = {
+  'required-i-standard': '必須Ⅰ型答案',
+  'elective-ii-1-short': 'Ⅱ-1型答案',
+  'elective-ii-2-procedure': 'Ⅱ-2型答案',
+  'elective-iii-analysis': 'Ⅲ型答案',
+};
+
+function answerFrameLabel(example: ModelAnswerExample) {
+  return answerFrameLabels[example.answerFrameId] ?? example.examPart;
+}
 
 export default function ModelAnswerExamples() {
   const [selectedId, setSelectedId] = useState(modelAnswerExamples[0]?.id ?? '');
@@ -66,9 +78,9 @@ export default function ModelAnswerExamples() {
               }`}
             >
               <p className="text-xs font-semibold text-blue-700">{example.examPart}</p>
-              <h3 className="mt-1 text-base font-bold text-slate-950">{example.theme}</h3>
+              <h3 className="mt-1 text-base font-bold text-slate-950">{example.title ?? example.theme}</h3>
               <p className="mt-2 text-sm leading-6 text-slate-600">
-                {example.questionPattern} / {example.answerType}
+                {answerFrameLabel(example)} / {example.questionPattern}
               </p>
             </button>
           );
@@ -79,12 +91,12 @@ export default function ModelAnswerExamples() {
         <header className="space-y-4">
           <div>
             <p className="text-sm font-semibold text-blue-700">{selectedExample.source}</p>
-            <h2 className="mt-1 text-2xl font-bold tracking-normal text-slate-950">{selectedExample.theme}</h2>
+            <h2 className="mt-1 text-2xl font-bold tracking-normal text-slate-950">{selectedExample.title ?? selectedExample.theme}</h2>
           </div>
 
           <div className="grid gap-3 md:grid-cols-4">
             <MetaCard label="試験区分" value={selectedExample.examPart} />
-            <MetaCard label="答案型" value={selectedExample.questionPattern} />
+            <MetaCard label="答案型" value={answerFrameLabel(selectedExample)} />
             <MetaCard label="目標原稿用紙" value={`${selectedExample.targetManuscriptPages}枚`} />
             <MetaCard label="上限文字数" value={`${charLimit}字以内`} />
             <MetaCard label="本文文字数" value={`${bodyCharCount}字`} />
