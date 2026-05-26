@@ -112,16 +112,18 @@ const engineerEntranceHrefs = [
   "/guides/engineer/how-to-study",
   "/guides/engineer/past-exam-trend-map",
   "/guides/engineer/past-exam-question-patterns",
-  "/guides/engineer/practice",
-  "/guides/engineer/answer-structure-guide",
 ];
 
-const engineerMapHrefs = [
-  "/guides/engineer/keyword-priority-100",
+const engineerPrepHrefs = [
+  "/guides/engineer/answer-structure-builder",
   "/guides/engineer/keywords",
-  "/guides/engineer/keyword-themes",
-  "/guides/engineer/keyword-answer-uses",
   "/guides/engineer/whitepaper-keyword-map",
+];
+
+const engineerPracticeHrefs = [
+  "/guides/engineer/model-answer-examples",
+  "/guides/engineer/practice",
+  "/guides/engineer/keyword-priority-100",
 ];
 
 const toExamKey = (v: unknown): ExamKey | null => {
@@ -249,9 +251,10 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
   const tools = guides.filter((guide) => guide.classification === "tool");
   const duplicateCandidates = guides.filter((guide) => guide.classification === "duplicate-candidate");
   const guideByHref = new Map(guides.map((guide) => [guide.href, guide]));
-  const engineerPrimaryLinks = new Set([...engineerEntranceHrefs, ...engineerMapHrefs]);
+  const engineerPrimaryLinks = new Set([...engineerEntranceHrefs, ...engineerPrepHrefs, ...engineerPracticeHrefs]);
   const engineerEntranceItems = engineerEntranceHrefs.map((href) => guideByHref.get(href)).filter((item): item is Card => !!item);
-  const engineerMapItems = engineerMapHrefs.map((href) => guideByHref.get(href)).filter((item): item is Card => !!item);
+  const engineerPrepItems = engineerPrepHrefs.map((href) => guideByHref.get(href)).filter((item): item is Card => !!item);
+  const engineerPracticeItems = engineerPracticeHrefs.map((href) => guideByHref.get(href)).filter((item): item is Card => !!item);
   const visibleThemeGuides = exam === "engineer"
     ? themeGuides.filter((guide) => !engineerPrimaryLinks.has(guide.href)).slice(0, 12)
     : themeGuides;
@@ -274,7 +277,7 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
           <h1 className={`mt-4 text-2xl font-extrabold md:text-3xl ${t.title}`}>{EXAM_LABEL[exam]}ガイド一覧</h1>
           <p className="mt-3 max-w-3xl text-sm leading-7 text-gray-700">
             {exam === "engineer"
-              ? "このページは、技術士 経営工学部門対策の入口です。経営工学の中でも、過去問分析・設問形式・答案骨子・重要キーワードを扱い、QC・統計・生産管理は技術士答案に使う関連知識として接続します。"
+              ? "このページは、技術士第二次試験・経営工学部門の学習入口です。過去問傾向、設問形式、答案骨子、白書・キーワード、模範答案例、答案型別練習を順に使い、合格答案に近い構成で書く力を養います。"
               : `${EXAM_DESCRIPTION[exam]} ここでは個別テーマを学ぶページを主表示にし、ロードマップや演習ツールは補助枠に分けています。`}
           </p>
         </section>
@@ -282,7 +285,7 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
         {exam === "engineer" ? <EngineerLearningFlow /> : null}
 
         {exam === "engineer" ? (
-          <EngineerLayeredNavigation entranceItems={engineerEntranceItems} mapItems={engineerMapItems} />
+          <EngineerLayeredNavigation entranceItems={engineerEntranceItems} prepItems={engineerPrepItems} practiceItems={engineerPracticeItems} />
         ) : null}
 
         {exam === "stat" ? <StatLearningPath /> : null}
@@ -373,9 +376,9 @@ function EngineerLearningFlow() {
     <section className="mt-6 rounded-2xl border border-emerald-100 bg-white p-5 shadow-sm">
       <h2 className="text-xl font-bold text-emerald-900">まずこの順で進める</h2>
       <ul className="mt-3 grid gap-2 text-sm leading-7 text-gray-700 md:grid-cols-3">
-        <li>まず過去問トレンドで出題領域を把握する</li>
-        <li>設問形式ごとに必要な答案要素を確認する</li>
-        <li>キーワードを答案骨子へ配置して練習する</li>
+        <li>過去問傾向と設問形式を確認する</li>
+        <li>答案型を選び、骨子を作る</li>
+        <li>キーワード・白書背景・答案例で補強して練習する</li>
       </ul>
       <Image
         src="/images/guides/engineer/engineer-learning-flow.svg"
@@ -387,17 +390,17 @@ function EngineerLearningFlow() {
       <div className="mt-4 rounded-xl bg-emerald-50 p-4 text-sm leading-7 text-emerald-950">
         <p className="font-bold">この図の使い方</p>
         <p className="mt-1">
-          技術士 経営工学部門の学習を「過去問分析 → キーワード理解 → 答案骨子 → 答案作成」の順に整理しています。最初は過去問トレンドを確認し、次に設問形式と重要キーワードを結びつけて学習します。
+          技術士 経営工学部門の学習を「過去問傾向 → 設問形式 → 答案骨子 → キーワード・白書補強 → 答案例確認 → 練習」の順に整理しています。最初は過去問トレンドを確認し、次に設問形式と答案型を結びつけて学習します。
         </p>
       </div>
       <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         {[
-          { href: "/guides/engineer/how-to-study", label: "まず全体の使い方を確認する" },
+          { href: "/guides/engineer/how-to-study", label: "学習順序を確認する" },
           { href: "/guides/engineer/past-exam-trend-map", label: "過去問トレンドを見る" },
           { href: "/guides/engineer/past-exam-question-patterns", label: "設問形式ごとの書き方を確認する" },
-          { href: "/guides/engineer/keyword-priority-100", label: "重要キーワードを学ぶ" },
-          { href: "/guides/engineer/practice", label: "テーマを選んで答案練習する" },
-          { href: "/guides/engineer/answer-structure-guide", label: "答案骨子を作る" },
+          { href: "/guides/engineer/answer-structure-builder", label: "答案骨子を作る" },
+          { href: "/guides/engineer/model-answer-examples", label: "模範答案例を見る" },
+          { href: "/guides/engineer/practice", label: "答案型別に練習する" },
         ].map((item) => (
           <Link key={item.href} href={item.href} className="rounded-xl border border-emerald-200 bg-white px-4 py-3 text-sm font-bold text-emerald-900 hover:border-emerald-500">
             {item.label}
@@ -408,18 +411,23 @@ function EngineerLearningFlow() {
   );
 }
 
-function EngineerLayeredNavigation({ entranceItems, mapItems }: { entranceItems: Card[]; mapItems: Card[] }) {
+function EngineerLayeredNavigation({ entranceItems, prepItems, practiceItems }: { entranceItems: Card[]; prepItems: Card[]; practiceItems: Card[] }) {
   return (
-    <section className="mt-6 grid gap-6 lg:grid-cols-2">
+    <section className="mt-6 grid gap-6 lg:grid-cols-3">
       <LayerCard
-        title="まず進むページ"
-        description="まずここから確認します。過去問でテーマを選び、設問形式を読み、問題演習から答案骨子へ進みます。"
+        title="まずはここから"
+        description="全体の進め方を確認し、過去問傾向と設問形式から、自分が書くべき答案型をつかみます。"
         items={entranceItems}
       />
       <LayerCard
-        title="キーワードを探すページ"
-        description="キーワードを名前、優先順位、テーマ、答案用途、白書背景から探すための入口です。"
-        items={mapItems}
+        title="答案を書く準備"
+        description="答案骨子を作り、経営工学キーワードと白書背景で、課題・解決策・リスクを補強します。"
+        items={prepItems}
+      />
+      <LayerCard
+        title="書いて練習する"
+        description="模範答案例で書き方を確認し、答案型別に練習します。苦手分野は重要キーワードで補強します。"
+        items={practiceItems}
       />
     </section>
   );

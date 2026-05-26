@@ -46,7 +46,7 @@ const pillars: Pillar[] = [
   },
   {
     title: "技術士 経営工学部門",
-    description: "過去問分析、設問形式、重要キーワード、答案骨子、問題演習を通じて、技術士第二次試験に向けた学習を進めます。",
+    description: "過去問傾向、設問形式、答案骨子、白書・キーワード、模範答案例、答案型別練習をつなげて、技術士第二次試験に向けた答案力を高めます。",
     href: "/guides/engineer",
     className: "border-emerald-200 bg-emerald-50",
   },
@@ -71,7 +71,7 @@ const purposeLinks = [
   },
   {
     title: "技術士二次試験の答案力を上げたい",
-    description: "過去問、設問形式、キーワード、答案骨子をつなげて学びます。",
+    description: "過去問傾向から答案骨子、白書・キーワード、模範答案例、練習へ進みます。",
     href: "/guides/engineer",
   },
   {
