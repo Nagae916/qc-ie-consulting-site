@@ -1,5 +1,4 @@
 import Head from "next/head";
-import Image from "next/image";
 import Link from "next/link";
 import type { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
 import { allGuides, type Guide } from "contentlayer/generated";
@@ -108,21 +107,18 @@ const statLearningSteps = [
   },
 ];
 
-const engineerEntranceHrefs = [
+const engineerPrimaryHrefs = [
   "/guides/engineer/how-to-study",
   "/guides/engineer/past-exam-trend-map",
-  "/guides/engineer/past-exam-question-patterns",
-];
-
-const engineerPrepHrefs = [
   "/guides/engineer/answer-structure-builder",
-  "/guides/engineer/keywords",
-  "/guides/engineer/whitepaper-keyword-map",
+  "/guides/engineer/practice",
 ];
 
-const engineerPracticeHrefs = [
+const engineerSupportHrefs = [
+  "/guides/engineer/past-exam-question-patterns",
+  "/guides/engineer/whitepaper-keyword-map",
   "/guides/engineer/model-answer-examples",
-  "/guides/engineer/practice",
+  "/guides/engineer/keywords",
   "/guides/engineer/keyword-priority-100",
 ];
 
@@ -251,12 +247,11 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
   const tools = guides.filter((guide) => guide.classification === "tool");
   const duplicateCandidates = guides.filter((guide) => guide.classification === "duplicate-candidate");
   const guideByHref = new Map(guides.map((guide) => [guide.href, guide]));
-  const engineerPrimaryLinks = new Set([...engineerEntranceHrefs, ...engineerPrepHrefs, ...engineerPracticeHrefs]);
-  const engineerEntranceItems = engineerEntranceHrefs.map((href) => guideByHref.get(href)).filter((item): item is Card => !!item);
-  const engineerPrepItems = engineerPrepHrefs.map((href) => guideByHref.get(href)).filter((item): item is Card => !!item);
-  const engineerPracticeItems = engineerPracticeHrefs.map((href) => guideByHref.get(href)).filter((item): item is Card => !!item);
+  const engineerPrimaryLinks = new Set([...engineerPrimaryHrefs, ...engineerSupportHrefs]);
+  const engineerPrimaryItems = engineerPrimaryHrefs.map((href) => guideByHref.get(href)).filter((item): item is Card => !!item);
+  const engineerSupportItems = engineerSupportHrefs.map((href) => guideByHref.get(href)).filter((item): item is Card => !!item);
   const visibleThemeGuides = exam === "engineer"
-    ? themeGuides.filter((guide) => !engineerPrimaryLinks.has(guide.href)).slice(0, 12)
+    ? themeGuides.filter((guide) => !engineerPrimaryLinks.has(guide.href)).slice(0, 6)
     : themeGuides;
   const t = THEME[exam];
 
@@ -282,11 +277,7 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
           </p>
         </section>
 
-        {exam === "engineer" ? <EngineerLearningFlow /> : null}
-
-        {exam === "engineer" ? (
-          <EngineerLayeredNavigation entranceItems={engineerEntranceItems} prepItems={engineerPrepItems} practiceItems={engineerPracticeItems} />
-        ) : null}
+        {exam === "engineer" ? <EngineerEntryNavigation primaryItems={engineerPrimaryItems} supportItems={engineerSupportItems} /> : null}
 
         {exam === "stat" ? <StatLearningPath /> : null}
 
@@ -371,80 +362,71 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
   );
 }
 
-function EngineerLearningFlow() {
+const engineerPrimaryLabels: Record<string, { label: string; lead: string }> = {
+  "/guides/engineer/how-to-study": {
+    label: "初めての人",
+    lead: "学習順序を見る",
+  },
+  "/guides/engineer/past-exam-trend-map": {
+    label: "出題傾向を知りたい",
+    lead: "過去問傾向を見る",
+  },
+  "/guides/engineer/answer-structure-builder": {
+    label: "答案を書きたい",
+    lead: "答案骨子を作る",
+  },
+  "/guides/engineer/practice": {
+    label: "練習したい",
+    lead: "問題演習に進む",
+  },
+};
+
+const engineerSupportLabels: Record<string, string> = {
+  "/guides/engineer/past-exam-question-patterns": "設問形式の違いを確認する",
+  "/guides/engineer/whitepaper-keyword-map": "白書背景とキーワードで答案を補強する",
+  "/guides/engineer/model-answer-examples": "模範答案例で書き方を見る",
+  "/guides/engineer/keywords": "経営工学キーワードを探す",
+  "/guides/engineer/keyword-priority-100": "頻出キーワードを優先復習する",
+};
+
+function EngineerEntryNavigation({ primaryItems, supportItems }: { primaryItems: Card[]; supportItems: Card[] }) {
   return (
     <section className="mt-6 rounded-2xl border border-emerald-100 bg-white p-5 shadow-sm">
-      <h2 className="text-xl font-bold text-emerald-900">まずこの順で進める</h2>
-      <ul className="mt-3 grid gap-2 text-sm leading-7 text-gray-700 md:grid-cols-3">
-        <li>過去問傾向と設問形式を確認する</li>
-        <li>答案型を選び、骨子を作る</li>
-        <li>キーワード・白書背景・答案例で補強して練習する</li>
-      </ul>
-      <Image
-        src="/images/guides/engineer/engineer-learning-flow.svg"
-        alt="技術士 経営工学部門の学習フロー"
-        width={960}
-        height={360}
-        className="mt-5 w-full rounded-xl border border-slate-100 bg-slate-50"
-      />
-      <div className="mt-4 rounded-xl bg-emerald-50 p-4 text-sm leading-7 text-emerald-950">
-        <p className="font-bold">この図の使い方</p>
-        <p className="mt-1">
-          技術士 経営工学部門の学習を「過去問傾向 → 設問形式 → 答案骨子 → キーワード・白書補強 → 答案例確認 → 練習」の順に整理しています。最初は過去問トレンドを確認し、次に設問形式と答案型を結びつけて学習します。
-        </p>
+      <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p className="text-sm font-semibold text-emerald-700">次にやることを選ぶ</p>
+          <h2 className="mt-1 text-xl font-bold text-slate-900">目的別に4つだけ表示しています</h2>
+          <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-700">
+            詳しい説明は各ページに任せ、この入口では「何をしたいか」から次のページを選べるようにしています。
+          </p>
+        </div>
+        <Link href="/guides/engineer/how-to-study" className="text-sm font-semibold text-emerald-800 underline">
+          学習順序を詳しく見る
+        </Link>
       </div>
-      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-        {[
-          { href: "/guides/engineer/how-to-study", label: "学習順序を確認する" },
-          { href: "/guides/engineer/past-exam-trend-map", label: "過去問トレンドを見る" },
-          { href: "/guides/engineer/past-exam-question-patterns", label: "設問形式ごとの書き方を確認する" },
-          { href: "/guides/engineer/answer-structure-builder", label: "答案骨子を作る" },
-          { href: "/guides/engineer/model-answer-examples", label: "模範答案例を見る" },
-          { href: "/guides/engineer/practice", label: "答案型別に練習する" },
-        ].map((item) => (
-          <Link key={item.href} href={item.href} className="rounded-xl border border-emerald-200 bg-white px-4 py-3 text-sm font-bold text-emerald-900 hover:border-emerald-500">
-            {item.label}
-          </Link>
-        ))}
+
+      <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+        {primaryItems.map((item) => {
+          const label = engineerPrimaryLabels[item.href] ?? { label: item.title, lead: "ページを開く" };
+          return (
+            <Link key={item.href} href={item.href} className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 hover:border-emerald-500">
+              <span className="block text-xs font-bold text-emerald-700">{label.label}</span>
+              <span className="mt-1 block text-base font-bold text-emerald-950">{label.lead}</span>
+              {item.description ? <span className="mt-2 line-clamp-2 block text-sm leading-6 text-emerald-900">{item.description}</span> : null}
+            </Link>
+          );
+        })}
       </div>
-    </section>
-  );
-}
 
-function EngineerLayeredNavigation({ entranceItems, prepItems, practiceItems }: { entranceItems: Card[]; prepItems: Card[]; practiceItems: Card[] }) {
-  return (
-    <section className="mt-6 grid gap-6 lg:grid-cols-3">
-      <LayerCard
-        title="まずはここから"
-        description="全体の進め方を確認し、過去問傾向と設問形式から、自分が書くべき答案型をつかみます。"
-        items={entranceItems}
-      />
-      <LayerCard
-        title="答案を書く準備"
-        description="答案骨子を作り、経営工学キーワードと白書背景で、課題・解決策・リスクを補強します。"
-        items={prepItems}
-      />
-      <LayerCard
-        title="書いて練習する"
-        description="模範答案例で書き方を確認し、答案型別に練習します。苦手分野は重要キーワードで補強します。"
-        items={practiceItems}
-      />
-    </section>
-  );
-}
-
-function LayerCard({ title, description, items }: { title: string; description: string; items: Card[] }) {
-  return (
-    <section className="rounded-2xl border border-emerald-100 bg-white p-5 shadow-sm">
-      <h2 className="text-xl font-bold text-emerald-900">{title}</h2>
-      <p className="mt-2 text-sm leading-7 text-slate-600">{description}</p>
-      <div className="mt-4 grid gap-3">
-        {items.map((item) => (
-          <Link key={item.href} href={item.href} className="rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 hover:border-emerald-400">
-            <span className="block text-sm font-bold text-emerald-950">{item.title}</span>
-            {item.description ? <span className="mt-1 line-clamp-2 block text-xs leading-5 text-emerald-900">{item.description}</span> : null}
-          </Link>
-        ))}
+      <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-4">
+        <p className="text-sm font-bold text-slate-900">補助ページ</p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {supportItems.map((item) => (
+            <Link key={item.href} href={item.href} className="rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:border-emerald-400 hover:text-emerald-800">
+              {engineerSupportLabels[item.href] ?? item.title}
+            </Link>
+          ))}
+        </div>
       </div>
     </section>
   );
