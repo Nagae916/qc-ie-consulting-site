@@ -1,0 +1,128 @@
+# Decision Log
+
+この文書は、N-IE LabのProtected Defaultsや広い影響を持つ設計判断を記録する。現在のユーザーによる明示的な指示が最優先であり、決定を変更した場合は旧項目を削除せず `Superseded` とする。
+
+## 記録形式
+
+```md
+## YYYY-MM-DD：決定タイトル
+
+- Status: Proposed / Accepted / Superseded
+- Context:
+- Decision:
+- Reason:
+- Affected areas:
+- Migration:
+- Verification:
+- Supersedes:
+```
+
+## 2026-08-01：表示ブランドをN-IE Labへ拡張
+
+- Status: Accepted
+- Context: 品質管理や資格対策に限定せず、ものづくり全体を経営工学でつなぐ位置付けを明確にする必要がある。
+- Decision: 表示ブランドを `N-IE Lab` とし、旧名称 `N-IE QC Lab` は必要に応じて沿革・旧名称として扱う。
+- Reason: 品質、生産、データ、組織、改善を横断する媒体であることを示すため。
+- Affected areas: ブランド表記、将来のAbout、タイトル、OG、構造化データ。
+- Migration: 本第0指示では画面を変更しない。表示変更は別タスクで現状調査と回帰確認を行う。
+- Verification: 文書間でブランド名と扱いが一致していることを確認する。
+- Supersedes: なし。
+
+## 2026-08-01：既存ドメインを維持
+
+- Status: Accepted
+- Context: 公開URL、検索評価、外部リンクを保全する必要がある。
+- Decision: `n-ie-qclab.com` を維持する。
+- Reason: ブランド拡張とドメイン変更を分離し、移行リスクを避けるため。
+- Affected areas: DNS、Vercel、canonical、OG、外部リンク。
+- Migration: なし。
+- Verification: 本番ドメインと主要URLの継続利用を確認する。
+- Supersedes: なし。
+
+## 2026-08-01：ものづくり実務者をメインターゲットとする
+
+- Status: Accepted
+- Context: 資格コンテンツが充実しても、サイト全体の読者価値を資格対策へ限定しない必要がある。
+- Decision: 製造業で3〜10年程度働く若手・中堅実務者をメインターゲットとする。
+- Reason: 実務課題と学習をつなぎ、専門メディアとポートフォリオの両方の価値を高めるため。
+- Affected areas: コンテンツ企画、ナビゲーション、文章、ケース、ツール。
+- Migration: 既存資格コンテンツは維持し、位置付けを副導線として整理する。
+- Verification: 入口が資格だけを中心に見せていないことを確認する。
+- Supersedes: なし。
+
+## 2026-08-01：資格コンテンツを副導線にする
+
+- Status: Accepted
+- Context: 技術士、QC検定、統計検定等は重要だが、ものづくり全体の理解を支える位置付けが必要である。
+- Decision: 資格関連を「学びを深める」の副導線に置く。
+- Reason: 資格学習と実務を接続しつつ、サイト全体を資格対策中心にしないため。
+- Affected areas: トップ、グローバルナビ、カテゴリ入口、関連リンク。
+- Migration: 明示的な別タスクなしにトップ構造を変更しない。
+- Verification: 4テーマが中心で、資格導線が補助的位置にあることを確認する。
+- Supersedes: なし。
+
+## 2026-08-01：4テーマ構成
+
+- Status: Accepted
+- Context: 分野間のつながりを読者が理解できる安定した分類が必要である。
+- Decision: 「品質をつくる」「生産を整える」「データで確かめる」「改善を仕組みにする」を中心構造とする。
+- Reason: 製造業の課題を経営工学で横断的に捉えられるため。
+- Affected areas: 情報設計、コンテンツ分類、トップ、関連導線。
+- Migration: 本第0指示では画面を変更しない。
+- Verification: Information ArchitectureとContent Modelで定義が一致していることを確認する。
+- Supersedes: なし。
+
+## 2026-08-01：既存URLを原則維持
+
+- Status: Accepted
+- Context: 公開コンテンツ、検索流入、外部リンク、利用者のブックマークを保護する必要がある。
+- Decision: 既存URLを原則維持し、変更時は301、canonical、対応表、回帰確認を必須とする。
+- Reason: 情報設計改善による不必要な破壊を防ぐため。
+- Affected areas: すべての公開ルートとコンテンツ。
+- Migration: URL Migration Policyに従う。
+- Verification: 変更前後のURL、リダイレクト、内部リンクを確認する。
+- Supersedes: なし。
+
+## 2026-08-01：初期ケーススタディ2件
+
+- Status: Accepted
+- Context: 運営者の問題構造化能力と成果物を示す具体的な入口が必要である。
+- Decision: 「実績ゼロから、品質規格をどう決めるか」「外部試験の結果を、そのまま信じてよいのか」を初期ケースとして維持する。
+- Reason: 品質規格設計と外部評価の妥当性確認は、判断過程と成果物を示しやすいため。
+- Affected areas: 将来のケース一覧、ケース詳細、ポートフォリオ導線。
+- Migration: 本第0指示ではケースページを新設しない。
+- Verification: ケース実装時に匿名化、実績表現、推奨URLを確認する。
+- Supersedes: なし。
+
+## 2026-08-01：静的生成・MDX中心の技術方針
+
+- Status: Accepted
+- Context: 保守性、表示速度、セキュリティ、運用負荷を優先する必要がある。現行実装はNext.js 14 Pages RouterとContentlayer2を使用している。
+- Decision: 静的生成とMDXを中心にし、操作が必要な箇所だけClient Componentにする。App RouterとReact Server Componentsを長期的な技術方向とするが、現行Pages Routerからの移行は明示的な別決定なしに行わない。
+- Reason: 将来方向を示しながら、既存ルートと機能を安全に保全するため。
+- Affected areas: ルーティング、レンダリング、コンテンツ基盤、デプロイ。
+- Migration: CMS、データベース、認証はMVPで導入しない。ルーター移行時はURL、Contentlayer、MDX、ISR、APIの移行計画を作る。
+- Verification: 現行ビルドと公開URLを維持し、移行タスクでは回帰確認を行う。
+- Supersedes: なし。
+
+## 2026-08-01：Pages Routerを維持した段階的リニューアル
+
+- Status: Accepted
+- Context: N-IE Labの4テーマ、ケース、ポートフォリオ価値を公開入口へ反映する一方、231件の既存ガイド、ツール、検索評価、公開URLを保全する必要がある。
+- Decision: 現行のNext.js Pages RouterとContentlayer2を維持し、共通メタ情報、ヘッダー・フッター、4テーマ、初期ケース、About・サービス、トップページを段階的に追加する。既存ガイドは移動せず、新しいハブから参照する。
+- Reason: App Routerへの全面移行を同時に行うと、URL、MDX、API、ISRの回帰範囲が過大になるため。情報設計と技術移行を分離する。
+- Affected areas: トップページ、グローバル導線、SEO、テーマ、ケース、学習導線、共通レイアウト、セキュリティヘッダー。
+- Migration: 既存URLの変更と301リダイレクトは発生しない。Contentlayerの追加項目は任意とし、既存frontmatterを一括変更しない。
+- Verification: typecheck、lint、build、主要URL、360px・768px・1280pxの表示、内部リンク、canonical、構造化データ、公開情報を確認する。
+- Supersedes: なし。
+
+## 2026-08-02：依存関係のセキュリティ更新を独立タスクで検証する
+
+- Status: Proposed
+- Context: 依存関係監査でNext.js 14.2.5およびContentlayer2の推移的依存関係に既知脆弱性が報告された。一方、今回のリニューアルは231件のMDX、既存URL、数式・演習機能を保全する情報設計変更である。
+- Decision: フレームワークと関連依存関係の更新は今回の変更へ混在させず、専用ブランチと回帰計画を持つ独立タスクとして検証する。
+- Reason: セキュリティ対応を優先しつつ、互換性の大きい更新と公開構造の変更を分離し、問題発生時の原因と戻し方を明確にするため。
+- Affected areas: `next`、Contentlayer2、MDX生成、静的生成、既存ガイド、API Routes、Vercelビルド。
+- Migration: 対応済みNext.jsへの更新可否、Contentlayer互換性、上流修正版の有無を確認し、typecheck、lint、build、主要URL、数式、演習、モバイル表示を更新前後で比較する。
+- Verification: `npm audit` の再実行、依存ツリーの確認、全静的生成、ブラウザ回帰、既存URLの200応答を確認する。
+- Supersedes: なし。
