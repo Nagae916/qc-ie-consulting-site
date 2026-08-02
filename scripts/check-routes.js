@@ -1,10 +1,32 @@
 // scripts/check-routes.js
-// "/guide/" を含むコードがあれば終了コード1で落とす（content/内は対象外）
-import { execSync } from "node:child_process";
+// 旧ガイドURLを含むコードがあれば終了コード1で落とす（content/内は対象外）
+const { spawnSync } = require("node:child_process");
 
-const grep = `git grep -nE '["\\']\\/guide\\/' -- \
-  ':!content/**' ':!**/*.md' || true`;
-const out = execSync(grep, { encoding: "utf8" }).trim();
+const result = spawnSync(
+  "git",
+  [
+    "grep",
+    "-nE",
+    "[\"']/guide/",
+    "--",
+    ":!content/**",
+    ":!**/*.md",
+    ":!scripts/check-routes.js",
+  ],
+  { encoding: "utf8", shell: false }
+);
+
+if (result.error) {
+  console.error("route check failed:", result.error.message);
+  process.exit(1);
+}
+
+if (result.status !== 0 && result.status !== 1) {
+  console.error("route check failed:", result.stderr.trim());
+  process.exit(result.status ?? 1);
+}
+
+const out = result.stdout.trim();
 
 if (out) {
   console.error(
