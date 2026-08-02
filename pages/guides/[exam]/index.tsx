@@ -1,7 +1,7 @@
-import Head from "next/head";
 import Link from "next/link";
 import type { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
-import { allGuides, type Guide } from "contentlayer/generated";
+import type { Guide } from "contentlayer/generated";
+import { SiteMeta } from "@/components/site/SiteMeta";
 import { classifyContent, classificationLabels, type ContentClassification } from "@/lib/content-classification";
 
 type ExamKey = "qc" | "stat" | "engineer";
@@ -180,14 +180,8 @@ export const getStaticPaths: GetStaticPaths = async () => ({
   fallback: false,
 });
 
-export const getStaticProps: GetStaticProps<{ exam: ExamKey }> = async ({ params }) => {
-  const exam = toExamKey(params?.exam);
-  if (!exam) return { notFound: true };
-  return { props: { exam }, revalidate: 1800 };
-};
-
 type Card = {
-  g: Guide;
+  id: string;
   href: string;
   tags: string[];
   updatedYmd: string;
@@ -198,7 +192,16 @@ type Card = {
   classification: ContentClassification;
 };
 
-export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getStaticProps>) {
+type ExamIndexProps = {
+  exam: ExamKey;
+  guides: Card[];
+};
+
+export const getStaticProps: GetStaticProps<ExamIndexProps> = async ({ params }) => {
+  const exam = toExamKey(params?.exam);
+  if (!exam) return { notFound: true };
+
+  const { allGuides } = await import("contentlayer/generated");
   const guidesEnriched = allGuides
     .filter((g) => toExamKey((g as { exam?: unknown }).exam) === exam && (g as { status?: unknown }).status !== "draft")
     .sort((a, b) => {
@@ -229,7 +232,7 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
       const classification = classifyContent({ slug: href.split("/").pop(), href });
 
       return {
-        g,
+        id: g._id,
         href,
         tags,
         updatedYmd,
@@ -241,11 +244,13 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
       };
     });
 
-  const guides = uniqByHref<Card>(guidesEnriched);
+  return { props: { exam, guides: uniqByHref<Card>(guidesEnriched) }, revalidate: 1800 };
+};
+
+export default function ExamIndex({ exam, guides }: InferGetStaticPropsType<typeof getStaticProps>) {
   const themeGuides = guides.filter((guide) => guide.classification === "guide");
   const learningRoutes = guides.filter((guide) => guide.classification === "learning-route");
   const tools = guides.filter((guide) => guide.classification === "tool");
-  const duplicateCandidates = guides.filter((guide) => guide.classification === "duplicate-candidate");
   const guideByHref = new Map(guides.map((guide) => [guide.href, guide]));
   const engineerPrimaryLinks = new Set([...engineerPrimaryHrefs, ...engineerSupportHrefs]);
   const engineerPrimaryItems = engineerPrimaryHrefs.map((href) => guideByHref.get(href)).filter((item): item is Card => !!item);
@@ -257,10 +262,7 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
 
   return (
     <>
-      <Head>
-        <title>{EXAM_LABEL[exam]}ガイド一覧 | n-ie-qclab</title>
-        <meta name="description" content={EXAM_DESCRIPTION[exam]} />
-      </Head>
+      <SiteMeta title={`${EXAM_LABEL[exam]}ガイド一覧`} description={EXAM_DESCRIPTION[exam]} path={`/guides/${exam}`} />
 
       <main className="mx-auto max-w-6xl px-4 py-10">
         <div className="text-sm text-gray-500">
@@ -297,8 +299,8 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
         </section>
 
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {visibleThemeGuides.map(({ g, href, tags, updatedYmd, title, description, section, status }) => (
-            <article key={g._id} className={`rounded-2xl border bg-white shadow-sm ${t.border}`}>
+          {visibleThemeGuides.map(({ id, href, tags, updatedYmd, title, description, section, status }) => (
+            <article key={id} className={`rounded-2xl border bg-white shadow-sm ${t.border}`}>
               <div className={`h-1 w-full rounded-t-2xl ${t.accent}`} />
               <div className="p-5">
                 <h2 className="text-lg font-bold leading-snug">
@@ -350,11 +352,10 @@ export default function ExamIndex({ exam }: InferGetStaticPropsType<typeof getSt
 
         {themeGuides.length === 0 && <p className="mt-6 text-gray-500">公開中の個別テーマガイドはまだありません。</p>}
 
-        {(learningRoutes.length > 0 || tools.length > 0 || duplicateCandidates.length > 0) && (
-          <section className="mt-10 grid gap-6 lg:grid-cols-3">
+        {(learningRoutes.length > 0 || tools.length > 0) && (
+          <section className="mt-10 grid gap-6 lg:grid-cols-2">
             <AuxiliaryLinks title="学習方針" description="学ぶ順番や全体像を確認するページです。" items={learningRoutes} themeLink={t.title} />
             <AuxiliaryLinks title="演習・ツール" description="入力、選択、可視化で理解する教材です。" items={tools} themeLink={t.title} />
-            <AuxiliaryLinks title="重複/統合候補" description="今回は削除せず、後で名称や統合方針を整理します。" items={duplicateCandidates} themeLink={t.title} />
           </section>
         )}
       </main>

@@ -1,5 +1,5 @@
-import Head from "next/head";
 import Link from "next/link";
+import { SiteMeta } from "@/components/site/SiteMeta";
 
 const learningAreas = [
   {
@@ -155,13 +155,11 @@ const nextLinks = [
 export default function ProductionGuidePage() {
   return (
     <>
-      <Head>
-        <title>生産管理を学ぶ｜経営工学の中核領域 | n-ie-qclab</title>
-        <meta
-          name="description"
-          content="生産管理を、経営工学における中核領域として、生産計画・工程管理・在庫管理・IE・設備効率・SCM・物流管理の観点から整理します。"
-        />
-      </Head>
+      <SiteMeta
+        title="生産管理を学ぶ｜経営工学の中核領域"
+        description="生産管理を、経営工学における中核領域として、生産計画・工程管理・在庫管理・IE・設備効率・SCM・物流管理の観点から整理します。"
+        path="/guides/production"
+      />
 
       <main className="min-h-screen bg-[#f7f8f5] text-slate-900">
         <section className="border-b border-slate-200 bg-white">
@@ -247,7 +245,7 @@ export default function ProductionGuidePage() {
           </section>
 
           <section className="mt-8">
-            <SectionHeader title="今後拡充予定" description="生産管理は4本柱の1つとして、今後専用コンテンツを増やしていきます。" />
+            <SectionHeader title="今後拡充予定" description="生産管理の学習領域として、今後も専用コンテンツを増やしていきます。" />
             <div className="mt-5 flex flex-wrap gap-2">
               {futureTopics.map((topic) => (
                 <span key={topic} className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700">

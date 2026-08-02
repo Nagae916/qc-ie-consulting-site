@@ -1,8 +1,8 @@
-import Head from "next/head";
 import Link from "next/link";
 import type { GetStaticProps, InferGetStaticPropsType } from "next";
 
 import * as CL from "contentlayer/generated";
+import { SiteMeta } from "@/components/site/SiteMeta";
 import { isGuideContent } from "@/lib/content-classification";
 
 type Pillar = {
@@ -81,7 +81,7 @@ const purposeLinks = [
   },
   {
     title: "実務改善に使える知識を整理したい",
-    description: "まず4本柱から近い領域を選び、必要な知識へ進みます。",
+    description: "品質、統計、技術士、生産管理から近い学習領域を選び、必要な知識へ進みます。",
     href: "/guides",
   },
 ];
@@ -137,13 +137,11 @@ export const getStaticProps: GetStaticProps<{ recentGuides: RecentGuide[] }> = a
 export default function GuidesIndexPage({ recentGuides }: InferGetStaticPropsType<typeof getStaticProps>) {
   return (
     <>
-      <Head>
-        <title>ガイド | n-ie-qclab</title>
-        <meta
-          name="description"
-          content="n-ie-qclabの学習ホームです。経営工学を中心に、QC・品質管理、統計・データ分析、技術士 経営工学部門、生産管理の4本柱から学習を始められます。"
-        />
-      </Head>
+      <SiteMeta
+        title="ガイド"
+        description="N-IE Labの体系学習ガイドです。QC・品質管理、統計・データ分析、技術士 経営工学部門、生産管理から学習を始められます。"
+        path="/guides"
+      />
 
       <main className="min-h-screen bg-[#f7f8f5] text-slate-900">
         <section className="border-b border-slate-200 bg-white">
@@ -151,14 +149,14 @@ export default function GuidesIndexPage({ recentGuides }: InferGetStaticPropsTyp
             <p className="text-sm font-semibold tracking-[0.18em] text-teal-700">GUIDES</p>
             <h1 className="mt-3 text-4xl font-black md:text-5xl">学びたい領域から選ぶ</h1>
             <p className="mt-4 max-w-3xl leading-8 text-slate-600">
-              n-ie-qclab では、経営工学を中心に、QC・品質管理、統計・データ分析、技術士 経営工学部門、生産管理の4本柱で学習できます。
+              N-IE Labでは、経営工学を中心に、QC・品質管理、統計・データ分析、技術士 経営工学部門、生産管理を体系的に学べます。
               まずは目的に合う領域を選び、各ガイドで全体像から深掘りしていきます。
             </p>
           </div>
         </section>
 
         <section className="mx-auto max-w-6xl px-4 py-10">
-          <SectionTitle title="経営工学を4本柱で学ぶ" description="最初は1つの柱を選びます。関連分野は下位ページで必要に応じてつなげます。" />
+          <SectionTitle title="目的に合う学習領域を選ぶ" description="最初は1つの入口を選び、関連分野は必要に応じてつなげます。" />
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             {pillars.map((pillar) => (
               <Link key={pillar.href} href={pillar.href} className={`rounded-xl border p-5 hover:shadow-sm ${pillar.className}`}>
@@ -185,11 +183,11 @@ export default function GuidesIndexPage({ recentGuides }: InferGetStaticPropsTyp
         </section>
 
         <section className="mx-auto max-w-6xl px-4 py-10">
-          <SectionTitle title="4本柱はつながっています" description="入口は分けますが、実務や試験では互いに接続して使います。" />
+          <SectionTitle title="学習領域はつながっています" description="入口は分けますが、実務や試験では互いに接続して使います。" />
           <div className="mt-6 rounded-xl border border-slate-200 bg-white p-5">
             <p className="text-sm leading-7 text-slate-600">
               QC・統計・生産管理は、いずれも経営工学を支える重要領域です。技術士 経営工学部門では、これらの知識を過去問・キーワード・答案骨子へ接続して学習します。
-              最初の階層では4本柱を混ぜすぎず、各柱の入口から順に進めます。
+              最初の階層では学習領域を混ぜすぎず、目的に近い入口から順に進めます。
             </p>
           </div>
         </section>
@@ -197,7 +195,7 @@ export default function GuidesIndexPage({ recentGuides }: InferGetStaticPropsTyp
         {recentGuides.length > 0 ? (
           <section className="border-t border-slate-200 bg-white">
             <div className="mx-auto max-w-6xl px-4 py-10">
-              <SectionTitle title="最近追加されたコンテンツ" description="最近追加されたガイドを少しだけ表示します。体系的に探す場合は、4本柱の入口から進んでください。" />
+              <SectionTitle title="最近追加されたコンテンツ" description="最近追加されたガイドを少しだけ表示します。体系的に探す場合は、上の学習領域から進んでください。" />
               <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {recentGuides.map((guide) => (
                   <Link key={guide.href} href={guide.href} className="rounded-xl border border-slate-200 bg-white p-5 hover:border-teal-500 hover:shadow-sm">

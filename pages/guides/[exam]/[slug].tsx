@@ -1,5 +1,4 @@
 import type { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
-import Head from "next/head";
 import Link from "next/link";
 import * as React from "react";
 import { allGuides, type Guide } from "contentlayer/generated";
@@ -16,6 +15,7 @@ import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeStringify from "rehype-stringify";
 
 import { GUIDE_COMPONENTS, type GuideComponentMap } from "@/components/guide/registry.client";
+import { SiteMeta } from "@/components/site/SiteMeta";
 
 type ExamKey = "qc" | "stat" | "engineer";
 type GuideStatus = "published" | "draft" | "planned" | "needs-review" | "wip";
@@ -170,22 +170,41 @@ export default function GuidePage({
   const { url } = stablePath(guide);
   const guideMeta = guide as { slug?: unknown; description?: unknown; version?: unknown; status?: unknown };
   const status = normalizeStatus(guideMeta.status);
-
-  const sourcePath =
-    (guide._raw?.sourceFilePath as string | undefined) ??
-    `${guide._raw?.flattenedPath ?? `${exam}/${String(guideMeta.slug ?? "")}`}.mdx`;
-  const editUrl = `https://github.com/Nagae916/qc-ie-consulting-site/edit/main/content/${sourcePath}`;
+  const description = typeof guideMeta.description === "string" ? guideMeta.description : "";
 
   const MDX = useMDXComponent(mdxCode || "");
   const components = React.useMemo(() => GUIDE_COMPONENTS as GuideComponentMap, []);
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
-      <Head>
-        <title>{guide.title} | n-ie-qclab</title>
-        <meta name="description" content={typeof guideMeta.description === "string" ? guideMeta.description : ""} />
-        <link rel="canonical" href={url} />
-      </Head>
+      <SiteMeta
+        title={guide.title}
+        description={description}
+        path={url}
+        type="article"
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "Article",
+            headline: guide.title,
+            description,
+            dateModified: updatedYmd || undefined,
+            author: { "@type": "Organization", name: "N-IE Lab" },
+            publisher: { "@type": "Organization", name: "N-IE Lab" },
+            mainEntityOfPage: `https://n-ie-qclab.com${url}`,
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "ホーム", item: "https://n-ie-qclab.com/" },
+              { "@type": "ListItem", position: 2, name: "ガイド", item: "https://n-ie-qclab.com/guides" },
+              { "@type": "ListItem", position: 3, name: EXAM_LABEL[exam], item: `https://n-ie-qclab.com/guides/${exam}` },
+              { "@type": "ListItem", position: 4, name: guide.title, item: `https://n-ie-qclab.com${url}` },
+            ],
+          },
+        ]}
+      />
 
       <Breadcrumb exam={exam} title={guide.title} themeLink={theme.link} />
 
@@ -196,9 +215,6 @@ export default function GuidePage({
         <StatusBadge status={status} />
         <span suppressHydrationWarning>{updatedYmd ? `更新: ${updatedYmd}` : ""}</span>
         {guideMeta.version ? <span className="ml-2">v{String(guideMeta.version)}</span> : null}
-        <a href={editUrl} target="_blank" rel="noreferrer" className="ml-3 underline">
-          編集する
-        </a>
       </div>
 
       <article className="prose prose-neutral mt-6 max-w-none">
@@ -262,7 +278,7 @@ function GuideBackLinks({
     },
     {
       title: "トップページへ戻る",
-      description: "n-ie-qclab の入口へ戻る",
+      description: "N-IE Labの入口へ戻る",
       href: "/",
     },
   ];

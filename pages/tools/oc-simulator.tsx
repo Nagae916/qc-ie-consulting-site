@@ -1,7 +1,8 @@
 // pages/tools/oc-simulator.tsx
-import Head from "next/head";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+
+import { SiteMeta } from "@/components/site/SiteMeta";
 
 // Chart.js を使うクライアント専用コンポーネントは SSR を無効化
 const OCSimulator = dynamic(() => import("@/components/guide/OCSimulator"), {
@@ -12,13 +13,11 @@ const OCSimulator = dynamic(() => import("@/components/guide/OCSimulator"), {
 export default function OCSimulatorPage() {
   return (
     <>
-      <Head>
-        <title>OC曲線シミュレーター | QC × IE LABO</title>
-        <meta
-          name="description"
-          content="n と c を動かして OC 曲線と α・β を体感するシミュレーター"
-        />
-      </Head>
+      <SiteMeta
+        title="OC曲線シミュレーター"
+        description="サンプルサイズと合格判定個数を変え、OC曲線と生産者危険・消費者危険の関係を確認できます。"
+        path="/tools/oc-simulator"
+      />
 
       <main className="mx-auto max-w-5xl px-4 py-8">
         <Link href="/tools" className="text-sm font-semibold text-teal-700 hover:text-teal-900">
