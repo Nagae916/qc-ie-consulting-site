@@ -3,6 +3,26 @@
 const baseConfig = {
   reactStrictMode: true,
 
+  // 231件超のMDXを8GB級の開発環境でも安定して生成できるよう、ビルドワーカーを抑える。
+  experimental: {
+    cpus: 1,
+  },
+
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains' },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'X-Frame-Options', value: 'DENY' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+        ],
+      },
+    ];
+  },
+
   // MD/MDX はページ化せず Contentlayer 経由で読むため、拡張子は TS/TSX のみに限定
   pageExtensions: ['ts', 'tsx'],
 
