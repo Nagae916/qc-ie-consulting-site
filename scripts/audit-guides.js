@@ -4,7 +4,8 @@
 // - 物理パス由来カテゴリと computed exam の不一致検出
 // - "stats" / "pe" などルーティングと不整合な exam を検出し、修正指示を出す
 // - URL 形状の監査（/guides/<exam>/<slug> の一貫性）
-const { allGuides } = require("../.contentlayer/generated");
+async function main() {
+const { allGuides } = await import("../.contentlayer/generated/index.mjs");
 
 // ルーターが期待する正規カテゴリ（pages 側）
 const ROUTE_EXAMS = /** @type {const} */ (["qc", "stat", "engineer"]);
@@ -119,4 +120,10 @@ for (const g of allGuides) {
 if (!issues) {
   console.log("Audit passed ✅ (no duplicates, no exam mismatches)");
 }
-process.exit(issues ? 1 : 0);
+process.exitCode = issues ? 1 : 0;
+}
+
+main().catch((error) => {
+  console.error("Guide audit failed:", error);
+  process.exitCode = 1;
+});
