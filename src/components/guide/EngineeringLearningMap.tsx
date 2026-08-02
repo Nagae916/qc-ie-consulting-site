@@ -477,7 +477,7 @@ export default function EngineeringLearningMap() {
   return (
     <div className="mx-auto max-w-7xl space-y-12 px-4 py-8 text-slate-900 sm:px-6 lg:px-8">
       <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-        <p className="text-sm font-semibold text-emerald-700">n-ie-qclab learning map</p>
+        <p className="text-sm font-semibold text-emerald-700">N-IE Lab learning map</p>
         <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-5xl">経営工学 学習マップ</h1>
         <p className="mt-4 max-w-3xl text-base leading-8 text-slate-700">
           品質管理・生産管理・統計・技術士演習をつなげて学ぶための入口ページです。
