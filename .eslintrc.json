@@ -16,6 +16,17 @@
       }
     },
     {
+      "files": ["pages/**/*.{ts,tsx}"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": ["../../../*", "../../src/*", "../src/*"]
+          }
+        ]
+      }
+    },
+    {
       "files": ["**/*.d.ts"],
       "rules": {
         "unused-imports/no-unused-imports": "off",
@@ -39,6 +50,13 @@
         "varsIgnorePattern": "^_",
         "args": "after-used",
         "argsIgnorePattern": "^_"
+      }
+    ],
+    "import/no-unresolved": [
+      "error",
+      {
+        "caseSensitive": true,
+        "ignore": ["^contentlayer/generated$"]
       }
     ]
   }
