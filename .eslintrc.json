@@ -52,6 +52,12 @@
         "argsIgnorePattern": "^_"
       }
     ],
-    "import/no-unresolved": ["error", { "caseSensitive": true }]
+    "import/no-unresolved": [
+      "error",
+      {
+        "caseSensitive": true,
+        "ignore": ["^contentlayer/generated$"]
+      }
+    ]
   }
 }
