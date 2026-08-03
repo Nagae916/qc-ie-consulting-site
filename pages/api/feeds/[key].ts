@@ -1,7 +1,6 @@
 // pages/api/feeds/[key].ts
 import type { NextApiRequest, NextApiResponse } from "next";
-// エイリアスに依存せず、相対で“確実に”解決
-import { fetchFeed, type FeedKey } from "../../../src/lib/feeds";
+import { fetchFeed, type FeedKey } from "@/lib/feeds";
 
 const ALLOWED: FeedKey[] = ["news", "blog", "note", "instagram", "x"];
 

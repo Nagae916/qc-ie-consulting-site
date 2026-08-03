@@ -27,7 +27,7 @@
     "lint:all": "npm run typecheck && npm run lint:unused:code && npm run lint:unused:exports && npm run lint:unused:deps && npm run lint:graph"
   },
   "dependencies": {
-    "next": "14.2.5",
+    "next": "15.5.22",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "rss-parser": "3.12.0",
@@ -53,9 +53,9 @@
     "@types/react-dom": "18.3.0",
     "autoprefixer": "10.4.20",
     "eslint": "8.57.0",
-    "eslint-config-next": "14.2.5",
+    "eslint-config-next": "15.5.22",
     "eslint-plugin-unused-imports": "^3",
-    "postcss": "8.4.41",
+    "postcss": "8.5.25",
     "tailwindcss": "3.4.10",
     "typescript": "5.5.4",
     "knip": "^4",
@@ -67,6 +67,6 @@
     "eslint": "8.57.0"
   },
   "engines": {
-    "node": ">=18 <21"
+    "node": "24.x"
   }
 }
