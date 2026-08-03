@@ -2,11 +2,12 @@
 
 ## 2026-08-03: Next.js 15.5.22 / Node.js 24 最終候補
 
-- Status: Proposed
+- Status: Accepted
 - Context: Pages Router、React 18.3.1、Contentlayer2 0.5.8を維持したまま、Next.js 15.5.22とNode.js 24へ更新する。
 - Decision: Next.jsとeslint-config-nextを15.5.22、Node.jsを24.xとする。サイトのCSS構築に使うPostCSSは直接devDependencyの8.5.25を維持する。Next.js内部のPostCSS 8.4.31とoptional dependencyのsharp 0.34.5は、公式パッケージ宣言どおりに解決し、overrideまたは直接依存を追加しない。
 - Reason: 宣言範囲外の強制上書きを避けながら、ローカルとVercelで回帰検証できる構成にするため。
 - Re-evaluation: 次回のNext.js 15 Maintenance LTSパッチまたはContentlayer2更新時。遅くとも2026-09-30までに再確認する。
+- Verification: Node.js 24.18.1のWindows環境でinstall、typecheck、lint、build、MDX、KaTeX、Chart.js、API、ISRを確認した。Vercel PreviewではNode.js 24.x、231ガイド、247ページの生成と主要ルートの実レスポンスを確認した。
 
 ### 構成
 
