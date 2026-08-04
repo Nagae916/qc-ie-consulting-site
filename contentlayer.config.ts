@@ -10,6 +10,7 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import { normalizeGuideStatus } from "./src/lib/frontmatter-normalization";
 
 /** ── 定数/型 ─────────────────────────────────────────────────────────── */
 const CANONICAL_EXAMS = ["qc", "stat", "engineer"] as const;
@@ -138,6 +139,10 @@ export const Guide = defineDocumentType(() => ({
     tags: {
       type: "json",
       resolve: (doc) => normalizeTags((doc as any).tags),
+    },
+    status: {
+      type: "string",
+      resolve: (doc) => normalizeGuideStatus((doc as any).status),
     },
     // frontmatter > Git > date の順
     updatedAtAuto: {
