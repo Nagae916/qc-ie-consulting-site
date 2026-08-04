@@ -1,6 +1,7 @@
 // src/components/home/HomeLibrary.tsx
 import Link from "next/link";
 import { allGuides, type Guide } from "contentlayer/generated";
+import { isPublishedGuideStatus } from "@/lib/frontmatter-normalization";
 
 /** まずは「パス」からカテゴリを判定。ダメなら exam の値でフォールバック。 */
 function detectCategory(g: Guide): "qc" | "stat" | "engineer" | "other" {
@@ -75,7 +76,7 @@ function UpdateList({
 }
 
 export default function HomeLibrary() {
-  const guides = allGuides.filter((g) => g.status !== "draft");
+  const guides = allGuides.filter((g) => isPublishedGuideStatus(g.status));
 
   const qc = guides.filter((g) => detectCategory(g) === "qc");
   const stat = guides.filter((g) => detectCategory(g) === "stat");

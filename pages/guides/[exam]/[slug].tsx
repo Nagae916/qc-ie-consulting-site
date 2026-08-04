@@ -16,6 +16,7 @@ import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeStringify from "rehype-stringify";
 
 import { GUIDE_COMPONENTS, type GuideComponentMap } from "@/components/guide/registry.client";
+import { isPublishedGuideStatus, normalizeGuideStatus } from "@/lib/frontmatter-normalization";
 
 type ExamKey = "qc" | "stat" | "engineer";
 type GuideStatus = "published" | "draft" | "planned" | "needs-review" | "wip";
@@ -66,11 +67,6 @@ const statusClasses: Record<GuideStatus, string> = {
   wip: "bg-sky-50 text-sky-800 border-sky-200",
 };
 
-const normalizeStatus = (value: unknown): GuideStatus => {
-  if (value === "draft" || value === "planned" || value === "needs-review" || value === "wip") return value;
-  return "published";
-};
-
 const toExamKey = (v: unknown): ExamKey | null => {
   const s = String(v ?? "").toLowerCase().trim();
   if (s === "qc") return "qc";
@@ -119,7 +115,7 @@ async function mdToHtml(mdxRaw: string): Promise<string> {
 export const getStaticPaths: GetStaticPaths = async () => {
   const seen = new Set<string>();
   const paths = allGuides
-    .filter((g) => (g as { status?: unknown }).status !== "draft")
+    .filter((g) => isPublishedGuideStatus((g as { status?: unknown }).status))
     .map((g) => stablePath(g))
     .filter(({ exam, slug }) => {
       const key = `${exam}/${slug}`;
@@ -144,7 +140,7 @@ export const getStaticProps: GetStaticProps<{
 
   const guide =
     allGuides.find((candidate) => {
-      if ((candidate as { status?: unknown }).status === "draft") return false;
+      if (!isPublishedGuideStatus((candidate as { status?: unknown }).status)) return false;
       const { exam, slug } = stablePath(candidate);
       return exam === examParam && slug.toLowerCase() === slugParam;
     }) ?? null;
@@ -169,7 +165,7 @@ export default function GuidePage({
   const theme = THEME[exam];
   const { url } = stablePath(guide);
   const guideMeta = guide as { slug?: unknown; description?: unknown; version?: unknown; status?: unknown };
-  const status = normalizeStatus(guideMeta.status);
+  const status = normalizeGuideStatus(guideMeta.status);
 
   const sourcePath =
     (guide._raw?.sourceFilePath as string | undefined) ??
