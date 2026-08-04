@@ -4,6 +4,7 @@ import { allGuides } from "contentlayer/generated";
 import { caseStudies } from "@/data/cases";
 import { siteIdentity, themes } from "@/data/n-ie-lab";
 import { labTools } from "@/data/site";
+import { isPublishedGuideStatus } from "@/lib/frontmatter-normalization";
 
 const staticRoutes = [
   "/",
@@ -42,7 +43,7 @@ const guideLastModified = (guide: (typeof allGuides)[number]) => {
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   const guideEntries: Array<{ path: string; lastmod?: string }> = allGuides
-    .filter((guide) => (guide as { status?: unknown }).status !== "draft")
+    .filter((guide) => isPublishedGuideStatus((guide as { status?: unknown }).status))
     .map((guide) => {
       const path = guideUrl(guide);
       const lastmod = guideLastModified(guide);

@@ -4,6 +4,7 @@ import type { GetStaticProps, InferGetStaticPropsType } from "next";
 import * as CL from "contentlayer/generated";
 import { SiteMeta } from "@/components/site/SiteMeta";
 import { isGuideContent } from "@/lib/content-classification";
+import { isPublishedGuideStatus } from "@/lib/frontmatter-normalization";
 
 type Pillar = {
   title: string;
@@ -125,7 +126,7 @@ const toRecentGuide = (guide: GuideLike): RecentGuide | null => {
 
 export const getStaticProps: GetStaticProps<{ recentGuides: RecentGuide[] }> = async () => {
   const recentGuides = collectDocs()
-    .filter((guide) => guide.status !== "draft")
+    .filter((guide) => isPublishedGuideStatus(guide.status))
     .sort((a, b) => getGuideTime(b) - getGuideTime(a))
     .map(toRecentGuide)
     .filter((guide): guide is RecentGuide => guide !== null)

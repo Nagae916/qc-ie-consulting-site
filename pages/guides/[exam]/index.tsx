@@ -3,6 +3,7 @@ import type { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "ne
 import type { Guide } from "contentlayer/generated";
 import { SiteMeta } from "@/components/site/SiteMeta";
 import { classifyContent, classificationLabels, type ContentClassification } from "@/lib/content-classification";
+import { isPublishedGuideStatus, normalizeGuideStatus } from "@/lib/frontmatter-normalization";
 
 type ExamKey = "qc" | "stat" | "engineer";
 type GuideStatus = "published" | "draft" | "planned" | "needs-review" | "wip";
@@ -136,11 +137,6 @@ const safeTags = (v: unknown): string[] => {
   return [];
 };
 
-const normalizeStatus = (value: unknown): GuideStatus => {
-  if (value === "draft" || value === "planned" || value === "needs-review" || value === "wip") return value;
-  return "published";
-};
-
 const formatYMD = (v1?: unknown, v2?: unknown): string => {
   const s = String(v1 ?? v2 ?? "").trim();
   if (!s) return "";
@@ -203,7 +199,7 @@ export const getStaticProps: GetStaticProps<ExamIndexProps> = async ({ params })
 
   const { allGuides } = await import("contentlayer/generated");
   const guidesEnriched = allGuides
-    .filter((g) => toExamKey((g as { exam?: unknown }).exam) === exam && (g as { status?: unknown }).status !== "draft")
+    .filter((g) => toExamKey((g as { exam?: unknown }).exam) === exam && isPublishedGuideStatus((g as { status?: unknown }).status))
     .sort((a, b) => {
       const aSection = String((a as { section?: unknown }).section ?? "");
       const bSection = String((b as { section?: unknown }).section ?? "");
@@ -228,7 +224,7 @@ export const getStaticProps: GetStaticProps<ExamIndexProps> = async ({ params })
       const title = String(values.title ?? "(no title)");
       const description = typeof values.description === "string" ? values.description : undefined;
       const section = typeof values.section === "string" ? values.section : undefined;
-      const status = normalizeStatus(values.status);
+      const status = normalizeGuideStatus(values.status);
       const classification = classifyContent({ slug: href.split("/").pop(), href });
 
       return {

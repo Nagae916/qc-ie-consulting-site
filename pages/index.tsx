@@ -23,6 +23,7 @@ import {
 } from "@/data/n-ie-lab";
 import { labTools } from "@/data/site";
 import { classifyContent } from "@/lib/content-classification";
+import { isPublishedGuideStatus } from "@/lib/frontmatter-normalization";
 
 type HomeGuide = {
   href: string;
@@ -111,7 +112,7 @@ const toHomeGuide = (guide: Guide, label: HomeGuide["label"]): HomeGuide => {
 };
 
 export const getStaticProps: GetStaticProps<{ contentItems: HomeGuide[] }> = async () => {
-  const published = allGuides.filter((guide) => (guide as { status?: unknown }).status !== "draft");
+  const published = allGuides.filter((guide) => isPublishedGuideStatus((guide as { status?: unknown }).status));
   const byHref = new Map(published.map((guide) => [getGuideHref(guide), guide]));
   const used = new Set<string>();
 
