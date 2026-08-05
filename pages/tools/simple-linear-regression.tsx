@@ -1,7 +1,8 @@
 // pages/tools/simple-linear-regression.tsx
-import Head from "next/head";
 import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
+
+import { SiteMeta } from "@/components/site/SiteMeta";
 
 // Chart.js を先に動的ロードしてから Scatter を返す（登録漏れ防止）
 const Scatter = dynamic(
@@ -145,10 +146,11 @@ export default function SimpleLinearRegressionTool() {
 
   return (
     <>
-      <Head>
-        <title>単回帰ツール | QC × IE LABO</title>
-        <meta name="description" content="散布図と回帰直線・ANOVA・R²・F比を即時計算" />
-      </Head>
+      <SiteMeta
+        title="単回帰ツール"
+        description="入力データから散布図、回帰直線、分散分析、決定係数、F比を確認できるツールです。"
+        path="/tools/simple-linear-regression"
+      />
 
       <main className="mx-auto max-w-5xl px-4 py-8">
         <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 mb-2">単回帰ツール</h1>

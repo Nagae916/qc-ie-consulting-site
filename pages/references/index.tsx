@@ -1,16 +1,13 @@
-import Head from "next/head";
 import Link from "next/link";
 
+import { SiteMeta } from "@/components/site/SiteMeta";
 import { insightItems } from "@/data/insights";
 import { whitepaperTopics } from "@/data/whitepapers";
 
 export default function ReferencesIndexPage() {
   return (
     <>
-      <Head>
-        <title>参考資料 | n-ie-qclab</title>
-        <meta name="description" content="白書、法令、過去問データ、年度別トピックを整理する参考資料の入口です。" />
-      </Head>
+      <SiteMeta title="参考資料" description="白書、法令、過去問の整理情報、年度別トピックを確認する参考資料の入口です。" path="/references" />
 
       <main className="min-h-screen bg-[#f7f8f5] text-slate-900">
         <section className="border-b border-slate-200 bg-white">
@@ -18,8 +15,8 @@ export default function ReferencesIndexPage() {
             <p className="text-sm font-semibold text-teal-700">References</p>
             <h1 className="mt-2 text-3xl font-extrabold md:text-4xl">参考資料</h1>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-600">
-              白書、法令、過去問データ、参考リンクを、技術士答案や実務改善へ使いやすい形で整理していく入口です。
-              今回はMVPとして、一次情報への導線と今後保持するメタデータ構造を示します。
+              白書、法令、過去問の整理情報、参考リンクを、技術士答案や実務改善へ使いやすい形でまとめています。
+              数値や制度は一次情報へ戻って確認できるようにします。
             </p>
           </div>
         </section>
@@ -27,8 +24,8 @@ export default function ReferencesIndexPage() {
         <section className="mx-auto max-w-6xl px-4 py-10">
           <div className="grid gap-4 md:grid-cols-3">
             <ReferenceCard title="白書・法令" description="ものづくり、物流、DX、標準化、取引適正化などの一次情報を確認します。" href="#whitepapers" />
-            <ReferenceCard title="過去問データ" description="技術士 経営工学の過去問を、年度・テーマ・設問パターンで整理するためのデータです。" href="/guides/engineer/past-exam-trend-map" />
-            <ReferenceCard title="年度別トピック" description="今後、前年からの変化、試験との関連、答案で使える観点を整理していきます。" href="#metadata" />
+            <ReferenceCard title="過去問の整理" description="技術士 経営工学の過去問を、年度・テーマ・設問パターンで確認できます。" href="/guides/engineer/past-exam-trend-map" />
+            <ReferenceCard title="年度別トピック" description="前年からの変化、試験との関連、答案で使える観点を確認します。" href="#topics" />
           </div>
         </section>
 
@@ -45,11 +42,11 @@ export default function ReferencesIndexPage() {
           </div>
         </section>
 
-        <section id="metadata" className="mx-auto max-w-6xl px-4 pb-14">
+        <section id="topics" className="mx-auto max-w-6xl px-4 pb-14">
           <div className="rounded-xl border border-slate-200 bg-white p-6">
-            <h2 className="text-2xl font-bold">白書メタデータの予定項目</h2>
+            <h2 className="text-2xl font-bold">白書を読むときの確認項目</h2>
             <p className="mt-3 text-sm leading-7 text-slate-600">
-              将来的に、年度、白書名、主要トピック、前年からの変化、技術士試験との関連、答案で使える観点、一次ソースURLを保持します。
+              年度、白書名、主要トピック、前年からの変化、技術士試験との関連、答案で使える観点、一次情報へのリンクを整理します。
             </p>
             <p className="mt-4 text-sm text-slate-500">
               現在の登録件数: {whitepaperTopics.length} 件
@@ -69,4 +66,3 @@ function ReferenceCard({ title, description, href }: { title: string; descriptio
     </Link>
   );
 }
-

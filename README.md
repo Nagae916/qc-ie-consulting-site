@@ -1,46 +1,42 @@
-# QC × IE Consulting — Website (React + Vite + Tailwind)
+# N-IE Lab
 
-最小構成の React サイトです。Tailwind と `react-helmet` を同梱。
+N-IE Labは、品質、生産、データ、改善のつながりを経営工学の視点から読み解く、製造業の実務者向けサイトです。Next.js、TypeScript、Contentlayer2、MDXで構成し、Vercelで静的生成を中心に配信します。
+
+## 必要な環境
+
+- Node.js 18以上、21未満
+- npm
+- PowerShell
 
 ## セットアップ
 
-```bash
-# 1) 依存をインストール
-npm i
-
-# 2) 開発サーバ
-npm run dev
-
-# 3) 本番ビルド
-npm run build && npm run preview
+```powershell
+npm.cmd install
+npm.cmd run dev
 ```
 
-## デプロイ（例：Vercel）
-- リポジトリを GitHub に push → Vercel で Import するだけで公開可
-- 独自ドメインは Vercel の Dashboard から追加
-- SSL は自動（Let's Encrypt）
+開発サーバーは通常 `http://localhost:3000` で起動します。
 
-## Instagram 最新3件（本番化）
-- `/src/App.tsx` の `InstagramFeed` はプレースホルダーです
-- Vercel Functions に `/api/instagram.ts` を置き、長期トークンを `IG_BASIC_TOKEN` で設定してください
+## 主な確認コマンド
 
-```ts
-// api/instagram.ts（Vercel）
-import type { VercelRequest, VercelResponse } from 'vercel';
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  try {
-    const token = process.env.IG_BASIC_TOKEN!;
-    const r = await fetch(`https://graph.instagram.com/me/media?fields=id,media_url,permalink,caption,timestamp&access_token=${token}&limit=3`);
-    const data = await r.json();
-    if (!r.ok) return res.status(500).json({ error: data });
-    res.setHeader('Cache-Control', 's-maxage=600, stale-while-revalidate=86400');
-    return res.status(200).json(data);
-  } catch (e:any) {
-    return res.status(500).json({ error: e?.message ?? 'unknown error' });
-  }
-}
+```powershell
+npm.cmd run typecheck
+npm.cmd run lint
+npm.cmd run build
 ```
 
-## 置き換えポイント
-- `https://example.com/` や `og-image.jpg`、`logo.png` を実URLに差し替え
-- フッター文言、問い合わせ先メールも実運用値に　
+追加の検証コマンドは `package.json` の `check:*` と `lint:*` を参照してください。自動テスト用の専用スクリプトは現時点ではありません。
+
+## コンテンツ
+
+- ガイド: `content/guides/{exam}/`
+- 公開ページ: `pages/`
+- 共通部品: `src/components/`
+- サイト設定・表示データ: `src/data/`
+- プロジェクト方針: `docs/project/`
+
+MDX本文にimportを書かず、動的なガイド部品は既存のコンポーネントレジストリへ登録します。公開URLの変更や既存記事の削除は、`docs/project/URL_MIGRATION_POLICY.md` と `docs/project/CHANGE_POLICY.md` に従います。
+
+## デプロイ
+
+本番は既存のVercelプロジェクトと `n-ie-qclab.com` を維持します。環境変数の値やAPIキーはリポジトリへ保存せず、必要な場合はVercel側で管理します。

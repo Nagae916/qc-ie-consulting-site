@@ -436,7 +436,7 @@ export default function PastExamTrendMap() {
         const json = (await response.json()) as PastExamData;
         if (!ignore) setData(json);
       } catch {
-        if (!ignore) setLoadError('過去問メタデータを読み込めませんでした。');
+        if (!ignore) setLoadError('過去問の整理情報を読み込めませんでした。');
       }
     }
 
@@ -540,7 +540,7 @@ export default function PastExamTrendMap() {
           令和元年度以降の経営工学部門の過去問を、年度・科目・テーマ・設問パターンで整理し、技術士二次試験の答案骨子作成につなげるためのページです。
         </p>
         <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold leading-7 text-amber-900">
-          このページでは、公式過去問題の全文転載は行わず、公式PDFへのリンク、問題要約、設問パターン、テーマタグなどの学習用メタデータを表示します。
+          このページでは、公式過去問題の全文転載は行わず、公式問題へのリンク、問題要約、設問パターン、学習テーマを整理して表示します。
         </p>
       </section>
 
@@ -576,15 +576,15 @@ export default function PastExamTrendMap() {
             <p className="text-sm font-semibold text-emerald-700">必須科目Ⅰ型</p>
             <h2 className="mt-2 text-2xl font-bold">必須Ⅰ型 例題生成MVP</h2>
             <p className="mt-3 text-sm leading-7 text-slate-700">
-              登録済みの必須科目Ⅰメタデータをもとに、過去問の設問構造に倣ったオリジナル例題を作成します。
+              必須科目Ⅰの過去問で見られる設問構造を参考に、答案練習用のオリジナル例題を確認します。
               公式過去問の再掲ではなく、課題抽出・最重要課題・解決策・リスク・倫理を練習するための例題です。
             </p>
             <p className="mt-3 text-sm leading-7 text-slate-700">
-              この例題は、過去問メタデータの設問構造、テーマタグ、政策・法令タグをもとに、必須科目Ⅰ型の練習用として作成します。
+              この例題は、過去問の設問構造、学習テーマ、政策・法令の観点を参考に、必須科目Ⅰ型の練習用として構成しています。
               答案作成時は、課題抽出、最重要課題、解決策、リスク、技術者倫理・社会の持続可能性を一貫して整理します。
             </p>
             <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold leading-7 text-amber-900">
-              この例題は、公式過去問の問題文を転載したものではありません。登録済みの過去問メタデータを参考に、設問構造とテーマを組み合わせて作成した学習用のオリジナル例題です。公式問題は日本技術士会の過去問題PDFを確認してください。
+              この例題は、公式過去問の問題文を転載したものではありません。設問構造とテーマを組み合わせて再構成した学習用のオリジナル例題です。正式な問題文は日本技術士会の過去問題を確認してください。
             </p>
             <div className="mt-4 rounded-xl border border-emerald-200 bg-white p-4">
               <h3 className="text-base font-bold text-slate-950">講座方針との整合性チェック</h3>
@@ -597,7 +597,7 @@ export default function PastExamTrendMap() {
 
             <div className="mt-5 grid gap-4 md:grid-cols-2">
               <label className="block">
-                <span className="text-sm font-bold text-slate-800">参考にする過去問メタデータ</span>
+                <span className="text-sm font-bold text-slate-800">参考にする過去問</span>
                 <select
                   value={selectedRequiredQuestion?.id ?? ''}
                   onChange={(event) => setSelectedRequiredQuestionId(event.target.value)}
@@ -631,7 +631,7 @@ export default function PastExamTrendMap() {
             <h3 className="text-lg font-bold">生成された例題</h3>
             <textarea
               readOnly
-              value={generatedQuestionText || '必須科目Ⅰのメタデータを読み込み中です。'}
+              value={generatedQuestionText || '必須科目Ⅰの出題傾向を読み込み中です。'}
               className="mt-3 min-h-80 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-sm leading-7 text-slate-900"
             />
             <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 p-4">
@@ -672,7 +672,7 @@ export default function PastExamTrendMap() {
               <h3 className="text-lg font-bold">参考にしたメタ情報</h3>
               <dl className="mt-4 grid gap-3 text-sm md:grid-cols-2">
                 <div>
-                  <dt className="font-bold text-slate-950">参考メタデータ</dt>
+                  <dt className="font-bold text-slate-950">参考にした過去問</dt>
                   <dd className="mt-1 text-slate-700">{selectedRequiredQuestion.eraYear} {selectedRequiredQuestion.questionNumber}</dd>
                 </div>
                 <div>
@@ -897,7 +897,7 @@ export default function PastExamTrendMap() {
 
         {filteredQuestions.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-600">
-            条件に一致する問題メタデータがありません。
+            条件に一致する問題がありません。
           </div>
         ) : (
           <div className="grid gap-5 lg:grid-cols-2">

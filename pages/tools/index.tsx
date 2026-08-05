@@ -1,6 +1,6 @@
-import Head from "next/head";
 import Link from "next/link";
 
+import { SiteMeta } from "@/components/site/SiteMeta";
 import { labTools } from "@/data/site";
 
 const toolFlow = [
@@ -13,10 +13,7 @@ const toolFlow = [
 export default function ToolsIndexPage() {
   return (
     <>
-      <Head>
-        <title>演習・ツール | n-ie-qclab</title>
-        <meta name="description" content="品質管理、統計、技術士答案の演習・分析ツール一覧" />
-      </Head>
+      <SiteMeta title="演習・ツール" description="品質管理、統計、技術士答案の演習・分析ツール一覧" path="/tools" />
 
       <main className="min-h-screen bg-[#f7f8f5] text-slate-900">
         <section className="border-b border-slate-200 bg-white">

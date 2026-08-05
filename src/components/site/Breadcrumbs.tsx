@@ -1,0 +1,27 @@
+import Link from "next/link";
+
+type BreadcrumbItem = {
+  label: string;
+  href?: string;
+};
+
+export function Breadcrumbs({ items }: { items: BreadcrumbItem[] }) {
+  return (
+    <nav aria-label="パンくず" className="text-sm text-slate-500">
+      <ol className="flex flex-wrap items-center gap-2">
+        {items.map((item, index) => (
+          <li key={`${item.label}-${index}`} className="flex items-center gap-2">
+            {index > 0 ? <span aria-hidden="true">/</span> : null}
+            {item.href ? (
+              <Link href={item.href} className="underline decoration-slate-300 underline-offset-4 hover:text-teal-700">
+                {item.label}
+              </Link>
+            ) : (
+              <span aria-current="page" className="text-slate-700">{item.label}</span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+  );
+}

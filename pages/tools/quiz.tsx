@@ -1,6 +1,7 @@
 // pages/tools/quiz.tsx
-import Head from "next/head";
 import dynamic from "next/dynamic";
+
+import { SiteMeta } from "@/components/site/SiteMeta";
 
 // Quiz はクライアント専用のため SSR 無効で読み込み
 const Quiz = dynamic(
@@ -34,10 +35,11 @@ export default function QuizPage() {
 
   return (
     <>
-      <Head>
-        <title>クイズ | QC × IE LABO</title>
-        <meta name="description" content="QA と選択式（単一/複数）の学習クイズ" />
-      </Head>
+      <SiteMeta
+        title="学習クイズ"
+        description="品質管理、統計、経営工学の基礎を一問一答と選択式で確認できる学習クイズです。"
+        path="/tools/quiz"
+      />
 
       <main className="mx-auto max-w-5xl px-4 py-8">
         <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 mb-2">学習クイズ</h1>

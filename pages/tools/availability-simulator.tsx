@@ -1,7 +1,8 @@
 // pages/tools/availability-simulator.tsx
-import Head from "next/head";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+
+import { SiteMeta } from "@/components/site/SiteMeta";
 
 const AvailabilitySimulator = dynamic(
   () => import("@/components/guide/AvailabilitySimulator"),
@@ -11,13 +12,11 @@ const AvailabilitySimulator = dynamic(
 export default function AvailabilitySimulatorPage() {
   return (
     <>
-      <Head>
-        <title>可用性シミュレーター | QC × IE LABO</title>
-        <meta
-          name="description"
-          content="MTBF と MTTR を変えて可用性（Availability）を体感"
-        />
-      </Head>
+      <SiteMeta
+        title="可用性シミュレーター"
+        description="MTBFとMTTRを変え、設備の可用性がどのように変わるかを確かめるシミュレーターです。"
+        path="/tools/availability-simulator"
+      />
 
       <main className="mx-auto max-w-5xl px-4 py-8">
         <Link href="/tools" className="text-sm font-semibold text-teal-700 hover:text-teal-900">

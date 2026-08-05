@@ -102,6 +102,12 @@ export const Guide = defineDocumentType(() => ({
     status: { type: "string", default: "published" },
     updatedAt: { type: "string" },
     date: { type: "date" },
+    publishedAt: { type: "string" },
+    themes: { type: "json" },
+    contentType: { type: "string" },
+    difficulty: { type: "string" },
+    featured: { type: "boolean", default: false },
+    draft: { type: "boolean", default: false },
   },
   computedFields: {
     exam: {

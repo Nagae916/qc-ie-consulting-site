@@ -1,7 +1,8 @@
 // pages/tools/chi-square.tsx
-import Head from "next/head";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+
+import { SiteMeta } from "@/components/site/SiteMeta";
 
 // クライアント専用コンポーネントを SSR 無効で読み込み
 const ChiSquareGuide = dynamic(
@@ -12,13 +13,11 @@ const ChiSquareGuide = dynamic(
 export default function ChiSquareToolPage() {
   return (
     <>
-      <Head>
-        <title>クロス集計とカイ二乗ツール | QC × IE LABO</title>
-        <meta
-          name="description"
-          content="クロス集計の度数入力から、期待度数・χ²・自由度・p値の計算までを体験"
-        />
-      </Head>
+      <SiteMeta
+        title="クロス集計とカイ二乗ツール"
+        description="クロス集計の度数入力から、期待度数、カイ二乗統計量、自由度、p値までを確認できるツールです。"
+        path="/tools/chi-square"
+      />
 
       <main className="mx-auto max-w-5xl px-4 py-8">
         <Link href="/tools" className="text-sm font-semibold text-teal-700 hover:text-teal-900">

@@ -1,7 +1,8 @@
 // pages/tools/control-chart.tsx
-import Head from "next/head";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+
+import { SiteMeta } from "@/components/site/SiteMeta";
 
 const ControlChart = dynamic(
   () => import("@/components/guide/ControlChart"),
@@ -11,10 +12,11 @@ const ControlChart = dynamic(
 export default function ControlChartTool() {
   return (
     <>
-      <Head>
-        <title>管理図ツール | QC × IE LABO</title>
-        <meta name="description" content="X̄–R / np / p / u 管理図の可視化" />
-      </Head>
+      <SiteMeta
+        title="管理図ツール"
+        description="X̄-R管理図、np管理図、p管理図、u管理図の違いと管理限界を可視化して確認できます。"
+        path="/tools/control-chart"
+      />
       <main className="mx-auto max-w-5xl px-4 py-8">
         <Link href="/tools" className="text-sm font-semibold text-teal-700 hover:text-teal-900">
           シミュレーター一覧へ
