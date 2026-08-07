@@ -132,6 +132,7 @@ export const getStaticProps: GetStaticProps<{
   exam: ExamKey;
   mdxCode: string | null;
   html: string | null;
+  publishedYmd: string;
   updatedYmd: string;
 }> = async ({ params }) => {
   const examParam = toExamKey(params?.exam);
@@ -149,10 +150,16 @@ export const getStaticProps: GetStaticProps<{
 
   const mdxCode = (guide as { body?: { code?: string } })?.body?.code ?? null;
   const html = mdxCode ? null : await mdToHtml(guide.body.raw);
-  const guideDates = guide as { updatedAtAuto?: unknown; updatedAt?: unknown; date?: unknown };
+  const guideDates = guide as {
+    publishedAt?: unknown;
+    updatedAtAuto?: unknown;
+    updatedAt?: unknown;
+    date?: unknown;
+  };
+  const publishedYmd = formatYMD(guideDates.publishedAt, guideDates.date);
   const updatedYmd = formatYMD(guideDates.updatedAtAuto ?? guideDates.updatedAt, guideDates.date);
 
-  return { props: { guide, exam: examParam, mdxCode, html, updatedYmd }, revalidate: 60 };
+  return { props: { guide, exam: examParam, mdxCode, html, publishedYmd, updatedYmd }, revalidate: 60 };
 };
 
 export default function GuidePage({
@@ -160,6 +167,7 @@ export default function GuidePage({
   exam,
   mdxCode,
   html,
+  publishedYmd,
   updatedYmd,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   const theme = THEME[exam];
@@ -184,6 +192,7 @@ export default function GuidePage({
             "@type": "Article",
             headline: guide.title,
             description,
+            datePublished: publishedYmd || undefined,
             dateModified: updatedYmd || undefined,
             author: { "@type": "Organization", name: "N-IE Lab" },
             publisher: { "@type": "Organization", name: "N-IE Lab" },
