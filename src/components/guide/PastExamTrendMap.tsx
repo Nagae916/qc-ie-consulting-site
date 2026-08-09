@@ -83,12 +83,14 @@ const knowledgeLinks: Record<string, KnowledgeLink> = {
   FMEA: { href: '/guides/engineer/fmea', label: 'FMEAの使い方' },
   IE: { href: '/guides/engineer/ie-overview', label: 'IEの基本' },
   JIT: { href: '/guides/engineer/jit', label: 'JITの考え方' },
+  KPI: { href: '/guides/engineer/kpi-management', label: 'KPIの設計方法' },
   KPI管理: { href: '/guides/engineer/kpi-management', label: 'KPIの設計方法' },
   LCA: { href: '/guides/engineer/lca', label: 'LCAの考え方' },
   MES: { href: '/guides/engineer/mes', label: 'MESの基本' },
   MRP: { href: '/guides/engineer/mrp', label: 'MRPの考え方' },
   OEE: { href: '/guides/engineer/oee', label: 'OEEの考え方' },
   QMS: { href: '/guides/engineer/qms-reconstruction', label: 'QMSの再構築' },
+  QMS再構築: { href: '/guides/engineer/qms-reconstruction', label: 'QMSの再構築' },
   'S&OP': { href: '/guides/engineer/s-and-op', label: 'S&OPの基本' },
   SCM: { href: '/guides/engineer/scm', label: 'SCMの基本' },
   TMS: { href: '/guides/engineer/tms', label: 'TMSの基本' },
@@ -179,28 +181,34 @@ function FilterSelect({
 
 function KeywordList({ question }: { question: PastExamQuestion }) {
   const keywords = keywordsFor(question);
+  const primaryKnowledge = [...question.themeTags, ...question.methodTags]
+    .map((keyword) => ({ keyword, link: knowledgeLinks[keyword] }))
+    .find(({ link }) => Boolean(link));
 
   return (
-    <div className="flex flex-wrap gap-2">
-      {keywords.map((keyword) => {
-        const link = knowledgeLinks[keyword];
-        return link ? (
-          <Link
-            key={keyword}
-            href={link.href}
-            className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800 no-underline hover:border-emerald-400 hover:bg-emerald-100"
-          >
-            {link.label}
-          </Link>
-        ) : (
+    <div>
+      <div className="flex flex-wrap gap-2">
+        {keywords.map((keyword) => (
           <span
             key={keyword}
-            className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700"
+            className={`rounded-full border px-3 py-1 text-xs font-semibold ${
+              knowledgeLinks[keyword]
+                ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+                : 'border-slate-200 bg-slate-50 text-slate-700'
+            }`}
           >
             {keyword}
           </span>
-        );
-      })}
+        ))}
+      </div>
+      {primaryKnowledge?.link ? (
+        <Link
+          href={primaryKnowledge.link.href}
+          className="mt-3 inline-flex text-sm font-bold text-emerald-800 underline underline-offset-4"
+        >
+          {primaryKnowledge.link.label}を読む
+        </Link>
+      ) : null}
     </div>
   );
 }
@@ -234,43 +242,46 @@ function QuestionCard({ question }: { question: PastExamQuestion }) {
         </ul>
       </div>
 
+      <div className="mt-5 rounded-md border border-emerald-200 bg-emerald-50 p-4">
+        <p className="text-xs font-bold text-emerald-800">次に使う答案の型</p>
+        <Link
+          href={frame.href}
+          className="mt-2 inline-flex rounded-md bg-emerald-700 px-3 py-2 text-sm font-bold text-white no-underline hover:bg-emerald-800"
+        >
+          {frame.label}の骨子を見る
+        </Link>
+        <p className="mt-2 text-xs leading-5 text-slate-700">{frame.description}</p>
+      </div>
+
       <div className="mt-5">
-        <h4 className="text-sm font-bold text-slate-950">使えそうなキーワード</h4>
+        <h4 className="text-sm font-bold text-slate-950">使えるキーワードとKnowledge</h4>
         <div className="mt-2">
           <KeywordList question={question} />
         </div>
       </div>
 
-      <div className="mt-5 rounded-md bg-slate-50 p-4">
-        <p className="text-xs font-bold text-slate-500">答案の型</p>
-        <Link href={frame.href} className="mt-1 inline-block text-sm font-bold text-emerald-800 underline">
-          {frame.label}の骨子を見る
-        </Link>
-        <p className="mt-2 text-xs leading-5 text-slate-600">{frame.description}</p>
-      </div>
-
-      {competenciesForQuestion.length > 0 ? (
-        <p className="mt-4 text-xs leading-5 text-slate-500">
-          評価される力: {competenciesForQuestion.join('、')}
-        </p>
-      ) : null}
-
-      <div className="mt-auto grid gap-2 pt-5 sm:grid-cols-2">
+      <div className="mt-auto flex flex-col gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:items-center sm:justify-between">
         <Link
           href="/guides/engineer/model-answer-examples"
-          className="rounded-md border border-slate-300 px-3 py-2 text-center text-sm font-bold text-slate-800 no-underline hover:bg-slate-50"
+          className="text-sm font-semibold text-slate-600 underline underline-offset-4"
         >
-          同じ答案型の例を見る
+          同じ答案型の例を確認する
         </Link>
         <a
           href={question.officialPdfUrl}
           target="_blank"
           rel="noreferrer"
-          className="rounded-md bg-emerald-700 px-3 py-2 text-center text-sm font-bold text-white no-underline hover:bg-emerald-800"
+          className="rounded-md border border-slate-300 bg-white px-3 py-2 text-center text-sm font-bold text-slate-800 no-underline hover:bg-slate-50"
         >
-          公式問題を確認
+          公式問題を見る
         </a>
       </div>
+
+      {competenciesForQuestion.length > 0 ? (
+        <p className="mt-4 text-xs leading-5 text-slate-500">
+          この問題で示す力: {competenciesForQuestion.join('、')}
+        </p>
+      ) : null}
     </article>
   );
 }
@@ -360,11 +371,19 @@ export default function PastExamTrendMap() {
   }
 
   const visibleQuestions = filteredQuestions.slice(0, visibleCount);
+  const hasActiveFilters = yearFilter !== 'all' || frameFilter !== 'all' || themeFilter !== 'all';
+  const resultSummary = hasActiveFilters
+    ? visibleQuestions.length < filteredQuestions.length
+      ? `該当する過去問：${filteredQuestions.length}問（うち${visibleQuestions.length}問を表示）`
+      : `該当する過去問：${filteredQuestions.length}問`
+    : `${questions.length}問中 ${visibleQuestions.length}問を表示`;
 
   return (
     <section aria-labelledby="past-exam-navigator-title" className="not-prose space-y-6">
       <div className="border-b border-slate-200 pb-5">
-        <p className="text-sm font-semibold text-emerald-700">令和元年度から令和7年度までの126問</p>
+        <p className="text-sm font-semibold text-emerald-700">
+          令和元年度から令和7年度までの{questions.length}問
+        </p>
         <h2 id="past-exam-navigator-title" className="mt-2 text-2xl font-bold text-slate-950">
           過去問を選ぶ
         </h2>
@@ -381,7 +400,7 @@ export default function PastExamTrendMap() {
         </div>
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 pt-4">
           <p aria-live="polite" className="text-sm font-semibold text-slate-700">
-            {filteredQuestions.length}問が該当
+            {resultSummary}
           </p>
           <button
             type="button"
