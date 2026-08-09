@@ -21,3 +21,118 @@ summary {
     scroll-behavior: smooth;
   }
 }
+
+@layer components {
+  .content-diagram,
+  .case-diagram {
+    @apply my-8 rounded-lg border border-slate-200 bg-slate-50 p-4 sm:p-6;
+  }
+
+  .content-diagram figcaption,
+  .case-diagram figcaption {
+    @apply mb-5 block text-slate-900;
+  }
+
+  .content-diagram figcaption strong,
+  .case-diagram figcaption strong {
+    @apply block text-lg font-bold;
+  }
+
+  .content-diagram figcaption span,
+  .case-diagram figcaption span {
+    @apply mt-2 block text-sm leading-6 text-slate-600;
+  }
+
+  .content-flow {
+    @apply m-0 grid list-none gap-8 p-0;
+  }
+
+  .content-flow li {
+    @apply relative m-0 rounded-lg border border-slate-200 bg-white p-4 text-center;
+  }
+
+  .content-flow li > span {
+    @apply mx-auto mb-2 flex h-7 w-7 items-center justify-center rounded-full bg-slate-900 text-xs font-bold text-white;
+  }
+
+  .content-flow li > strong {
+    @apply block text-sm font-bold text-slate-900;
+  }
+
+  .content-flow li > small {
+    @apply mt-2 block text-xs leading-5 text-slate-600;
+  }
+
+  .content-flow li:not(:last-child)::after {
+    content: "↓";
+    @apply absolute left-1/2 top-full mt-1 -translate-x-1/2 text-xl font-bold text-teal-700;
+  }
+
+  .case-diagram__items {
+    @apply m-0 grid list-none gap-4 p-0 md:grid-cols-3;
+  }
+
+  .case-diagram--layers .case-diagram__items {
+    @apply md:grid-cols-2;
+  }
+
+  .case-diagram__items li {
+    @apply relative m-0 rounded-lg border border-slate-200 bg-white p-4;
+  }
+
+  .case-diagram__items li:nth-child(2) {
+    @apply border-sky-300;
+  }
+
+  .case-diagram__items li:nth-child(3) {
+    @apply border-amber-300;
+  }
+
+  .case-diagram__items li:nth-child(4) {
+    @apply border-rose-300;
+  }
+
+  .case-diagram__index {
+    @apply flex h-7 w-7 items-center justify-center rounded-full bg-slate-900 text-xs font-bold text-white;
+  }
+
+  .case-diagram__items h3 {
+    @apply mt-3 text-base font-bold text-slate-900;
+  }
+
+  .case-diagram__items p {
+    @apply mt-2 text-sm leading-6 text-slate-600;
+  }
+
+  .case-diagram__items small {
+    @apply mt-3 block border-t border-slate-100 pt-3 text-xs leading-5 text-teal-800;
+  }
+
+  .case-deliverable-grid {
+    @apply mt-6 grid gap-4 md:grid-cols-2;
+  }
+
+  .case-deliverable-card {
+    @apply rounded-lg border border-slate-200 bg-white p-5;
+  }
+
+  .case-deliverable-card h3 {
+    @apply text-lg font-bold text-slate-900;
+  }
+
+  .case-deliverable-card > p {
+    @apply mt-2 text-sm leading-6 text-slate-600;
+  }
+
+  .case-deliverable-card dl {
+    @apply mt-4 grid gap-3 border-t border-slate-100 pt-4;
+  }
+
+  .case-deliverable-card dt {
+    @apply text-xs font-bold text-slate-500;
+  }
+
+  .case-deliverable-card dd {
+    @apply mt-1 text-sm leading-6 text-slate-700;
+  }
+}

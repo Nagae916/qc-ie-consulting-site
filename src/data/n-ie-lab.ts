@@ -53,9 +53,9 @@ export const primaryNavigation = [
 
 export const manufacturingQuestions = [
   {
-    question: "検査を増やせば、品質は良くなる？",
-    answerHint: "検査だけでなく、要求、工程、標準、再発防止のつながりから考えます。",
-    href: "/themes/quality",
+    question: "品質規格は、何を根拠に決める？",
+    answerHint: "顧客・法令・用途要求から、規格値、管理値、見直し条件を組み立てます。",
+    href: "/guides/qc/how-to-set-quality-standards",
   },
   {
     question: "在庫は、本当に少ないほど良い？",
@@ -63,9 +63,9 @@ export const manufacturingQuestions = [
     href: "/themes/production",
   },
   {
-    question: "平均値が同じなら、工程も同じ？",
-    answerHint: "ばらつき、分布、時系列、測定方法まで見て判断します。",
-    href: "/themes/data",
+    question: "外部試験の数値を、どこまで信頼できる？",
+    answerHint: "試料、方法、結果、判定の4層から、品質判断に使える条件を確認します。",
+    href: "/guides/qc/third-party-testing-validity",
   },
 ] as const;
 
@@ -92,6 +92,20 @@ export const themes: ThemeDefinition[] = [
       },
     ],
     practical: [
+      {
+        title: "品質規格は、どのように決めるのか",
+        description: "要求と限られたデータから、規格値、管理値、見直し条件を設計します。",
+        href: "/guides/qc/how-to-set-quality-standards",
+        contentType: "explanation",
+        difficulty: "practical",
+      },
+      {
+        title: "第三者試験の結果を、品質判断に使うための確認事項",
+        description: "試料、方法、結果、判定を分け、外部データを使える条件を整理します。",
+        href: "/guides/qc/third-party-testing-validity",
+        contentType: "explanation",
+        difficulty: "practical",
+      },
       {
         title: "工程能力",
         description: "規格と工程のばらつきから、安定して作れる状態かを判断します。",
@@ -230,6 +244,20 @@ export const themes: ThemeDefinition[] = [
       },
     ],
     practical: [
+      {
+        title: "品質規格は、どのように決めるのか",
+        description: "少ないデータを過信せず、暫定管理と見直しを組み合わせます。",
+        href: "/guides/qc/how-to-set-quality-standards",
+        contentType: "explanation",
+        difficulty: "practical",
+      },
+      {
+        title: "第三者試験の結果を、品質判断に使うための確認事項",
+        description: "数値の前提を確認し、測定結果を意思決定へつなげます。",
+        href: "/guides/qc/third-party-testing-validity",
+        contentType: "explanation",
+        difficulty: "practical",
+      },
       {
         title: "仮説検定",
         description: "見えた差が偶然か、改善判断に使える差かを考えます。",
