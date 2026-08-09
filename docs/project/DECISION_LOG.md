@@ -126,3 +126,14 @@
 - Migration: 対応済みNext.jsへの更新可否、Contentlayer互換性、上流修正版の有無を確認し、typecheck、lint、build、主要URL、数式、演習、モバイル表示を更新前後で比較する。
 - Verification: `npm audit` の再実行、依存ツリーの確認、全静的生成、ブラウザ回帰、既存URLの200応答を確認する。
 - Supersedes: なし。
+
+## 2026-08-09：note・N-IE Lab・SNSの編集上の役割を分ける
+
+- Status: Accepted
+- Context: 個人の気づき、専門メディアの知識、短い発信を同じ形で公開すると、重複コンテンツと読者目的の混同が生じる。継続運用できる編集工程と、Codex Agentの責任範囲も必要である。
+- Decision: noteは考え、経験、問い、背景を文章として残す場、N-IE Labは他者が再利用できるKnowledgeを構造化する場、SNSは発見と入口を作る場とする。同じ本文を複数媒体へ掲載しない。Knowledgeは既存4テーマ内のコンテンツ品質・形式として扱い、新しいトップレベルカテゴリにしない。EditorとKnowledge Curatorは提案とレビューを担当し、公開判断はOrchestratorとユーザーが行う。
+- Reason: 媒体ごとの読者価値を明確にし、個人の経験を無理に一般化せず、既存URLと情報設計を保全しながら再利用可能な知識を蓄積するため。
+- Affected areas: `docs/editorial/`、`AGENTS.md`、`.codex/agents/`、今後のnoteドラフト、N-IE Lab Knowledge、内部リンク。
+- Migration: 既存の公開記事、URL、4テーマ、グローバルナビは変更しない。今後の編集タスクから段階的に適用する。
+- Verification: 公開候補ごとに事実と見解、重複、配置、出典、draft除外、Protected Defaultsを確認する。Agentの出力はPR前に人がレビューする。
+- Supersedes: なし。
