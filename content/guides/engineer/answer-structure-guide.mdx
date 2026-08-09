@@ -33,6 +33,8 @@ status: "published"
 
 ## 4. 設問形式に合わせて骨子を選ぶ
 
+<div className="hidden sm:block">
+
 | 答案フレーム | 答案型 | 件数 | 主な科目区分 | 使う場面 |
 |---|---|---:|---|---|
 | 必須科目Ⅰ型 | 社会的課題を論じる3枚答案 | 14 | 必須科目Ⅰ | 社会課題から課題、解決策、リスク、倫理・持続可能性まで展開する |
@@ -40,9 +42,57 @@ status: "published"
 | 選択科目Ⅱ-2型 | 業務手順を説明する2枚答案 | 28 | 選択科目Ⅱ-2 | 業務手順、留意点、管理項目、効果確認を整理する |
 | 選択科目Ⅲ型 | 課題解決を提案する3枚答案 | 28 | 選択科目Ⅲ | 専門領域の課題解決と将来展望を組み立てる |
 
+</div>
+
+<div className="not-prose grid gap-3 sm:hidden">
+  <section className="rounded-lg border border-emerald-200 bg-white p-4">
+    <p className="text-xs font-bold text-emerald-700">設問：必須科目Ⅰ（14問）</p>
+    <h3 className="mt-2 text-base font-bold text-slate-950">社会的課題を論じる3枚答案</h3>
+    <dl className="mt-3 space-y-3 text-sm leading-6">
+      <div><dt className="font-bold text-slate-700">何を書くか</dt><dd className="text-slate-600">社会課題を経営工学上の課題へ変換し、解決策まで論じる。</dd></div>
+      <div><dt className="font-bold text-slate-700">答案構造</dt><dd className="text-slate-600">背景・制約 → 多面的課題 → 最重要課題 → 解決策 → リスク対策 → 倫理・持続可能性</dd></div>
+      <div><dt className="font-bold text-slate-700">注意点</dt><dd className="text-slate-600">社会課題の列挙で終わらず、課題・解決策・リスクを一貫させる。</dd></div>
+    </dl>
+  </section>
+  <section className="rounded-lg border border-emerald-200 bg-white p-4">
+    <p className="text-xs font-bold text-emerald-700">設問：選択科目Ⅱ-1（56問）</p>
+    <h3 className="mt-2 text-base font-bold text-slate-950">用語・手法を説明する1枚答案</h3>
+    <dl className="mt-3 space-y-3 text-sm leading-6">
+      <div><dt className="font-bold text-slate-700">何を書くか</dt><dd className="text-slate-600">用語や手法を短く、正確に説明する。</dd></div>
+      <div><dt className="font-bold text-slate-700">答案構造</dt><dd className="text-slate-600">定義 → 目的 → 特徴・構成要素 → 適用場面 → 留意点</dd></div>
+      <div><dt className="font-bold text-slate-700">注意点</dt><dd className="text-slate-600">定義だけで終わらず、特徴と使いどころまで示す。</dd></div>
+    </dl>
+  </section>
+  <section className="rounded-lg border border-emerald-200 bg-white p-4">
+    <p className="text-xs font-bold text-emerald-700">設問：選択科目Ⅱ-2（28問）</p>
+    <h3 className="mt-2 text-base font-bold text-slate-950">業務手順を説明する2枚答案</h3>
+    <dl className="mt-3 space-y-3 text-sm leading-6">
+      <div><dt className="font-bold text-slate-700">何を書くか</dt><dd className="text-slate-600">担当者として実行する調査、手順、管理、調整を書く。</dd></div>
+      <div><dt className="font-bold text-slate-700">答案構造</dt><dd className="text-slate-600">背景・目的 → 現状把握 → 実施手順 → 管理項目 → 関係者調整 → 効果確認</dd></div>
+      <div><dt className="font-bold text-slate-700">注意点</dt><dd className="text-slate-600">時系列を明確にし、実行できる管理項目と留意点を具体化する。</dd></div>
+    </dl>
+  </section>
+  <section className="rounded-lg border border-emerald-200 bg-white p-4">
+    <p className="text-xs font-bold text-emerald-700">設問：選択科目Ⅲ（28問）</p>
+    <h3 className="mt-2 text-base font-bold text-slate-950">課題解決を提案する3枚答案</h3>
+    <dl className="mt-3 space-y-3 text-sm leading-6">
+      <div><dt className="font-bold text-slate-700">何を書くか</dt><dd className="text-slate-600">専門領域の課題解決と将来展望を組み立てる。</dd></div>
+      <div><dt className="font-bold text-slate-700">答案構造</dt><dd className="text-slate-600">背景 → 多面的課題 → 最重要課題 → 解決策 → リスク対策 → 将来展望・持続可能性</dd></div>
+      <div><dt className="font-bold text-slate-700">注意点</dt><dd className="text-slate-600">専門性と制約条件を使い、選定理由と解決策・リスクを対応させる。</dd></div>
+    </dl>
+  </section>
+</div>
+
 ## 5. 必須科目Ⅰで使う骨子
 
 必須科目Ⅰでは、社会課題をそのまま書くのではなく、経営工学上の管理対象へ変換します。
+
+<div className="not-prose my-4 rounded-lg border border-emerald-200 bg-emerald-50 p-4 sm:hidden">
+  <p className="text-xs font-bold text-emerald-700">設問：必須科目Ⅰ</p>
+  <p className="mt-2 text-sm leading-6 text-slate-700"><strong>何を書くか：</strong>社会課題を経営工学上の課題へ変換し、解決策まで論じる。</p>
+  <p className="mt-2 text-sm leading-6 text-slate-700"><strong>答案構造：</strong>背景・制約 → 多面的課題 → 最重要課題 → 解決策 → リスク対策 → 倫理・持続可能性</p>
+  <p className="mt-2 text-sm leading-6 text-slate-700"><strong>注意点：</strong>課題・解決策・リスクを一貫させる。</p>
+</div>
 
 基本の流れは次の通りです。
 
@@ -59,6 +109,13 @@ status: "published"
 
 選択科目Ⅱ-1では、短答型として用語や手法を説明します。定義だけで終わらせず、目的、特徴、適用場面、留意点まで含めると答案が安定します。
 
+<div className="not-prose my-4 rounded-lg border border-emerald-200 bg-emerald-50 p-4 sm:hidden">
+  <p className="text-xs font-bold text-emerald-700">設問：選択科目Ⅱ-1</p>
+  <p className="mt-2 text-sm leading-6 text-slate-700"><strong>何を書くか：</strong>用語や手法を短く、正確に説明する。</p>
+  <p className="mt-2 text-sm leading-6 text-slate-700"><strong>答案構造：</strong>定義 → 目的 → 特徴・構成要素 → 適用場面 → 留意点</p>
+  <p className="mt-2 text-sm leading-6 text-slate-700"><strong>注意点：</strong>定義だけで終わらず、使いどころまで示す。</p>
+</div>
+
 骨子は次の順にすると使いやすくなります。
 
 1. 定義
@@ -73,6 +130,13 @@ status: "published"
 ## 7. 選択科目Ⅱ-2で使う骨子
 
 選択科目Ⅱ-2では、実務でどう進めるかが問われます。手法名の説明だけでなく、現状把握、実施手順、管理項目、関係者調整、効果確認まで書くことが重要です。
+
+<div className="not-prose my-4 rounded-lg border border-emerald-200 bg-emerald-50 p-4 sm:hidden">
+  <p className="text-xs font-bold text-emerald-700">設問：選択科目Ⅱ-2</p>
+  <p className="mt-2 text-sm leading-6 text-slate-700"><strong>何を書くか：</strong>担当者として実行する調査、手順、管理、調整を書く。</p>
+  <p className="mt-2 text-sm leading-6 text-slate-700"><strong>答案構造：</strong>背景・目的 → 現状把握 → 実施手順 → 管理項目 → 関係者調整 → 効果確認</p>
+  <p className="mt-2 text-sm leading-6 text-slate-700"><strong>注意点：</strong>時系列と実行できる管理項目を具体化する。</p>
+</div>
 
 骨子は次の順にします。
 
@@ -90,6 +154,13 @@ status: "published"
 
 選択科目Ⅲでは、専門領域の課題解決力が問われます。必須科目Ⅰに近い構造ですが、より選択科目の専門性、実務上の制約、将来展望を意識します。
 
+<div className="not-prose my-4 rounded-lg border border-emerald-200 bg-emerald-50 p-4 sm:hidden">
+  <p className="text-xs font-bold text-emerald-700">設問：選択科目Ⅲ</p>
+  <p className="mt-2 text-sm leading-6 text-slate-700"><strong>何を書くか：</strong>専門領域の課題解決と将来展望を組み立てる。</p>
+  <p className="mt-2 text-sm leading-6 text-slate-700"><strong>答案構造：</strong>背景 → 多面的課題 → 最重要課題 → 解決策 → リスク対策 → 将来展望・持続可能性</p>
+  <p className="mt-2 text-sm leading-6 text-slate-700"><strong>注意点：</strong>選定理由と解決策・リスクを対応させる。</p>
+</div>
+
 骨子は次の順にすると展開しやすくなります。
 
 1. 背景
@@ -104,6 +175,8 @@ status: "published"
 
 ## 9. 設問形式との対応
 
+<div className="hidden sm:block">
+
 | 設問形式 | 主に使う答案フレーム | 注意点 |
 |---|---|---|
 | 用語説明型 | 選択科目Ⅱ-1型 | 定義だけでなく、特徴、留意点、活用場面まで書く |
@@ -112,11 +185,21 @@ status: "published"
 | 将来展望型 | 選択科目Ⅲ型 | 社会変化や技術変化を踏まえて展開する |
 | 留意点型 | 選択科目Ⅱ-1型、Ⅱ-2型 | 失敗防止、制約条件、説明責任を具体化する |
 
+</div>
+
+<div className="not-prose grid gap-3 sm:hidden">
+  <section className="rounded-lg border border-slate-200 bg-white p-4"><h3 className="text-sm font-bold text-slate-950">用語説明型</h3><p className="mt-2 text-sm text-slate-600"><strong>答案の型：</strong>選択科目Ⅱ-1型</p><p className="mt-2 text-sm leading-6 text-slate-600"><strong>注意点：</strong>定義だけでなく、特徴、留意点、活用場面まで書く。</p></section>
+  <section className="rounded-lg border border-slate-200 bg-white p-4"><h3 className="text-sm font-bold text-slate-950">手順説明型</h3><p className="mt-2 text-sm text-slate-600"><strong>答案の型：</strong>選択科目Ⅱ-2型</p><p className="mt-2 text-sm leading-6 text-slate-600"><strong>注意点：</strong>業務として実行できる順序と管理項目を書く。</p></section>
+  <section className="rounded-lg border border-slate-200 bg-white p-4"><h3 className="text-sm font-bold text-slate-950">課題抽出型</h3><p className="mt-2 text-sm text-slate-600"><strong>答案の型：</strong>必須科目Ⅰ型、選択科目Ⅲ型</p><p className="mt-2 text-sm leading-6 text-slate-600"><strong>注意点：</strong>課題、解決策、リスク、倫理・持続可能性を一貫させる。</p></section>
+  <section className="rounded-lg border border-slate-200 bg-white p-4"><h3 className="text-sm font-bold text-slate-950">将来展望型</h3><p className="mt-2 text-sm text-slate-600"><strong>答案の型：</strong>選択科目Ⅲ型</p><p className="mt-2 text-sm leading-6 text-slate-600"><strong>注意点：</strong>社会変化や技術変化を踏まえて展開する。</p></section>
+  <section className="rounded-lg border border-slate-200 bg-white p-4"><h3 className="text-sm font-bold text-slate-950">留意点型</h3><p className="mt-2 text-sm text-slate-600"><strong>答案の型：</strong>選択科目Ⅱ-1型、Ⅱ-2型</p><p className="mt-2 text-sm leading-6 text-slate-600"><strong>注意点：</strong>失敗防止、制約条件、説明責任を具体化する。</p></section>
+</div>
+
 ## 10. 次に進むページ
 
 - [サイトの使い方ガイド](/guides/engineer/how-to-study)
 - [問題演習](/guides/engineer/practice)
 - [答案骨子ビルダー](/guides/engineer/answer-structure-builder)
 - [設問形式別トレンド](/guides/engineer/past-exam-question-patterns)
-- [過去問トレンドマップ](/guides/engineer/past-exam-trend-map)
+- [過去問ナビに戻る](/guides/engineer/past-exam-trend-map)
 - [答案用途別キーワードマップ](/guides/engineer/keyword-answer-uses)

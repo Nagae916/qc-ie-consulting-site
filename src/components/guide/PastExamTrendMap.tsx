@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import answerFrameRulesData from '../../../public/data/engineer/answer-frame-rules.json';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 import competenciesData from '../../../public/data/engineer/competencies.json';
 
 type PastExamQuestion = {
@@ -14,146 +15,154 @@ type PastExamQuestion = {
   officialPdfUrl: string;
   officialSourceLabel: string;
   summary: string;
-  questionPattern: string;
   requiredActions: string[];
   themeTags: string[];
   methodTags: string[];
-  policyTags: string[];
-  lawTags: string[];
-  answerFrameType: string;
   skeletonTemplateId: string;
   assessedCompetencies?: string[];
-  competencyNotes?: string;
 };
 
 type PastExamData = {
-  source: {
-    label: string;
-    url: string;
-    note: string;
-  };
   questions: PastExamQuestion[];
 };
 
-type CountItem = {
-  label: string;
-  count: number;
-};
-
-type EngineerCompetency = {
+type Competency = {
   id: string;
   label: string;
+};
+
+type KnowledgeLink = {
+  href: string;
+  label: string;
+};
+
+type AnswerFrame = {
   shortLabel: string;
-  description: string;
-  answerSignals: string[];
-  weakSignals: string[];
-  relatedExamParts: string[];
-  relatedTools: string[];
-};
-
-type AnswerFrameRule = {
-  id: string;
   label: string;
-  examPart: string;
-  questionPatterns: string[];
-  answerBlocks: string[];
-  keyEvaluationPoints: string[];
-  usefulKeywords: string[];
-  commonWeaknesses: string[];
-  relatedCompetencies: string[];
-  recommendedTools: string[];
+  href: string;
+  description: string;
 };
 
-const dataPath = '/data/engineer/past-exam-questions.json';
-const answerBuilderHref = '/guides/engineer/answer-structure-builder';
-const issueMatrixHref = '/guides/engineer/issue-decomposition-matrix';
-const learningMapHref = '/guides/engineer/learning-map';
-const requiredGeneratorId = 'required-exam-generator';
-const competencies = competenciesData as EngineerCompetency[];
-const competencyLabelById = new Map(competencies.map((competency) => [competency.id, competency.label]));
-const answerFrameRules = answerFrameRulesData as AnswerFrameRule[];
-const answerFrameRuleById = new Map(answerFrameRules.map((rule) => [rule.id, rule]));
-const requiredFrameId = 'required-i-standard';
-const requiredExampleRule = answerFrameRuleById.get(requiredFrameId);
-const requiredExampleCompetencyIds = requiredExampleRule?.relatedCompetencies ?? ['professionalKnowledge', 'problemSolving', 'evaluation', 'communication', 'engineeringEthics'];
-const requiredAnswerBuilderHref = `${answerBuilderHref}?frame=${requiredFrameId}`;
-const electiveIi1AnswerBuilderHref = `${answerBuilderHref}?frame=elective-ii-1-short`;
-const electiveIi2AnswerBuilderHref = `${answerBuilderHref}?frame=elective-ii-2-procedure`;
-const electiveIiiAnswerBuilderHref = `${answerBuilderHref}?frame=elective-iii-analysis`;
-const contextOptions = ['製造業', 'サービス業', 'サプライチェーン', '品質マネジメント', '生産・物流マネジメント'];
-const skeletonGuide = [
-  '問題文の背景、対象業務、自分の立場を先に整理する',
-  '課題は、品質・生産性・人材・データ・サプライチェーンなど観点を分けて3つ抽出する',
-  '問題点、技術課題、解決策を混同せず、課題を抽象語だけで終わらせない',
-  '最重要課題は、抽出した3課題の中から、影響範囲・根本性・波及性で選ぶ',
-  '解決策は、最重要課題に直接対応させ、誰が・何を・どの指標で管理するかを書く',
-  'リスクは、施策実施後に新たに生じる副作用として書き、対策と一対一で対応させる',
-  '倫理・持続可能性は、安全、品質保証、情報管理、人材育成などテーマ固有の具体語で書く',
-];
+const DATA_PATH = '/data/engineer/past-exam-questions.json';
+const PAGE_SIZE = 8;
 
-const patternGuides: Record<string, { feature: string; action: string; href: string }> = {
-  課題抽出型: {
-    feature: '多面的な課題抽出、最重要課題、解決策、リスク対応が必要。',
-    action: '課題分解マトリクスと AnswerStructureBuilder で練習する。',
-    href: issueMatrixHref,
+const frameQueryValues: Record<string, string> = {
+  'required-i-standard': 'required-i',
+  'elective-ii-1-short': 'ii-1',
+  'elective-ii-2-procedure': 'ii-2',
+  'elective-iii-analysis': 'iii',
+};
+
+const frameIdByQueryValue = new Map(
+  Object.entries(frameQueryValues).map(([frameId, queryValue]) => [queryValue, frameId]),
+);
+
+const competencies = competenciesData as Competency[];
+const competencyLabelById = new Map(competencies.map((item) => [item.id, item.label]));
+
+const answerFrames: Record<string, AnswerFrame> = {
+  'required-i-standard': {
+    shortLabel: '必須Ⅰ',
+    label: '必須Ⅰ型',
+    href: '/guides/engineer/answer-structure-guide#5-必須科目ⅰで使う骨子',
+    description: '複数の課題、最重要課題、解決策、リスク、倫理・持続可能性を組み立てます。',
   },
-  手順説明型: {
-    feature: '実施手順、管理項目、留意点を整理する必要がある。',
-    action: '選択科目Ⅱ-2型の構成で、手順と留意点をセットで練習する。',
-    href: electiveIi2AnswerBuilderHref,
+  'elective-ii-1-short': {
+    shortLabel: 'Ⅱ-1',
+    label: 'Ⅱ-1型',
+    href: '/guides/engineer/answer-structure-guide#6-選択科目ⅱ-1で使う骨子',
+    description: '用語や手法を、定義、特徴、適用場面、留意点で簡潔に説明します。',
   },
-  留意点型: {
-    feature: '適用条件、実施上の注意点、工夫点を具体化する必要がある。',
-    action: '手法のメリットだけでなく、現場導入時の制約も整理する。',
-    href: electiveIi2AnswerBuilderHref,
+  'elective-ii-2-procedure': {
+    shortLabel: 'Ⅱ-2',
+    label: 'Ⅱ-2型',
+    href: '/guides/engineer/answer-structure-guide#7-選択科目ⅱ-2で使う骨子',
+    description: '担当者としての調査、手順、関係者調整、留意点、効果確認を整理します。',
   },
-  用語説明型: {
-    feature: '定義だけでなく、特徴、適用場面、留意点を短く整理する必要がある。',
-    action: '選択科目Ⅱ-1型の600字答案で練習する。',
-    href: electiveIi1AnswerBuilderHref,
-  },
-  比較評価型: {
-    feature: '複数案の評価軸、選定理由、トレードオフ整理が必要。',
-    action: '評価軸、採用理由、代替案の弱点をセットで整理する。',
-    href: electiveIi1AnswerBuilderHref,
-  },
-  リスク対応型: {
-    feature: '施策実施後の副作用と対策を一対一で整理する必要がある。',
-    action: 'リスクと対策の対応関係を崩さずに骨子化する。',
-    href: requiredAnswerBuilderHref,
-  },
-  将来展望型: {
-    feature: '社会変化、技術動向、経営工学的対応をつなげる必要がある。',
-    action: '白書・政策タグを見ながら、今後の方向性と実務対応を結びつける。',
-    href: electiveIiiAnswerBuilderHref,
+  'elective-iii-analysis': {
+    shortLabel: 'Ⅲ',
+    label: 'Ⅲ型',
+    href: '/guides/engineer/answer-structure-guide#8-選択科目ⅲで使う骨子',
+    description: '複数課題、最重要課題、選定理由、解決策、リスク対策を組み立てます。',
   },
 };
 
-const answerBuilderLinkLabels: Record<string, string> = {
-  'required-i-standard': 'この必須Ⅰ型で答案骨子を作る',
-  'elective-ii-1-short': 'このⅡ-1型で短答骨子を作る',
-  'elective-ii-2-procedure': 'このⅡ-2型で手順骨子を作る',
-  'elective-iii-analysis': 'このⅢ型で課題解決骨子を作る',
+const knowledgeLinks: Record<string, KnowledgeLink> = {
+  ABC分析: { href: '/guides/engineer/abc-analysis', label: 'ABC分析の使い方' },
+  BCP: { href: '/guides/engineer/bcp', label: 'BCPの考え方' },
+  DX: { href: '/guides/engineer/dx', label: 'DXの基本' },
+  ERP: { href: '/guides/engineer/erp', label: 'ERPの基本' },
+  FMEA: { href: '/guides/engineer/fmea', label: 'FMEAの使い方' },
+  IE: { href: '/guides/engineer/ie-overview', label: 'IEの基本' },
+  JIT: { href: '/guides/engineer/jit', label: 'JITの考え方' },
+  KPI: { href: '/guides/engineer/kpi-management', label: 'KPIの設計方法' },
+  KPI管理: { href: '/guides/engineer/kpi-management', label: 'KPIの設計方法' },
+  LCA: { href: '/guides/engineer/lca', label: 'LCAの考え方' },
+  MES: { href: '/guides/engineer/mes', label: 'MESの基本' },
+  MRP: { href: '/guides/engineer/mrp', label: 'MRPの考え方' },
+  OEE: { href: '/guides/engineer/oee', label: 'OEEの考え方' },
+  QMS: { href: '/guides/engineer/qms-reconstruction', label: 'QMSの再構築' },
+  QMS再構築: { href: '/guides/engineer/qms-reconstruction', label: 'QMSの再構築' },
+  'S&OP': { href: '/guides/engineer/s-and-op', label: 'S&OPの基本' },
+  SCM: { href: '/guides/engineer/scm', label: 'SCMの基本' },
+  TMS: { href: '/guides/engineer/tms', label: 'TMSの基本' },
+  WMS: { href: '/guides/engineer/wms', label: 'WMSの基本' },
+  カーボンニュートラル: {
+    href: '/guides/engineer/carbon-neutrality',
+    label: 'カーボンニュートラルの考え方',
+  },
+  サービスマネジメント: {
+    href: '/guides/engineer/service-management',
+    label: 'サービスマネジメントの基本',
+  },
+  サービス品質: { href: '/guides/engineer/service-quality', label: 'サービス品質の考え方' },
+  データガバナンス: {
+    href: '/guides/engineer/data-governance',
+    label: 'データガバナンスの考え方',
+  },
+  データドリブン: { href: '/guides/engineer/data-driven', label: 'データに基づく意思決定' },
+  モーダルシフト: { href: '/guides/engineer/modal-shift', label: 'モーダルシフトの基本' },
+  レジリエンス: { href: '/guides/engineer/resilience', label: 'レジリエンスの考え方' },
+  リスク管理: { href: '/guides/engineer/risk-management', label: 'リスク管理の基本' },
+  物流2024年問題: { href: '/guides/engineer/logistics-2024', label: '物流2024年問題の論点' },
+  物流効率化: { href: '/guides/engineer/logistics', label: '物流効率化の考え方' },
+  生産管理: { href: '/guides/engineer/production-planning', label: '生産計画の基本' },
+  需要予測: { href: '/guides/engineer/demand-forecasting', label: '需要予測の考え方' },
+  需給調整: { href: '/guides/engineer/demand-supply-adjustment', label: '需給調整の考え方' },
+  工程能力: { href: '/guides/stat/process-capability', label: '工程能力指数の考え方' },
+  標準化: { href: '/guides/engineer/standardization', label: '標準化の進め方' },
+  品質管理: { href: '/guides/qc', label: '品質管理の基礎' },
+  内部監査: { href: '/guides/engineer/internal-audit', label: '内部監査の考え方' },
 };
 
-function uniqueValues(values: string[]) {
+function unique(values: string[]) {
   return Array.from(new Set(values)).sort((a, b) => a.localeCompare(b, 'ja'));
 }
 
-function countValues(values: string[]) {
-  const countMap = new Map<string, number>();
-  values.forEach((value) => {
-    countMap.set(value, (countMap.get(value) ?? 0) + 1);
-  });
-
-  return Array.from(countMap.entries())
-    .map(([label, count]) => ({ label, count }))
-    .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, 'ja'));
+function firstQueryValue(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] ?? '' : value ?? '';
 }
 
-function percentage(count: number, total: number) {
-  if (total <= 0) return 0;
-  return Math.round((count / total) * 100);
+function answerFrameFor(question: PastExamQuestion) {
+  return answerFrames[question.skeletonTemplateId] ?? {
+    shortLabel: question.subjectType,
+    label: question.subjectType,
+    href: '/guides/engineer/answer-structure-guide',
+    description: '設問要求を確認し、対応する答案の型で骨子を組み立てます。',
+  };
+}
+
+function keywordsFor(question: PastExamQuestion) {
+  const values = Array.from(new Set([...question.methodTags, ...question.themeTags]));
+  return values
+    .map((keyword, index) => ({ keyword, index, linked: Boolean(knowledgeLinks[keyword]) }))
+    .sort((a, b) => Number(b.linked) - Number(a.linked) || a.index - b.index)
+    .slice(0, 5)
+    .map(({ keyword }) => keyword);
+}
+
+function competencyLabels(ids: string[]) {
+  return ids.map((id) => competencyLabelById.get(id) ?? id).slice(0, 3);
 }
 
 function FilterSelect({
@@ -164,7 +173,7 @@ function FilterSelect({
 }: {
   label: string;
   value: string;
-  options: string[];
+  options: Array<{ value: string; label: string }>;
   onChange: (_value: string) => void;
 }) {
   return (
@@ -173,12 +182,12 @@ function FilterSelect({
       <select
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="mt-2 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+        className="mt-2 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-100"
       >
         <option value="all">すべて</option>
         {options.map((option) => (
-          <option key={`${label}-${option}`} value={option}>
-            {option}
+          <option key={`${label}-${option.value}`} value={option.value}>
+            {option.label}
           </option>
         ))}
       </select>
@@ -186,807 +195,298 @@ function FilterSelect({
   );
 }
 
-function TagList({ tags, tone = 'slate' }: { tags: string[]; tone?: 'slate' | 'emerald' | 'amber' }) {
-  const className =
-    tone === 'emerald'
-      ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
-      : tone === 'amber'
-        ? 'border-amber-200 bg-amber-50 text-amber-800'
-        : 'border-slate-200 bg-slate-50 text-slate-700';
-
-  if (tags.length === 0) {
-    return <span className="text-sm text-slate-500">該当タグなし</span>;
-  }
-
-  return (
-    <div className="flex flex-wrap gap-2">
-      {tags.map((tag) => (
-        <span key={tag} className={`rounded-full border px-3 py-1 text-xs font-semibold ${className}`}>
-          {tag}
-        </span>
-      ))}
-    </div>
-  );
-}
-
-function competencyLabels(ids: string[]) {
-  return ids.map((id) => competencyLabelById.get(id) ?? id);
-}
-
-function competencyDetails(ids: string[]) {
-  return ids
-    .map((id) => competencies.find((competency) => competency.id === id))
-    .filter((competency): competency is EngineerCompetency => Boolean(competency));
-}
-
-function answerFrameRuleFor(question: PastExamQuestion) {
-  return answerFrameRuleById.get(question.skeletonTemplateId);
-}
-
-function answerBuilderLabel(question: PastExamQuestion) {
-  return answerBuilderLinkLabels[question.skeletonTemplateId] ?? 'この型で答案骨子を作る';
-}
-
-function answerBuilderHrefFor(question: PastExamQuestion) {
-  const rule = answerFrameRuleFor(question);
-  if (!rule) return answerBuilderHref;
-  return `${answerBuilderHref}?frame=${encodeURIComponent(rule.id)}`;
-}
-
-function SummaryCard({ label, value, note }: { label: string; value: string | number; note?: string }) {
-  return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <p className="text-xs font-bold uppercase tracking-wide text-slate-500">{label}</p>
-      <p className="mt-2 text-lg font-bold text-slate-950">{value}</p>
-      {note && <p className="mt-2 text-xs leading-5 text-slate-500">{note}</p>}
-    </div>
-  );
-}
-
-function AnswerFramePanel({ question }: { question: PastExamQuestion }) {
-  const rule = answerFrameRuleFor(question);
-  const competencyIds = rule?.relatedCompetencies ?? question.assessedCompetencies ?? [];
-
-  if (!rule) {
-    return (
-      <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
-        <p className="text-xs font-bold uppercase tracking-wide text-amber-700">答案フレーム</p>
-        <p className="mt-2 text-base font-bold text-amber-950">答案フレーム未設定</p>
-        <p className="mt-2 text-sm leading-6 text-amber-900">
-          skeletonTemplateId: <span className="font-mono text-xs">{question.skeletonTemplateId}</span>
-          。answerFrameType は「{question.answerFrameType}」です。
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
-      <div className="flex flex-wrap items-center gap-2">
-        <p className="text-xs font-bold uppercase tracking-wide text-emerald-700">答案フレーム</p>
-        <span className="rounded-full border border-emerald-200 bg-white px-3 py-1 text-xs font-bold text-emerald-800">
-          {rule.examPart}
-        </span>
-      </div>
-      <h4 className="mt-2 text-lg font-bold text-slate-950">{rule.label}</h4>
-      <div className="mt-4 grid gap-4 lg:grid-cols-2">
-        <div>
-          <p className="text-xs font-bold uppercase tracking-wide text-slate-500">想定される設問パターン</p>
-          <ul className="mt-2 space-y-1 text-sm leading-6 text-slate-700">
-            {rule.questionPatterns.slice(0, 3).map((pattern) => (
-              <li key={`${rule.id}-pattern-${pattern}`}>・{pattern}</li>
-            ))}
-          </ul>
-        </div>
-        <div>
-          <p className="text-xs font-bold uppercase tracking-wide text-slate-500">この型で整理する内容</p>
-          <div className="mt-2">
-            <TagList tags={rule.answerBlocks.slice(0, 5)} />
-          </div>
-        </div>
-        <div>
-          <p className="text-xs font-bold uppercase tracking-wide text-slate-500">評価観点</p>
-          <ul className="mt-2 space-y-1 text-sm leading-6 text-slate-700">
-            {rule.keyEvaluationPoints.slice(0, 3).map((point) => (
-              <li key={`${rule.id}-point-${point}`}>・{point}</li>
-            ))}
-          </ul>
-        </div>
-        <div>
-          <p className="text-xs font-bold uppercase tracking-wide text-slate-500">意識するコンピテンシー</p>
-          <div className="mt-2">
-            <TagList tags={competencyLabels(competencyIds)} tone="emerald" />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function RequiredExampleFramePanel({ rule }: { rule: AnswerFrameRule }) {
-  const relatedCompetencies = competencyDetails(rule.relatedCompetencies);
-
-  return (
-    <div className="rounded-2xl border border-emerald-200 bg-white p-5 shadow-sm">
-      <div className="flex flex-wrap items-center gap-2">
-        <p className="text-sm font-semibold text-emerald-700">この例題の答案フレーム</p>
-        <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-800">
-          {rule.examPart}
-        </span>
-      </div>
-      <h3 className="mt-2 text-xl font-bold text-slate-950">{rule.label}</h3>
-      <div className="mt-4 grid gap-4 lg:grid-cols-2">
-        <div>
-          <p className="text-xs font-bold uppercase tracking-wide text-slate-500">整理する内容</p>
-          <div className="mt-2">
-            <TagList tags={rule.answerBlocks.slice(1, 6)} tone="emerald" />
-          </div>
-        </div>
-        <div>
-          <p className="text-xs font-bold uppercase tracking-wide text-slate-500">有用キーワード</p>
-          <div className="mt-2">
-            <TagList tags={rule.usefulKeywords.slice(0, 8)} tone="amber" />
-          </div>
-        </div>
-        <div>
-          <p className="text-xs font-bold uppercase tracking-wide text-slate-500">評価観点</p>
-          <ul className="mt-2 space-y-1 text-sm leading-6 text-slate-700">
-            {rule.keyEvaluationPoints.slice(0, 5).map((point) => (
-              <li key={`${rule.id}-required-point-${point}`}>・{point}</li>
-            ))}
-          </ul>
-        </div>
-        <div>
-          <p className="text-xs font-bold uppercase tracking-wide text-slate-500">よくある弱点</p>
-          <ul className="mt-2 space-y-1 text-sm leading-6 text-slate-700">
-            {rule.commonWeaknesses.slice(0, 5).map((weakness) => (
-              <li key={`${rule.id}-required-weakness-${weakness}`}>・{weakness}</li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      <div className="mt-5 rounded-xl border border-emerald-200 bg-emerald-50 p-4">
-        <h4 className="text-sm font-bold text-slate-950">この例題で意識するコンピテンシー</h4>
-        <div className="mt-3 grid gap-3 md:grid-cols-2">
-          {relatedCompetencies.map((competency) => (
-            <div key={`required-example-${competency.id}`} className="rounded-lg border border-emerald-200 bg-white p-3">
-              <p className="text-sm font-bold text-slate-950">{competency.label}</p>
-              <p className="mt-1 text-xs leading-5 text-slate-600">{competency.description}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function TrendBar({ item, total }: { item: CountItem; total: number }) {
-  const ratio = percentage(item.count, total);
-  const width = `${Math.max(8, ratio)}%`;
+function KeywordSupport({ question }: { question: PastExamQuestion }) {
+  const keywords = keywordsFor(question);
+  const primaryKnowledge = [...question.themeTags, ...question.methodTags]
+    .map((keyword) => ({ keyword, link: knowledgeLinks[keyword] }))
+    .find(({ link }) => Boolean(link));
 
   return (
     <div>
-      <div className="flex items-center justify-between gap-3 text-sm">
-        <span className="font-semibold text-slate-700">{item.label}</span>
-        <span className="text-slate-500">
-          {item.count}件 / {ratio}%
-        </span>
+      <h4 className="text-sm font-bold text-slate-950">答案に使えるキーワード</h4>
+      <div className="mt-2 flex flex-wrap gap-2">
+        {keywords.map((keyword) => (
+          <span
+            key={keyword}
+            className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700"
+          >
+            {keyword}
+          </span>
+        ))}
       </div>
-      <div className="mt-2 h-2 rounded-full bg-slate-100">
-        <div className="h-2 rounded-full bg-emerald-600" style={{ width }} />
-      </div>
+      {primaryKnowledge?.link ? (
+        <div className="mt-3 flex flex-wrap items-center gap-3 border-t border-slate-100 pt-3">
+          <p className="text-xs font-bold text-slate-500">理解を深める</p>
+          <Link
+            href={primaryKnowledge.link.href}
+            className="inline-flex rounded-md border border-emerald-700 bg-white px-3 py-1.5 text-sm font-bold text-emerald-800 no-underline hover:bg-emerald-50"
+          >
+            {primaryKnowledge.link.label}を読む
+          </Link>
+        </div>
+      ) : null}
     </div>
   );
 }
 
-function CountPanel({ title, items, total }: { title: string; items: CountItem[]; total: number }) {
-  return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-      <h3 className="text-lg font-bold text-slate-950">{title}</h3>
-      <div className="mt-4 space-y-3">
-        {items.map((item) => (
-          <TrendBar key={`${title}-${item.label}`} item={item} total={total} />
-        ))}
-        {items.length === 0 && <p className="text-sm text-slate-500">集計対象がありません。</p>}
-      </div>
-    </section>
-  );
-}
-
-function CrossSummary({ subject, patterns }: { subject: string; patterns: CountItem[] }) {
-  const topPattern = patterns[0];
+function QuestionCard({ question }: { question: PastExamQuestion }) {
+  const frame = answerFrameFor(question);
+  const competenciesForQuestion = competencyLabels(question.assessedCompetencies ?? []);
 
   return (
-    <article className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <h3 className="text-base font-bold text-slate-950">{subject}</h3>
-      <p className="mt-2 text-sm leading-6 text-slate-700">
-        {topPattern ? `${topPattern.label}が多い傾向です。` : '登録データがありません。'}
-      </p>
-      <div className="mt-3 space-y-2">
-        {patterns.map((pattern) => (
-          <div key={`${subject}-${pattern.label}`} className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm">
-            <span className="font-semibold text-slate-700">{pattern.label}</span>
-            <span className="text-slate-500">{pattern.count}件</span>
-          </div>
-        ))}
+    <article className="flex h-full flex-col rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-sm font-bold text-slate-950">
+          {question.eraYear} {question.questionNumber}
+        </span>
+        <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-800">
+          {frame.shortLabel}
+        </span>
       </div>
+
+      <h3 className="mt-3 text-lg font-bold leading-7 text-slate-950">
+        {question.themeTags.slice(0, 2).join('・') || question.field}
+      </h3>
+      <p className="mt-2 text-sm leading-6 text-slate-700">{question.summary}</p>
+
+      <div className="mt-5 rounded-md border-l-4 border-slate-800 bg-slate-50 p-3.5">
+        <h4 className="text-sm font-bold text-slate-950">この問題で問われていること</h4>
+        <ul className="mt-2 space-y-1.5 pl-5 text-sm leading-6 text-slate-700">
+          {question.requiredActions.slice(0, 4).map((action) => (
+            <li key={action}>{action}</li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="mt-5 rounded-md border border-emerald-300 bg-emerald-50 p-4">
+        <p className="text-xs font-bold text-emerald-800">答案の型</p>
+        <Link
+          href={frame.href}
+          className="mt-2 inline-flex rounded-md bg-emerald-700 px-3 py-2 text-sm font-bold text-white no-underline hover:bg-emerald-800"
+        >
+          {frame.label}の骨子を見る
+        </Link>
+        <p className="mt-2 text-xs leading-5 text-slate-700">{frame.description}</p>
+      </div>
+
+      <div className="mt-4">
+        <KeywordSupport question={question} />
+      </div>
+
+      <div className="mt-auto border-t border-slate-100 pt-4">
+        <p className="text-xs font-bold text-slate-500">参考にする</p>
+        <div className="mt-2 flex flex-wrap gap-x-5 gap-y-2">
+          <Link
+            href="/guides/engineer/model-answer-examples"
+            className="text-sm font-semibold text-slate-600 underline underline-offset-4"
+          >
+            同じ答案型の例を確認する
+          </Link>
+          <a
+            href={question.officialPdfUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="text-sm font-semibold text-slate-600 underline underline-offset-4"
+          >
+            公式問題を確認する
+          </a>
+        </div>
+      </div>
+
+      {competenciesForQuestion.length > 0 ? (
+        <p className="mt-4 text-xs leading-5 text-slate-500">
+          この問題で示す力: {competenciesForQuestion.join('、')}
+        </p>
+      ) : null}
     </article>
   );
 }
 
 export default function PastExamTrendMap() {
+  const router = useRouter();
   const [data, setData] = useState<PastExamData | null>(null);
   const [loadError, setLoadError] = useState('');
   const [yearFilter, setYearFilter] = useState('all');
-  const [subjectFilter, setSubjectFilter] = useState('all');
-  const [fieldFilter, setFieldFilter] = useState('all');
-  const [patternFilter, setPatternFilter] = useState('all');
+  const [frameFilter, setFrameFilter] = useState('all');
   const [themeFilter, setThemeFilter] = useState('all');
-  const [selectedRequiredQuestionId, setSelectedRequiredQuestionId] = useState('');
-  const [selectedContext, setSelectedContext] = useState('製造業');
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [filtersReady, setFiltersReady] = useState(false);
 
   useEffect(() => {
     let ignore = false;
 
     async function loadData() {
       try {
-        const response = await fetch(dataPath);
-        if (!response.ok) throw new Error('Failed to load past exam metadata.');
+        const response = await fetch(DATA_PATH);
+        if (!response.ok) throw new Error('Failed to load past exam data.');
         const json = (await response.json()) as PastExamData;
         if (!ignore) setData(json);
       } catch {
-        if (!ignore) setLoadError('過去問の整理情報を読み込めませんでした。');
+        if (!ignore) setLoadError('過去問の整理情報を読み込めませんでした。時間をおいて再度お試しください。');
       }
     }
 
     loadData();
-
     return () => {
       ignore = true;
     };
   }, []);
 
-  const questions = useMemo(() => data?.questions ?? [], [data]);
+  const questions = useMemo(
+    () => [...(data?.questions ?? [])].sort((a, b) => b.year - a.year || a.questionNumber.localeCompare(b.questionNumber, 'ja')),
+    [data],
+  );
 
-  const yearOptions = useMemo(() => uniqueValues(questions.map((question) => question.eraYear)), [questions]);
-  const subjectOptions = useMemo(() => uniqueValues(questions.map((question) => question.subjectType)), [questions]);
-  const fieldOptions = useMemo(() => uniqueValues(questions.map((question) => question.field)), [questions]);
-  const patternOptions = useMemo(() => uniqueValues(questions.map((question) => question.questionPattern)), [questions]);
-  const themeOptions = useMemo(() => uniqueValues(questions.flatMap((question) => question.themeTags)), [questions]);
+  const yearOptions = useMemo(
+    () =>
+      Array.from(new Map(questions.map((question) => [question.year, question.eraYear])))
+        .sort(([a], [b]) => b - a)
+        .map(([year, eraYear]) => ({ value: String(year), label: eraYear })),
+    [questions],
+  );
 
-  const filteredQuestions = useMemo(() => {
-    return questions.filter((question) => {
-      const yearMatched = yearFilter === 'all' || question.eraYear === yearFilter;
-      const subjectMatched = subjectFilter === 'all' || question.subjectType === subjectFilter;
-      const fieldMatched = fieldFilter === 'all' || question.field === fieldFilter;
-      const patternMatched = patternFilter === 'all' || question.questionPattern === patternFilter;
-      const themeMatched = themeFilter === 'all' || question.themeTags.includes(themeFilter);
-      return yearMatched && subjectMatched && fieldMatched && patternMatched && themeMatched;
-    });
-  }, [fieldFilter, patternFilter, questions, subjectFilter, themeFilter, yearFilter]);
+  const frameOptions = useMemo(
+    () =>
+      Object.entries(answerFrames).map(([value, frame]) => ({
+        value,
+        label: frame.label,
+      })),
+    [],
+  );
 
-  const requiredQuestions = useMemo(() => {
-    return questions.filter((question) => question.subjectType === '必須科目Ⅰ');
-  }, [questions]);
+  const themeOptions = useMemo(
+    () => unique(questions.flatMap((question) => question.themeTags)).map((theme) => ({ value: theme, label: theme })),
+    [questions],
+  );
 
-  const selectedRequiredQuestion = useMemo(() => {
-    return requiredQuestions.find((question) => question.id === selectedRequiredQuestionId) ?? requiredQuestions[0];
-  }, [requiredQuestions, selectedRequiredQuestionId]);
+  useEffect(() => {
+    if (!data || !router.isReady) return;
 
-  const generatedQuestionText = useMemo(() => {
-    if (!selectedRequiredQuestion) return '';
+    const requestedYear = firstQueryValue(router.query.year);
+    const requestedFrame = frameIdByQueryValue.get(firstQueryValue(router.query.type)) ?? 'all';
+    const requestedTheme = firstQueryValue(router.query.theme);
 
-    const mainTheme = selectedRequiredQuestion.themeTags[0] ?? '経営工学上の課題';
-    const themeText = selectedRequiredQuestion.themeTags.slice(0, 3).join('、') || '経営環境の変化';
-    const policyText = selectedRequiredQuestion.policyTags.slice(0, 2).join('、') || '公的動向';
-    const lawText = selectedRequiredQuestion.lawTags.slice(0, 2).join('、') || '関連制度';
+    setYearFilter(yearOptions.some((option) => option.value === requestedYear) ? requestedYear : 'all');
+    setFrameFilter(frameOptions.some((option) => option.value === requestedFrame) ? requestedFrame : 'all');
+    setThemeFilter(themeOptions.some((option) => option.value === requestedTheme) ? requestedTheme : 'all');
+    setFiltersReady(true);
+  }, [data, frameOptions, router.isReady, router.query.theme, router.query.type, router.query.year, themeOptions, yearOptions]);
 
-    return `近年、${selectedContext} では、${themeText}、${policyText}、${lawText} などへの対応が重要となっている。
-このような状況を踏まえ、経営工学の技術者として、QCD、人材・組織、業務プロセス、データ活用、サプライチェーン、リスク管理の観点を考慮し、${selectedContext} における ${mainTheme} を推進するにあたり、以下の問いに答えよ。
+  useEffect(() => {
+    if (!filtersReady || !router.isReady) return;
 
-(1) 多面的な観点から、取り組むべき技術課題を3つ抽出せよ。
-(2) 抽出した3課題のうち最も重要と考える課題を1つ挙げ、その理由と、経営工学の手法を用いた解決策を述べよ。
-(3) 解決策を実施した場合に新たに生じうるリスクと、その対策を述べよ。
-(4) 技術者倫理および社会の持続可能性の観点から、業務遂行上の留意点を述べよ。`;
-  }, [selectedContext, selectedRequiredQuestion]);
+    const queryYear = firstQueryValue(router.query.year);
+    const queryType = firstQueryValue(router.query.type);
+    const queryTheme = firstQueryValue(router.query.theme);
+    const nextYear = yearFilter === 'all' ? '' : yearFilter;
+    const nextType = frameFilter === 'all' ? '' : frameQueryValues[frameFilter] ?? '';
+    const nextTheme = themeFilter === 'all' ? '' : themeFilter;
 
-  const yearRange = useMemo(() => {
-    if (questions.length === 0) return '未読込';
-    const sortedYears = [...questions].sort((a, b) => a.year - b.year);
-    const first = sortedYears[0];
-    const last = sortedYears[sortedYears.length - 1];
-    if (!first || !last) return '未読込';
-    return `${first.eraYear}〜${last.eraYear}`;
-  }, [questions]);
+    if (queryYear === nextYear && queryType === nextType && queryTheme === nextTheme) return;
 
-  const themeCounts = useMemo(() => countValues(questions.flatMap((question) => question.themeTags)), [questions]);
-  const methodCounts = useMemo(() => countValues(questions.flatMap((question) => question.methodTags)), [questions]);
-  const patternCounts = useMemo(() => countValues(questions.map((question) => question.questionPattern)), [questions]);
-  const subjectCounts = useMemo(() => countValues(questions.map((question) => question.subjectType)), [questions]);
-  const fieldCounts = useMemo(() => countValues(questions.map((question) => question.field)), [questions]);
-  const frameCounts = useMemo(() => countValues(questions.map((question) => question.answerFrameType)), [questions]);
+    const query: Record<string, string> = {};
+    if (nextYear) query.year = nextYear;
+    if (nextType) query.type = nextType;
+    if (nextTheme) query.theme = nextTheme;
 
-  const subjectPatternCounts = useMemo(() => {
-    return subjectOptions.map((subject) => {
-      const subjectQuestions = questions.filter((question) => question.subjectType === subject);
-      return {
-        subject,
-        patterns: countValues(subjectQuestions.map((question) => question.questionPattern)),
-      };
-    });
-  }, [questions, subjectOptions]);
+    const pathname = router.asPath.split(/[?#]/)[0] || '/guides/engineer/past-exam-trend-map';
+    void router.replace({ pathname, query }, undefined, { shallow: true, scroll: false });
+  }, [filtersReady, frameFilter, router, themeFilter, yearFilter]);
+
+  const filteredQuestions = useMemo(
+    () =>
+      questions.filter((question) => {
+        const yearMatched = yearFilter === 'all' || String(question.year) === yearFilter;
+        const frameMatched = frameFilter === 'all' || question.skeletonTemplateId === frameFilter;
+        const themeMatched = themeFilter === 'all' || question.themeTags.includes(themeFilter);
+        return yearMatched && frameMatched && themeMatched;
+      }),
+    [frameFilter, questions, themeFilter, yearFilter],
+  );
+
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [yearFilter, frameFilter, themeFilter]);
 
   function resetFilters() {
     setYearFilter('all');
-    setSubjectFilter('all');
-    setFieldFilter('all');
-    setPatternFilter('all');
+    setFrameFilter('all');
     setThemeFilter('all');
   }
 
-  function selectRequiredExample(question: PastExamQuestion) {
-    setSelectedRequiredQuestionId(question.id);
-    const element = document.getElementById(requiredGeneratorId);
-    element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (loadError) {
+    return <p className="rounded-md border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">{loadError}</p>;
   }
 
+  if (!data || !filtersReady) {
+    return <p className="rounded-md border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">過去問を読み込んでいます。</p>;
+  }
+
+  const visibleQuestions = filteredQuestions.slice(0, visibleCount);
+  const hasActiveFilters = yearFilter !== 'all' || frameFilter !== 'all' || themeFilter !== 'all';
+  const resultSummary = hasActiveFilters
+    ? visibleQuestions.length < filteredQuestions.length
+      ? `該当する過去問：${filteredQuestions.length}問（うち${visibleQuestions.length}問を表示）`
+      : `該当する過去問：${filteredQuestions.length}問`
+    : `${questions.length}問中 ${visibleQuestions.length}問を表示`;
+
   return (
-    <div className="mx-auto max-w-7xl space-y-8 px-4 py-8 text-slate-900 sm:px-6 lg:px-8">
-      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-        <p className="text-sm font-semibold text-emerald-700">技術士二次試験 経営工学部門</p>
-        <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">技術士 経営工学 過去問トレンドマップ</h1>
-        <p className="mt-4 max-w-4xl text-base leading-8 text-slate-700">
-          令和元年度以降の経営工学部門の過去問を、年度・科目・テーマ・設問パターンで整理し、技術士二次試験の答案骨子作成につなげるためのページです。
+    <section aria-labelledby="past-exam-navigator-title" className="not-prose space-y-6">
+      <div className="border-b border-slate-200 pb-5">
+        <p className="text-sm font-semibold text-emerald-700">
+          令和元年度から令和7年度までの{questions.length}問
         </p>
-        <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold leading-7 text-amber-900">
-          このページでは、公式過去問題の全文転載は行わず、公式問題へのリンク、問題要約、設問パターン、学習テーマを整理して表示します。
+        <h2 id="past-exam-navigator-title" className="mt-2 text-2xl font-bold text-slate-950">
+          過去問を選ぶ
+        </h2>
+        <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-700">
+          問題を選ぶと、問われていること、使う答案の型、確認したいキーワードが分かります。答案を自動生成するのではなく、自分で論述する前の判断を短くします。
         </p>
-      </section>
+      </div>
 
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <SummaryCard label="登録問題数" value={`${questions.length}問`} note={`現在の絞り込み結果：${filteredQuestions.length}問`} />
-        <SummaryCard label="対象年度範囲" value={yearRange} />
-        <SummaryCard label="対象科目" value={subjectOptions.join(' / ') || '未読込'} />
-        <SummaryCard label="主なテーマ" value={themeCounts.slice(0, 5).map((item) => item.label).join(' / ') || '未読込'} />
-      </section>
-
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h2 className="text-xl font-bold">フィルタ</h2>
-            <p className="mt-2 text-sm leading-7 text-slate-700">年度、科目区分、分野、設問パターン、テーマタグで絞り込みできます。</p>
-          </div>
-          <button type="button" onClick={resetFilters} className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-50">
+      <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 sm:p-5">
+        <div className="grid gap-4 md:grid-cols-3">
+          <FilterSelect label="年度" value={yearFilter} options={yearOptions} onChange={setYearFilter} />
+          <FilterSelect label="問題形式" value={frameFilter} options={frameOptions} onChange={setFrameFilter} />
+          <FilterSelect label="テーマ" value={themeFilter} options={themeOptions} onChange={setThemeFilter} />
+        </div>
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 pt-4">
+          <p aria-live="polite" className="text-sm font-semibold text-slate-700">
+            {resultSummary}
+          </p>
+          <button
+            type="button"
+            onClick={resetFilters}
+            className="text-sm font-bold text-emerald-800 underline underline-offset-4"
+          >
             条件をリセット
           </button>
         </div>
-        <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-          <FilterSelect label="年度" value={yearFilter} options={yearOptions} onChange={setYearFilter} />
-          <FilterSelect label="科目区分" value={subjectFilter} options={subjectOptions} onChange={setSubjectFilter} />
-          <FilterSelect label="分野" value={fieldFilter} options={fieldOptions} onChange={setFieldFilter} />
-          <FilterSelect label="設問パターン" value={patternFilter} options={patternOptions} onChange={setPatternFilter} />
-          <FilterSelect label="テーマタグ" value={themeFilter} options={themeOptions} onChange={setThemeFilter} />
-        </div>
-      </section>
+      </div>
 
-      <section id={requiredGeneratorId} className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm sm:p-6">
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_420px]">
-          <div>
-            <p className="text-sm font-semibold text-emerald-700">必須科目Ⅰ型</p>
-            <h2 className="mt-2 text-2xl font-bold">必須Ⅰ型 例題生成MVP</h2>
-            <p className="mt-3 text-sm leading-7 text-slate-700">
-              必須科目Ⅰの過去問で見られる設問構造を参考に、答案練習用のオリジナル例題を確認します。
-              公式過去問の再掲ではなく、課題抽出・最重要課題・解決策・リスク・倫理を練習するための例題です。
-            </p>
-            <p className="mt-3 text-sm leading-7 text-slate-700">
-              この例題は、過去問の設問構造、学習テーマ、政策・法令の観点を参考に、必須科目Ⅰ型の練習用として構成しています。
-              答案作成時は、課題抽出、最重要課題、解決策、リスク、技術者倫理・社会の持続可能性を一貫して整理します。
-            </p>
-            <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold leading-7 text-amber-900">
-              この例題は、公式過去問の問題文を転載したものではありません。設問構造とテーマを組み合わせて再構成した学習用のオリジナル例題です。正式な問題文は日本技術士会の過去問題を確認してください。
-            </p>
-            <div className="mt-4 rounded-xl border border-emerald-200 bg-white p-4">
-              <h3 className="text-base font-bold text-slate-950">講座方針との整合性チェック</h3>
-              <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-700">
-                <li>必須科目Ⅰの答案型として、課題抽出、最重要課題、解決策、リスク、倫理・持続可能性の順にしている</li>
-                <li>課題を抽象語で終わらせず、QCD、人材、プロセス、データ、サプライチェーンなど経営工学部門の観点を入れている</li>
-                <li>添削で弱くなりやすい、課題と解決策の不一致、リスクと対策の不対応、倫理の一般論化を避けるガイドにしている</li>
-              </ul>
-            </div>
-
-            <div className="mt-5 grid gap-4 md:grid-cols-2">
-              <label className="block">
-                <span className="text-sm font-bold text-slate-800">参考にする過去問</span>
-                <select
-                  value={selectedRequiredQuestion?.id ?? ''}
-                  onChange={(event) => setSelectedRequiredQuestionId(event.target.value)}
-                  className="mt-2 w-full rounded-lg border border-emerald-200 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100"
-                >
-                  {requiredQuestions.map((question) => (
-                    <option key={`required-generator-${question.id}`} value={question.id}>
-                      {question.eraYear} {question.questionNumber}：{question.themeTags.slice(0, 2).join(' / ')}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className="block">
-                <span className="text-sm font-bold text-slate-800">出題対象の文脈</span>
-                <select
-                  value={selectedContext}
-                  onChange={(event) => setSelectedContext(event.target.value)}
-                  className="mt-2 w-full rounded-lg border border-emerald-200 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100"
-                >
-                  {contextOptions.map((context) => (
-                    <option key={`context-${context}`} value={context}>
-                      {context}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-emerald-200 bg-white p-5 shadow-sm">
-            <h3 className="text-lg font-bold">生成された例題</h3>
-            <textarea
-              readOnly
-              value={generatedQuestionText || '必須科目Ⅰの出題傾向を読み込み中です。'}
-              className="mt-3 min-h-80 w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-sm leading-7 text-slate-900"
-            />
-            <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 p-4">
-              <h4 className="text-sm font-bold text-slate-950">生成例題と答案フレームの対応</h4>
-              <dl className="mt-3 grid gap-3 text-sm md:grid-cols-2">
-                <div>
-                  <dt className="font-bold text-slate-950">設問パターン</dt>
-                  <dd className="mt-1 text-slate-700">課題抽出型</dd>
-                </div>
-                <div>
-                  <dt className="font-bold text-slate-950">答案フレーム</dt>
-                  <dd className="mt-1 text-slate-700">{requiredExampleRule?.label ?? '必須科目Ⅰ型'}</dd>
-                </div>
-                <div>
-                  <dt className="font-bold text-slate-950">skeletonTemplateId</dt>
-                  <dd className="mt-1 font-mono text-xs text-slate-700">{requiredFrameId}</dd>
-                </div>
-                <div>
-                  <dt className="font-bold text-slate-950">主に問われる行動</dt>
-                  <dd className="mt-2">
-                    <TagList tags={['課題抽出', '最重要課題選定', '解決策提示', 'リスク対策', '技術者倫理', '社会の持続可能性']} tone="emerald" />
-                  </dd>
-                </div>
-              </dl>
-            </div>
-          </div>
-        </div>
-
-        {requiredExampleRule ? (
-          <div className="mt-6">
-            <RequiredExampleFramePanel rule={requiredExampleRule} />
-          </div>
-        ) : null}
-
-        {selectedRequiredQuestion && (
-          <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
-            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-              <h3 className="text-lg font-bold">参考にしたメタ情報</h3>
-              <dl className="mt-4 grid gap-3 text-sm md:grid-cols-2">
-                <div>
-                  <dt className="font-bold text-slate-950">参考にした過去問</dt>
-                  <dd className="mt-1 text-slate-700">{selectedRequiredQuestion.eraYear} {selectedRequiredQuestion.questionNumber}</dd>
-                </div>
-                <div>
-                  <dt className="font-bold text-slate-950">設問パターン</dt>
-                  <dd className="mt-1 text-slate-700">{selectedRequiredQuestion.questionPattern}</dd>
-                </div>
-                <div>
-                  <dt className="font-bold text-slate-950">答案フレーム</dt>
-                  <dd className="mt-1 text-slate-700">{selectedRequiredQuestion.answerFrameType}</dd>
-                </div>
-                <div>
-                  <dt className="font-bold text-slate-950">テンプレートID</dt>
-                  <dd className="mt-1 font-mono text-xs text-slate-700">{selectedRequiredQuestion.skeletonTemplateId}</dd>
-                </div>
-              </dl>
-              <div className="mt-4 space-y-3">
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-wide text-slate-500">requiredActions</p>
-                  <div className="mt-2">
-                    <TagList tags={selectedRequiredQuestion.requiredActions} />
-                  </div>
-                </div>
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-wide text-slate-500">themeTags</p>
-                  <div className="mt-2">
-                    <TagList tags={selectedRequiredQuestion.themeTags} tone="emerald" />
-                  </div>
-                </div>
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-wide text-slate-500">methodTags</p>
-                  <div className="mt-2">
-                    <TagList tags={selectedRequiredQuestion.methodTags} />
-                  </div>
-                </div>
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-wide text-slate-500">policyTags / lawTags</p>
-                  <div className="mt-2">
-                    <TagList tags={[...selectedRequiredQuestion.policyTags, ...selectedRequiredQuestion.lawTags]} tone="amber" />
-                  </div>
-                </div>
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-wide text-slate-500">assessedCompetencies</p>
-                  <div className="mt-2">
-                    <TagList tags={competencyLabels(selectedRequiredQuestion.assessedCompetencies ?? requiredExampleCompetencyIds)} tone="emerald" />
-                  </div>
-                  {selectedRequiredQuestion.competencyNotes ? (
-                    <p className="mt-2 text-sm leading-6 text-slate-700">{selectedRequiredQuestion.competencyNotes}</p>
-                  ) : null}
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-              <h3 className="text-lg font-bold">骨子作成ガイド</h3>
-              <ol className="mt-4 space-y-3 text-sm leading-7 text-slate-700">
-                {skeletonGuide.map((item, index) => (
-                  <li key={item} className="flex gap-3">
-                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-700 text-xs font-bold text-white">{index + 1}</span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ol>
-              <a href={requiredAnswerBuilderHref} className="mt-5 block rounded-lg bg-emerald-700 px-4 py-2 text-center text-sm font-bold text-white transition hover:bg-emerald-800">
-                この必須Ⅰ型で答案骨子を作る
-              </a>
-            </div>
-          </div>
-        )}
-      </section>
-
-      <section className="space-y-4">
-        <div>
-          <h2 className="text-2xl font-bold">傾向分析サマリー</h2>
-          <p className="mt-2 text-sm leading-7 text-slate-700">全登録データをもとに、頻出テーマ、設問パターン、科目区分ごとの答案型を確認します。</p>
-        </div>
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <SummaryCard label="必須科目Ⅰ型" value={`${frameCounts.find((item) => item.label === '必須科目Ⅰ型')?.count ?? 0}問`} />
-          <SummaryCard label="選択科目Ⅱ-1型" value={`${frameCounts.find((item) => item.label === '選択科目Ⅱ-1型')?.count ?? 0}問`} />
-          <SummaryCard label="選択科目Ⅱ-2型" value={`${frameCounts.find((item) => item.label === '選択科目Ⅱ-2型')?.count ?? 0}問`} />
-          <SummaryCard label="選択科目Ⅲ型" value={`${frameCounts.find((item) => item.label === '選択科目Ⅲ型')?.count ?? 0}問`} />
-        </div>
-        <div className="grid gap-5 lg:grid-cols-2">
-          <CountPanel title="themeTags 上位5件" items={themeCounts.slice(0, 5)} total={questions.length} />
-          <CountPanel title="questionPattern 上位5件" items={patternCounts.slice(0, 5)} total={questions.length} />
-          <CountPanel title="科目区分別件数" items={subjectCounts} total={questions.length} />
-          <CountPanel title="field 別件数" items={fieldCounts} total={questions.length} />
-        </div>
-      </section>
-
-      <section className="space-y-4">
-        <div>
-          <h2 className="text-2xl font-bold">テーマタグ別の頻出傾向</h2>
-          <p className="mt-2 text-sm leading-7 text-slate-700">件数が多いテーマほど、優先して自分の言葉で説明できるようにします。</p>
-        </div>
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {themeCounts.map((item) => (
-            <article key={`theme-${item.label}`} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-              <div className="flex items-start justify-between gap-3">
-                <h3 className="text-lg font-bold">{item.label}</h3>
-                <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-800">
-                  {item.count}問 / {percentage(item.count, questions.length)}%
-                </span>
-              </div>
-              <p className="mt-3 text-sm leading-7 text-slate-700">関連する問題数：{item.count}問。過去問カードを絞り込んで、設問パターンと必要アクションを確認します。</p>
-              <button
-                type="button"
-                onClick={() => setThemeFilter(item.label)}
-                className="mt-4 rounded-lg border border-emerald-700 bg-white px-4 py-2 text-sm font-bold text-emerald-700 transition hover:bg-emerald-50"
-              >
-                このテーマの問題を見る
-              </button>
-            </article>
+      {visibleQuestions.length > 0 ? (
+        <div className="grid items-stretch gap-5 lg:grid-cols-2">
+          {visibleQuestions.map((question) => (
+            <QuestionCard key={question.id} question={question} />
           ))}
         </div>
-      </section>
+      ) : (
+        <p className="rounded-md border border-slate-200 bg-white p-6 text-sm text-slate-700">
+          条件に合う問題がありません。テーマを「すべて」に戻して確認してください。
+        </p>
+      )}
 
-      <section className="space-y-4">
-        <div>
-          <h2 className="text-2xl font-bold">設問パターン別の頻出傾向</h2>
-          <p className="mt-2 text-sm leading-7 text-slate-700">パターンごとに、答案で求められる動作が変わります。</p>
+      {visibleCount < filteredQuestions.length ? (
+        <div className="text-center">
+          <button
+            type="button"
+            onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}
+            className="rounded-md border border-emerald-700 bg-white px-5 py-2.5 text-sm font-bold text-emerald-800 hover:bg-emerald-50"
+          >
+            さらに{Math.min(PAGE_SIZE, filteredQuestions.length - visibleCount)}問を見る
+          </button>
         </div>
-        <div className="grid gap-4 lg:grid-cols-2">
-          {patternCounts.map((item) => {
-            const guide = patternGuides[item.label] ?? {
-              feature: '設問要求に合わせて、定義、手順、留意点、リスクを整理する必要があります。',
-              action: 'AnswerStructureBuilder で骨子を作り、設問要求との対応を確認する。',
-              href: answerBuilderHref,
-            };
-
-            return (
-              <article key={`pattern-${item.label}`} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="text-lg font-bold">{item.label}</h3>
-                  <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-bold text-slate-700">
-                    {item.count}問 / {percentage(item.count, questions.length)}%
-                  </span>
-                </div>
-                <p className="mt-3 text-sm leading-7 text-slate-700">{guide.feature}</p>
-                <p className="mt-2 text-sm leading-7 text-slate-700">推奨アクション：{guide.action}</p>
-                <a href={guide.href} className="mt-4 inline-flex rounded-lg bg-emerald-700 px-4 py-2 text-sm font-bold text-white transition hover:bg-emerald-800">
-                  この型を練習する
-                </a>
-              </article>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="space-y-4">
-        <div>
-          <h2 className="text-2xl font-bold">科目区分 × 設問パターン</h2>
-          <p className="mt-2 text-sm leading-7 text-slate-700">科目区分ごとに多い設問パターンを確認し、答案型の違いを押さえます。</p>
-        </div>
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {subjectPatternCounts.map((item) => (
-            <CrossSummary key={item.subject} subject={item.subject} patterns={item.patterns} />
-          ))}
-        </div>
-      </section>
-
-      <section className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm">
-        <h2 className="text-2xl font-bold">傾向から見た学習優先度</h2>
-        <div className="mt-5 grid gap-4 lg:grid-cols-3">
-          <div className="rounded-xl border border-emerald-200 bg-white p-4">
-            <h3 className="text-lg font-bold">最優先で押さえるテーマ</h3>
-            <div className="mt-3 space-y-3">
-              {themeCounts.slice(0, 3).map((item) => (
-                <div key={`priority-theme-${item.label}`} className="rounded-lg bg-slate-50 p-3">
-                  <p className="font-bold">{item.label}（{item.count}問）</p>
-                  <p className="mt-1 text-sm leading-6 text-slate-700">過去問での登場頻度が高いため、背景、課題、使える手法をセットで整理します。</p>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="rounded-xl border border-emerald-200 bg-white p-4">
-            <h3 className="text-lg font-bold">答案型として優先して練習</h3>
-            <div className="mt-3 space-y-3">
-              {patternCounts.slice(0, 2).map((item) => (
-                <div key={`priority-pattern-${item.label}`} className="rounded-lg bg-slate-50 p-3">
-                  <p className="font-bold">{item.label}（{item.count}問）</p>
-                  <p className="mt-1 text-sm leading-6 text-slate-700">{patternGuides[item.label]?.action ?? 'AnswerStructureBuilder で設問要求に沿って骨子化します。'}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="rounded-xl border border-emerald-200 bg-white p-4">
-            <h3 className="text-lg font-bold">優先して整理する手法</h3>
-            <div className="mt-3 space-y-2">
-              {methodCounts.slice(0, 5).map((item) => (
-                <div key={`priority-method-${item.label}`} className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm">
-                  <span className="font-semibold">{item.label}</span>
-                  <span className="text-slate-500">{item.count}問</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="grid gap-4 md:grid-cols-3">
-        <a href={issueMatrixHref} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-emerald-400 hover:shadow-md">
-          <h2 className="text-lg font-bold">課題抽出型の問題を練習する</h2>
-          <p className="mt-2 text-sm leading-7 text-slate-700">多面的な課題抽出、最重要課題、選定理由を整理します。</p>
-        </a>
-        <a href={requiredAnswerBuilderHref} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-emerald-400 hover:shadow-md">
-          <h2 className="text-lg font-bold">答案骨子を作成する</h2>
-          <p className="mt-2 text-sm leading-7 text-slate-700">設問要求、課題、解決策、リスク、倫理を一貫して骨子化します。</p>
-        </a>
-        <a href={learningMapHref} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-emerald-400 hover:shadow-md">
-          <h2 className="text-lg font-bold">学習マップに戻る</h2>
-          <p className="mt-2 text-sm leading-7 text-slate-700">経営工学全体の学習ルートに戻ります。</p>
-        </a>
-      </section>
-
-      {loadError && <p className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-800">{loadError}</p>}
-
-      <section className="space-y-4">
-        <div>
-          <h2 className="text-2xl font-bold">問題カード</h2>
-          <p className="mt-2 text-sm text-slate-600">表示件数：{filteredQuestions.length}件</p>
-        </div>
-
-        {filteredQuestions.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-600">
-            条件に一致する問題がありません。
-          </div>
-        ) : (
-          <div className="grid gap-5 lg:grid-cols-2">
-            {filteredQuestions.map((question) => (
-              <article key={question.id} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="rounded-full bg-slate-900 px-3 py-1 text-xs font-bold text-white">{question.eraYear}</span>
-                  <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700">{question.subjectType}</span>
-                  <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800">{question.questionPattern}</span>
-                  <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800">{question.answerFrameType}</span>
-                </div>
-
-                <h3 className="mt-4 text-xl font-bold">{question.field} {question.questionNumber}</h3>
-                <p className="mt-1 text-sm font-semibold text-slate-500">{question.officialSourceLabel}</p>
-                <p className="mt-3 text-sm leading-7 text-slate-700">{question.summary}</p>
-                <div className="mt-4">
-                  <AnswerFramePanel question={question} />
-                </div>
-
-                <div className="mt-4 space-y-3">
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wide text-slate-500">要求される行動</p>
-                    <div className="mt-2">
-                      <TagList tags={question.requiredActions} />
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wide text-slate-500">テーマタグ</p>
-                    <div className="mt-2">
-                      <TagList tags={question.themeTags} tone="emerald" />
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wide text-slate-500">経営工学手法タグ</p>
-                    <div className="mt-2">
-                      <TagList tags={question.methodTags} />
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wide text-slate-500">白書・政策タグ</p>
-                    <div className="mt-2">
-                      <TagList tags={question.policyTags} tone="amber" />
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wide text-slate-500">法令タグ</p>
-                    <div className="mt-2">
-                      <TagList tags={question.lawTags} tone="amber" />
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wide text-slate-500">この問題で意識するコンピテンシー</p>
-                    <div className="mt-2">
-                      <TagList tags={competencyLabels(question.assessedCompetencies ?? [])} tone="emerald" />
-                    </div>
-                    {question.competencyNotes ? <p className="mt-2 text-sm leading-6 text-slate-700">{question.competencyNotes}</p> : null}
-                  </div>
-                </div>
-
-                <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-                  {question.subjectType === '必須科目Ⅰ' && (
-                    <button
-                      type="button"
-                      onClick={() => selectRequiredExample(question)}
-                      className="rounded-lg border border-emerald-700 bg-white px-4 py-2 text-center text-sm font-bold text-emerald-700 transition hover:bg-emerald-50"
-                    >
-                      この型で例題を作る
-                    </button>
-                  )}
-                  <a
-                    href={question.officialPdfUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-center text-sm font-bold text-slate-800 transition hover:bg-slate-50"
-                  >
-                    公式PDFを開く（外部）
-                  </a>
-                  <a
-                    href={answerBuilderHrefFor(question)}
-                    className="rounded-lg bg-emerald-700 px-4 py-2 text-center text-sm font-bold text-white transition hover:bg-emerald-800"
-                  >
-                    {answerBuilderLabel(question)}
-                  </a>
-                </div>
-              </article>
-            ))}
-          </div>
-        )}
-      </section>
-    </div>
+      ) : null}
+    </section>
   );
 }
