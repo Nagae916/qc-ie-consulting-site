@@ -93,6 +93,13 @@ export const themes: ThemeDefinition[] = [
     ],
     practical: [
       {
+        title: "WHYから考える品質問題解決",
+        description: "手法を選ぶ前に、目的、要求、品質特性、評価尺度を整理します。",
+        href: "/guides/qc/why-before-how-quality-problem-solving",
+        contentType: "explanation",
+        difficulty: "practical",
+      },
+      {
         title: "品質規格は、どのように決めるのか",
         description: "要求と限られたデータから、規格値、管理値、見直し条件を設計します。",
         href: "/guides/qc/how-to-set-quality-standards",
