@@ -3,6 +3,7 @@ const test = require("node:test");
 
 const {
   isPublishedGuideStatus,
+  normalizeFrontmatterBooleanValue,
   normalizeFrontmatterEnumValue,
   normalizeGuideStatus,
 } = require("../src/lib/frontmatter-normalization.ts");
@@ -35,4 +36,29 @@ test("publishes only the explicit published status", () => {
   assert.equal(isPublishedGuideStatus("\uFEFFdraft"), false);
   assert.equal(isPublishedGuideStatus("planned"), false);
   assert.equal(isPublishedGuideStatus("unexpected-status"), false);
+});
+
+test("normalizes boolean frontmatter across line endings and boundary whitespace", () => {
+  assert.equal(normalizeFrontmatterBooleanValue(true), true);
+  assert.equal(normalizeFrontmatterBooleanValue("true"), true);
+  assert.equal(normalizeFrontmatterBooleanValue("true\r"), true);
+  assert.equal(normalizeFrontmatterBooleanValue("  true\t"), true);
+  assert.equal(normalizeFrontmatterBooleanValue("\uFEFFtrue"), true);
+  assert.equal(normalizeFrontmatterBooleanValue(false), false);
+  assert.equal(normalizeFrontmatterBooleanValue("false"), false);
+  assert.equal(normalizeFrontmatterBooleanValue("false\r\n"), false);
+});
+
+test("uses the boolean fallback only for empty values and rejects unknown values", () => {
+  assert.equal(normalizeFrontmatterBooleanValue(undefined), false);
+  assert.equal(normalizeFrontmatterBooleanValue(" \r\n"), false);
+  assert.equal(normalizeFrontmatterBooleanValue("", true), true);
+  assert.throws(
+    () => normalizeFrontmatterBooleanValue("yes"),
+    /Invalid frontmatter boolean/
+  );
+  assert.throws(
+    () => normalizeFrontmatterBooleanValue(1),
+    /Invalid frontmatter boolean/
+  );
 });

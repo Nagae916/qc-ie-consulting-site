@@ -10,6 +10,21 @@ export function normalizeFrontmatterEnumValue(value: unknown, fallback = ""): st
   return normalized || fallback;
 }
 
+export function normalizeFrontmatterBooleanValue(
+  value: unknown,
+  fallback = false
+): boolean {
+  if (value === undefined || value === null) return fallback;
+  if (typeof value === "boolean") return value;
+
+  const normalized = normalizeFrontmatterEnumValue(value);
+  if (!normalized) return fallback;
+  if (normalized === "true") return true;
+  if (normalized === "false") return false;
+
+  throw new Error(`Invalid frontmatter boolean: ${JSON.stringify(normalized)}`);
+}
+
 export function normalizeGuideStatus(value: unknown): GuideStatus {
   const normalized = normalizeFrontmatterEnumValue(value, DEFAULT_GUIDE_STATUS);
 
