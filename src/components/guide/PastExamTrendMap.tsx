@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import competenciesData from '../../../public/data/engineer/competencies.json';
 
 type PastExamQuestion = {
@@ -44,6 +45,17 @@ type AnswerFrame = {
 
 const DATA_PATH = '/data/engineer/past-exam-questions.json';
 const PAGE_SIZE = 8;
+
+const frameQueryValues: Record<string, string> = {
+  'required-i-standard': 'required-i',
+  'elective-ii-1-short': 'ii-1',
+  'elective-ii-2-procedure': 'ii-2',
+  'elective-iii-analysis': 'iii',
+};
+
+const frameIdByQueryValue = new Map(
+  Object.entries(frameQueryValues).map(([frameId, queryValue]) => [queryValue, frameId]),
+);
 
 const competencies = competenciesData as Competency[];
 const competencyLabelById = new Map(competencies.map((item) => [item.id, item.label]));
@@ -127,6 +139,10 @@ function unique(values: string[]) {
   return Array.from(new Set(values)).sort((a, b) => a.localeCompare(b, 'ja'));
 }
 
+function firstQueryValue(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] ?? '' : value ?? '';
+}
+
 function answerFrameFor(question: PastExamQuestion) {
   return answerFrames[question.skeletonTemplateId] ?? {
     shortLabel: question.subjectType,
@@ -179,7 +195,7 @@ function FilterSelect({
   );
 }
 
-function KeywordList({ question }: { question: PastExamQuestion }) {
+function KeywordSupport({ question }: { question: PastExamQuestion }) {
   const keywords = keywordsFor(question);
   const primaryKnowledge = [...question.themeTags, ...question.methodTags]
     .map((keyword) => ({ keyword, link: knowledgeLinks[keyword] }))
@@ -187,27 +203,27 @@ function KeywordList({ question }: { question: PastExamQuestion }) {
 
   return (
     <div>
-      <div className="flex flex-wrap gap-2">
+      <h4 className="text-sm font-bold text-slate-950">答案に使えるキーワード</h4>
+      <div className="mt-2 flex flex-wrap gap-2">
         {keywords.map((keyword) => (
           <span
             key={keyword}
-            className={`rounded-full border px-3 py-1 text-xs font-semibold ${
-              knowledgeLinks[keyword]
-                ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
-                : 'border-slate-200 bg-slate-50 text-slate-700'
-            }`}
+            className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700"
           >
             {keyword}
           </span>
         ))}
       </div>
       {primaryKnowledge?.link ? (
-        <Link
-          href={primaryKnowledge.link.href}
-          className="mt-3 inline-flex text-sm font-bold text-emerald-800 underline underline-offset-4"
-        >
-          {primaryKnowledge.link.label}を読む
-        </Link>
+        <div className="mt-3 flex flex-wrap items-center gap-3 border-t border-slate-100 pt-3">
+          <p className="text-xs font-bold text-slate-500">理解を深める</p>
+          <Link
+            href={primaryKnowledge.link.href}
+            className="inline-flex rounded-md border border-emerald-700 bg-white px-3 py-1.5 text-sm font-bold text-emerald-800 no-underline hover:bg-emerald-50"
+          >
+            {primaryKnowledge.link.label}を読む
+          </Link>
+        </div>
       ) : null}
     </div>
   );
@@ -233,7 +249,7 @@ function QuestionCard({ question }: { question: PastExamQuestion }) {
       </h3>
       <p className="mt-2 text-sm leading-6 text-slate-700">{question.summary}</p>
 
-      <div className="mt-5 border-t border-slate-100 pt-4">
+      <div className="mt-5 rounded-md border-l-4 border-slate-800 bg-slate-50 p-3.5">
         <h4 className="text-sm font-bold text-slate-950">この問題で問われていること</h4>
         <ul className="mt-2 space-y-1.5 pl-5 text-sm leading-6 text-slate-700">
           {question.requiredActions.slice(0, 4).map((action) => (
@@ -242,8 +258,8 @@ function QuestionCard({ question }: { question: PastExamQuestion }) {
         </ul>
       </div>
 
-      <div className="mt-5 rounded-md border border-emerald-200 bg-emerald-50 p-4">
-        <p className="text-xs font-bold text-emerald-800">次に使う答案の型</p>
+      <div className="mt-5 rounded-md border border-emerald-300 bg-emerald-50 p-4">
+        <p className="text-xs font-bold text-emerald-800">答案の型</p>
         <Link
           href={frame.href}
           className="mt-2 inline-flex rounded-md bg-emerald-700 px-3 py-2 text-sm font-bold text-white no-underline hover:bg-emerald-800"
@@ -253,28 +269,28 @@ function QuestionCard({ question }: { question: PastExamQuestion }) {
         <p className="mt-2 text-xs leading-5 text-slate-700">{frame.description}</p>
       </div>
 
-      <div className="mt-5">
-        <h4 className="text-sm font-bold text-slate-950">使えるキーワードとKnowledge</h4>
-        <div className="mt-2">
-          <KeywordList question={question} />
-        </div>
+      <div className="mt-4">
+        <KeywordSupport question={question} />
       </div>
 
-      <div className="mt-auto flex flex-col gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:items-center sm:justify-between">
-        <Link
-          href="/guides/engineer/model-answer-examples"
-          className="text-sm font-semibold text-slate-600 underline underline-offset-4"
-        >
-          同じ答案型の例を確認する
-        </Link>
-        <a
-          href={question.officialPdfUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="rounded-md border border-slate-300 bg-white px-3 py-2 text-center text-sm font-bold text-slate-800 no-underline hover:bg-slate-50"
-        >
-          公式問題を見る
-        </a>
+      <div className="mt-auto border-t border-slate-100 pt-4">
+        <p className="text-xs font-bold text-slate-500">参考にする</p>
+        <div className="mt-2 flex flex-wrap gap-x-5 gap-y-2">
+          <Link
+            href="/guides/engineer/model-answer-examples"
+            className="text-sm font-semibold text-slate-600 underline underline-offset-4"
+          >
+            同じ答案型の例を確認する
+          </Link>
+          <a
+            href={question.officialPdfUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="text-sm font-semibold text-slate-600 underline underline-offset-4"
+          >
+            公式問題を確認する
+          </a>
+        </div>
       </div>
 
       {competenciesForQuestion.length > 0 ? (
@@ -287,12 +303,14 @@ function QuestionCard({ question }: { question: PastExamQuestion }) {
 }
 
 export default function PastExamTrendMap() {
+  const router = useRouter();
   const [data, setData] = useState<PastExamData | null>(null);
   const [loadError, setLoadError] = useState('');
   const [yearFilter, setYearFilter] = useState('all');
   const [frameFilter, setFrameFilter] = useState('all');
   const [themeFilter, setThemeFilter] = useState('all');
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [filtersReady, setFiltersReady] = useState(false);
 
   useEffect(() => {
     let ignore = false;
@@ -323,7 +341,7 @@ export default function PastExamTrendMap() {
     () =>
       Array.from(new Map(questions.map((question) => [question.year, question.eraYear])))
         .sort(([a], [b]) => b - a)
-        .map(([, eraYear]) => ({ value: eraYear, label: eraYear })),
+        .map(([year, eraYear]) => ({ value: String(year), label: eraYear })),
     [questions],
   );
 
@@ -341,10 +359,44 @@ export default function PastExamTrendMap() {
     [questions],
   );
 
+  useEffect(() => {
+    if (!data || !router.isReady) return;
+
+    const requestedYear = firstQueryValue(router.query.year);
+    const requestedFrame = frameIdByQueryValue.get(firstQueryValue(router.query.type)) ?? 'all';
+    const requestedTheme = firstQueryValue(router.query.theme);
+
+    setYearFilter(yearOptions.some((option) => option.value === requestedYear) ? requestedYear : 'all');
+    setFrameFilter(frameOptions.some((option) => option.value === requestedFrame) ? requestedFrame : 'all');
+    setThemeFilter(themeOptions.some((option) => option.value === requestedTheme) ? requestedTheme : 'all');
+    setFiltersReady(true);
+  }, [data, frameOptions, router.isReady, router.query.theme, router.query.type, router.query.year, themeOptions, yearOptions]);
+
+  useEffect(() => {
+    if (!filtersReady || !router.isReady) return;
+
+    const queryYear = firstQueryValue(router.query.year);
+    const queryType = firstQueryValue(router.query.type);
+    const queryTheme = firstQueryValue(router.query.theme);
+    const nextYear = yearFilter === 'all' ? '' : yearFilter;
+    const nextType = frameFilter === 'all' ? '' : frameQueryValues[frameFilter] ?? '';
+    const nextTheme = themeFilter === 'all' ? '' : themeFilter;
+
+    if (queryYear === nextYear && queryType === nextType && queryTheme === nextTheme) return;
+
+    const query: Record<string, string> = {};
+    if (nextYear) query.year = nextYear;
+    if (nextType) query.type = nextType;
+    if (nextTheme) query.theme = nextTheme;
+
+    const pathname = router.asPath.split(/[?#]/)[0] || '/guides/engineer/past-exam-trend-map';
+    void router.replace({ pathname, query }, undefined, { shallow: true, scroll: false });
+  }, [filtersReady, frameFilter, router, themeFilter, yearFilter]);
+
   const filteredQuestions = useMemo(
     () =>
       questions.filter((question) => {
-        const yearMatched = yearFilter === 'all' || question.eraYear === yearFilter;
+        const yearMatched = yearFilter === 'all' || String(question.year) === yearFilter;
         const frameMatched = frameFilter === 'all' || question.skeletonTemplateId === frameFilter;
         const themeMatched = themeFilter === 'all' || question.themeTags.includes(themeFilter);
         return yearMatched && frameMatched && themeMatched;
@@ -366,7 +418,7 @@ export default function PastExamTrendMap() {
     return <p className="rounded-md border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">{loadError}</p>;
   }
 
-  if (!data) {
+  if (!data || !filtersReady) {
     return <p className="rounded-md border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">過去問を読み込んでいます。</p>;
   }
 
