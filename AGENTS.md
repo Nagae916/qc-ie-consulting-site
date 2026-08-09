@@ -74,6 +74,15 @@ Protected Defaultsを変更する明示的な指示を受けた場合は、影�
 - 文書や手順にBash専用コマンドを導入せず、PowerShell互換のnpmコマンドを使う。
 - 変更後は `package.json` で利用可能なtypecheck、lint、テスト、ビルドを可能な範囲で実行する。
 
+## Editorial Workflow
+
+- 編集作業の前に [Editorial Charter](docs/editorial/EDITORIAL_CHARTER.md) と [Site and Note Content Policy](docs/editorial/SITE_NOTE_CONTENT_POLICY.md) を読む。
+- noteは考え、経験、問い、背景を文章として残し、N-IE Labは他者が再利用できるKnowledgeを構造化して残す。同じ本文を両方へ掲載しない。
+- Knowledge作成時は [Knowledge Definition](docs/editorial/KNOWLEDGE_DEFINITION.md) を読み、既存ページとの重複を確認する。
+- 事実、解釈、提案、個人の経験を区別し、必要な出典と引用元を確認する。
+- 編集Agentの役割と受け渡しは [Agent Workflow](docs/editorial/AGENT_WORKFLOW.md) に従う。AgentはmainへのmergeやProduction公開を行わない。
+- 編集作業でもProtected Defaults、既存URL、機密情報の保全を優先する。
+
 ## Prohibited Actions
 
 - 指示されていないブランド、ターゲット、URL、カテゴリー、依存関係の変更。
@@ -104,3 +113,8 @@ Protected Defaultsを変更する明示的な指示を受けた場合は、影�
 - [CHANGE_POLICY.md](docs/project/CHANGE_POLICY.md)
 - [DECISION_LOG.md](docs/project/DECISION_LOG.md)
 - [REPOSITORY_AUDIT.md](docs/project/REPOSITORY_AUDIT.md)
+- [EDITORIAL_CHARTER.md](docs/editorial/EDITORIAL_CHARTER.md)
+- [SITE_NOTE_CONTENT_POLICY.md](docs/editorial/SITE_NOTE_CONTENT_POLICY.md)
+- [CONTENT_PIPELINE.md](docs/editorial/CONTENT_PIPELINE.md)
+- [KNOWLEDGE_DEFINITION.md](docs/editorial/KNOWLEDGE_DEFINITION.md)
+- [AGENT_WORKFLOW.md](docs/editorial/AGENT_WORKFLOW.md)
