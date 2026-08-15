@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-type PrototypeVariant = "a" | "b";
+type PrototypeVariant = "a" | "b" | "c";
 
 type ReviewPointData = {
   title: string;
@@ -106,8 +106,19 @@ const relatedKnowledge = [
   },
 ] as const;
 
+const conceptStages = [
+  ["01", "特性要因図", "結果と要因を見える化"],
+  ["02", "原因候補を整理", "4Mで仮説を広げる"],
+  ["03", "仮説", "重要そうな関係を選ぶ"],
+  ["04", "データで検証", "層別・散布図・実験"],
+  ["05", "真因を判断", "観察結果と照合する"],
+  ["06", "改善", "再測定して効果を確かめる"],
+] as const;
+
 export function EngineerAnswerReviewPrototype({ variant }: { variant: PrototypeVariant }) {
-  return variant === "a" ? <EditorialLab /> : <GuidedWorkbook />;
+  if (variant === "a") return <EditorialLab />;
+  if (variant === "b") return <GuidedWorkbook />;
+  return <EditorialLabPlus />;
 }
 
 function PrototypeSwitcher({ active }: { active: PrototypeVariant }) {
@@ -119,6 +130,9 @@ function PrototypeSwitcher({ active }: { active: PrototypeVariant }) {
       </Link>
       <Link className={active === "b" ? "text-teal-800 underline underline-offset-4" : "text-slate-500 hover:text-teal-700"} href="/prototypes/engineer-answer-review?variant=b">
         B Guided Workbook
+      </Link>
+      <Link className={active === "c" ? "text-teal-800 underline underline-offset-4" : "text-slate-500 hover:text-teal-700"} href="/prototypes/engineer-answer-review?variant=c">
+        C Editorial Lab A+
       </Link>
     </nav>
   );
@@ -228,6 +242,164 @@ function EditorialLab() {
   );
 }
 
+function EditorialLabPlus() {
+  const contents = [
+    ["01", "問題をつかむ", "editorial-plus-01"],
+    ["02", "実際にどう書いたか", "editorial-plus-02"],
+    ["03", "どこを改善するか", "editorial-plus-03"],
+    ["04", "今ならどう書くか", "editorial-plus-04"],
+    ["05", "理解を深める", "editorial-plus-05"],
+  ] as const;
+
+  return (
+    <main id="main-content" className="min-h-screen bg-[#fafaf8] text-slate-900">
+      <header className="bg-[#fafaf8]">
+        <div className="mx-auto max-w-6xl px-4 pb-8 pt-9 md:pb-10 md:pt-11">
+          <PrototypeSwitcher active="c" />
+          <div className="mt-9 max-w-4xl">
+            <p className="text-xs font-bold tracking-[0.12em] text-teal-800">2026 / 選択科目Ⅱ-1-4 / 復元答案レビュー</p>
+            <h1 className="mt-4 max-w-3xl text-3xl font-black leading-tight md:text-5xl">特性要因図を、どう説明すればよかったか</h1>
+            <p className="mt-5 max-w-2xl text-base leading-7 text-slate-600 md:text-lg md:leading-8">
+              実際の復元答案を読み直し、Ⅱ-1型の組み立て方と、原因候補をデータで検証するところまでを一つの教材として整理します。
+            </p>
+          </div>
+          <dl className="mt-8 grid max-w-4xl gap-5 border-t border-slate-300 pt-5 md:grid-cols-3">
+            <SummaryFact term="問題要求">基本構造と4Mを説明し、飲食店へ適用する</SummaryFact>
+            <SummaryFact term="答案の型">選択科目Ⅱ-1型</SummaryFact>
+            <SummaryFact term="この教材の焦点">原因仮説と真因を分ける</SummaryFact>
+          </dl>
+        </div>
+      </header>
+
+      <div className="mx-auto grid max-w-6xl gap-10 px-4 pb-10 pt-4 lg:grid-cols-[10rem_minmax(0,44rem)] lg:gap-12 lg:pb-14">
+        <aside className="hidden lg:block">
+          <nav aria-label="ページ内目次" className="sticky top-28 pt-3">
+            <div className="h-px bg-slate-400" />
+            <p className="mt-4 text-[0.6875rem] font-bold tracking-[0.14em] text-slate-500">目次</p>
+            <ol className="mt-4 space-y-3">
+              {contents.map(([number, label, id]) => (
+                <li key={id}>
+                  <a href={`#${id}`} className="grid grid-cols-[1.8rem_1fr] text-xs leading-5 text-slate-600 hover:text-teal-800">
+                    <span className="font-bold text-teal-800">{number}</span>
+                    <span>{label}</span>
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+        </aside>
+
+        <article className="min-w-0 max-w-[44rem]">
+          <EditorialPlusChapter
+            id="editorial-plus-01"
+            number="01"
+            title="問題をつかむ"
+            focus="設問が求める二つの説明対象と、使うべき答案の型を先に確認します。"
+          >
+            <p className="text-lg font-bold leading-8 text-slate-950">特性要因図の基本構造と4Mを説明し、飲食店の顧客満足度が低い要因を4Mから分析する問題です。</p>
+            <p className="mt-4 text-base leading-8 text-slate-700">
+              用語の暗記だけでなく、特性要因図が何を整理する手法か、4Mをどう使い、サービス品質の問題へどう当てはめるかまでが問われています。
+            </p>
+            <p className="mt-5 text-sm font-bold leading-7 text-slate-800">このレビューで分かること：原因候補を挙げた後、何を根拠に真因と判断するか。</p>
+            <div className="mt-5 flex flex-wrap gap-x-6 gap-y-3 text-sm font-bold">
+              <Link className="text-teal-800 underline decoration-teal-300 underline-offset-4" href="/guides/engineer/answer-structure-guide#6-選択科目ⅱ-1で使う骨子">Ⅱ-1答案型を確認する</Link>
+              <a className="text-slate-600 underline decoration-slate-300 underline-offset-4" href="https://www.engineer.or.jp/c_topics/011/attached/attach_11985_2.pdf">公式問題を確認する</a>
+            </div>
+          </EditorialPlusChapter>
+
+          <EditorialPlusChapter
+            id="editorial-plus-02"
+            number="02"
+            title="実際にどう書いたか"
+            focus="復元答案の内容と、答案に表れた説明順序を分けて読みます。"
+          >
+            <AnswerBlock
+              variant="reconstructed"
+              title="復元答案"
+              subtitle="ORIGINAL"
+              note="試験後に作成した復元答案です。試験当日の記述を完全に逐語再現したものではありません。"
+            >
+              <div className="space-y-7">
+                {originalAnswer.map((part) => (
+                  <section key={part.title}>
+                    <h3 className="text-base font-bold leading-7 text-slate-950">{part.title}</h3>
+                    <div className="mt-3 space-y-2 text-sm leading-6 text-slate-700">
+                      {part.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+                    </div>
+                  </section>
+                ))}
+              </div>
+            </AnswerBlock>
+
+            <section className="mt-9" aria-labelledby="editorial-plus-design">
+              <p className="text-[0.6875rem] font-bold tracking-[0.12em] text-slate-500">答案に表れた設計</p>
+              <h3 id="editorial-plus-design" className="mt-2 text-lg font-bold text-slate-950">何を選び、どの順で説明したか</h3>
+              <p className="mt-2 text-sm leading-7 text-slate-600">内面的な思考過程は資料に残っていないため、答案本文に表れた選択と順序だけを分析します。</p>
+              <dl className="mt-5 grid gap-x-8 gap-y-5 sm:grid-cols-2">
+                {answerDesign.map(([term, description]) => (
+                  <div key={term}>
+                    <dt className="text-sm font-bold text-slate-950">{term}</dt>
+                    <dd className="mt-1 text-sm leading-6 text-slate-600">{description}</dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+          </EditorialPlusChapter>
+
+          <EditorialPlusChapter
+            id="editorial-plus-03"
+            number="03"
+            title="どこを改善するか"
+            focus="良い部分を残しながら、原因候補を真因と判断してしまう箇所を見直します。"
+          >
+            <div>
+              {reviewPoints.map((point, index) => (
+                <EditorialPlusReviewPoint key={point.title} index={index + 1} point={point} />
+              ))}
+            </div>
+            <EditorialConceptFigure />
+          </EditorialPlusChapter>
+
+          <EditorialPlusChapter
+            id="editorial-plus-04"
+            number="04"
+            title="今ならどう書くか"
+            focus="参考解答を読む前に、短答に必要な五つの要素を自分の順序で確認します。"
+          >
+            <section aria-labelledby="editorial-plus-frame">
+              <p className="text-[0.6875rem] font-bold tracking-[0.12em] text-slate-500">答案骨子</p>
+              <h3 id="editorial-plus-frame" className="mt-2 text-xl font-bold text-slate-950">今ならこう組み立てる</h3>
+              <EditorialAnswerFrame />
+            </section>
+            <p className="mt-7 text-sm font-bold leading-7 text-slate-800">図で終わらず、原因候補をどのデータで確かめるかまで一文で示します。</p>
+            <AnswerBlock
+              variant="reference"
+              title="N-IE Lab参考解答"
+              subtitle="REFERENCE"
+              heading="復元答案の直接性を残し、検証まで補う"
+              note="試験後の検討を反映したN-IE Lab独自の参考解答です。公式採点や合格を保証するものではありません。"
+            >
+              <div className="space-y-3 text-sm leading-6 text-slate-700">
+                {referenceAnswer.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+              </div>
+            </AnswerBlock>
+          </EditorialPlusChapter>
+
+          <EditorialPlusChapter
+            id="editorial-plus-05"
+            number="05"
+            title="理解を深める"
+            focus="答案で使った手法を、試験以外でも使える通常のKnowledgeへ戻します。"
+          >
+            <EditorialRelatedReading />
+            <EditorialNextLinks />
+          </EditorialPlusChapter>
+        </article>
+      </div>
+    </main>
+  );
+}
+
 function GuidedWorkbook() {
   const steps = ["問題", "復元答案", "レビュー", "組み直す", "深める"] as const;
 
@@ -303,6 +475,177 @@ function GuidedWorkbook() {
         </WorkbookStep>
       </article>
     </main>
+  );
+}
+
+function EditorialPlusChapter({
+  id,
+  number,
+  title,
+  focus,
+  children,
+}: {
+  id: string;
+  number: string;
+  title: string;
+  focus: string;
+  children: ReactNode;
+}) {
+  return (
+    <section id={id} className="scroll-mt-24 py-8 md:py-10">
+      {number === "01" ? null : <div aria-hidden="true" className="mb-8 h-px bg-slate-300" />}
+      <header className="mb-5">
+        <div className="grid grid-cols-[2.75rem_1fr] items-baseline gap-3">
+          <span className="text-sm font-black text-teal-800">{number}</span>
+          <h2 className="text-2xl font-black text-slate-950 md:text-3xl">{title}</h2>
+        </div>
+        <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600 sm:pl-[3.5rem]">
+          <span className="font-bold text-slate-800">この章で見ること：</span>{focus}
+        </p>
+      </header>
+      {children}
+    </section>
+  );
+}
+
+function AnswerBlock({
+  variant,
+  title,
+  subtitle,
+  heading,
+  note,
+  children,
+}: {
+  variant: "reconstructed" | "reference";
+  title: string;
+  subtitle: string;
+  heading?: string;
+  note: string;
+  children: ReactNode;
+}) {
+  const isReference = variant === "reference";
+
+  return (
+    <section
+      className={`border-l-2 pl-5 md:pl-7 ${isReference ? "mt-9 border-teal-600" : "border-slate-400"}`}
+      aria-label={title}
+    >
+      <p className={`text-xs font-black ${isReference ? "text-teal-800" : "text-slate-700"}`}>
+        {title}
+        <span className="ml-2 text-[0.625rem] font-bold tracking-[0.12em] text-slate-400">{subtitle}</span>
+      </p>
+      {heading ? <h3 className="mt-2 text-xl font-bold text-slate-950">{heading}</h3> : null}
+      <p className="mt-2 text-xs leading-5 text-slate-500">{note}</p>
+      <div className="mt-4">{children}</div>
+    </section>
+  );
+}
+
+function EditorialPlusReviewPoint({ index, point }: { index: number; point: ReviewPointData }) {
+  const items = [
+    ["できていたこと", point.good],
+    ["見直したいこと", point.but],
+    ["なぜか", point.why],
+    ["今なら", point.better],
+  ] as const;
+
+  return (
+    <section className={index === 1 ? "pb-6" : "pb-6 pt-6"}>
+      {index === 1 ? null : <div aria-hidden="true" className="mb-6 h-px bg-slate-200" />}
+      <p className="text-[0.6875rem] font-black tracking-[0.12em] text-teal-800">振り返り {String(index).padStart(2, "0")}</p>
+      <h3 className="mt-2 text-lg font-bold text-slate-950 md:text-xl">{point.title}</h3>
+      <dl className="mt-4 grid gap-x-8 gap-y-3 sm:grid-cols-2">
+        {items.map(([label, description]) => (
+          <div key={label}>
+            <dt className="text-xs font-bold text-slate-500">{label}</dt>
+            <dd className="mt-1 text-sm leading-6 text-slate-700">{description}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+  );
+}
+
+function EditorialConceptFigure() {
+  return (
+    <figure className="mt-4 py-6">
+      <div aria-hidden="true" className="h-px bg-slate-400" />
+      <figcaption className="pt-6">
+        <p className="text-[0.6875rem] font-black tracking-[0.12em] text-teal-800">図1 <span className="ml-2 text-slate-400">FIGURE 01</span></p>
+        <h3 className="mt-2 text-xl font-bold text-slate-950">特性要因図から真因判断まで</h3>
+      </figcaption>
+      <ol className="mt-6 grid gap-2 sm:grid-cols-6 sm:gap-4" aria-label="原因候補を整理してデータで検証し、真因を判断して改善する流れ">
+        {conceptStages.map(([number, title, description], index) => (
+          <li key={number} className="relative grid grid-cols-[2.25rem_1fr] gap-3 pb-2 sm:block sm:pb-0">
+            <span className="text-xs font-black text-teal-800">{number}</span>
+            <div className="sm:mt-2">
+              <p className="text-sm font-bold leading-6 text-slate-950">{title}</p>
+              <p className="mt-0.5 text-xs leading-5 text-slate-500">{description}</p>
+            </div>
+            {index < conceptStages.length - 1 ? (
+              <>
+                <span aria-hidden="true" className="absolute bottom-0 left-[0.85rem] top-6 w-px bg-slate-200 sm:hidden" />
+                <span aria-hidden="true" className="absolute -right-3 top-1 hidden text-sm text-slate-300 sm:block">→</span>
+              </>
+            ) : null}
+          </li>
+        ))}
+      </ol>
+      <p className="mt-6 max-w-2xl text-sm font-bold leading-6 text-slate-800">特性要因図で得られるのは原因候補です。真因の判断には、観察や測定による検証が必要になります。</p>
+      <p className="mt-3 text-xs italic leading-6 text-slate-500">特性要因図は真因そのものではなく、検証すべき仮説を整理するために使います。</p>
+      <div aria-hidden="true" className="mt-6 h-px bg-slate-300" />
+    </figure>
+  );
+}
+
+function EditorialAnswerFrame() {
+  return (
+    <ol className="mt-5 space-y-3">
+      {answerFrame.map(([title, description], index) => (
+        <li key={title} className="grid grid-cols-[2.25rem_1fr] gap-3 sm:grid-cols-[2.75rem_1fr]">
+          <span className="pt-0.5 text-sm font-black text-teal-800">{String(index + 1).padStart(2, "0")}</span>
+          <p className="text-sm leading-6 text-slate-600">
+            <span className="mr-2 font-bold text-slate-950">{title}</span>{description}
+          </p>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+function EditorialRelatedReading() {
+  return (
+    <div className="space-y-5">
+      {relatedKnowledge.map((item) => (
+        <Link key={item.href} href={item.href} className="group block max-w-2xl">
+          <span className="block text-base font-bold text-slate-950 group-hover:text-teal-800">{item.title}</span>
+          <span className="mt-1 block text-sm leading-6 text-slate-600">{item.description}</span>
+          <span className="mt-1 block text-sm font-bold text-teal-700">読む →</span>
+        </Link>
+      ))}
+    </div>
+  );
+}
+
+function EditorialNextLinks() {
+  const links = [
+    ["答案の型を確認する", "Ⅱ-1の答案型", "/guides/engineer/answer-structure-guide#6-選択科目ⅱ-1で使う骨子"],
+    ["次に学ぶ", "Ⅱ-2では何が違う？", "/guides/engineer/answer-structure-guide#7-選択科目ⅱ-2で使う骨子"],
+    ["過去問へ戻る", "Ⅱ-1の問題を探す", "/guides/engineer/past-exam-trend-map?type=ii-1"],
+  ] as const;
+
+  return (
+    <nav aria-label="次に進む" className="mt-8">
+      <div aria-hidden="true" className="h-px bg-slate-300" />
+      <div className="grid gap-5 pt-5 sm:grid-cols-3">
+        {links.map(([label, text, href]) => (
+          <Link key={href} href={href} className="group block">
+            <span className="block text-xs font-bold text-slate-500">{label}</span>
+            <span className="mt-1 block text-sm font-bold leading-6 text-slate-900 underline decoration-slate-300 underline-offset-4 group-hover:text-teal-800">{text}</span>
+          </Link>
+        ))}
+      </div>
+    </nav>
   );
 }
 
@@ -412,15 +755,6 @@ function CheckNote({ title, children }: { title: string; children: ReactNode }) 
 }
 
 function ConceptFigure({ variant }: { variant: PrototypeVariant }) {
-  const stages = [
-    ["01", "特性要因図", "結果と要因を見える化"],
-    ["02", "原因候補を整理", "4Mで仮説を広げる"],
-    ["03", "仮説", "重要そうな関係を選ぶ"],
-    ["04", "データで検証", "層別・散布図・実験"],
-    ["05", "真因を判断", "観察結果と照合する"],
-    ["06", "改善", "再測定して効果を確かめる"],
-  ] as const;
-
   return (
     <figure className={`mt-12 border-y border-slate-300 py-8 ${variant === "b" ? "bg-white px-4 sm:px-6" : ""}`}>
       <figcaption>
@@ -428,7 +762,7 @@ function ConceptFigure({ variant }: { variant: PrototypeVariant }) {
         <h3 className="mt-2 text-xl font-bold text-slate-950">特性要因図だけでは、真因は証明できない</h3>
       </figcaption>
       <div className="mt-7" role="img" aria-label="特性要因図で原因候補を仮説として整理し、データで検証して真因を判断し、改善する流れ">
-        {stages.map(([number, title, description], index) => (
+        {conceptStages.map(([number, title, description], index) => (
           <div key={number} className="contents">
             <div className="grid grid-cols-[2.25rem_1fr] gap-3 py-3 sm:grid-cols-[3rem_1fr]">
               <span className="pt-0.5 text-xs font-black text-teal-800">{number}</span>
@@ -437,7 +771,7 @@ function ConceptFigure({ variant }: { variant: PrototypeVariant }) {
                 <p className="mt-1 text-xs leading-5 text-slate-500">{description}</p>
               </div>
             </div>
-            {index < stages.length - 1 ? <div aria-hidden="true" className="pl-3 text-lg leading-none text-slate-300">↓</div> : null}
+            {index < conceptStages.length - 1 ? <div aria-hidden="true" className="pl-3 text-lg leading-none text-slate-300">↓</div> : null}
           </div>
         ))}
       </div>

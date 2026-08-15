@@ -3,7 +3,7 @@ import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { EngineerAnswerReviewPrototype } from "@/components/prototypes/EngineerAnswerReviewPrototype";
 import { SiteMeta } from "@/components/site/SiteMeta";
 
-type PrototypeVariant = "a" | "b";
+type PrototypeVariant = "a" | "b" | "c";
 
 type PrototypePageProps = {
   variant: PrototypeVariant;
@@ -11,14 +11,14 @@ type PrototypePageProps = {
 
 export const getServerSideProps: GetServerSideProps<PrototypePageProps> = async ({ query }) => ({
   props: {
-    variant: query.variant === "b" ? "b" : "a",
+    variant: query.variant === "b" || query.variant === "c" ? query.variant : "a",
   },
 });
 
 export default function EngineerAnswerReviewPrototypePage({
   variant,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const label = variant === "a" ? "Editorial Lab" : "Guided Workbook";
+  const label = variant === "a" ? "Editorial Lab" : variant === "b" ? "Guided Workbook" : "Editorial Lab A+";
 
   return (
     <>
