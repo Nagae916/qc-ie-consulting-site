@@ -44,7 +44,7 @@ type KnowledgeTerm = {
   aliases: string[];
   taxonomy: string;
   themeIds: string[];
-  knowledgeUrl: string;
+  knowledgeUrl?: string | null;
   linkLabel: string;
   relatedTerms: string[];
 };
@@ -95,14 +95,25 @@ const answerFrames: Record<string, AnswerFrame> = Object.fromEntries(
 
 const knowledgeTerms = knowledgeTermMapData as KnowledgeTerm[];
 
+function normalizeKnowledgeTerm(value: string) {
+  return value.trim();
+}
+
 const knowledgeLinks: Record<string, KnowledgeLink> = Object.fromEntries(
-  knowledgeTerms.flatMap((term) =>
-    Array.from(new Set([term.canonicalTerm, ...term.aliases])).map((alias) => [
-      alias,
-      { href: term.knowledgeUrl, label: term.linkLabel },
-    ]),
-  ),
+  knowledgeTerms.flatMap((term) => {
+    const href = term.knowledgeUrl?.trim();
+    if (!href) return [];
+
+    return Array.from(new Set([term.canonicalTerm, ...term.aliases]))
+      .map(normalizeKnowledgeTerm)
+      .filter(Boolean)
+      .map((alias) => [alias, { href, label: term.linkLabel }]);
+  }),
 );
+
+function knowledgeLinkFor(keyword: string) {
+  return knowledgeLinks[normalizeKnowledgeTerm(keyword)];
+}
 
 function unique(values: string[]) {
   return Array.from(new Set(values)).sort((a, b) => a.localeCompare(b, 'ja'));
@@ -124,7 +135,7 @@ function answerFrameFor(question: PastExamQuestion) {
 function keywordsFor(question: PastExamQuestion) {
   const values = Array.from(new Set([...question.methodTags, ...question.themeTags]));
   return values
-    .map((keyword, index) => ({ keyword, index, linked: Boolean(knowledgeLinks[keyword]) }))
+    .map((keyword, index) => ({ keyword, index, linked: Boolean(knowledgeLinkFor(keyword)) }))
     .sort((a, b) => Number(b.linked) - Number(a.linked) || a.index - b.index)
     .slice(0, 5)
     .map(({ keyword }) => keyword);
@@ -167,7 +178,7 @@ function FilterSelect({
 function KeywordSupport({ question }: { question: PastExamQuestion }) {
   const keywords = keywordsFor(question);
   const primaryKnowledge = [...question.themeTags, ...question.methodTags]
-    .map((keyword) => ({ keyword, link: knowledgeLinks[keyword] }))
+    .map((keyword) => ({ keyword, link: knowledgeLinkFor(keyword) }))
     .find(({ link }) => Boolean(link));
 
   return (
