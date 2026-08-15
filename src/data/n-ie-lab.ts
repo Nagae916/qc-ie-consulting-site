@@ -201,6 +201,13 @@ export const themes: ThemeDefinition[] = [
         difficulty: "practical",
       },
       {
+        title: "GT（グループテクノロジー）",
+        description: "類似部品をまとめ、工程・設備・標準を再利用する考え方を学びます。",
+        href: "/guides/engineer/group-technology",
+        contentType: "explanation",
+        difficulty: "practical",
+      },
+      {
         title: "OEE",
         description: "設備の停止、速度低下、不良を分けて改善機会を捉えます。",
         href: "/guides/engineer/oee",
