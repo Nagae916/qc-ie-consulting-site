@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import answerFrameRules from '../../../public/data/engineer/answer-frame-rules.json';
 import worksheetTemplates from '../../../public/data/engineer/answer-worksheet-templates.json';
 import worksheetExamples from '../../../public/data/engineer/answer-worksheet-examples.json';
 import whitepaperFacts from '../../../public/data/engineer/whitepaper-facts.json';
@@ -71,16 +72,22 @@ type WhitepaperFact = {
   answerSentenceExamples?: string[];
 };
 
+type AnswerFrameSummary = {
+  id: string;
+  shortLabel: string;
+  headline: string;
+  writingSteps: Array<{
+    label: string;
+  }>;
+};
+
 const templates = worksheetTemplates as WorksheetTemplate[];
 const examples = worksheetExamples as WorksheetExample[];
 const facts = whitepaperFacts as WhitepaperFact[];
-
-const labelByAnswerType: Record<string, string> = {
-  'required-i-standard': '必須Ⅰ',
-  'elective-ii-1-short': 'Ⅱ-1',
-  'elective-ii-2-procedure': 'Ⅱ-2',
-  'elective-iii-analysis': 'Ⅲ',
-};
+const frameSummaries = answerFrameRules as AnswerFrameSummary[];
+const labelByAnswerType = Object.fromEntries(
+  frameSummaries.map((frame) => [frame.id, frame.shortLabel]),
+) as Record<string, string>;
 
 export default function AnswerWorksheetGuide() {
   const [selectedId, setSelectedId] = useState(templates[0]?.id ?? '');
@@ -163,10 +170,13 @@ export default function AnswerWorksheetGuide() {
       </section>
 
       <section className="grid gap-3 md:grid-cols-4">
-        <MetaCard label="必須Ⅰ型" value="課題、解決策、リスク、倫理、持続可能性" />
-        <MetaCard label="Ⅱ-1型" value="定義、特徴、長所短所、適用場面" />
-        <MetaCard label="Ⅱ-2型" value="調査、手順、関係者調整、留意点、KPI" />
-        <MetaCard label="Ⅲ型" value="複数課題、最重要課題、理由、解決策、リスク対策" />
+        {frameSummaries.map((frame) => (
+          <MetaCard
+            key={frame.id}
+            label={`${frame.shortLabel}型`}
+            value={frame.writingSteps.map((step) => step.label).join(' → ')}
+          />
+        ))}
       </section>
 
       <section className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">

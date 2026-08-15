@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import competenciesData from '../../../public/data/engineer/competencies.json';
+import answerFrameRulesData from '../../../public/data/engineer/answer-frame-rules.json';
 
 type PastExamQuestion = {
   id: string;
@@ -43,15 +44,23 @@ type AnswerFrame = {
   description: string;
 };
 
+type AnswerFrameRule = {
+  id: string;
+  shortLabel: string;
+  label: string;
+  queryValue: string;
+  guideHref: string;
+  navigatorDescription: string;
+};
+
 const DATA_PATH = '/data/engineer/past-exam-questions.json';
 const PAGE_SIZE = 8;
 
-const frameQueryValues: Record<string, string> = {
-  'required-i-standard': 'required-i',
-  'elective-ii-1-short': 'ii-1',
-  'elective-ii-2-procedure': 'ii-2',
-  'elective-iii-analysis': 'iii',
-};
+const answerFrameRules = answerFrameRulesData as AnswerFrameRule[];
+
+const frameQueryValues: Record<string, string> = Object.fromEntries(
+  answerFrameRules.map((frame) => [frame.id, frame.queryValue]),
+);
 
 const frameIdByQueryValue = new Map(
   Object.entries(frameQueryValues).map(([frameId, queryValue]) => [queryValue, frameId]),
@@ -60,32 +69,17 @@ const frameIdByQueryValue = new Map(
 const competencies = competenciesData as Competency[];
 const competencyLabelById = new Map(competencies.map((item) => [item.id, item.label]));
 
-const answerFrames: Record<string, AnswerFrame> = {
-  'required-i-standard': {
-    shortLabel: '必須Ⅰ',
-    label: '必須Ⅰ型',
-    href: '/guides/engineer/answer-structure-guide#5-必須科目ⅰで使う骨子',
-    description: '複数の課題、最重要課題、解決策、リスク、倫理・持続可能性を組み立てます。',
-  },
-  'elective-ii-1-short': {
-    shortLabel: 'Ⅱ-1',
-    label: 'Ⅱ-1型',
-    href: '/guides/engineer/answer-structure-guide#6-選択科目ⅱ-1で使う骨子',
-    description: '用語や手法を、定義、特徴、適用場面、留意点で簡潔に説明します。',
-  },
-  'elective-ii-2-procedure': {
-    shortLabel: 'Ⅱ-2',
-    label: 'Ⅱ-2型',
-    href: '/guides/engineer/answer-structure-guide#7-選択科目ⅱ-2で使う骨子',
-    description: '担当者としての調査、手順、関係者調整、留意点、効果確認を整理します。',
-  },
-  'elective-iii-analysis': {
-    shortLabel: 'Ⅲ',
-    label: 'Ⅲ型',
-    href: '/guides/engineer/answer-structure-guide#8-選択科目ⅲで使う骨子',
-    description: '複数課題、最重要課題、選定理由、解決策、リスク対策を組み立てます。',
-  },
-};
+const answerFrames: Record<string, AnswerFrame> = Object.fromEntries(
+  answerFrameRules.map((frame) => [
+    frame.id,
+    {
+      shortLabel: frame.shortLabel,
+      label: `${frame.shortLabel}型`,
+      href: frame.guideHref,
+      description: frame.navigatorDescription,
+    },
+  ]),
+);
 
 const knowledgeLinks: Record<string, KnowledgeLink> = {
   ABC分析: { href: '/guides/engineer/abc-analysis', label: 'ABC分析の使い方' },

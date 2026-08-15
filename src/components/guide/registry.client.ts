@@ -26,6 +26,7 @@ const ModelAnswerExamples = dynamic(() => import('./ModelAnswerExamples'), { ssr
 const PSISimulator = dynamic(() => import('./PSISimulator'), { ssr: false });
 const RequiredIWorksheet = dynamic(() => import('./RequiredIWorksheet'), { ssr: false });
 const AnswerWorksheetGuide = dynamic(() => import('./AnswerWorksheetGuide'), { ssr: false });
+import AnswerFrameGuide from './AnswerFrameGuide';
 import ProblemMatrix from './ProblemMatrix';
 
 /**
@@ -73,6 +74,7 @@ export const GUIDE_COMPONENTS = {
   PSISimulator,
   RequiredIWorksheet,
   AnswerWorksheetGuide,
+  AnswerFrameGuide,
   ProblemMatrix,
   // ファイルパスをコメントで明記し、人的ミスを予防
 
