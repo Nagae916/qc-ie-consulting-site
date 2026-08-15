@@ -1,10 +1,11 @@
 ---
-title: "SCM: 技術士答案で使えるサプライチェーン全体最適の論点"
-description: "SCMについて、情報・物・資金の流れ、需給調整、在庫、物流、共通KPIを整理し、技術士第二次試験 経営工学部門の答案作成に使える形でまとめます。"
+title: "SCM｜調達・生産・在庫・物流を全体最適でつなぐ"
+description: "SCMを、情報・物・資金の流れ、需給調整、在庫配置、物流、共通KPIの観点から整理します。"
 tags: ["技術士第二次試験", "経営工学", "SCM", "サプライチェーン", "需給調整"]
 exam: engineer
 slug: scm
 status: published
+updatedAt: "2026-08-15"
 ---
 
 # SCM
@@ -39,6 +40,14 @@ SCM（Supply Chain Management）は、調達、生産、在庫、物流、販売
 - ERP、EDI、WMS、TMSを連携し、実需、在庫、輸送状況を見える化する
 - サプライチェーン全体のKPIを設定する
 - 複数購買、代替輸送、BCPにより供給リスクを低減する
+
+### ポストポーンメントで差別化を遅らせる
+
+ポストポーンメント（Postponement、延期差別化）は、需要が確定するまで製品の最終仕様、包装、組立、在庫配置などを遅らせ、需要予測誤差の影響を抑える考え方である。共通部品や半製品の状態で在庫を持ち、受注後に色、仕様、ラベル、配送先を確定する。
+
+狙いは在庫をなくすことではなく、需要が読みにくい完成品在庫を、複数製品で共用できる在庫へ置き換えることである。どこまで見込生産し、どこから受注対応へ切り替えるかは、[デカップリングポイント](/guides/engineer/decoupling-point)として設計する。
+
+判断時は、共通化できる範囲、顧客が許容する納期、最終工程の能力、品質保証、輸送・包装条件を確認する。差別化を遅らせすぎると受注後工程へ負荷が集中し、納期遅延や品質確認不足を招くため、能力余裕と例外ルールを併せて設計する。
 
 ## 7. 応用例・企業事例
 
@@ -75,3 +84,7 @@ SCMは、DX、AI需要予測、物流2024年問題、カーボンニュートラ
 - [レジリエンス](/guides/engineer/resilience)
 - [BCP](/guides/engineer/bcp)
 - [物流2024年問題](/guides/engineer/logistics-2024)
+
+## 11. 参考資料
+
+- [MIT Center for Transportation and Logistics: Building a Resilient Supply Chain](https://sheffi.mit.edu/sites/sheffi.mit.edu/files/2021-12/Building%20a%20Resilient%20Supply%20Chain_2007.pdf)

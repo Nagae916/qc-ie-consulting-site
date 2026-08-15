@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import competenciesData from '../../../public/data/engineer/competencies.json';
 import answerFrameRulesData from '../../../public/data/engineer/answer-frame-rules.json';
+import knowledgeTermMapData from '../../../public/data/engineer/knowledge-term-map.json';
 
 type PastExamQuestion = {
   id: string;
@@ -35,6 +36,17 @@ type Competency = {
 type KnowledgeLink = {
   href: string;
   label: string;
+};
+
+type KnowledgeTerm = {
+  canonicalTerm: string;
+  displayName: string;
+  aliases: string[];
+  taxonomy: string;
+  themeIds: string[];
+  knowledgeUrl: string;
+  linkLabel: string;
+  relatedTerms: string[];
 };
 
 type AnswerFrame = {
@@ -81,53 +93,16 @@ const answerFrames: Record<string, AnswerFrame> = Object.fromEntries(
   ]),
 );
 
-const knowledgeLinks: Record<string, KnowledgeLink> = {
-  ABC分析: { href: '/guides/engineer/abc-analysis', label: 'ABC分析の使い方' },
-  BCP: { href: '/guides/engineer/bcp', label: 'BCPの考え方' },
-  DX: { href: '/guides/engineer/dx', label: 'DXの基本' },
-  ERP: { href: '/guides/engineer/erp', label: 'ERPの基本' },
-  FMEA: { href: '/guides/engineer/fmea', label: 'FMEAの使い方' },
-  IE: { href: '/guides/engineer/ie-overview', label: 'IEの基本' },
-  JIT: { href: '/guides/engineer/jit', label: 'JITの考え方' },
-  KPI: { href: '/guides/engineer/kpi-management', label: 'KPIの設計方法' },
-  KPI管理: { href: '/guides/engineer/kpi-management', label: 'KPIの設計方法' },
-  LCA: { href: '/guides/engineer/lca', label: 'LCAの考え方' },
-  MES: { href: '/guides/engineer/mes', label: 'MESの基本' },
-  MRP: { href: '/guides/engineer/mrp', label: 'MRPの考え方' },
-  OEE: { href: '/guides/engineer/oee', label: 'OEEの考え方' },
-  QMS: { href: '/guides/engineer/qms-reconstruction', label: 'QMSの再構築' },
-  QMS再構築: { href: '/guides/engineer/qms-reconstruction', label: 'QMSの再構築' },
-  'S&OP': { href: '/guides/engineer/s-and-op', label: 'S&OPの基本' },
-  SCM: { href: '/guides/engineer/scm', label: 'SCMの基本' },
-  TMS: { href: '/guides/engineer/tms', label: 'TMSの基本' },
-  WMS: { href: '/guides/engineer/wms', label: 'WMSの基本' },
-  カーボンニュートラル: {
-    href: '/guides/engineer/carbon-neutrality',
-    label: 'カーボンニュートラルの考え方',
-  },
-  サービスマネジメント: {
-    href: '/guides/engineer/service-management',
-    label: 'サービスマネジメントの基本',
-  },
-  サービス品質: { href: '/guides/engineer/service-quality', label: 'サービス品質の考え方' },
-  データガバナンス: {
-    href: '/guides/engineer/data-governance',
-    label: 'データガバナンスの考え方',
-  },
-  データドリブン: { href: '/guides/engineer/data-driven', label: 'データに基づく意思決定' },
-  モーダルシフト: { href: '/guides/engineer/modal-shift', label: 'モーダルシフトの基本' },
-  レジリエンス: { href: '/guides/engineer/resilience', label: 'レジリエンスの考え方' },
-  リスク管理: { href: '/guides/engineer/risk-management', label: 'リスク管理の基本' },
-  物流2024年問題: { href: '/guides/engineer/logistics-2024', label: '物流2024年問題の論点' },
-  物流効率化: { href: '/guides/engineer/logistics', label: '物流効率化の考え方' },
-  生産管理: { href: '/guides/engineer/production-planning', label: '生産計画の基本' },
-  需要予測: { href: '/guides/engineer/demand-forecasting', label: '需要予測の考え方' },
-  需給調整: { href: '/guides/engineer/demand-supply-adjustment', label: '需給調整の考え方' },
-  工程能力: { href: '/guides/stat/process-capability', label: '工程能力指数の考え方' },
-  標準化: { href: '/guides/engineer/standardization', label: '標準化の進め方' },
-  品質管理: { href: '/guides/qc', label: '品質管理の基礎' },
-  内部監査: { href: '/guides/engineer/internal-audit', label: '内部監査の考え方' },
-};
+const knowledgeTerms = knowledgeTermMapData as KnowledgeTerm[];
+
+const knowledgeLinks: Record<string, KnowledgeLink> = Object.fromEntries(
+  knowledgeTerms.flatMap((term) =>
+    Array.from(new Set([term.canonicalTerm, ...term.aliases])).map((alias) => [
+      alias,
+      { href: term.knowledgeUrl, label: term.linkLabel },
+    ]),
+  ),
+);
 
 function unique(values: string[]) {
   return Array.from(new Set(values)).sort((a, b) => a.localeCompare(b, 'ja'));

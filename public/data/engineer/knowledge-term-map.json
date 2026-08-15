@@ -1,0 +1,462 @@
+[
+  {
+    "canonicalTerm": "ABC分析",
+    "displayName": "ABC分析",
+    "aliases": ["ABC分析"],
+    "taxonomy": "concept-method",
+    "themeIds": ["production", "data"],
+    "knowledgeUrl": "/guides/engineer/abc-analysis",
+    "linkLabel": "ABC分析の使い方",
+    "relatedTerms": ["在庫管理", "重点管理"]
+  },
+  {
+    "canonicalTerm": "APS",
+    "displayName": "APS",
+    "aliases": ["APS", "Advanced Planning and Scheduling"],
+    "taxonomy": "concept-method",
+    "themeIds": ["production", "data"],
+    "knowledgeUrl": "/guides/engineer/scheduling",
+    "linkLabel": "APSとスケジューリングの考え方",
+    "relatedTerms": ["生産計画", "MES", "有限能力計画"]
+  },
+  {
+    "canonicalTerm": "BCP",
+    "displayName": "BCP",
+    "aliases": ["BCP"],
+    "taxonomy": "concept-method",
+    "themeIds": ["production", "improvement"],
+    "knowledgeUrl": "/guides/engineer/bcp",
+    "linkLabel": "BCPの考え方",
+    "relatedTerms": ["レジリエンス", "リスク管理"]
+  },
+  {
+    "canonicalTerm": "DX",
+    "displayName": "DX",
+    "aliases": ["DX"],
+    "taxonomy": "domain-topic",
+    "themeIds": ["data", "improvement"],
+    "knowledgeUrl": "/guides/engineer/dx",
+    "linkLabel": "DXの基本",
+    "relatedTerms": ["データドリブン", "ERP", "MES"]
+  },
+  {
+    "canonicalTerm": "ERP",
+    "displayName": "ERP",
+    "aliases": ["ERP"],
+    "taxonomy": "concept-method",
+    "themeIds": ["production", "data"],
+    "knowledgeUrl": "/guides/engineer/erp",
+    "linkLabel": "ERPの基本",
+    "relatedTerms": ["MES", "SCM", "データガバナンス"]
+  },
+  {
+    "canonicalTerm": "FMEA",
+    "displayName": "FMEA",
+    "aliases": ["FMEA"],
+    "taxonomy": "concept-method",
+    "themeIds": ["quality", "improvement"],
+    "knowledgeUrl": "/guides/engineer/fmea",
+    "linkLabel": "FMEAの使い方",
+    "relatedTerms": ["リスク管理", "設計レビュー"]
+  },
+  {
+    "canonicalTerm": "GT",
+    "displayName": "GT（グループテクノロジー）",
+    "aliases": ["GT", "Group Technology", "グループテクノロジー"],
+    "taxonomy": "concept-method",
+    "themeIds": ["production", "improvement"],
+    "knowledgeUrl": "/guides/engineer/group-technology",
+    "linkLabel": "GTで類似部品をまとめる考え方",
+    "relatedTerms": ["セル生産", "レイアウト計画", "標準化"]
+  },
+  {
+    "canonicalTerm": "IE",
+    "displayName": "IE",
+    "aliases": ["IE"],
+    "taxonomy": "domain-topic",
+    "themeIds": ["production", "improvement"],
+    "knowledgeUrl": "/guides/engineer/ie-overview",
+    "linkLabel": "IEの基本",
+    "relatedTerms": ["工程分析", "作業測定", "改善"]
+  },
+  {
+    "canonicalTerm": "JIT",
+    "displayName": "JIT",
+    "aliases": ["JIT"],
+    "taxonomy": "concept-method",
+    "themeIds": ["production", "improvement"],
+    "knowledgeUrl": "/guides/engineer/jit",
+    "linkLabel": "JITの考え方",
+    "relatedTerms": ["平準化", "かんばん", "SMED"]
+  },
+  {
+    "canonicalTerm": "KGI",
+    "displayName": "KGI",
+    "aliases": ["KGI"],
+    "taxonomy": "concept-method",
+    "themeIds": ["data", "improvement"],
+    "knowledgeUrl": "/guides/engineer/kgi",
+    "linkLabel": "KGIの考え方",
+    "relatedTerms": ["KPI", "CSF", "ロジックモデル"]
+  },
+  {
+    "canonicalTerm": "KPI",
+    "displayName": "KPI",
+    "aliases": ["KPI", "KPI管理"],
+    "taxonomy": "concept-method",
+    "themeIds": ["data", "improvement"],
+    "knowledgeUrl": "/guides/engineer/kpi-management",
+    "linkLabel": "KPIの設計方法",
+    "relatedTerms": ["KGI", "CSF", "ロジックモデル"]
+  },
+  {
+    "canonicalTerm": "LCA",
+    "displayName": "LCA",
+    "aliases": ["LCA"],
+    "taxonomy": "concept-method",
+    "themeIds": ["production", "data", "improvement"],
+    "knowledgeUrl": "/guides/engineer/lca",
+    "linkLabel": "LCAの考え方",
+    "relatedTerms": ["LCC", "カーボンニュートラル"]
+  },
+  {
+    "canonicalTerm": "MES",
+    "displayName": "MES",
+    "aliases": ["MES"],
+    "taxonomy": "concept-method",
+    "themeIds": ["production", "data"],
+    "knowledgeUrl": "/guides/engineer/mes",
+    "linkLabel": "MESの基本",
+    "relatedTerms": ["ERP", "APS", "OEE"]
+  },
+  {
+    "canonicalTerm": "MIP",
+    "displayName": "MIP（混合整数計画）",
+    "aliases": ["MIP", "混合整数計画", "混合整数計画法", "混合整数線形計画"],
+    "taxonomy": "concept-method",
+    "themeIds": ["production", "data"],
+    "knowledgeUrl": "/guides/engineer/linear-programming",
+    "linkLabel": "混合整数計画の考え方",
+    "relatedTerms": ["線形計画法", "OR", "生産計画"]
+  },
+  {
+    "canonicalTerm": "MRP",
+    "displayName": "MRP",
+    "aliases": ["MRP"],
+    "taxonomy": "concept-method",
+    "themeIds": ["production", "data"],
+    "knowledgeUrl": "/guides/engineer/mrp",
+    "linkLabel": "MRPの考え方",
+    "relatedTerms": ["BOM", "生産計画", "在庫管理"]
+  },
+  {
+    "canonicalTerm": "OEE",
+    "displayName": "OEE",
+    "aliases": ["OEE"],
+    "taxonomy": "concept-method",
+    "themeIds": ["production", "data", "improvement"],
+    "knowledgeUrl": "/guides/engineer/oee",
+    "linkLabel": "OEEの考え方",
+    "relatedTerms": ["設備管理", "KPI", "MES"]
+  },
+  {
+    "canonicalTerm": "QFD",
+    "displayName": "QFD（品質機能展開）",
+    "aliases": ["QFD", "品質機能展開"],
+    "taxonomy": "concept-method",
+    "themeIds": ["quality", "improvement"],
+    "knowledgeUrl": "/guides/engineer/qfd",
+    "linkLabel": "QFDの考え方",
+    "relatedTerms": ["顧客要求", "設計品質", "品質表"]
+  },
+  {
+    "canonicalTerm": "QMS",
+    "displayName": "QMS",
+    "aliases": ["QMS", "QMS再構築"],
+    "taxonomy": "domain-topic",
+    "themeIds": ["quality", "improvement"],
+    "knowledgeUrl": "/guides/engineer/qms-reconstruction",
+    "linkLabel": "QMSの再構築",
+    "relatedTerms": ["内部監査", "標準化", "CAPA"]
+  },
+  {
+    "canonicalTerm": "S&OP",
+    "displayName": "S&OP",
+    "aliases": ["S&OP", "SOP"],
+    "taxonomy": "concept-method",
+    "themeIds": ["production", "improvement"],
+    "knowledgeUrl": "/guides/engineer/s-and-op",
+    "linkLabel": "S&OPの基本",
+    "relatedTerms": ["SCM", "需給調整", "PSI管理"]
+  },
+  {
+    "canonicalTerm": "SCM",
+    "displayName": "SCM",
+    "aliases": ["SCM", "サプライチェーンマネジメント"],
+    "taxonomy": "domain-topic",
+    "themeIds": ["production", "improvement"],
+    "knowledgeUrl": "/guides/engineer/scm",
+    "linkLabel": "SCMの基本",
+    "relatedTerms": ["S&OP", "需給調整", "ポストポーンメント"]
+  },
+  {
+    "canonicalTerm": "SMED",
+    "displayName": "SMED",
+    "aliases": ["SMED"],
+    "taxonomy": "concept-method",
+    "themeIds": ["production", "improvement"],
+    "knowledgeUrl": "/guides/engineer/smed",
+    "linkLabel": "SMEDの進め方",
+    "relatedTerms": ["段取短縮", "小ロット化", "平準化"]
+  },
+  {
+    "canonicalTerm": "TMS",
+    "displayName": "TMS",
+    "aliases": ["TMS"],
+    "taxonomy": "concept-method",
+    "themeIds": ["production", "data"],
+    "knowledgeUrl": "/guides/engineer/tms",
+    "linkLabel": "TMSの基本",
+    "relatedTerms": ["物流効率化", "WMS", "モーダルシフト"]
+  },
+  {
+    "canonicalTerm": "TOC",
+    "displayName": "TOC／DBR",
+    "aliases": ["TOC", "DBR", "制約理論"],
+    "taxonomy": "concept-method",
+    "themeIds": ["production", "improvement"],
+    "knowledgeUrl": "/guides/engineer/toc",
+    "linkLabel": "TOCとDBRの考え方",
+    "relatedTerms": ["ボトルネック", "スループット", "仕掛在庫"]
+  },
+  {
+    "canonicalTerm": "WMS",
+    "displayName": "WMS",
+    "aliases": ["WMS"],
+    "taxonomy": "concept-method",
+    "themeIds": ["production", "data"],
+    "knowledgeUrl": "/guides/engineer/wms",
+    "linkLabel": "WMSの基本",
+    "relatedTerms": ["在庫管理", "TMS", "SCM"]
+  },
+  {
+    "canonicalTerm": "カーボンニュートラル",
+    "displayName": "カーボンニュートラル",
+    "aliases": ["カーボンニュートラル"],
+    "taxonomy": "domain-topic",
+    "themeIds": ["production", "improvement"],
+    "knowledgeUrl": "/guides/engineer/carbon-neutrality",
+    "linkLabel": "カーボンニュートラルの考え方",
+    "relatedTerms": ["LCA", "エネルギー原単位"]
+  },
+  {
+    "canonicalTerm": "サービスマネジメント",
+    "displayName": "サービスマネジメント",
+    "aliases": ["サービスマネジメント"],
+    "taxonomy": "domain-topic",
+    "themeIds": ["quality", "production", "improvement"],
+    "knowledgeUrl": "/guides/engineer/service-management",
+    "linkLabel": "サービスマネジメントの基本",
+    "relatedTerms": ["サービス品質", "顧客価値"]
+  },
+  {
+    "canonicalTerm": "サービス品質",
+    "displayName": "サービス品質",
+    "aliases": ["サービス品質"],
+    "taxonomy": "concept-method",
+    "themeIds": ["quality", "improvement"],
+    "knowledgeUrl": "/guides/engineer/service-quality",
+    "linkLabel": "サービス品質の考え方",
+    "relatedTerms": ["サービスマネジメント", "顧客価値"]
+  },
+  {
+    "canonicalTerm": "データガバナンス",
+    "displayName": "データガバナンス",
+    "aliases": ["データガバナンス", "データ辞書"],
+    "taxonomy": "domain-topic",
+    "themeIds": ["data", "improvement"],
+    "knowledgeUrl": "/guides/engineer/data-governance",
+    "linkLabel": "データガバナンスの考え方",
+    "relatedTerms": ["データ辞書", "データ品質", "標準化"]
+  },
+  {
+    "canonicalTerm": "データドリブン",
+    "displayName": "データドリブン",
+    "aliases": ["データドリブン"],
+    "taxonomy": "domain-topic",
+    "themeIds": ["data", "improvement"],
+    "knowledgeUrl": "/guides/engineer/data-driven",
+    "linkLabel": "データに基づく意思決定",
+    "relatedTerms": ["KPI", "データガバナンス"]
+  },
+  {
+    "canonicalTerm": "ポストポーンメント",
+    "displayName": "ポストポーンメント",
+    "aliases": ["ポストポーンメント", "Postponement"],
+    "taxonomy": "concept-method",
+    "themeIds": ["production", "improvement"],
+    "knowledgeUrl": "/guides/engineer/scm",
+    "linkLabel": "ポストポーンメントの考え方",
+    "relatedTerms": ["SCM", "デカップリングポイント", "在庫配置"]
+  },
+  {
+    "canonicalTerm": "モーダルシフト",
+    "displayName": "モーダルシフト",
+    "aliases": ["モーダルシフト"],
+    "taxonomy": "concept-method",
+    "themeIds": ["production", "improvement"],
+    "knowledgeUrl": "/guides/engineer/modal-shift",
+    "linkLabel": "モーダルシフトの基本",
+    "relatedTerms": ["物流効率化", "カーボンニュートラル"]
+  },
+  {
+    "canonicalTerm": "リスク管理",
+    "displayName": "リスク管理",
+    "aliases": ["リスク管理"],
+    "taxonomy": "concept-method",
+    "themeIds": ["quality", "improvement"],
+    "knowledgeUrl": "/guides/engineer/risk-management",
+    "linkLabel": "リスク管理の基本",
+    "relatedTerms": ["FMEA", "BCP", "リスクベース思考"]
+  },
+  {
+    "canonicalTerm": "レジリエンス",
+    "displayName": "レジリエンス",
+    "aliases": ["レジリエンス"],
+    "taxonomy": "domain-topic",
+    "themeIds": ["production", "improvement"],
+    "knowledgeUrl": "/guides/engineer/resilience",
+    "linkLabel": "レジリエンスの考え方",
+    "relatedTerms": ["BCP", "SCM", "リスク管理"]
+  },
+  {
+    "canonicalTerm": "ロジックモデル",
+    "displayName": "ロジックモデル",
+    "aliases": ["ロジックモデル", "Logic Model"],
+    "taxonomy": "concept-method",
+    "themeIds": ["data", "improvement"],
+    "knowledgeUrl": "/guides/engineer/kpi-management",
+    "linkLabel": "ロジックモデルとKPIのつなぎ方",
+    "relatedTerms": ["KGI", "KPI", "効果測定"]
+  },
+  {
+    "canonicalTerm": "内部監査",
+    "displayName": "内部監査",
+    "aliases": ["内部監査"],
+    "taxonomy": "concept-method",
+    "themeIds": ["quality", "improvement"],
+    "knowledgeUrl": "/guides/engineer/internal-audit",
+    "linkLabel": "内部監査の考え方",
+    "relatedTerms": ["QMS", "CAPA", "標準化"]
+  },
+  {
+    "canonicalTerm": "工程能力",
+    "displayName": "工程能力",
+    "aliases": ["工程能力", "工程能力指数"],
+    "taxonomy": "concept-method",
+    "themeIds": ["quality", "data"],
+    "knowledgeUrl": "/guides/stat/process-capability",
+    "linkLabel": "工程能力指数の考え方",
+    "relatedTerms": ["管理図", "規格", "ばらつき"]
+  },
+  {
+    "canonicalTerm": "技術者倫理",
+    "displayName": "技術者倫理",
+    "aliases": ["技術者倫理"],
+    "taxonomy": "concept-method",
+    "themeIds": ["quality", "improvement"],
+    "knowledgeUrl": "/guides/engineer/engineering-ethics",
+    "linkLabel": "技術者倫理の考え方",
+    "relatedTerms": ["公益", "説明責任", "持続可能性"]
+  },
+  {
+    "canonicalTerm": "需要予測",
+    "displayName": "需要予測",
+    "aliases": ["需要予測"],
+    "taxonomy": "concept-method",
+    "themeIds": ["production", "data"],
+    "knowledgeUrl": "/guides/engineer/demand-forecasting",
+    "linkLabel": "需要予測の考え方",
+    "relatedTerms": ["S&OP", "在庫管理", "需給調整"]
+  },
+  {
+    "canonicalTerm": "需給調整",
+    "displayName": "需給調整",
+    "aliases": ["需給調整"],
+    "taxonomy": "concept-method",
+    "themeIds": ["production", "improvement"],
+    "knowledgeUrl": "/guides/engineer/demand-supply-adjustment",
+    "linkLabel": "需給調整の考え方",
+    "relatedTerms": ["S&OP", "SCM", "需要予測"]
+  },
+  {
+    "canonicalTerm": "生産管理",
+    "displayName": "生産管理",
+    "aliases": ["生産管理"],
+    "taxonomy": "domain-topic",
+    "themeIds": ["production"],
+    "knowledgeUrl": "/guides/engineer/production-planning",
+    "linkLabel": "生産計画の基本",
+    "relatedTerms": ["生産計画", "APS", "MES"]
+  },
+  {
+    "canonicalTerm": "標準化",
+    "displayName": "標準化",
+    "aliases": ["標準化"],
+    "taxonomy": "concept-method",
+    "themeIds": ["quality", "improvement"],
+    "knowledgeUrl": "/guides/engineer/standardization",
+    "linkLabel": "標準化の進め方",
+    "relatedTerms": ["力量管理", "QMS", "改善"]
+  },
+  {
+    "canonicalTerm": "測定妥当性",
+    "displayName": "測定妥当性",
+    "aliases": ["測定妥当性", "測定の妥当性"],
+    "taxonomy": "concept-method",
+    "themeIds": ["quality", "data"],
+    "knowledgeUrl": "/guides/qc/how-to-set-quality-standards",
+    "linkLabel": "測定と品質規格のつなぎ方",
+    "relatedTerms": ["測定誤差", "規格", "出荷判定"]
+  },
+  {
+    "canonicalTerm": "物流2024年問題",
+    "displayName": "物流2024年問題",
+    "aliases": ["物流2024年問題"],
+    "taxonomy": "domain-topic",
+    "themeIds": ["production", "improvement"],
+    "knowledgeUrl": "/guides/engineer/logistics-2024",
+    "linkLabel": "物流2024年問題の論点",
+    "relatedTerms": ["物流効率化", "モーダルシフト", "CLO"]
+  },
+  {
+    "canonicalTerm": "物流効率化",
+    "displayName": "物流効率化",
+    "aliases": ["物流効率化"],
+    "taxonomy": "domain-topic",
+    "themeIds": ["production", "improvement"],
+    "knowledgeUrl": "/guides/engineer/logistics",
+    "linkLabel": "物流効率化の考え方",
+    "relatedTerms": ["TMS", "WMS", "共同輸配送"]
+  },
+  {
+    "canonicalTerm": "品質管理",
+    "displayName": "品質管理",
+    "aliases": ["品質管理"],
+    "taxonomy": "domain-topic",
+    "themeIds": ["quality", "data", "improvement"],
+    "knowledgeUrl": "/guides/qc",
+    "linkLabel": "品質管理の基礎",
+    "relatedTerms": ["QMS", "工程能力", "標準化"]
+  },
+  {
+    "canonicalTerm": "離散事象シミュレーション",
+    "displayName": "離散事象シミュレーション",
+    "aliases": ["離散事象シミュレーション", "Discrete Event Simulation"],
+    "taxonomy": "concept-method",
+    "themeIds": ["production", "data"],
+    "knowledgeUrl": "/guides/engineer/simulation",
+    "linkLabel": "シミュレーションの使い方",
+    "relatedTerms": ["デジタルツイン", "待ち行列", "能力計画"]
+  }
+]
