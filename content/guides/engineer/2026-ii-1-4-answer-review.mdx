@@ -1,0 +1,153 @@
+---
+title: "2026年度 技術士Ⅱ-1-4 復元答案レビュー｜特性要因図と4M"
+description: "令和8年度 技術士第二次試験・経営工学部門のⅡ-1-4について、試験後の復元答案を答案型と通常Knowledgeから振り返り、改善骨子とN-IE Lab参考解答を示します。"
+tags: ["技術士", "経営工学", "復元答案", "特性要因図", "4M", "QC七つ道具"]
+exam: "engineer"
+slug: "2026-ii-1-4-answer-review"
+status: "published"
+date: "2026-08-15"
+updatedAt: "2026-08-15"
+---
+
+令和8年度の選択科目Ⅱ-1-4「特性要因図と4M」について、試験後に作成した復元答案を、現在の[選択科目Ⅱ-1型](/guides/engineer/answer-structure-guide#6-選択科目ⅱ-1で使う骨子)と通常Knowledgeから振り返ります。
+
+このページは模範答案や公式採点ではありません。復元答案を批評して終わるのではなく、**題意へ直接答える力を残しながら、手法の役割と検証方法をどう補うか**を学ぶケースです。
+
+<aside className="not-prose my-6 border-l-4 border-amber-500 bg-amber-50 px-5 py-4 text-sm leading-7 text-slate-700">
+  <p className="font-bold text-slate-950">このレビューの位置付け</p>
+  <p className="mt-2">本文は試験後に作成した復元答案です。試験当日の記述を完全に逐語再現したものではありません。評価はN-IE Lab独自のものであり、公式採点や合否を保証するものではありません。改善後の参考解答には、試験後の検討を含みます。</p>
+</aside>
+
+<div className="not-prose my-8 grid gap-4 md:grid-cols-3">
+  <section className="border-t-2 border-emerald-600 pt-4">
+    <p className="text-xs font-bold text-emerald-700">問題</p>
+    <p className="mt-1 text-base font-bold text-slate-950">選択科目Ⅱ-1-4</p>
+    <p className="mt-2 text-sm leading-6 text-slate-600">特性要因図の基本構造と4Mを説明し、飲食店の顧客満足度低下を分析する。</p>
+  </section>
+  <section className="border-t-2 border-slate-400 pt-4">
+    <p className="text-xs font-bold text-slate-600">評価サマリー</p>
+    <p className="mt-1 text-sm leading-6 text-slate-700">二つの設問へ直接答え、4Mを具体化できています。一方、原因仮説と真因の区別、データによる検証が不足しています。</p>
+  </section>
+  <section className="border-t-2 border-blue-500 pt-4">
+    <p className="text-xs font-bold text-blue-700">主な改善ポイント</p>
+    <p className="mt-1 text-sm leading-6 text-slate-700">最初に手法を定義し、4Mで仮説を整理した後、観察・測定で重要要因を確かめる流れにします。</p>
+  </section>
+</div>
+
+## 1. この問題で問われたこと
+
+設問は、特性要因図の基本構造と4Mの分類項目を説明したうえで、飲食店の顧客満足度が低い要因を4Mから分析することを求めています。
+
+問われているのは、用語の定義だけではありません。**特性要因図が何を整理する手法か、4Mをどう使い、具体的なサービス品質の問題へどう当てはめるか**までが対象です。
+
+- [令和8年度 経営工学部門 選択科目の公式問題（日本技術士会）](https://www.engineer.or.jp/c_topics/011/attached/attach_11985_2.pdf)
+
+## 2. 使用する答案の型
+
+この問題では[選択科目Ⅱ-1型](/guides/engineer/answer-structure-guide#6-選択科目ⅱ-1で使う骨子)を使います。
+
+設問の動詞と指定項目を先に確認し、**定義 → 関係・原理 → 使い方 → 留意点**の順で、600字以内に必要な内容だけを置く型です。この問題では、長所・短所を機械的に追加するより、4Mの説明と飲食店への適用を優先します。
+
+## 3. 復元答案
+
+<section className="not-prose my-6 border-l-4 border-slate-400 bg-slate-50 px-5 py-5">
+  <p className="text-xs font-bold text-slate-600">試験後に作成した復元答案</p>
+  <h3 className="mt-2 text-base font-bold text-slate-950">（1）特性要因図の基本構造と4Mの分類項目</h3>
+  <div className="mt-3 space-y-3 text-sm leading-7 text-slate-800">
+    <p>①ヒト：作業員の習熟度、教育体制、標準作業書、作業員工数など人的リソースが該当する。</p>
+    <p>②モノ：生産設備や治工具、部品や保管棚など生産に関わる機器や備品が該当する。</p>
+    <p>③原材料：生産に投入される原料や中間品、仕掛品などが該当する。</p>
+    <p>④方法：生産方法や修理方法、ノウハウなどの手法が該当する。</p>
+    <p>特性要因図は、発生した事象、トラブルを幹として、その要因を上記の4Mに分類し、枝分かれして記述する手法である。これにより、要因をもれなく重複なく拾い上げ、真因の究明を図ることが出来る。</p>
+    <p className="italic text-slate-600">（特性要因図を記載）</p>
+  </div>
+  <h3 className="mt-6 text-base font-bold text-slate-950">（2）飲食店で顧客満足度が低い要因分析</h3>
+  <div className="mt-3 space-y-3 text-sm leading-7 text-slate-800">
+    <p>①ヒト：従業員の教育が不十分であり、サービスの質が要求水準を満たしていない。</p>
+    <p>②モノ：自動調理機器の稼働効率が悪く、提供に時間を要している。</p>
+    <p>③原材料：食材の鮮度が一定でないため、味にばらつきがある。</p>
+    <p>④方法：調理方法が従業員の裁量に任されており、調理者によって焼きムラなどが生じる。</p>
+    <p className="text-right">以上</p>
+  </div>
+</section>
+
+## 4. 復元答案から読み取れる答案設計
+
+内面的な思考過程は資料に残っていないため、ここでは答案本文に表れた選択と順序だけを分析します。
+
+<div className="not-prose my-6 divide-y divide-slate-200 border-y border-slate-200">
+  <div className="grid gap-1 py-4 sm:grid-cols-[10rem_1fr] sm:gap-5"><p className="text-sm font-bold text-slate-950">設問への対応</p><p className="text-sm leading-6 text-slate-700">基本構造・4Mと、飲食店での要因分析を同じ4区分で対応させています。</p></div>
+  <div className="grid gap-1 py-4 sm:grid-cols-[10rem_1fr] sm:gap-5"><p className="text-sm font-bold text-slate-950">構成</p><p className="text-sm leading-6 text-slate-700">4Mの具体例を先に示し、その後で特性要因図の説明、適用例へ進んでいます。</p></div>
+  <div className="grid gap-1 py-4 sm:grid-cols-[10rem_1fr] sm:gap-5"><p className="text-sm font-bold text-slate-950">専門語</p><p className="text-sm leading-6 text-slate-700">4M、標準作業書、習熟度、稼働効率、要求水準などを使い、抽象語だけで終わらせていません。</p></div>
+  <div className="grid gap-1 py-4 sm:grid-cols-[10rem_1fr] sm:gap-5"><p className="text-sm font-bold text-slate-950">効果確認</p><p className="text-sm leading-6 text-slate-700">原因候補は挙げていますが、顧客満足度との関係を観察・測定して確かめる段階は書かれていません。</p></div>
+</div>
+
+## 5. 良かった点
+
+1. **二つの設問へ直接答えている。** 基本構造・4Mと飲食店への適用が分かれ、短答として何を説明しているかを追いやすい構成です。
+2. **4Mを具体的な対象へ変換している。** 教育、設備、食材、調理方法という例により、分類名の暗記だけで終わっていません。
+3. **適用例に因果の方向がある。** 教育不足からサービス品質、設備稼働から提供時間、食材鮮度から味のばらつきへつなげています。
+4. **問われていない説明を増やしていない。** 長所・短所を機械的に足さず、1枚答案で指定項目を優先しています。
+
+## 6. 改善したい点
+
+### 特性要因図の役割を正確にする
+
+「真因の究明を図ることが出来る」という記述は、図だけで真因を確定できるようにも読めます。特性要因図は、関係者の知見から**原因仮説を整理し、検証対象を見つける手法**です。真因の判断には、現地観察、聞取り、チェックシート、散布図などによる確認が必要です。
+
+### 定義を先に置く
+
+復元答案では4Mの例示後に特性要因図を説明しています。冒頭で「品質特性と原因仮説の関係を魚骨状に整理する手法」と定義すると、後の4Mと飲食店の例が何のためにあるかを早く示せます。
+
+### 顧客満足度との関係を測れる形にする
+
+「設備の稼働効率が悪い」だけでなく、提供時間や待ち時間を通じて満足度へどう影響するかを示すと、分析対象が明確になります。味、待ち時間、接客などに満足度を層別し、対応するデータで確認する流れが必要です。
+
+### 4Mを完全なMECEと断定しない
+
+原因候補は複数の区分に関係する場合があります。「もれなく重複なく」を形式的に優先するより、関係者で不足要因を補い、重要な仮説をデータで絞ることが実務上の留意点です。
+
+## 7. なぜ改善するのか
+
+Ⅱ-1では、用語の正確さと設問への直接性が答案の土台になります。特性要因図の役割を「真因の証明」と捉えると、原因候補を挙げただけで分析が終わり、改善策の根拠が弱くなります。
+
+定義、適用、検証の順を明確にすれば、限られた文字数でも、手法を知っているだけでなく**どこまで判断でき、次に何を確かめるか**を示せます。
+
+## 8. 現在ならどう構成するか
+
+1. **定義**：特性要因図は、結果と原因仮説の関係を魚骨状に整理する手法と示す。
+2. **4M**：Man、Machine、Material、Methodの意味を短く説明する。
+3. **作り方**：特性を魚頭に置き、4Mから「なぜ」を展開すると説明する。
+4. **飲食店への適用**：接客、調理設備、食材、標準レシピの観点で原因候補を示す。
+5. **留意点**：図の要因は仮説であり、観察とデータで検証して改善後も再測定する。
+
+## 9. N-IE Lab参考解答
+
+<section className="not-prose my-6 border-l-4 border-emerald-600 bg-emerald-50 px-5 py-5">
+  <p className="text-xs font-bold text-emerald-700">試験後の検討を反映した参考解答・569字</p>
+  <p className="mt-3 text-sm leading-7 text-slate-800">特性要因図は、解決すべき品質特性と、それに影響すると考えられる要因の関係を魚骨状に体系化し、原因仮説を網羅的に抽出するQC七つ道具である。4Mは、①Man（人：技能、教育、作業負荷）、②Machine（機械：設備、治工具、保全状態）、③Material（材料：食材、部品、仕掛品の品質）、④Method（方法：手順、条件、管理方法）である。</p>
+  <p className="mt-3 text-sm leading-7 text-slate-800">作成時は、右端の魚頭に「顧客満足度が低い」と結果を具体的に記す。そこへ背骨を引き、4Mを大骨として配置する。次に、現地観察、顧客の声及び従業員への聞取りから「なぜ」を繰り返し、中骨、小骨へ具体的要因を展開する。</p>
+  <p className="mt-3 text-sm leading-7 text-slate-800">飲食店では、Manは接客教育不足により応対が不統一、Machineは調理機器の故障や能力不足により提供が遅い、Materialは食材の鮮度や規格のばらつきにより味が安定しない、Methodは標準レシピ、注文伝達及び衛生管理が不徹底、と整理できる。</p>
+  <p className="mt-3 text-sm leading-7 text-slate-800">ただし、図に挙げた要因は仮説であり真因ではない。満足度を味、待ち時間、接客等に層別し、チェックシートで発生頻度を収集する。さらに、待ち時間と満足度の散布図、提供時間の管理図等で影響を検証し、重要要因を改善する。分類の重複を避けるより、関係者で不足要因を補い、データで真因を確定することが留意点である。改善後は同条件で再測定し、効果を確認する。</p>
+</section>
+
+この参考解答は唯一の正解ではありません。復元答案の直接性を残しながら、定義、使い方、検証、留意点を補った一例です。
+
+## 10. この答案で使用したKnowledge
+
+- [QC七つ道具と特性要因図](/guides/qc/qc-seven-tools)：問題を見える化し、原因候補を整理する手法の位置付け
+- [散布図で二つの変数の関係を見る](/guides/stat/scatterplot)：原因仮説と満足度の関係を確認する方法
+- [管理図で時間的な安定性を見る](/guides/stat/control-chart-basics)：提供時間や改善後の状態を継続確認する方法
+
+## 11. この問題から一般化できること
+
+1. Ⅱ-1では、設問の動詞と指定項目を先に拾い、問われていない要素を機械的に足さない。
+2. 要因分析の図は、原因を証明するものではなく、検証すべき仮説を整理するために使う。
+3. 具体例では、分類名を挙げるだけでなく、どの品質特性へ影響するかまでつなぐ。
+4. 短い答案でも、最後に検証方法と留意点を一文置くと、専門手法の適用範囲が伝わる。
+
+## 次に確認する
+
+- [選択科目Ⅱ-1型の書き方](/guides/engineer/answer-structure-guide#6-選択科目ⅱ-1で使う骨子)
+- [過去問ナビ](/guides/engineer/past-exam-trend-map?type=ii-1)
+- [ブラッシュアップ答案例](/guides/engineer/model-answer-examples)
