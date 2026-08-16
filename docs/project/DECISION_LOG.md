@@ -148,3 +148,14 @@
 - Migration: 既存URLと見出しアンカー、過去問126件、記入例・答案例本文を維持する。Ⅱ-1は設問で問われた場合だけ長所・短所等を書き、Ⅱ-2は問題に合う必要数の手順を書く案内へ段階的に統一する。
 - Verification: 4型の必須項目、短い例の文字数、関連リンク、デスクトップ・モバイル表示、過去問ナビからの遷移、typecheck、lint、buildを確認する。
 - Supersedes: なし。
+
+## 2026-08-16：Editorial Learning Designを教育・Knowledge長文の設計言語とする
+
+- Status: Accepted
+- Context: 技術士の実答案レビューを比較検証した結果、カードや操作部品を重ねる構成より、タイポグラフィ、余白、罫線、図、captionで読解順序を作る編集紙面型の構成が、長文教材の理解とN-IE Labの専門性を伝えやすかった。
+- Decision: Prototype C（Editorial Lab A+）から抽出した紙面編集原則を、教育・Knowledge系長文へ適用できる `Editorial Learning Design` として採用する。学習内容を主役にし、日本語を主ラベルとし、図を理解の圧縮に使い、モバイルでは自然な縦の読解順序へ変換する。共通コンポーネントは読解構造を支える最小限に留め、文量、レビュー表現、図解を機械的に揃えない。
+- Reason: 同じサイトとしての一貫性を保ちながら、問題やKnowledgeごとの思考構造を紙面へ反映し、UIテンプレートを埋めたような均質さを避けるため。
+- Affected areas: 技術士実答案レビュー、今後選定する教育・Knowledge長文、将来のケース紙面の一部。トップページ、グローバルナビ、通常の一覧・ツールには教材テンプレートを適用しない。
+- Migration: まず2026年度Ⅱ-1-4答案レビューへ適用し、UX確認後に残り3答案レビューへ段階展開する。既存URL、SEOメタデータ、本文資料、Knowledge、答案型の正本を維持する。
+- Verification: Desktopと390px Mobileの読解順序、復元答案と参考解答の識別、図の意味、CTA数、horizontal overflow、typecheck、lint、build、route、canonical、sitemapを確認する。
+- Supersedes: なし。既存のDesign PrinciplesとProtected Defaultsを補完する。

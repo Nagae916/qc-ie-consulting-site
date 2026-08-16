@@ -109,6 +109,7 @@ export const Guide = defineDocumentType(() => ({
     themes: { type: "json" },
     contentType: { type: "string" },
     difficulty: { type: "string" },
+    layout: { type: "string" },
     featured: { type: "json", default: false },
     draft: { type: "json", default: false },
   },

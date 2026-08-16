@@ -172,12 +172,53 @@ export default function GuidePage({
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   const theme = THEME[exam];
   const { url } = stablePath(guide);
-  const guideMeta = guide as { slug?: unknown; description?: unknown; version?: unknown; status?: unknown };
+  const guideMeta = guide as { slug?: unknown; description?: unknown; version?: unknown; status?: unknown; layout?: unknown };
   const status = normalizeGuideStatus(guideMeta.status);
   const description = typeof guideMeta.description === "string" ? guideMeta.description : "";
+  const isEditorialLearning = guideMeta.layout === "editorial-learning";
 
   const MDX = useMDXComponent(mdxCode || "");
   const components = React.useMemo(() => GUIDE_COMPONENTS as GuideComponentMap, []);
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: guide.title,
+      description,
+      datePublished: publishedYmd || undefined,
+      dateModified: updatedYmd || undefined,
+      author: { "@type": "Organization", name: "N-IE Lab" },
+      publisher: { "@type": "Organization", name: "N-IE Lab" },
+      mainEntityOfPage: `https://n-ie-qclab.com${url}`,
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "ホーム", item: "https://n-ie-qclab.com/" },
+        { "@type": "ListItem", position: 2, name: "ガイド", item: "https://n-ie-qclab.com/guides" },
+        { "@type": "ListItem", position: 3, name: EXAM_LABEL[exam], item: `https://n-ie-qclab.com/guides/${exam}` },
+        { "@type": "ListItem", position: 4, name: guide.title, item: `https://n-ie-qclab.com${url}` },
+      ],
+    },
+  ];
+
+  if (isEditorialLearning) {
+    return (
+      <main className="min-h-screen bg-[#fafaf8] text-slate-900">
+        <SiteMeta title={guide.title} description={description} path={url} type="article" jsonLd={jsonLd} />
+        <div className="mx-auto max-w-6xl px-4 pt-6">
+          <Breadcrumb exam={exam} title={guide.title} themeLink={theme.link} />
+          <p className="text-xs leading-5 text-slate-500" suppressHydrationWarning>
+            {statusLabels[status]}
+            {updatedYmd ? ` / 更新 ${updatedYmd}` : ""}
+            {guideMeta.version ? ` / v${String(guideMeta.version)}` : ""}
+          </p>
+        </div>
+        {mdxCode ? <MDX components={components} /> : <div dangerouslySetInnerHTML={{ __html: html ?? "" }} />}
+      </main>
+    );
+  }
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
@@ -186,29 +227,7 @@ export default function GuidePage({
         description={description}
         path={url}
         type="article"
-        jsonLd={[
-          {
-            "@context": "https://schema.org",
-            "@type": "Article",
-            headline: guide.title,
-            description,
-            datePublished: publishedYmd || undefined,
-            dateModified: updatedYmd || undefined,
-            author: { "@type": "Organization", name: "N-IE Lab" },
-            publisher: { "@type": "Organization", name: "N-IE Lab" },
-            mainEntityOfPage: `https://n-ie-qclab.com${url}`,
-          },
-          {
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              { "@type": "ListItem", position: 1, name: "ホーム", item: "https://n-ie-qclab.com/" },
-              { "@type": "ListItem", position: 2, name: "ガイド", item: "https://n-ie-qclab.com/guides" },
-              { "@type": "ListItem", position: 3, name: EXAM_LABEL[exam], item: `https://n-ie-qclab.com/guides/${exam}` },
-              { "@type": "ListItem", position: 4, name: guide.title, item: `https://n-ie-qclab.com${url}` },
-            ],
-          },
-        ]}
+        jsonLd={jsonLd}
       />
 
       <Breadcrumb exam={exam} title={guide.title} themeLink={theme.link} />

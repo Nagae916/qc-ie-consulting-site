@@ -28,6 +28,13 @@ const RequiredIWorksheet = dynamic(() => import('./RequiredIWorksheet'), { ssr: 
 const AnswerWorksheetGuide = dynamic(() => import('./AnswerWorksheetGuide'), { ssr: false });
 import AnswerFrameGuide from './AnswerFrameGuide';
 import ProblemMatrix from './ProblemMatrix';
+import {
+  AnswerBlock,
+  ArticleContents,
+  LearningArticleHeader,
+  LearningChapter,
+  LearningNextLinks,
+} from './EditorialLearning';
 
 /**
  * asDefault:
@@ -76,6 +83,11 @@ export const GUIDE_COMPONENTS = {
   AnswerWorksheetGuide,
   AnswerFrameGuide,
   ProblemMatrix,
+  LearningArticleHeader,
+  ArticleContents,
+  LearningChapter,
+  AnswerBlock,
+  LearningNextLinks,
   // ファイルパスをコメントで明記し、人的ミスを予防
 
   // /src/components/guide/Quiz.tsx（named export: Quiz）
