@@ -1,0 +1,171 @@
+---
+title: "2026年度 技術士Ⅱ-2-2 復元答案レビュー｜納品遅延とサプライチェーン強化"
+description: "令和8年度 技術士第二次試験・経営工学部門のⅡ-2-2について、試験後の復元答案を答案型と通常Knowledgeから振り返り、調査・判断・実施の対応、改善骨子、N-IE Lab参考解答を示します。"
+tags: ["技術士", "経営工学", "復元答案", "サプライチェーン", "納品遅延", "Ⅱ-2"]
+exam: "engineer"
+slug: "2026-ii-2-2-answer-review"
+status: "published"
+date: "2026-08-15"
+updatedAt: "2026-08-16"
+layout: "editorial-learning"
+---
+
+<LearningArticleHeader
+  eyebrow="2026 / 選択科目Ⅱ-2-2 / 復元答案レビュー"
+  title="納品遅延を、調査から実行へどうつなぐか"
+  lead="調査項目を並べるだけで終わらせず、得られた事実を分析、施策、関係者との合意、KPIへ接続するⅡ-2型の書き方を整理します。"
+  facts={[
+    { label: "問題要求", value: "調査・検討、業務手順、留意点・工夫、関係者調整を示す" },
+    { label: "答案の型", value: "選択科目Ⅱ-2型" },
+    { label: "この教材の焦点", value: "調査結果を次の判断へ渡す" }
+  ]}
+/>
+
+<ArticleContents
+  items={[
+    { number: "01", label: "役割と要求を読む", id: "review-question" },
+    { number: "02", label: "復元答案を読む", id: "review-answer" },
+    { number: "03", label: "情報の流れを整える", id: "review-information" },
+    { number: "04", label: "実行設計を見直す", id: "review-rewrite" },
+    { number: "05", label: "参考解答と比べる", id: "review-reference" },
+    { number: "06", label: "理解を深める", id: "review-learn" }
+  ]}
+>
+
+<LearningChapter id="review-question" number="01" title="役割と要求を読む" focus="サプライチェーン強化を担当するリーダーとして、調査、遂行、調整の三つへ答えます。">
+  <p className="text-lg font-bold leading-8 text-slate-950">家電製品を組み立てるメーカーで、部品サプライヤの納品遅延などにより出荷遅延が続く状況を改善する問題です。</p>
+  <p className="mt-4 text-base leading-8 text-slate-700">問われているのは、改善策の名前だけではありません。何を調査・検討するか、その結果を使ってどの順に業務を進めるか、どこに留意して工夫するか、関係者と何を共有・協議・合意するかまでが対象です。</p>
+  <div className="mt-5 flex flex-wrap gap-x-6 gap-y-3 text-sm font-bold">
+    <a className="text-teal-800 underline decoration-teal-300 underline-offset-4" href="/guides/engineer/answer-structure-guide#7-選択科目ⅱ-2で使う骨子">Ⅱ-2答案型を確認する</a>
+    <a className="text-slate-600 underline decoration-slate-300 underline-offset-4" href="https://www.engineer.or.jp/c_topics/011/attached/attach_11985_2.pdf">令和8年度の公式問題を確認する</a>
+  </div>
+  <aside className="mt-7 border-l-2 border-amber-500 pl-4 text-sm leading-7 text-slate-600">
+    <p className="font-bold text-slate-900">このレビューの位置付け</p>
+    <p className="mt-2">本文は試験後に作成した復元答案です。試験当日の記述を完全に逐語再現したものではありません。評価はN-IE Lab独自のものであり、公式採点や合否を保証するものではありません。参考解答には試験後の検討を含みます。</p>
+  </aside>
+</LearningChapter>
+
+<LearningChapter id="review-answer" number="02" title="復元答案を読む" focus="調査、手順、関係者調整の三つが、どの粒度で書かれていたかを確認します。">
+  <AnswerBlock variant="reconstructed" title="復元答案" subtitle="ORIGINAL" note="試験後に作成した復元答案です。一次資料で確認できた内容を掲載しています。">
+    <div className="space-y-7 text-sm leading-6 text-slate-700">
+      <section>
+        <h3 className="text-base font-bold leading-7 text-slate-950">（1）調査・検討すべき事項と、その必要性及び内容</h3>
+        <div className="mt-3 space-y-4">
+          <div><p className="font-bold text-slate-900">①部品や組み立て製品の品質</p><p className="mt-1">受入時や出荷時の品質不良によって納品遅延が生じているかを明らかにするために、部品や組み立て製品の品質を調査・検討する。内容は、受入時、出荷時の検査データ、不適合品の発生件数である。</p></div>
+          <div><p className="font-bold text-slate-900">②顧客からの納期とリードタイム</p><p className="mt-1">顧客からの納期が現実的か把握することが必要である。そこでサプライチェーンのリードタイムを調査・検討する。内容は、調達リードタイムや組み立て生産リードタイム、顧客からのスケジュールや納期などである。</p></div>
+          <div><p className="font-bold text-slate-900">③需要予測と生産可能ボリューム</p><p className="mt-1">需要に対して生産キャパが十分かを確認する必要がある。そのために、需要量と生産能力を調査・検討する。内容は、顧客からの需要予測や販売実績、工場やサプライヤの供給能力や稼働率などである。</p></div>
+          <div><p className="font-bold text-slate-900">④サプライヤの代替可能性</p><p className="mt-1">部品の供給網の強靭化が必要である。そのために、別のサプライヤにて調達できるかを調査・検討する。内容は、部品の品質、価格、リードタイムや輸送経路などである。</p></div>
+        </div>
+      </section>
+      <section>
+        <h3 className="text-base font-bold leading-7 text-slate-950">（2）業務遂行手順と留意点、工夫点</h3>
+        <div className="mt-3 space-y-4">
+          <div><p className="font-bold text-slate-900">①現状把握</p><p className="mt-1">納期遅延の頻度、件数、理由などを把握する。留意点は、現場へのヒアリングに留まる点であり、WMSなどの記録を照合し現状把握する。</p></div>
+          <div><p className="font-bold text-slate-900">②原因究明・施策立案</p><p className="mt-1">特性要因図や連関図法を用いて、納期遅延の原因を究明する。留意点は、効果の低い施策を実行しても改善効果が小さい。そこで発生頻度が高い、または損失金額が大きい遅延が何かをパレート図によって明らかにし、優先順位をつけて施策を立案する。</p></div>
+          <div><p className="font-bold text-slate-900">③施策実行・評価</p><p className="mt-1">優先順位の高い施策から実行する。留意点は、納期遅延解消に偏重した施策になることであり、納期遵守と併せて品質やコストに関わるKPIも設定・管理する。</p></div>
+          <div><p className="font-bold text-slate-900">④改善・標準化</p><p className="mt-1">KPIに基づき、効果測定を行う。留意点は、施策実行が単発で終わることであり、施策は継続的に改善を行い、現場と調整を繰り返し標準化を図る。</p></div>
+        </div>
+      </section>
+      <section>
+        <h3 className="text-base font-bold leading-7 text-slate-950">（3）関係者との連携・調整</h3>
+        <div className="mt-3 space-y-3">
+          <p>①経営層：業務の進捗や費用対効果を定量化し、定期的な報告機会を持ち、意思決定を支援する。</p>
+          <p>②現場作業員：改善業務の目的や進捗をフィードバックし、現場からの意見を改善策に反映する。</p>
+          <p>③サプライヤ：需要予測や販売計画を共有し、密に連携しながら部品調達の確実性を高める。</p>
+          <p className="text-right">以上</p>
+        </div>
+      </section>
+    </div>
+  </AnswerBlock>
+</LearningChapter>
+
+<LearningChapter id="review-information" number="03" title="情報の流れを整える" focus="調査項目を、次に行う分析・判断・施策へ一対一で渡せるかを点検します。">
+  <figure className="py-3">
+    <div aria-hidden="true" className="h-px bg-slate-400" />
+    <figcaption className="pt-6">
+      <p className="text-[0.6875rem] font-black tracking-[0.12em] text-teal-800">図1 <span className="ml-2 text-slate-400">EVIDENCE FLOW</span></p>
+      <h3 className="mt-2 text-xl font-bold text-slate-950">調べた事実を、判断と実施へ渡す</h3>
+    </figcaption>
+    <div className="mt-6 divide-y divide-slate-200 border-y border-slate-300" role="table" aria-label="調査事項、判断、実施とKPIの対応">
+      <div className="hidden grid-cols-[1.15fr_1.2fr_1.4fr] gap-5 py-3 text-xs font-bold text-slate-500 sm:grid" role="row"><div role="columnheader">調べること</div><div role="columnheader">分かること・決めること</div><div role="columnheader">実施・確認</div></div>
+      <div className="grid gap-3 py-5 sm:grid-cols-[1.15fr_1.2fr_1.4fr] sm:gap-5" role="row"><div role="cell"><p className="text-xs font-bold text-slate-500 sm:hidden">調べること</p><p className="text-sm font-bold text-slate-950">出荷実績と遅延理由</p></div><div role="cell"><p className="text-xs font-bold text-slate-500 sm:hidden">分かること</p><p className="text-sm leading-6 text-slate-600">重要顧客、遅延発生点、削減目標</p></div><div role="cell"><p className="text-xs font-bold text-slate-500 sm:hidden">実施・確認</p><p className="text-sm leading-6 text-slate-600">重点遅延を改善し、納期遵守率と遅延時間で確認</p></div></div>
+      <div className="grid gap-3 py-5 sm:grid-cols-[1.15fr_1.2fr_1.4fr] sm:gap-5" role="row"><div role="cell"><p className="text-xs font-bold text-slate-500 sm:hidden">調べること</p><p className="text-sm font-bold text-slate-950">工程別の実績LTと滞留</p></div><div role="cell"><p className="text-xs font-bold text-slate-500 sm:hidden">分かること</p><p className="text-sm leading-6 text-slate-600">ボトルネック、手待ち、安全LT</p></div><div role="cell"><p className="text-xs font-bold text-slate-500 sm:hidden">実施・確認</p><p className="text-sm leading-6 text-slate-600">VSMと履歴照合で流れを直し、実績LTを監視</p></div></div>
+      <div className="grid gap-3 py-5 sm:grid-cols-[1.15fr_1.2fr_1.4fr] sm:gap-5" role="row"><div role="cell"><p className="text-xs font-bold text-slate-500 sm:hidden">調べること</p><p className="text-sm font-bold text-slate-950">需要、能力、在庫</p></div><div role="cell"><p className="text-xs font-bold text-slate-500 sm:hidden">分かること</p><p className="text-sm leading-6 text-slate-600">有限能力、生産量、凍結期間、安全在庫</p></div><div role="cell"><p className="text-xs font-bold text-slate-500 sm:hidden">実施・確認</p><p className="text-sm leading-6 text-slate-600">MRP・APS条件を試行し、欠品率と在庫回転率で確認</p></div></div>
+      <div className="grid gap-3 py-5 sm:grid-cols-[1.15fr_1.2fr_1.4fr] sm:gap-5" role="row"><div role="cell"><p className="text-xs font-bold text-slate-500 sm:hidden">調べること</p><p className="text-sm font-bold text-slate-950">品質と供給リスク</p></div><div role="cell"><p className="text-xs font-bold text-slate-500 sm:hidden">分かること</p><p className="text-sm leading-6 text-slate-600">重点部品、代替先、責任分界</p></div><div role="cell"><p className="text-xs font-bold text-slate-500 sm:hidden">実施・確認</p><p className="text-sm leading-6 text-slate-600">複数購買・代替輸送を合意し、不良率と復旧時間で確認</p></div></div>
+    </div>
+    <p className="mt-5 text-xs italic leading-6 text-slate-500">調査事項は答案の前半だけで完結させず、後半の施策とKPIが使う入力情報として書きます。</p>
+  </figure>
+
+  <div className="mt-8 grid gap-8 sm:grid-cols-2">
+    <section><p className="text-[0.6875rem] font-bold tracking-[0.12em] text-teal-800">STRENGTH</p><h3 className="mt-2 text-lg font-bold text-slate-950">復元答案で機能していたこと</h3><ul className="mt-4 space-y-2 pl-5 text-sm leading-7 text-slate-600"><li>品質、LT、需要と能力、代替可能性を、必要性とデータ内容まで分けています。</li><li>ヒアリングだけでなくWMS記録を照合する工夫があります。</li><li>納期だけでなく品質・コストKPIを併記し、部分最適を避けています。</li><li>経営層、現場、サプライヤを挙げ、調整の対象を外していません。</li></ul></section>
+    <section><p className="text-[0.6875rem] font-bold tracking-[0.12em] text-amber-700">EDITORIAL NOTE</p><h3 className="mt-2 text-lg font-bold text-slate-950">次の判断へ渡しきれていないこと</h3><ul className="mt-4 space-y-2 pl-5 text-sm leading-7 text-slate-600"><li>四つの調査事項が、手順のどの判断に使われるかが本文上では離れています。</li><li>「原因究明」が特性要因図だけに寄ると、履歴データとの照合が弱く見えます。</li><li>施策が抽象的なため、MRP条件、能力予約、複数購買など実施対象を示したいところです。</li><li>関係者調整は、共有する情報、協議する論点、合意する条件まで書くと実務性が増します。</li></ul></section>
+  </div>
+</LearningChapter>
+
+<LearningChapter id="review-rewrite" number="04" title="実行設計を見直す" focus="手順数を固定せず、問題を解くために必要な四つの段階で組み立てます。">
+  <ol className="relative mt-4 space-y-6 border-l border-slate-300 pl-7">
+    <li><span className="absolute -left-[0.48rem] mt-1 h-3.5 w-3.5 rounded-full border-2 border-white bg-teal-700" /><p className="text-sm font-bold text-slate-950">現状把握</p><p className="mt-1 text-sm leading-6 text-slate-600">ERP、購買、MES、WMSの注文番号と部品ロットをそろえ、顧客・製品・週別に実績LTを層別する。</p></li>
+    <li><span className="absolute -left-[0.48rem] mt-1 h-3.5 w-3.5 rounded-full border-2 border-white bg-teal-700" /><p className="text-sm font-bold text-slate-950">要因分析</p><p className="mt-1 text-sm leading-6 text-slate-600">遅延時間と損失額をパレート図で重点化し、VSMと注文・ロット履歴でボトルネックを確かめる。</p></li>
+    <li><span className="absolute -left-[0.48rem] mt-1 h-3.5 w-3.5 rounded-full border-2 border-white bg-teal-700" /><p className="text-sm font-bold text-slate-950">施策立案・試行</p><p className="mt-1 text-sm leading-6 text-slate-600">MRPのLT・安全在庫、能力予約、複数購買、APSによる有限能力計画を、代表製品で限定試行する。</p></li>
+    <li><span className="absolute -left-[0.48rem] mt-1 h-3.5 w-3.5 rounded-full border-2 border-white bg-teal-700" /><p className="text-sm font-bold text-slate-950">効果確認・標準化</p><p className="mt-1 text-sm leading-6 text-slate-600">需要量を補正して複数周期を比較し、納期、欠品、在庫、品質、緊急輸送費を同時に監視する。</p></li>
+  </ol>
+  <section className="mt-9 border-t border-slate-300 pt-6" aria-labelledby="coordination-design">
+    <p className="text-[0.6875rem] font-bold tracking-[0.12em] text-slate-500">関係者調整</p>
+    <h3 id="coordination-design" className="mt-2 text-xl font-bold text-slate-950">共有・協議・合意を分ける</h3>
+    <p className="mt-3 text-sm leading-7 text-slate-600">経営層とはサービス水準と投資上限、製造・購買とは凍結期間と発注条件、サプライヤとは能力予約、変更期限、品質水準、責任分界を合意します。単に「連携する」と書くより、意思決定の出口が明確になります。</p>
+  </section>
+</LearningChapter>
+
+<LearningChapter id="review-reference" number="05" title="参考解答と比べる" focus="復元答案の四観点を、実績データ、有限能力、試行、合意条件まで具体化した再構成です。">
+  <AnswerBlock variant="reference" title="N-IE Lab参考解答" subtitle="REFERENCE" heading="調査結果を、施策と合意へ接続する" note="試験後の検討を反映したN-IE Lab独自の参考解答・1,150字です。唯一の正解ではなく、公式採点や合格を保証するものではありません。">
+    <AnswerSections sections={[
+      {
+        heading: "1．調査・検討事項",
+        items: [
+          { heading: "（1）目標及び出荷実績", paragraphs: ["顧客・製品別の受注量、要求納期、出荷日、遅延件数・時間及び理由を調査する。これを基に、重要顧客の要求サービス水準、納期遵守率及び遅延削減目標を検討する。目的は、優先順位とKPIを明確にすることである。"] },
+          { heading: "（2）プロセス及びリードタイム", paragraphs: ["受注、所要量計算、発注、納入、組立、検査、出荷の実績時刻と滞留時間を調査する。VSMで情報と物の流れを可視化し、クリティカル工程、手待ち及び安全リードタイムを検討する。目的は遅延発生点を特定することである。"] },
+          { heading: "（3）需要、能力及び在庫", paragraphs: ["需要予測誤差、MPS、部品所要量、発注残、部品・仕掛在庫、工場とサプライヤの能力・稼働率を調査する。これを基に、有限能力下の生産量、凍結期間、発注点及び安全在庫を検討する。目的は需要と供給可能量を整合させることである。"] },
+          { heading: "（4）品質及び供給リスク", paragraphs: ["部品別の不良率、サプライヤ納期遵守率、単一購買品、輸送経路及び変更情報の伝達状況を調査する。品質・供給能力・費用から代替先、複数購買、代替輸送及びBCPを検討する。目的は出荷回復力を高めることである。"] }
+        ]
+      },
+      {
+        heading: "2．業務遂行手順",
+        items: [
+          { heading: "（1）現状把握", paragraphs: ["ERP、購買、MES及びWMSの注文番号・部品ロットを統合し、VSMで実績LTを可視化する。留意点は平均値で繁忙期や特定部品の遅延を隠すことである。工夫として、顧客、製品、部品、サプライヤ及び週別に層別する。"] },
+          { heading: "（2）要因分析", paragraphs: ["遅延時間と損失額をパレート図で重点化し、TOCと特性要因図でボトルネックと原因仮説を抽出する。留意点は相関を真因と誤認することである。工夫として、注文・ロット別に履歴を追跡し、現物、記録及び関係者の証言を突合する。"] },
+          { heading: "（3）施策立案・試行", paragraphs: ["MRPのLT・安全在庫を是正し、凍結期間内の変更を制限する。重点部品は能力予約、複数購買及び納入便再設計を行い、APSで有限能力計画を試算する。留意点は在庫増や局所改善で費用・品質を悪化させることである。工夫として、FMEA後に代表製品で限定試行する。"] },
+          { heading: "（4）効果確認・標準化", paragraphs: ["納期遵守率、遅延時間、欠品率、在庫回転率、不良率及び緊急輸送費を管理図で監視する。留意点は需要減を施策効果と誤認することである。工夫として、需要量を補正した前後比較を複数周期行い、有効条件を標準化する。併せて顧客回答時間と供給復旧時間を評価する。"] }
+        ]
+      },
+      { heading: "3．関係者との連携・調整", paragraphs: ["経営層には遅延損失、投資額及びKPIを共有し、能力増強と在庫費用を協議し、サービス水準と投資上限を合意する。製造・購買現場には遅延要因と試行条件を共有し、凍結期間、発注量及び標準作業を協議・合意する。サプライヤには需要予測、確定注文及び品質実績を共有し、能力予約、変更期限、代替輸送を協議し、納期・品質水準と責任分界を合意する。"] }
+    ]} />
+  </AnswerBlock>
+</LearningChapter>
+
+<LearningChapter id="review-learn" number="06" title="理解を深める" focus="調査と施策の間を支える、生産・物流の通常Knowledgeへ進みます。">
+  <RelatedReadingList links={[
+    { title: "SCMの基本", description: "顧客、工場、サプライヤを一つの流れとして捉える前提を確認します。", href: "/guides/engineer/scm" },
+    { title: "MRPの考え方", description: "部品所要量、リードタイム、安全在庫を計画条件へ落とす方法を学びます。", href: "/guides/engineer/mrp" },
+    { title: "APSと有限能力スケジューリング", description: "需要に対して実行可能な生産量と日程を検討する視点を確認します。", href: "/guides/engineer/scheduling" },
+    { title: "WMSで在庫と履歴をつなぐ", description: "ヒアリングだけでなく、入出庫記録から事実を照合する基盤を確認します。", href: "/guides/engineer/wms" }
+  ]} />
+  <section className="mt-10" aria-labelledby="ii2-generalized-learning">
+    <p className="text-[0.6875rem] font-bold tracking-[0.12em] text-slate-500">この問題から一般化できること</p>
+    <h3 id="ii2-generalized-learning" className="mt-2 text-xl font-bold text-slate-950">Ⅱ-2で業務を動かす四つの確認</h3>
+    <ol className="mt-5 space-y-3 text-sm leading-7 text-slate-700">
+      <li><span className="mr-2 font-bold text-teal-800">01</span>調査項目には、必要性と、調べた結果から決めることを添える。</li>
+      <li><span className="mr-2 font-bold text-teal-800">02</span>手順数を固定せず、その業務で必要な現状把握、分析、試行、評価を選ぶ。</li>
+      <li><span className="mr-2 font-bold text-teal-800">03</span>各手順に留意点と工夫を置き、失敗を避ける実務上の判断を示す。</li>
+      <li><span className="mr-2 font-bold text-teal-800">04</span>関係者ごとに、共有・協議・合意する内容を区別する。</li>
+    </ol>
+  </section>
+  <LearningNextLinks
+    links={[
+      { label: "答案の型を確認する", text: "Ⅱ-2の答案型", href: "/guides/engineer/answer-structure-guide#7-選択科目ⅱ-2で使う骨子" },
+      { label: "次の実答案を読む", text: "Ⅲ-1 復元答案レビュー", href: "/guides/engineer/2026-iii-1-answer-review" },
+      { label: "過去問へ戻る", text: "Ⅱ-2の問題を探す", href: "/guides/engineer/past-exam-trend-map?year=2026&type=ii-2" }
+    ]}
+  />
+</LearningChapter>
+
+</ArticleContents>
