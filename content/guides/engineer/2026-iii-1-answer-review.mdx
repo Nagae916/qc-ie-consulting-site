@@ -1,0 +1,211 @@
+---
+title: "2026年度 技術士Ⅲ-1 復元答案レビュー｜鋳造工程のロット最適化"
+description: "令和8年度 技術士第二次試験・経営工学部門のⅢ-1について、試験後の復元答案を答案型と通常Knowledgeから振り返り、制約下の課題選定、改善骨子、N-IE Lab参考解答を示します。"
+tags: ["技術士", "経営工学", "復元答案", "鋳造", "ロット最適化", "生産管理"]
+exam: "engineer"
+slug: "2026-iii-1-answer-review"
+status: "published"
+date: "2026-08-15"
+updatedAt: "2026-08-16"
+layout: "editorial-learning"
+---
+
+<LearningArticleHeader
+  eyebrow="2026 / 選択科目Ⅲ-1 / 復元答案レビュー"
+  title="三つのロット制約を、どう一つの課題にまとめるか"
+  lead="受注生産の強みを残しながら、鋳型取り数、溶解量、注文数量の不整合を解く。制約条件から最重要課題を選ぶⅢ型の考え方を整理します。"
+  facts={[
+    { label: "問題要求", value: "複数課題、最重要課題と理由、三つの解決策、施策後リスクを示す" },
+    { label: "答案の型", value: "選択科目Ⅲ型" },
+    { label: "この教材の焦点", value: "与件の制約を専門技術でつなぐ" }
+  ]}
+/>
+
+<ArticleContents
+  items={[
+    { number: "01", label: "制約を読む", id: "review-question" },
+    { number: "02", label: "復元答案を読む", id: "review-answer" },
+    { number: "03", label: "論点のずれを確かめる", id: "review-contrast" },
+    { number: "04", label: "因果から組み直す", id: "review-rewrite" },
+    { number: "05", label: "参考解答と比べる", id: "review-reference" },
+    { number: "06", label: "理解を深める", id: "review-learn" }
+  ]}
+>
+
+<LearningChapter id="review-question" number="01" title="制約を読む" focus="A社の強み、三つのロット単位、情報伝達、頻繁な変更を、解決策が守るべき前提として拾います。">
+  <p className="text-lg font-bold leading-8 text-slate-950">中堅鋳物メーカーA社で、鋳型一枠から得られる部品数、金属溶解炉一回の溶解量、顧客の注文数量が独立して決まり、ロットサイズにずれが生じている問題です。</p>
+  <p className="mt-4 text-base leading-8 text-slate-700">A社は、顧客図面に基づく一貫受注生産と品質を強みにしています。一方で、紙・口頭による進捗伝達と頻繁な納期・数量変更があります。答案では、これらの条件から複数課題を抽出し、最重要課題を理由付きで選び、専門技術を用いた三つの解決策と実施後リスクを示します。</p>
+  <div className="mt-5 flex flex-wrap gap-x-6 gap-y-3 text-sm font-bold">
+    <a className="text-teal-800 underline decoration-teal-300 underline-offset-4" href="/guides/engineer/answer-structure-guide#8-選択科目ⅲで使う骨子">Ⅲ答案型を確認する</a>
+    <a className="text-slate-600 underline decoration-slate-300 underline-offset-4" href="https://www.engineer.or.jp/c_topics/011/attached/attach_11985_2.pdf">令和8年度の公式問題を確認する</a>
+  </div>
+  <aside className="mt-7 border-l-2 border-amber-500 pl-4 text-sm leading-7 text-slate-600">
+    <p className="font-bold text-slate-900">問題番号の確認</p>
+    <p className="mt-2">復元資料の見出しには「選択Ⅲ-2」とありますが、本文は公式問題の選択Ⅲ-1にあるA社の鋳型取り数、溶解量、注文数量の不整合と一致します。このページでは公式問題に合わせてⅢ-1として扱い、復元答案本文は改変していません。</p>
+    <p className="mt-2">評価はN-IE Lab独自のものであり、公式採点や合否を保証するものではありません。参考解答には試験後の検討を含みます。</p>
+  </aside>
+</LearningChapter>
+
+<LearningChapter id="review-answer" number="02" title="復元答案を読む" focus="何を最重要課題に選び、どこまで生産方式そのものを変えようとしたかを確認します。">
+  <AnswerBlock variant="reconstructed" title="復元答案" subtitle="ORIGINAL" note="試験後に作成した復元答案です。一次資料の見出し誤記を除き、確認できた内容を掲載しています。">
+    <div className="space-y-7 text-sm leading-6 text-slate-700">
+      <section>
+        <h3 className="text-base font-bold leading-7 text-slate-950">（1）A社が直面している課題とその発生原因</h3>
+        <div className="mt-3 space-y-4">
+          <div><p className="font-bold text-slate-900">①適切でないロットサイズでの生産（生産管理）</p><p className="mt-1">A社は受注生産体制を採っており、顧客が仕様を自由に決められるため、細かいロットで顧客ごとに生産する必要があり、適切なロットサイズで生産できていない。そこでロットサイズを生産性の高いサイズへ調整することが課題である。</p></div>
+          <div><p className="font-bold text-slate-900">②仕様や数量の変更履歴の管理不足（情報管理）</p><p className="mt-1">社内の情報伝達が紙や口頭で行われており、顧客からの仕様や数量の変更が記録として残っていない可能性がある。顧客からの仕様変更などを記録として残し、即時に現場へ伝えることが課題である。</p></div>
+          <div><p className="font-bold text-slate-900">③リードタイムが長い（納期管理）</p><p className="mt-1">受注生産体制を採用しているため、顧客の受注から納品までのリードタイムが長くなっている。さらに仕様の変更が頻繁に起こっており、計画よりも納品までに時間を要していると考えられる。そのためリードタイムの短縮が課題である。</p></div>
+          <div><p className="font-bold text-slate-900">④最終仕様の不整合（品質管理）</p><p className="mt-1">最終的な仕様の記録が残っていないために、顧客要求と異なる仕様を製造してしまい、品質不適合、顧客満足の低下につながる。最終仕様と品質検査の整合が課題である。</p></div>
+        </div>
+      </section>
+      <section>
+        <h3 className="text-base font-bold leading-7 text-slate-950">（2）最重要課題とその解決策</h3>
+        <p className="mt-3">最重要課題は、①適切でないロットサイズでの生産である。理由は、納期及びコストダウンの両方に波及し、A社の競争力回復に対する貢献度が大きいためである。</p>
+        <div className="mt-4 space-y-4">
+          <div><p className="font-bold text-slate-900">①標準仕様の設定</p><p className="mt-1">受注生産体制から、標準仕様を設定しその中から選択してもらう半受注生産体制へ切り替える。製造する仕様パターンを減らし、ロットサイズを平準化した生産が可能となる。また流用可能な標準品については、大ロットで生産することでコスト削減と在庫確保を図る。</p></div>
+          <div><p className="font-bold text-slate-900">②デカップリングポイントの前倒し</p><p className="mt-1">最終製品でなく、仕様決定前の中間品として在庫する。これにより小ロットで製造する仕様を減らし、また標準仕様品を在庫として持つことで、標準仕様の製造工程を短縮し、リードタイムの削減につなげる。</p></div>
+          <div><p className="font-bold text-slate-900">③ロットサイズの最適化</p><p className="mt-1">部品の取り数、溶解量、注文数量を変数として、標準仕様のロットサイズを最適化する。これによって、設備の稼働率や在庫数量を改善し、コスト削減につなげる。</p></div>
+        </div>
+      </section>
+      <section>
+        <h3 className="text-base font-bold leading-7 text-slate-950">（3）新たに生じるリスクとその対策</h3>
+        <div className="mt-3 space-y-4">
+          <div><p className="font-bold text-slate-900">①生産体制変更による顧客離れ</p><p className="mt-1">受注生産による細かい仕様指定が顧客満足につながっていた場合、生産体制変更に伴い、受注が減るリスクがある。対策として、受注生産でも対応可能ではあるが、割増料金などの条件を提示し、顧客と合意しておく。</p></div>
+          <div><p className="font-bold text-slate-900">②標準仕様品の在庫不足</p><p className="mt-1">半受注生産は標準仕様品を在庫しておくことで、リードタイムの短縮につながる一方、標準仕様品の在庫が不足により納期遅延や顧客満足低下のリスクがある。対策として、サービス率から標準仕様の安全在庫を設定し、維持・管理する。</p></div>
+          <div><p className="font-bold text-slate-900">③コストや効率に偏重した施策</p><p className="mt-1">コストや効率に偏重した改善を行うと、品質や顧客満足を損なうリスクがある。対策として、納期遵守率や不適合品率など多角的なKPIを設定・管理する。</p></div>
+          <p className="text-right">以上</p>
+        </div>
+      </section>
+    </div>
+  </AnswerBlock>
+</LearningChapter>
+
+<LearningChapter id="review-contrast" number="03" title="論点のずれを確かめる" focus="解決策が問題文の制約を扱っているか、それとも前提そのものを変えているかを区別します。">
+  <div className="grid gap-8 sm:grid-cols-2">
+    <section className="border-t-2 border-slate-400 pt-5">
+      <p className="text-[0.6875rem] font-black tracking-[0.12em] text-slate-500">復元答案の方向</p>
+      <h3 className="mt-2 text-xl font-bold text-slate-950">受注生産を半受注生産へ寄せる</h3>
+      <p className="mt-3 text-sm leading-7 text-slate-600">標準仕様、中間在庫、ロット最適化を組み合わせ、仕様数と小ロットを減らす考えです。デカップリングポイントという専門語を使い、施策後の顧客離れと在庫不足も捉えています。</p>
+    </section>
+    <section className="border-t-2 border-teal-700 pt-5">
+      <p className="text-[0.6875rem] font-black tracking-[0.12em] text-teal-800">問題文から強めたい方向</p>
+      <h3 className="mt-2 text-xl font-bold text-slate-950">受注生産の強みを残して同期する</h3>
+      <p className="mt-3 text-sm leading-7 text-slate-600">A社の品質と個別対応を制約として残し、注文数量、鋳型取り数、炉容量を同じ計画で同期します。GT、段取短縮、有限能力計画を使えば、生産方式の全面変更より題意へ直接答えられます。</p>
+    </section>
+  </div>
+  <section className="mt-9 border-y border-slate-300 py-6" aria-labelledby="selection-review">
+    <p className="text-[0.6875rem] font-bold tracking-[0.12em] text-slate-500">選定理由の点検</p>
+    <h3 id="selection-review" className="mt-2 text-xl font-bold text-slate-950">「適切でないロット」の中身を具体化する</h3>
+    <p className="mt-3 text-sm leading-7 text-slate-600">復元答案は、納期とコストへ波及する点を理由に最重要課題を選べています。ただし題意の核心は、単に小ロットであることではなく、三つのロット単位が独立して決まる不整合です。ここを明示すると、余剰溶湯、端数品、仕掛、待ち時間という損失と、三つの解決策が一つの因果でつながります。</p>
+  </section>
+</LearningChapter>
+
+<LearningChapter id="review-rewrite" number="04" title="因果から組み直す" focus="三つのロット単位がずれることで何が起きるかを示し、最重要課題と解決策を一直線につなぎます。">
+  <figure className="py-3">
+    <div aria-hidden="true" className="h-px bg-slate-400" />
+    <figcaption className="pt-6">
+      <p className="text-[0.6875rem] font-black tracking-[0.12em] text-teal-800">図1 <span className="ml-2 text-slate-400">CONSTRAINT MAP</span></p>
+      <h3 className="mt-2 text-xl font-bold text-slate-950">独立した三つの数量を、一つの計画へ</h3>
+    </figcaption>
+    <div className="mt-6 grid gap-5 sm:grid-cols-[1fr_1.1fr_1fr] sm:items-center">
+      <div className="space-y-2 border-l-2 border-slate-400 pl-4"><p className="text-sm font-bold text-slate-950">顧客の注文数量</p><p className="text-sm font-bold text-slate-950">鋳型一枠の取り数</p><p className="text-sm font-bold text-slate-950">炉一回の溶解量</p></div>
+      <div className="border-y border-slate-300 py-4 text-center"><p className="text-xs font-bold text-amber-700">独立に決まる</p><p className="mt-2 text-lg font-black text-slate-950">ロット不整合</p><p className="mt-2 text-xs leading-5 text-slate-500">余剰溶湯・端数品・仕掛・待ち</p></div>
+      <div className="border-l-2 border-teal-700 pl-4"><p className="text-sm font-bold text-slate-950">統合ロット計画</p><p className="mt-2 text-xs leading-5 text-slate-600">品質と納期を制約に、総費用と投入日を同期</p></div>
+    </div>
+    <p className="mt-6 text-sm font-bold leading-7 text-slate-800">最重要課題を「三つのロット単位の不整合」と定義すれば、最適化、まとめ生産、同期運用という三つの解決策が役割分担できます。</p>
+  </figure>
+
+  <section className="mt-8" aria-labelledby="iii-outline">
+    <p className="text-[0.6875rem] font-bold tracking-[0.12em] text-slate-500">改善骨子</p>
+    <h3 id="iii-outline" className="mt-2 text-xl font-bold text-slate-950">今ならこう組み立てる</h3>
+    <ol className="mt-5 space-y-4">
+      <li className="grid grid-cols-[2.5rem_1fr] gap-3"><span className="text-sm font-black text-teal-800">01</span><p className="text-sm leading-7 text-slate-600"><span className="mr-2 font-bold text-slate-950">複数課題</span>ロット不整合、変更情報の一元管理不足、ボトルネックを考慮しない工程運営を、異なる観点で示す。</p></li>
+      <li className="grid grid-cols-[2.5rem_1fr] gap-3"><span className="text-sm font-black text-teal-800">02</span><p className="text-sm leading-7 text-slate-600"><span className="mr-2 font-bold text-slate-950">最重要課題</span>余剰材、段取り、仕掛、待ちを同時に生み、納期と収益へ波及するロット不整合を選ぶ。</p></li>
+      <li className="grid grid-cols-[2.5rem_1fr] gap-3"><span className="text-sm font-black text-teal-800">03</span><p className="text-sm leading-7 text-slate-600"><span className="mr-2 font-bold text-slate-950">解決策</span>混合整数計画で組合せを決め、GTとSMEDでまとめやすさと小ロット対応を両立し、APS・MESで進捗と変更を同期する。</p></li>
+      <li className="grid grid-cols-[2.5rem_1fr] gap-3"><span className="text-sm font-black text-teal-800">04</span><p className="text-sm leading-7 text-slate-600"><span className="mr-2 font-bold text-slate-950">効果確認</span>製造LT、納期遵守率、仕掛量、材料歩留り、段取り時間、良品スループット、単位原価を追う。</p></li>
+      <li className="grid grid-cols-[2.5rem_1fr] gap-3"><span className="text-sm font-black text-teal-800">05</span><p className="text-sm leading-7 text-slate-600"><span className="mr-2 font-bold text-slate-950">施策後リスク</span>最適計画への依存と、まとめ生産によるロット混同を挙げ、再計画・バッファとトレーサビリティで対処する。</p></li>
+    </ol>
+  </section>
+</LearningChapter>
+
+<LearningChapter id="review-reference" number="05" title="参考解答と比べる" focus="生産方式を直ちに変えるのではなく、A社の制約の下でロット、工程、情報を同期する再構成です。">
+  <AnswerBlock variant="reference" title="N-IE Lab参考解答" subtitle="REFERENCE" heading="品質と納期を制約に、三つのロットを同期する" note="試験後の検討を反映したN-IE Lab独自の参考解答・1,796字です。唯一の正解ではなく、公式採点や合格を保証するものではありません。">
+    <AnswerSections
+      sections={[
+        {
+          heading: "1．A社が直面する技術課題",
+          items: [
+            {
+              heading: "（1）三つのロット単位の不整合（生産管理）",
+              paragraphs: ["鋳型一枠の取り数、溶解炉一回の溶解量及び顧客注文数量が一致せず、余剰溶湯、端数品、仕掛在庫及び次工程待ちが発生し、原価と製造LTが増大している。要因は各工程が個別にロットを決めることであり、真因は受注、鋳型及び炉を同一目的関数で同期させる計画機能がないことである。したがって、品質と納期を制約として総費用を最小にする統合ロット計画が課題である。"]
+            },
+            {
+              heading: "（2）変更情報と進捗の一元管理不足（情報管理）",
+              paragraphs: ["納期・数量変更が紙と口頭で伝達され、旧版指示による手直しや再計画の遅れが生じている。要因は工程ごとに記録媒体が異なることであり、真因は注文、図面、鋳型、溶解及び製造ロットを結ぶ識別子と変更管理責任がないことである。したがって、正本情報を一元化し、変更を有限能力計画へ即時反映することが課題である。"]
+            },
+            {
+              heading: "（3）ボトルネックを考慮しない工程運営（納期管理）",
+              paragraphs: ["鋳型製造、溶解、鋳仕上げの負荷差により仕掛が滞留し、特急品の投入で計画が頻繁に崩れる。要因は設備稼働率を工程別に追求することであり、真因はボトルネックの良品スループットを基準とする優先規則がないことである。したがって、制約工程を基準に投入量と日程を統制することが課題である。"]
+            }
+          ]
+        },
+        {
+          heading: "2．最重要課題及び解決策",
+          intro: "最重要課題は（1）三つのロット単位の不整合である。これは余剰材、段取り、仕掛及び待ち時間を同時に発生させ、他の工程負荷と納期にも波及するため、影響度、波及性及び収益改善効果が最大である。",
+          items: [
+            {
+              heading: "（1）統合ロットモデルによる最適化",
+              paragraphs: ["製品群ごとに注文数量、鋳型取り数、歩留り、炉容量、材質、納期及び段取り時間を収集する。納期遅延費、在庫費、余剰溶湯費及び段取り費の総和を目的関数とし、炉容量、設備能力、品質及び納期を制約とする混合整数計画モデルを構築する。複数案を離散事象シミュレーションで検証し、総費用を最小にするロットと投入日を決める。需要変動、故障及び歩留り変動を感度分析する。納期遵守率を維持し総費用が低下することを確認後、対象材質を段階的に拡大する。"]
+            },
+            {
+              heading: "（2）グループテクノロジーによるまとめ生産",
+              paragraphs: ["材質、溶解条件、鋳型及び仕上げ工程が近い品種をGTで製品群化し、同一材質をキャンペーン生産する。注文を無条件に大ロット化せず、納期範囲内で炉単位へ組み合わせる。鋳型交換にはSMEDを適用し、外段取り化と治工具共通化で小ロット対応力を維持する。これにより余剰溶湯と段取り時間を削減する。製品群ごとに生産周期と投入上限を定め、制約工程前の仕掛量を制限する。端数は次回注文へ安易に持ち越さず、保管期限、転用可能性及び再溶解費を比較して処置する。"]
+            },
+            {
+              heading: "（3）APS・MESによる同期運用",
+              paragraphs: [
+                "ERPの受注・図面版数と、APSの有限能力計画、MESの進捗・良品数をロットIDで連携する。TOCにより溶解炉等の制約工程を特定し、ドラム・バッファ・ロープで投入を統制する。変更は凍結期間、承認者及び再計画条件を定め、影響を確認して反映する。KPIは製造LT、納期遵守率、仕掛量、材料歩留り、段取り時間、良品スループット及び単位原価とする。導入時はマスタ精度を棚卸しし、旧運用と並行して計画差異を検証する。通信障害時の手動指示と復旧手順を標準化し、計画担当者と現場作業者を教育する。",
+                "技術的実現性はモデル精度と設備制約の再現性、経済性は削減原価と導入・運用費による投資回収期間で評価する。安全、品質及び顧客納期を制約条件として、費用削減だけを目的化しない。"
+              ]
+            }
+          ]
+        },
+        {
+          heading: "3．新たに生じるリスクと対策",
+          paragraphs: [
+            "第一のリスクは、最適計画への依存により、故障や特急注文に対する柔軟性が低下することである。対策として、ローリング・スケジュールで定期再計画し、制約工程に時間バッファを設定する。緊急変更はシナリオ比較と責任者承認を条件とする。これにより、計画安定性を保ちながら異常時の納期影響を抑える。",
+            "第二のリスクは、複数注文を炉単位へまとめることでロット混同が起こり、不適合範囲が拡大することである。対策として、溶解ヒート、鋳型、注文及び検査結果を一意のロットIDで紐付け、現品票のバーコード照合と工程間数量照合を行う。異材混入をFMEAで重点管理し、異常時は対象範囲を即時隔離する。これにより、まとめ生産の効率を維持しつつ、トレーサビリティと顧客品質を確保する。"
+          ]
+        }
+      ]}
+    />
+  </AnswerBlock>
+</LearningChapter>
+
+<LearningChapter id="review-learn" number="06" title="理解を深める" focus="ロットの組合せ、製品群化、制約工程、進捗連携を通常Knowledgeで確認します。">
+  <RelatedReadingList links={[
+    { title: "混合整数計画の考え方", description: "離散的な注文・鋳型・炉の組合せを、制約条件の下で比較する方法を学びます。", href: "/guides/engineer/linear-programming" },
+    { title: "GTで類似品をまとめる", description: "材質や工程の近い品種を製品群化し、まとめ生産へつなぐ考え方を確認します。", href: "/guides/engineer/group-technology" },
+    { title: "TOCとDBRの考え方", description: "制約工程を基準に投入と仕掛を統制し、全体のスループットを守る方法を学びます。", href: "/guides/engineer/toc" },
+    { title: "MESで計画と実績をつなぐ", description: "注文、製造ロット、進捗、良品数を同じ識別子で管理する基盤を確認します。", href: "/guides/engineer/mes" }
+  ]} />
+  <section className="mt-10" aria-labelledby="iii-generalized-learning">
+    <p className="text-[0.6875rem] font-bold tracking-[0.12em] text-slate-500">この問題から一般化できること</p>
+    <h3 id="iii-generalized-learning" className="mt-2 text-xl font-bold text-slate-950">Ⅲで専門性を示す四つの確認</h3>
+    <ol className="mt-5 space-y-3 text-sm leading-7 text-slate-700">
+      <li><span className="mr-2 font-bold text-teal-800">01</span>問題文の制約と企業の強みを、解決策が守る条件として先に置く。</li>
+      <li><span className="mr-2 font-bold text-teal-800">02</span>複数課題は観点を変え、最重要課題は損失と他課題への波及で選ぶ。</li>
+      <li><span className="mr-2 font-bold text-teal-800">03</span>専門用語は列挙せず、入力、使い方、得られる効果、KPIまで説明する。</li>
+      <li><span className="mr-2 font-bold text-teal-800">04</span>リスクは各解決策から新たに生じる副作用を挙げ、対策と一対一で対応させる。</li>
+    </ol>
+  </section>
+  <LearningNextLinks
+    links={[
+      { label: "答案の型を確認する", text: "Ⅲの答案型", href: "/guides/engineer/answer-structure-guide#8-選択科目ⅲで使う骨子" },
+      { label: "別の実答案を読む", text: "必須Ⅰ-2 復元答案レビュー", href: "/guides/engineer/2026-required-i-2-answer-review" },
+      { label: "過去問へ戻る", text: "Ⅲの問題を探す", href: "/guides/engineer/past-exam-trend-map?year=2026&type=iii" }
+    ]}
+  />
+</LearningChapter>
+
+</ArticleContents>
