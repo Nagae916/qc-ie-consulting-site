@@ -1,0 +1,180 @@
+---
+title: "2026年度 技術士必須Ⅰ-2 復元答案レビュー｜代用特性による品質評価"
+description: "令和8年度 技術士第二次試験・経営工学部門の必須Ⅰ-2について、試験後の復元答案を答案型と通常Knowledgeから振り返り、因果構造、改善骨子、N-IE Lab参考解答を示します。"
+tags: ["技術士", "経営工学", "復元答案", "代用特性", "KPI", "業務品質"]
+exam: "engineer"
+slug: "2026-required-i-2-answer-review"
+status: "published"
+date: "2026-08-15"
+updatedAt: "2026-08-16"
+layout: "editorial-learning"
+---
+
+<LearningArticleHeader
+  eyebrow="2026 / 必須科目Ⅰ-2 / 復元答案レビュー"
+  title="測りやすい指標を、品質の代理にしてよいか"
+  lead="代用特性による評価が、業務品質、現場負荷、組織行動へどう波及するか。実際の復元答案を、必須Ⅰ型の因果関係から読み直します。"
+  facts={[
+    { label: "問題要求", value: "多面的課題、最重要課題、解決策、施策後リスク、倫理を論じる" },
+    { label: "答案の型", value: "必須科目Ⅰ型" },
+    { label: "この教材の焦点", value: "指標と成果物品質の因果を切らさない" }
+  ]}
+/>
+
+<ArticleContents
+  items={[
+    { number: "01", label: "問題をつかむ", id: "review-question" },
+    { number: "02", label: "復元答案を読む", id: "review-answer" },
+    { number: "03", label: "因果を点検する", id: "review-causality" },
+    { number: "04", label: "答案を組み直す", id: "review-rewrite" },
+    { number: "05", label: "参考解答と比べる", id: "review-reference" },
+    { number: "06", label: "理解を深める", id: "review-learn" }
+  ]}
+>
+
+<LearningChapter id="review-question" number="01" title="問題をつかむ" focus="代用特性そのものの説明ではなく、評価・管理へ使うことで起こる課題と対策を問う問題です。">
+  <p className="text-lg font-bold leading-8 text-slate-950">直接測りにくい業務品質を代用特性で管理するとき、測定の妥当性、業務プロセス、組織行動の三つの観点から課題を抽出する問題です。</p>
+  <p className="mt-4 text-base leading-8 text-slate-700">最重要課題を一つ選んだ後は、複数の解決策、その実施による波及効果と新たなリスク、技術者倫理・社会的責任までを一貫して説明します。指標を改善することと、本来の成果物品質を改善することを混同しない視点が中心です。</p>
+  <div className="mt-5 flex flex-wrap gap-x-6 gap-y-3 text-sm font-bold">
+    <a className="text-teal-800 underline decoration-teal-300 underline-offset-4" href="/guides/engineer/answer-structure-guide#5-必須科目ⅰで使う骨子">必須Ⅰ答案型を確認する</a>
+    <a className="text-slate-600 underline decoration-slate-300 underline-offset-4" href="https://www.engineer.or.jp/c_topics/011/attached/attach_11985_1.pdf">令和8年度の公式問題を確認する</a>
+  </div>
+  <aside className="mt-7 border-l-2 border-amber-500 pl-4 text-sm leading-7 text-slate-600">
+    <p className="font-bold text-slate-900">このレビューの位置付け</p>
+    <p className="mt-2">本文は試験後に作成した復元答案です。試験当日の記述を完全に逐語再現したものではありません。評価はN-IE Lab独自のものであり、公式採点や合否を保証するものではありません。参考解答には試験後の検討を含みます。</p>
+  </aside>
+</LearningChapter>
+
+<LearningChapter id="review-answer" number="02" title="復元答案を読む" focus="三つの課題から倫理まで、実際の答案がどの論理でつながっていたかを確認します。">
+  <AnswerBlock variant="reconstructed" title="復元答案" subtitle="ORIGINAL" note="試験後に作成した復元答案です。表記を含め、一次資料で確認できた内容を掲載しています。">
+    <AnswerSections sections={[
+      {
+        heading: "（1）代用特性による評価・管理上の課題",
+        items: [
+          { heading: "①成果物品質を反映していない指標の選定（測定の妥当性）", paragraphs: ["測定の簡易さや工数負荷の少なさなどを優先して指標を選定すると、成果物品質が反映されておらず、いくら改善しても成果物品質や業務効率が改善しない事態が生じる。真因は、指標と成果物品質の関係性を把握できていない点である。これを防ぐために、指標と成果物品質の相関分析などを行い適切な指標を選定することが課題である。"] },
+          { heading: "②管理工数増加による現場への負担増（業務プロセスへの影響）", paragraphs: ["指標の測定、評価、改善の工数が増加するため、実務担当者の業務負荷が増加する。真因としては、必要な納期や工数を把握できていない点である。これを防ぐために、現場負荷にならない指標や測定方法、評価フローの整備が課題である。"] },
+          { heading: "③代用項目偏重の改善活動（組織行動への影響）", paragraphs: ["代用特性にて評価を行うにあたり、代用項目の改善に偏重し、本来の目的である成果物品質や業務プロセスの改善が行われず、根本的な課題解決が進まない。真因は、最終目的を組織で共有できていない点であり、これを防ぐために、組織としての目的の明確化と、KGI・KPIを用いるなどして到達度を測ることが課題である。"] }
+        ]
+      },
+      {
+        heading: "（2）最重要課題とその解決策",
+        intro: "最重要課題は、①成果物品質を反映していない指標の選定である。理由は、代用特性を用いた管理・評価の可否に関わる課題であり、他の課題にも波及するためである。",
+        items: [
+          { heading: "①成果物品質の再定義", paragraphs: ["成果物品質を顧客満足度やサービス率、納期遵守率などに分解し、どの因子が最終品質に寄与しているかを確認、検証する。営業や品質保証部隊とも情報を共有する。"] },
+          { heading: "②測定方法の標準化", paragraphs: ["代用特性にて品質を管理していくために、プロジェクトや測定者ごとに測定ルールが変わることがないように、測定方法、評価方法や改善フローを標準化し、業務プロセスへ落とし込む。"] },
+          { heading: "③代用特性と成果物品質の関連分析", paragraphs: ["代用特性となる指標のデータを収集し、散布図を用いて相関関係を整理するとともに、特性要因図を用いて因果関係を明らかにし、成果物指標に対する代替性を確認し、管理項目及びKPIを決定する。"] }
+        ]
+      },
+      {
+        heading: "（3）波及効果及び新たに生じる可能性のあるリスクとその対策",
+        intro: "波及効果：成果物の品質改善に限らず、業務プロセスの改善、従業員の意識改善に波及する。",
+        items: [
+          { heading: "①過度な標準化による柔軟性の低下", paragraphs: ["過度に管理方法を標準化すると、他のプロジェクトや企画への横展開が困難になるリスクがある。対策として、評価の大枠を標準化するに留め、詳細はプロジェクトに応じて変更できる余白を残す。ただし、同等の結果、評価となることを確認しておく必要がある。"] },
+          { heading: "②KPI偏重の改善活動", paragraphs: ["代用指標の改善に偏重し、本質的な改善が進まないリスクがある。対策として、品質だけでなく、コストや納期遵守率など多角的な指標を設定、管理する。"] }
+        ]
+      },
+      {
+        heading: "（4）必要な要件・留意点",
+        items: [
+          { heading: "①技術士倫理", paragraphs: ["要件：公衆の安全・健康・福利を最優先し、データに基づき校正・公平な判断をする。", "留意点：会社の利益のための不正なデータ取得を許さず、顧客への説明責任を果たす。"] },
+          { heading: "②社会的義務・責務", paragraphs: ["要件：多様な人材や文化を尊重し、施策への参加機会を確保し、包摂的な改善策を実行する。", "留意点：標準手順書を海外人材向けに英語版を作成し、全員で共有できる体制を作る。"] }
+        ]
+      }
+    ]} />
+    <p className="mt-6 text-right text-sm leading-6 text-slate-700">以上</p>
+  </AnswerBlock>
+</LearningChapter>
+
+<LearningChapter id="review-causality" number="03" title="因果を点検する" focus="課題を並べるだけでなく、上流の指標選定が現場と組織へ波及する順序を読み取ります。">
+  <figure className="py-3">
+    <div aria-hidden="true" className="h-px bg-slate-400" />
+    <figcaption className="pt-6">
+      <p className="text-[0.6875rem] font-black tracking-[0.12em] text-teal-800">図1 <span className="ml-2 text-slate-400">CAUSAL MAP</span></p>
+      <h3 className="mt-2 text-xl font-bold text-slate-950">代用特性が成果物品質へ届くまで</h3>
+    </figcaption>
+    <ol className="mt-6 grid gap-4 sm:grid-cols-4" aria-label="成果物品質から代用特性、業務行動、品質結果までの因果関係">
+      <li className="border-t-2 border-teal-700 pt-3"><span className="text-xs font-black text-teal-800">01</span><p className="mt-2 text-sm font-bold text-slate-950">成果を定義</p><p className="mt-1 text-xs leading-5 text-slate-600">顧客満足、サービス率、納期遵守</p></li>
+      <li className="border-t-2 border-slate-400 pt-3"><span className="text-xs font-black text-teal-800">02</span><p className="mt-2 text-sm font-bold text-slate-950">代理指標を選ぶ</p><p className="mt-1 text-xs leading-5 text-slate-600">測りやすさではなく妥当性を検証</p></li>
+      <li className="border-t-2 border-slate-400 pt-3"><span className="text-xs font-black text-teal-800">03</span><p className="mt-2 text-sm font-bold text-slate-950">行動が変わる</p><p className="mt-1 text-xs leading-5 text-slate-600">測定負荷、評価行動、改善の優先順位</p></li>
+      <li className="border-t-2 border-slate-900 pt-3"><span className="text-xs font-black text-teal-800">04</span><p className="mt-2 text-sm font-bold text-slate-950">成果で再確認</p><p className="mt-1 text-xs leading-5 text-slate-600">直接測定を残し、関係の劣化も監視</p></li>
+    </ol>
+    <p className="mt-6 text-sm font-bold leading-7 text-slate-800">代用特性が改善しても成果物品質が改善しないなら、指標の妥当性か、指標から行動へ至る設計を見直します。</p>
+    <p className="mt-2 text-xs italic leading-6 text-slate-500">相関は候補を絞る材料です。因果の説明には業務の仕組み、層別、試行後の成果確認が必要です。</p>
+  </figure>
+
+  <section className="mt-8" aria-labelledby="structure-review">
+    <p className="text-[0.6875rem] font-bold tracking-[0.12em] text-slate-500">答案構造の診断</p>
+    <h3 id="structure-review" className="mt-2 text-xl font-bold text-slate-950">つながっていた箇所と、橋を足したい箇所</h3>
+    <dl className="mt-5 divide-y divide-slate-200 border-y border-slate-200">
+      <div className="grid gap-2 py-5 sm:grid-cols-[8rem_1fr]"><dt className="text-sm font-bold text-slate-950">多面的課題</dt><dd className="text-sm leading-7 text-slate-600">測定、業務プロセス、組織行動の三観点は明確です。各課題を「現象→真因→課題」で書いた点も、後続の選定理由を支えています。</dd></div>
+      <div className="grid gap-2 py-5 sm:grid-cols-[8rem_1fr]"><dt className="text-sm font-bold text-slate-950">最重要課題</dt><dd className="text-sm leading-7 text-slate-600">他課題へ波及するという理由があります。誤った指標が誤判断を全組織へ広げる、と影響度まで示すと選定がさらに強くなります。</dd></div>
+      <div className="grid gap-2 py-5 sm:grid-cols-[8rem_1fr]"><dt className="text-sm font-bold text-slate-950">解決策</dt><dd className="text-sm leading-7 text-slate-600">再定義、標準化、関連分析の順序は実務的です。一方、特性要因図だけで因果を確定せず、直接測定、層別、別期間での検証を加えたいところです。</dd></div>
+      <div className="grid gap-2 py-5 sm:grid-cols-[8rem_1fr]"><dt className="text-sm font-bold text-slate-950">施策後リスク</dt><dd className="text-sm leading-7 text-slate-600">標準化とKPI運用を実施した結果の副作用になっています。測定負荷と環境変化による関係の劣化も、解決策へ一対一で対応させられます。</dd></div>
+      <div className="grid gap-2 py-5 sm:grid-cols-[8rem_1fr]"><dt className="text-sm font-bold text-slate-950">倫理・持続可能性</dt><dd className="text-sm leading-7 text-slate-600">安全、公平、説明責任、多様性を挙げています。データの目的外利用を防ぎ、入力負荷や資源消費まで指標設計へ戻すと本文との接続が明確です。</dd></div>
+    </dl>
+  </section>
+</LearningChapter>
+
+<LearningChapter id="review-rewrite" number="04" title="答案を組み直す" focus="解決策の数を増やすのではなく、成果定義から検証・運用までの順序を整えます。">
+  <ol className="space-y-4">
+    <li className="grid grid-cols-[2.5rem_1fr] gap-3"><span className="text-sm font-black text-teal-800">01</span><div><p className="text-sm font-bold text-slate-950">三つの課題を異なる観点で置く</p><p className="mt-1 text-sm leading-6 text-slate-600">測定妥当性、測定負荷、指標の目的化を、同じ原因の言い換えにしない。</p></div></li>
+    <li className="grid grid-cols-[2.5rem_1fr] gap-3"><span className="text-sm font-black text-teal-800">02</span><div><p className="text-sm font-bold text-slate-950">最重要課題を上流性で選ぶ</p><p className="mt-1 text-sm leading-6 text-slate-600">指標が妥当でなければ、標準化もKPI運用も誤った方向へ進むと示す。</p></div></li>
+    <li className="grid grid-cols-[2.5rem_1fr] gap-3"><span className="text-sm font-black text-teal-800">03</span><div><p className="text-sm font-bold text-slate-950">成果定義、統計的検証、運用をつなぐ</p><p className="mt-1 text-sm leading-6 text-slate-600">QFDとロジックモデルで仮説を作り、層別・回帰・試行で確かめ、定期見直しへ閉じる。</p></div></li>
+    <li className="grid grid-cols-[2.5rem_1fr] gap-3"><span className="text-sm font-black text-teal-800">04</span><div><p className="text-sm font-bold text-slate-950">施策後リスクを対策と対にする</p><p className="mt-1 text-sm leading-6 text-slate-600">検証強化による負荷には自動取得、モデル劣化には定期再検証を対応させる。</p></div></li>
+    <li className="grid grid-cols-[2.5rem_1fr] gap-3"><span className="text-sm font-black text-teal-800">05</span><div><p className="text-sm font-bold text-slate-950">倫理を指標運用へ戻す</p><p className="mt-1 text-sm leading-6 text-slate-600">公平性、説明責任、個人情報、参加機会を、データ収集と評価の具体的な条件として書く。</p></div></li>
+  </ol>
+  <p className="mt-7 text-sm font-bold leading-7 text-slate-800">必須Ⅰは、各節を個別に満たすより、「その課題を選んだから、この解決策・リスク・倫理が必要になる」という因果で閉じます。</p>
+</LearningChapter>
+
+<LearningChapter id="review-reference" number="05" title="参考解答と比べる" focus="復元答案の三観点を残し、検証条件と運用責任を具体化した再構成を読みます。">
+  <AnswerBlock variant="reference" title="N-IE Lab参考解答" subtitle="REFERENCE" heading="指標の妥当性を、定義・検証・運用で確保する" note="試験後の検討を反映したN-IE Lab独自の参考解答・1,777字です。唯一の正解ではなく、公式採点や合格を保証するものではありません。">
+    <AnswerSections sections={[
+      {
+        heading: "1．代用特性による評価・管理上の課題",
+        items: [
+          { heading: "（1）測定妥当性の欠如（測定の妥当性）", paragraphs: ["測定容易性を優先して応答時間や処理件数を代用特性にすると、その改善が顧客価値へ結び付かない現象が生じる。要因は成果物品質との関連を検証せず指標を採用することであり、真因は成果物品質、代用特性及び両者を結ぶ因果仮説が定義されていないことである。したがって、顧客要求を成果指標へ展開し、代用特性の妥当性を統計的に検証することが課題である。"] },
+          { heading: "（2）測定・入力負荷による本来業務の停滞（業務プロセスへの影響）", paragraphs: ["評価項目を増やすほど入力、集計及び確認に時間を要し、サービス提供が遅れる。要因はデータ取得を既存業務へ付加することであり、真因は測定工数と改善便益を比較せず運用を設計することである。したがって、既存システムから自動取得し、測定頻度と標本数を必要精度に応じて最小化することが課題である。"] },
+          { heading: "（3）指標の目的化（組織行動への影響）", paragraphs: ["目標値達成を優先して容易な案件だけを処理する等、成果物品質を損なう行動が生じる。要因は単一指標による評価であり、真因は最終目的、評価責任及び指標見直し条件が共有されていないことである。したがって、KGIと先行・結果KPIの関係を示し、複数指標による均衡管理と定期見直しを行うことが課題である。"] }
+        ]
+      },
+      {
+        heading: "2．最重要課題と解決策",
+        intro: "最重要課題は（1）測定妥当性の欠如である。妥当でない指標は誤った意思決定を全組織へ波及させ、改善資源を浪費するため、影響度、波及性及び基盤性が最大である。",
+        items: [
+          { heading: "（1）成果物品質と因果仮説の定義", paragraphs: ["顧客の声をQFDで要求品質へ展開し、顧客満足度、再利用率、苦情率等をKGIとする。次にロジックモデルで業務活動、代用特性、成果の因果経路を記述し、候補指標の定義、単位、取得時点、責任者をデータ辞書へ登録する。これにより、指標選定の根拠と責任範囲を明確にする。顧客調査は利用者属性と利用場面を層別し、同一質問を継続して直接品質を測る。代用特性だけでなく、定期的な直接測定を残して両者の関係を確認できる設計とする。"] },
+          { heading: "（2）代用特性の統計的検証", paragraphs: ["案件種別、顧客層及び繁閑で層別して候補指標と成果指標を収集する。散布図と回帰分析で関連の強さ、時系列分析で先行性を確認し、別期間データで予測誤差を検証する。また、測定者間差と欠測率を確認し、再現性を満たす指標だけを採用する。目標は決定係数、予測誤差及び欠測率で定量化する。交絡が疑われる場合は多変量解析で顧客属性等を調整し、代表部署で指標改善を試行して成果指標の変化を確認する。相関のみで採否を決めず、統計的有意性と実務上の効果量を併せて評価する。"] },
+          { heading: "（3）運用、監視及び改善", paragraphs: ["KGI・KPIツリーをダッシュボード化し、管理図で変化を監視する。四半期ごとに相関、予測誤差及び顧客評価を再検証し、閾値超過時は指標を改訂する。KPIは顧客満足度、苦情率、処理時間、測定工数及び指標予測誤差とし、品質と効率を両面評価する。指標の新設・変更・廃止は、業務部門、品質保証部門及びデータ管理者による会議で審議し、変更理由と影響を記録する。現場へ評価目的を説明し、指標達成のための不適切行動を監査する。"] }
+        ]
+      },
+      { heading: "3．波及効果、新たなリスク及び対策", paragraphs: ["妥当な指標を共通言語とすることで、部門間の優先順位が整合し、改善投資の選択精度と説明責任が向上する。", "第一のリスクは、検証項目の増加による測定負荷と監視コストの増大である。対策として、重要指標を絞り、APIによる自動取得とリスクに応じた標本抽出を行う。これにより、検証精度を保ちつつ本来業務への負荷を抑える。", "第二のリスクは、過去データで構築した関係が環境変化で劣化するモデルドリフトである。対策として、顧客層別の誤差を定期監視し、変更管理の下で再推定する。これにより、特定層への不公平と誤判断を防止する。"] },
+      { heading: "4．倫理及び社会的義務・責任", paragraphs: ["技術者は公衆の安全、健康及び福利を最優先し、都合のよいデータの選別・改ざんを行わず、指標の限界と不確実性を説明する。個人情報は目的を限定し、最小限収集、匿名化及びアクセス制御を行う。また、年齢、障害、言語等で評価機会に差が生じないよう当事者を含めて指標を点検し、図解や多言語化で参加を保障する。自動化による負荷軽減、適正な労働及び資源消費も評価し、包摂的で持続可能な改善とする。"] }
+    ]} />
+  </AnswerBlock>
+</LearningChapter>
+
+<LearningChapter id="review-learn" number="06" title="理解を深める" focus="答案で使った指標設計と検証手法を、通常のKnowledgeで確認します。">
+  <RelatedReadingList links={[
+    { title: "KPIとロジックモデルのつなぎ方", description: "目的、活動、成果の因果を整理し、指標の目的化を防ぐ考え方を確認します。", href: "/guides/engineer/kpi-management" },
+    { title: "QFDで顧客要求を品質へ展開する", description: "何を成果物品質とするかを、顧客の声から具体化する方法を学びます。", href: "/guides/engineer/qfd" },
+    { title: "散布図で代用特性との関係を見る", description: "二つの指標の関係を可視化し、相関と因果を混同しない入口を確認します。", href: "/guides/stat/scatterplot" }
+  ]} />
+  <section className="mt-10" aria-labelledby="required-generalized-learning">
+    <p className="text-[0.6875rem] font-bold tracking-[0.12em] text-slate-500">この問題から一般化できること</p>
+    <h3 id="required-generalized-learning" className="mt-2 text-xl font-bold text-slate-950">必須Ⅰで因果を閉じる四つの確認</h3>
+    <ol className="mt-5 space-y-3 text-sm leading-7 text-slate-700">
+      <li><span className="mr-2 font-bold text-teal-800">01</span>課題の観点を変え、同じ現象の言い換えを三つ並べない。</li>
+      <li><span className="mr-2 font-bold text-teal-800">02</span>最重要課題は、影響度、波及性、基盤性など比較できる理由で選ぶ。</li>
+      <li><span className="mr-2 font-bold text-teal-800">03</span>リスクは現状課題ではなく、提案した解決策を実施した後の副作用として書く。</li>
+      <li><span className="mr-2 font-bold text-teal-800">04</span>倫理・持続可能性を一般論で終えず、データ収集や運用条件へ戻す。</li>
+    </ol>
+  </section>
+  <LearningNextLinks
+    links={[
+      { label: "答案の型を確認する", text: "必須Ⅰの答案型", href: "/guides/engineer/answer-structure-guide#5-必須科目ⅰで使う骨子" },
+      { label: "別の実答案を読む", text: "Ⅱ-1-4 復元答案レビュー", href: "/guides/engineer/2026-ii-1-4-answer-review" },
+      { label: "過去問へ戻る", text: "必須Ⅰの問題を探す", href: "/guides/engineer/past-exam-trend-map?year=2026&type=required-i" }
+    ]}
+  />
+</LearningChapter>
+
+</ArticleContents>

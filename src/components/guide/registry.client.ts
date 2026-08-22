@@ -30,10 +30,12 @@ import AnswerFrameGuide from './AnswerFrameGuide';
 import ProblemMatrix from './ProblemMatrix';
 import {
   AnswerBlock,
+  AnswerSections,
   ArticleContents,
   LearningArticleHeader,
   LearningChapter,
   LearningNextLinks,
+  RelatedReadingList,
 } from './EditorialLearning';
 
 /**
@@ -87,7 +89,9 @@ export const GUIDE_COMPONENTS = {
   ArticleContents,
   LearningChapter,
   AnswerBlock,
+  AnswerSections,
   LearningNextLinks,
+  RelatedReadingList,
   // ファイルパスをコメントで明記し、人的ミスを予防
 
   // /src/components/guide/Quiz.tsx（named export: Quiz）

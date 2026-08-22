@@ -18,6 +18,24 @@ type NextLink = {
   href: string;
 };
 
+type AnswerSectionItem = {
+  heading: string;
+  paragraphs: string[];
+};
+
+type AnswerSection = {
+  heading: string;
+  intro?: string;
+  items?: AnswerSectionItem[];
+  paragraphs?: string[];
+};
+
+type RelatedReadingLink = {
+  title: string;
+  description: string;
+  href: string;
+};
+
 export function LearningArticleHeader({
   eyebrow,
   title,
@@ -134,6 +152,54 @@ export function AnswerBlock({
       <p className="mt-2 text-xs leading-5 text-slate-500">{note}</p>
       <div className="mt-4">{children}</div>
     </section>
+  );
+}
+
+export function AnswerSections({ sections }: { sections: AnswerSection[] }) {
+  return (
+    <div className="space-y-7 text-sm leading-6 text-slate-700">
+      {sections.map((section) => (
+        <section key={section.heading}>
+          <h3 className="text-base font-bold text-slate-950">{section.heading}</h3>
+          {section.intro ? <p className="mt-3">{section.intro}</p> : null}
+          {section.items?.length ? (
+            <div className="mt-4 space-y-4">
+              {section.items.map((item) => (
+                <div key={item.heading}>
+                  <p className="font-bold text-slate-900">{item.heading}</p>
+                  {item.paragraphs.map((paragraph, index) => (
+                    <p key={`${item.heading}-${index}`} className={index === 0 ? "mt-1" : "mt-2"}>
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
+              ))}
+            </div>
+          ) : null}
+          {section.paragraphs?.length ? (
+            <div className="mt-3 space-y-3">
+              {section.paragraphs.map((paragraph, index) => (
+                <p key={`${section.heading}-${index}`}>{paragraph}</p>
+              ))}
+            </div>
+          ) : null}
+        </section>
+      ))}
+    </div>
+  );
+}
+
+export function RelatedReadingList({ links }: { links: RelatedReadingLink[] }) {
+  return (
+    <div className="space-y-5">
+      {links.map((item) => (
+        <Link key={item.href} href={item.href} className="group block max-w-2xl">
+          <span className="block text-base font-bold text-slate-950 group-hover:text-teal-800">{item.title}</span>
+          <span className="mt-1 block text-sm leading-6 text-slate-600">{item.description}</span>
+          <span className="mt-1 block text-sm font-bold text-teal-700">関連読書として開く →</span>
+        </Link>
+      ))}
+    </div>
   );
 }
 
