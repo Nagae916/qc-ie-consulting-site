@@ -19,6 +19,13 @@ const fields = [
   { label: 'サービスマネジメント', code: '1502' },
 ];
 
+const reviewed2026Rows = [
+  { year: 2026, era: '令和8年度', subjectType: '必須科目Ⅰ', field: '共通', questionNumber: 'I-2' },
+  { year: 2026, era: '令和8年度', subjectType: '選択科目Ⅱ-1', field: '生産・物流マネジメント', questionNumber: 'II-1-4' },
+  { year: 2026, era: '令和8年度', subjectType: '選択科目Ⅱ-2', field: '生産・物流マネジメント', questionNumber: 'II-2-2' },
+  { year: 2026, era: '令和8年度', subjectType: '選択科目Ⅲ', field: '生産・物流マネジメント', questionNumber: 'III-1' },
+];
+
 const requiredFields = [
   'id',
   'year',
@@ -61,7 +68,7 @@ function expectedRows() {
       }
     }
   }
-  return rows;
+  return [...rows, ...reviewed2026Rows];
 }
 
 function isEmpty(value) {
@@ -89,7 +96,9 @@ const missing = expectedRows().filter(
 const incomplete = questions
   .map((q) => ({
     id: q.id,
-    missing: requiredFields.filter((field) => isEmpty(q[field])),
+    missing: [...requiredFields, ...(q.year === 2026 ? ['answerReviewUrl'] : [])].filter((field) =>
+      isEmpty(q[field]),
+    ),
   }))
   .filter((row) => row.missing.length > 0);
 

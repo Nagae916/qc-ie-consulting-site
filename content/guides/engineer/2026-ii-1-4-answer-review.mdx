@@ -177,11 +177,11 @@ layout: "editorial-learning"
 </LearningChapter>
 
 <LearningChapter id="review-learn" number="05" title="理解を深める" focus="答案で使った手法を、試験以外でも使える通常のKnowledgeへ戻します。">
-  <div className="space-y-5">
-    <a href="/guides/qc/qc-seven-tools" className="group block max-w-2xl"><span className="block text-base font-bold text-slate-950 group-hover:text-teal-800">QC七つ道具と特性要因図</span><span className="mt-1 block text-sm leading-6 text-slate-600">問題を見える化し、原因候補を整理する手法の位置付けを確認します。</span><span className="mt-1 block text-sm font-bold text-teal-700">関連読書として開く →</span></a>
-    <a href="/guides/stat/scatterplot" className="group block max-w-2xl"><span className="block text-base font-bold text-slate-950 group-hover:text-teal-800">散布図で二つの変数の関係を見る</span><span className="mt-1 block text-sm leading-6 text-slate-600">原因仮説と満足度の関係を確認する方法を学びます。</span><span className="mt-1 block text-sm font-bold text-teal-700">関連読書として開く →</span></a>
-    <a href="/guides/stat/control-chart-basics" className="group block max-w-2xl"><span className="block text-base font-bold text-slate-950 group-hover:text-teal-800">管理図で時間的な安定性を見る</span><span className="mt-1 block text-sm leading-6 text-slate-600">提供時間や改善後の状態を継続確認する方法を学びます。</span><span className="mt-1 block text-sm font-bold text-teal-700">関連読書として開く →</span></a>
-  </div>
+  <RelatedReadingList links={[
+    { title: "QC七つ道具と特性要因図", description: "問題を見える化し、原因候補を整理する手法の位置付けを確認します。", href: "/guides/qc/qc-seven-tools" },
+    { title: "散布図で二つの変数の関係を見る", description: "原因仮説と満足度の関係を確認する方法を学びます。", href: "/guides/stat/scatterplot" },
+    { title: "管理図で時間的な安定性を見る", description: "提供時間や改善後の状態を継続確認する方法を学びます。", href: "/guides/stat/control-chart-basics" }
+  ]} />
 
   <section className="mt-10" aria-labelledby="generalized-learning">
     <p className="text-[0.6875rem] font-bold tracking-[0.12em] text-slate-500">この問題から一般化できること</p>
@@ -197,7 +197,7 @@ layout: "editorial-learning"
   <LearningNextLinks
     links={[
       { label: "答案の型を確認する", text: "Ⅱ-1の答案型", href: "/guides/engineer/answer-structure-guide#6-選択科目ⅱ-1で使う骨子" },
-      { label: "完成答案を比較する", text: "答案型別の答案例", href: "/guides/engineer/model-answer-examples" },
+      { label: "次の実答案を読む", text: "Ⅱ-2-2 復元答案レビュー", href: "/guides/engineer/2026-ii-2-2-answer-review" },
       { label: "過去問へ戻る", text: "Ⅱ-1の問題を探す", href: "/guides/engineer/past-exam-trend-map?type=ii-1" }
     ]}
   />
