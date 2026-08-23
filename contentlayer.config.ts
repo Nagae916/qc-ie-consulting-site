@@ -179,6 +179,8 @@ export const Guide = defineDocumentType(() => ({
 export default makeSource({
   contentDirPath: "content",
   documentTypes: [Guide],
+  onUnknownDocuments: "fail",
+  onMissingOrIncompatibleData: "fail",
   mdx: {
     // MDX -> "コード"（React）として出力。ページ側で useMDXComponent(body.code) を使う前提
     remarkPlugins: [remarkGfm, remarkMath],

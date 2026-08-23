@@ -1,0 +1,9 @@
+# Contentlayer parses guide frontmatter before application-level normalization.
+# Keep guide sources on LF so checkout behavior is identical on Windows and Linux.
+content/guides/** text eol=lf
+
+# Validation entrypoints and workflow definitions must also be cross-platform.
+scripts/*.js text eol=lf
+scripts/*.cjs text eol=lf
+.github/workflows/*.yml text eol=lf
+package.json text eol=lf
