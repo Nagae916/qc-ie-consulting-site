@@ -136,7 +136,11 @@ Local HTTP verification returned 200 for all four review pages, `/sitemap.xml`, 
 
 ## 9. Linux and Preview verification
 
-The branch workflow runs the same production entrypoint on Ubuntu and the cross-platform content entrypoint on Windows. Linux counts, GitHub Checks, and Vercel Preview are recorded after the branch push. The checks use fixed 239-document, 238-published-guide, 266-static-page, 249-prerender-route, and 130-question baselines so an OS-specific skip fails the workflow.
+The branch workflow runs the same production entrypoint on Ubuntu and the cross-platform content entrypoint on Windows. The checks use fixed 239-document, 238-published-guide, 266-static-page, 249-prerender-route, and 130-question baselines so an OS-specific skip fails the workflow.
+
+GitHub Actions run `32644638247` completed successfully for both `check` (Ubuntu) and `windows-content` (Windows). Existing `Quality / scan` run `32644638249` also completed successfully. Passing both OS jobs confirms the same 239-document and 238-published-guide baselines; Ubuntu also confirmed the 266-page production build.
+
+Vercel Preview `https://qc-ie-consulting-site-ej9ygbc4j-nagae916s-projects.vercel.app` built commit `46cd47b` on Linux and reached Ready. Its build log recorded 239 Contentlayer documents, 266 static pages, and 146 kB First Load JS for the guide route. Authenticated `vercel curl` returned 200 for the four review pages, sitemap, and robots, and 404 for the draft route. The Preview sitemap contained all four reviews and contained neither the draft route nor the Prototype route.
 
 ## 10. Existing warnings and deferred work
 
