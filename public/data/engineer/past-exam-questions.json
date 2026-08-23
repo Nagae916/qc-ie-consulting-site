@@ -6,6 +6,230 @@
   },
   "questions": [
     {
+      "id": "r08-i-02",
+      "year": 2026,
+      "eraYear": "令和8年度",
+      "subjectType": "必須科目Ⅰ",
+      "field": "共通",
+      "fieldCode": "common",
+      "questionNumber": "I-2",
+      "officialPdfUrl": "https://www.engineer.or.jp/c_topics/011/attached/attach_11985_1.pdf",
+      "sourcePdfUrl": "https://www.engineer.or.jp/c_topics/011/attached/attach_11985_1.pdf",
+      "sourceChecked": true,
+      "officialSourceLabel": "令和8年度 15経営工学部門 必須科目",
+      "summary": "直接測定が難しい業務品質を代用特性で評価・管理する場面について、測定の妥当性、業務プロセス、組織行動の課題から、最重要課題、解決策、施策後リスク、倫理・社会的責任までを問う問題。",
+      "questionPattern": "課題抽出型",
+      "requiredActions": [
+        "多面的課題の抽出",
+        "最重要課題の選定と理由",
+        "複数の解決策提示",
+        "波及効果の説明",
+        "施策後リスクと対策",
+        "技術者倫理・社会的責任"
+      ],
+      "themeTags": [
+        "業務品質",
+        "代用特性",
+        "評価指標",
+        "組織行動"
+      ],
+      "methodTags": [
+        "KPI",
+        "KGI",
+        "QFD",
+        "相関分析",
+        "ロジックモデル"
+      ],
+      "policyTags": [
+        "サービス産業の生産性向上"
+      ],
+      "lawTags": [
+        "個人情報保護",
+        "技術者倫理"
+      ],
+      "answerFrameType": "必須科目Ⅰ型",
+      "skeletonTemplateId": "required-i-standard",
+      "assessedCompetencies": [
+        "professionalKnowledge",
+        "problemSolving",
+        "evaluation",
+        "communication",
+        "engineeringEthics"
+      ],
+      "competencyNotes": "必須科目Ⅰ型として、多面的課題から最重要課題を選び、複数解決策、施策後リスク、倫理・社会的責任までを一貫して表現することを重視する。",
+      "examPart": "必須科目Ⅰ",
+      "answerType": "課題解決型",
+      "targetChars": 1800,
+      "manuscriptPages": 3,
+      "answerReviewUrl": "/guides/engineer/2026-required-i-2-answer-review"
+    },
+    {
+      "id": "r08-ii1-plm-04",
+      "year": 2026,
+      "eraYear": "令和8年度",
+      "subjectType": "選択科目Ⅱ-1",
+      "field": "生産・物流マネジメント",
+      "fieldCode": "1501",
+      "questionNumber": "II-1-4",
+      "officialPdfUrl": "https://www.engineer.or.jp/c_topics/011/attached/attach_11985_2.pdf",
+      "sourcePdfUrl": "https://www.engineer.or.jp/c_topics/011/attached/attach_11985_2.pdf",
+      "sourceChecked": true,
+      "officialSourceLabel": "令和8年度 1501生産・物流マネジメント 選択科目Ⅱ-1",
+      "summary": "特性要因図について、一般的な4Mの分類項目と基本構造を説明し、飲食店の顧客満足度が低い要因を4Mの観点から具体化する問題。",
+      "questionPattern": "用語・手法説明型",
+      "requiredActions": [
+        "4Mの分類項目説明",
+        "特性要因図の基本構造説明",
+        "飲食店への適用",
+        "要因の具体例提示"
+      ],
+      "themeTags": [
+        "サービス品質",
+        "特性要因図",
+        "4M",
+        "顧客満足"
+      ],
+      "methodTags": [
+        "QC七つ道具",
+        "特性要因図",
+        "4M"
+      ],
+      "policyTags": [
+        "サービス産業"
+      ],
+      "lawTags": [
+        "消費者保護"
+      ],
+      "answerFrameType": "選択科目Ⅱ-1型",
+      "skeletonTemplateId": "elective-ii-1-short",
+      "assessedCompetencies": [
+        "professionalKnowledge",
+        "communication"
+      ],
+      "competencyNotes": "選択科目Ⅱ-1型として、設問の動詞に沿って4M、基本構造、適用例を簡潔に説明することを重視する。",
+      "examPart": "選択科目Ⅱ-1",
+      "answerType": "用語・手法説明型",
+      "targetChars": 600,
+      "manuscriptPages": 1,
+      "answerReviewUrl": "/guides/engineer/2026-ii-1-4-answer-review"
+    },
+    {
+      "id": "r08-ii2-plm-02",
+      "year": 2026,
+      "eraYear": "令和8年度",
+      "subjectType": "選択科目Ⅱ-2",
+      "field": "生産・物流マネジメント",
+      "fieldCode": "1501",
+      "questionNumber": "II-2-2",
+      "officialPdfUrl": "https://www.engineer.or.jp/c_topics/011/attached/attach_11985_2.pdf",
+      "sourcePdfUrl": "https://www.engineer.or.jp/c_topics/011/attached/attach_11985_2.pdf",
+      "sourceChecked": true,
+      "officialSourceLabel": "令和8年度 1501生産・物流マネジメント 選択科目Ⅱ-2",
+      "summary": "部品サプライヤの納品遅延などで製品出荷が遅れている家電メーカーを題材に、サプライチェーン強化のための調査・検討、業務遂行手順、留意点・工夫、関係者調整を問う問題。",
+      "questionPattern": "手順説明型",
+      "requiredActions": [
+        "調査・検討事項の列挙",
+        "必要性と内容の説明",
+        "業務遂行手順の提示",
+        "留意点・工夫点の説明",
+        "関係者との連携・調整"
+      ],
+      "themeTags": [
+        "サプライチェーン強靭化",
+        "納品遅延",
+        "調達管理",
+        "生産能力",
+        "品質管理"
+      ],
+      "methodTags": [
+        "SCM",
+        "WMS",
+        "MRP",
+        "APS",
+        "KPI管理"
+      ],
+      "policyTags": [
+        "サプライチェーン強靭化",
+        "ものづくり白書"
+      ],
+      "lawTags": [
+        "取引適正化"
+      ],
+      "answerFrameType": "選択科目Ⅱ-2型",
+      "skeletonTemplateId": "elective-ii-2-procedure",
+      "assessedCompetencies": [
+        "professionalKnowledge",
+        "problemSolving",
+        "management",
+        "evaluation",
+        "communication"
+      ],
+      "competencyNotes": "選択科目Ⅱ-2型として、調査結果を分析・検討、実施手順、留意点・工夫、関係者調整へ接続することを重視する。",
+      "examPart": "選択科目Ⅱ-2",
+      "answerType": "業務遂行手順型",
+      "targetChars": 1200,
+      "manuscriptPages": 2,
+      "answerReviewUrl": "/guides/engineer/2026-ii-2-2-answer-review"
+    },
+    {
+      "id": "r08-iii-plm-01",
+      "year": 2026,
+      "eraYear": "令和8年度",
+      "subjectType": "選択科目Ⅲ",
+      "field": "生産・物流マネジメント",
+      "fieldCode": "1501",
+      "questionNumber": "III-1",
+      "officialPdfUrl": "https://www.engineer.or.jp/c_topics/011/attached/attach_11985_2.pdf",
+      "sourcePdfUrl": "https://www.engineer.or.jp/c_topics/011/attached/attach_11985_2.pdf",
+      "sourceChecked": true,
+      "officialSourceLabel": "令和8年度 1501生産・物流マネジメント 選択科目Ⅲ",
+      "summary": "受注生産の中堅鋳物メーカーを題材に、鋳型取り数、炉一回の溶解量、注文数量の不整合や情報伝達を踏まえ、複数課題、最重要課題と理由、三つの解決策、施策後リスクを問う問題。",
+      "questionPattern": "課題抽出型",
+      "requiredActions": [
+        "多面的な課題と原因の抽出",
+        "最重要課題の選定と理由",
+        "三つの解決策提示",
+        "施策後リスクと対策"
+      ],
+      "themeTags": [
+        "ロットサイズ",
+        "受注生産",
+        "リードタイム短縮",
+        "コスト削減",
+        "生産管理"
+      ],
+      "methodTags": [
+        "MIP",
+        "GT",
+        "SMED",
+        "TOC",
+        "APS",
+        "MES"
+      ],
+      "policyTags": [
+        "ものづくり白書"
+      ],
+      "lawTags": [
+        "労働安全衛生"
+      ],
+      "answerFrameType": "選択科目Ⅲ型",
+      "skeletonTemplateId": "elective-iii-analysis",
+      "assessedCompetencies": [
+        "professionalKnowledge",
+        "problemSolving",
+        "management",
+        "evaluation",
+        "leadership",
+        "engineeringEthics"
+      ],
+      "competencyNotes": "選択科目Ⅲ型として、制約条件から複数課題を抽出し、最重要課題の選定理由、専門技術を用いた解決策、施策後リスクを一貫して表現することを重視する。",
+      "examPart": "選択科目Ⅲ",
+      "answerType": "課題解決提案型",
+      "targetChars": 1800,
+      "manuscriptPages": 3,
+      "answerReviewUrl": "/guides/engineer/2026-iii-1-answer-review"
+    },
+    {
       "id": "r07-i-01",
       "year": 2025,
       "eraYear": "令和7年度",

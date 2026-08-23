@@ -1,0 +1,206 @@
+---
+title: "2026年度 技術士Ⅱ-1-4 復元答案レビュー｜特性要因図と4M"
+description: "令和8年度 技術士第二次試験・経営工学部門のⅡ-1-4について、試験後の復元答案を答案型と通常Knowledgeから振り返り、改善骨子とN-IE Lab参考解答を示します。"
+tags: ["技術士", "経営工学", "復元答案", "特性要因図", "4M", "QC七つ道具"]
+exam: "engineer"
+slug: "2026-ii-1-4-answer-review"
+status: "published"
+date: "2026-08-15"
+updatedAt: "2026-08-16"
+layout: "editorial-learning"
+---
+
+<LearningArticleHeader
+  eyebrow="2026 / 選択科目Ⅱ-1-4 / 復元答案レビュー"
+  title="特性要因図を、どう説明すればよかったか"
+  lead="実際の復元答案を読み直し、Ⅱ-1型の組み立て方と、原因候補をデータで検証するところまでを一つの教材として整理します。"
+  facts={[
+    { label: "問題要求", value: "基本構造と4Mを説明し、飲食店へ適用する" },
+    { label: "答案の型", value: "選択科目Ⅱ-1型" },
+    { label: "この教材の焦点", value: "原因仮説と真因を分ける" }
+  ]}
+/>
+
+<ArticleContents
+  items={[
+    { number: "01", label: "問題をつかむ", id: "review-question" },
+    { number: "02", label: "実際にどう書いたか", id: "review-answer" },
+    { number: "03", label: "どこを改善するか", id: "review-improve" },
+    { number: "04", label: "今ならどう書くか", id: "review-rewrite" },
+    { number: "05", label: "理解を深める", id: "review-learn" }
+  ]}
+>
+
+<LearningChapter id="review-question" number="01" title="問題をつかむ" focus="設問が求める二つの説明対象と、使うべき答案の型を先に確認します。">
+  <p className="text-lg font-bold leading-8 text-slate-950">特性要因図の基本構造と4Mを説明し、飲食店の顧客満足度が低い要因を4Mから分析する問題です。</p>
+  <p className="mt-4 text-base leading-8 text-slate-700">用語の暗記だけでなく、特性要因図が何を整理する手法か、4Mをどう使い、サービス品質の問題へどう当てはめるかまでが問われています。</p>
+  <p className="mt-5 text-sm font-bold leading-7 text-slate-800">このレビューで分かること：原因候補を挙げた後、何を根拠に真因と判断するか。</p>
+  <div className="mt-5 flex flex-wrap gap-x-6 gap-y-3 text-sm font-bold">
+    <a className="text-teal-800 underline decoration-teal-300 underline-offset-4" href="/guides/engineer/answer-structure-guide#6-選択科目ⅱ-1で使う骨子">Ⅱ-1答案型を確認する</a>
+    <a className="text-slate-600 underline decoration-slate-300 underline-offset-4" href="https://www.engineer.or.jp/c_topics/011/attached/attach_11985_2.pdf">令和8年度の公式問題を確認する</a>
+  </div>
+  <aside className="mt-7 border-l-2 border-amber-500 pl-4 text-sm leading-7 text-slate-600">
+    <p className="font-bold text-slate-900">このレビューの位置付け</p>
+    <p className="mt-2">本文は試験後に作成した復元答案です。試験当日の記述を完全に逐語再現したものではありません。評価はN-IE Lab独自のものであり、公式採点や合否を保証するものではありません。改善後の参考解答には、試験後の検討を含みます。</p>
+  </aside>
+</LearningChapter>
+
+<LearningChapter id="review-answer" number="02" title="実際にどう書いたか" focus="復元答案の内容と、答案に表れた説明順序を分けて読みます。">
+  <AnswerBlock variant="reconstructed" title="復元答案" subtitle="ORIGINAL" note="試験後に作成した復元答案です。試験当日の記述を完全に逐語再現したものではありません。">
+    <div className="space-y-7">
+      <section>
+        <h3 className="text-base font-bold leading-7 text-slate-950">（1）特性要因図の基本構造と4Mの分類項目</h3>
+        <div className="mt-3 space-y-2 text-sm leading-6 text-slate-700">
+          <p>①ヒト：作業員の習熟度、教育体制、標準作業書、作業員工数など人的リソースが該当する。</p>
+          <p>②モノ：生産設備や治工具、部品や保管棚など生産に関わる機器や備品が該当する。</p>
+          <p>③原材料：生産に投入される原料や中間品、仕掛品などが該当する。</p>
+          <p>④方法：生産方法や修理方法、ノウハウなどの手法が該当する。</p>
+          <p>特性要因図は、発生した事象、トラブルを幹として、その要因を上記の4Mに分類し、枝分かれして記述する手法である。これにより、要因をもれなく重複なく拾い上げ、真因の究明を図ることが出来る。</p>
+          <p className="italic text-slate-500">（特性要因図を記載）</p>
+        </div>
+      </section>
+      <section>
+        <h3 className="text-base font-bold leading-7 text-slate-950">（2）飲食店で顧客満足度が低い要因分析</h3>
+        <div className="mt-3 space-y-2 text-sm leading-6 text-slate-700">
+          <p>①ヒト：従業員の教育が不十分であり、サービスの質が要求水準を満たしていない。</p>
+          <p>②モノ：自動調理機器の稼働効率が悪く、提供に時間を要している。</p>
+          <p>③原材料：食材の鮮度が一定でないため、味にばらつきがある。</p>
+          <p>④方法：調理方法が従業員の裁量に任されており、調理者によって焼きムラなどが生じる。</p>
+          <p className="text-right">以上</p>
+        </div>
+      </section>
+    </div>
+  </AnswerBlock>
+
+  <section className="mt-9" aria-labelledby="answer-design">
+    <p className="text-[0.6875rem] font-bold tracking-[0.12em] text-slate-500">答案に表れた設計</p>
+    <h3 id="answer-design" className="mt-2 text-lg font-bold text-slate-950">何を選び、どの順で説明したか</h3>
+    <p className="mt-2 text-sm leading-7 text-slate-600">内面的な思考過程は資料に残っていないため、答案本文に表れた選択と順序だけを分析します。</p>
+    <dl className="mt-5 grid gap-x-8 gap-y-5 sm:grid-cols-2">
+      <div><dt className="text-sm font-bold text-slate-950">設問への対応</dt><dd className="mt-1 text-sm leading-6 text-slate-600">基本構造・4Mと、飲食店での要因分析を同じ4区分で対応させています。</dd></div>
+      <div><dt className="text-sm font-bold text-slate-950">構成</dt><dd className="mt-1 text-sm leading-6 text-slate-600">4Mの具体例を先に示し、その後で特性要因図の説明、適用例へ進んでいます。</dd></div>
+      <div><dt className="text-sm font-bold text-slate-950">専門語</dt><dd className="mt-1 text-sm leading-6 text-slate-600">4M、標準作業書、習熟度、稼働効率、要求水準を使い、抽象語だけで終わらせていません。</dd></div>
+      <div><dt className="text-sm font-bold text-slate-950">効果確認</dt><dd className="mt-1 text-sm leading-6 text-slate-600">原因候補は挙げていますが、顧客満足度との関係を観察・測定して確かめる段階は書かれていません。</dd></div>
+    </dl>
+  </section>
+</LearningChapter>
+
+<LearningChapter id="review-improve" number="03" title="どこを改善するか" focus="良い部分を残しながら、原因候補を真因と判断してしまう箇所を見直します。">
+  <div>
+    <section className="pb-6">
+      <p className="text-[0.6875rem] font-black tracking-[0.12em] text-teal-800">振り返り 01</p>
+      <h3 className="mt-2 text-lg font-bold text-slate-950 md:text-xl">設問へ直接答える構成</h3>
+      <dl className="mt-4 grid gap-x-8 gap-y-3 sm:grid-cols-2">
+        <div><dt className="text-xs font-bold text-slate-500">できていたこと</dt><dd className="mt-1 text-sm leading-6 text-slate-700">基本構造・4Mと飲食店への適用を分け、二つの設問へ対応しています。</dd></div>
+        <div><dt className="text-xs font-bold text-slate-500">見直したいこと</dt><dd className="mt-1 text-sm leading-6 text-slate-700">4Mの例示が先に来るため、特性要因図を何のために使うかが後から分かる構成です。</dd></div>
+        <div><dt className="text-xs font-bold text-slate-500">なぜか</dt><dd className="mt-1 text-sm leading-6 text-slate-700">短答では、冒頭の定義が後続の分類と適用例を読む基準になります。</dd></div>
+        <div><dt className="text-xs font-bold text-slate-500">今なら</dt><dd className="mt-1 text-sm leading-6 text-slate-700">最初に手法を一文で定義し、4M、作り方、適用例の順に置きます。</dd></div>
+      </dl>
+    </section>
+    <section className="pb-6 pt-6">
+      <div aria-hidden="true" className="mb-6 h-px bg-slate-200" />
+      <p className="text-[0.6875rem] font-black tracking-[0.12em] text-teal-800">振り返り 02</p>
+      <h3 className="mt-2 text-lg font-bold text-slate-950 md:text-xl">原因仮説と真因を分ける</h3>
+      <dl className="mt-4 grid gap-x-8 gap-y-3 sm:grid-cols-2">
+        <div><dt className="text-xs font-bold text-slate-500">できていたこと</dt><dd className="mt-1 text-sm leading-6 text-slate-700">教育、設備、食材、調理方法を、顧客満足度へ影響する具体的な候補に変換しています。</dd></div>
+        <div><dt className="text-xs font-bold text-slate-500">見直したいこと</dt><dd className="mt-1 text-sm leading-6 text-slate-700">「真因の究明を図ることが出来る」は、図だけで真因を確定できるようにも読めます。</dd></div>
+        <div><dt className="text-xs font-bold text-slate-500">なぜか</dt><dd className="mt-1 text-sm leading-6 text-slate-700">特性要因図は関係者の知見から原因仮説を整理する手法であり、因果を証明する手法ではありません。</dd></div>
+        <div><dt className="text-xs font-bold text-slate-500">今なら</dt><dd className="mt-1 text-sm leading-6 text-slate-700">図で検証対象を絞り、現地観察、聞取り、測定で重要要因を確かめると示します。</dd></div>
+      </dl>
+    </section>
+    <section className="pb-6 pt-6">
+      <div aria-hidden="true" className="mb-6 h-px bg-slate-200" />
+      <p className="text-[0.6875rem] font-black tracking-[0.12em] text-teal-800">振り返り 03</p>
+      <h3 className="mt-2 text-lg font-bold text-slate-950 md:text-xl">データで検証する出口を置く</h3>
+      <dl className="mt-4 grid gap-x-8 gap-y-3 sm:grid-cols-2">
+        <div><dt className="text-xs font-bold text-slate-500">できていたこと</dt><dd className="mt-1 text-sm leading-6 text-slate-700">教育不足から接客品質、設備稼働から提供時間という因果の方向があります。</dd></div>
+        <div><dt className="text-xs font-bold text-slate-500">見直したいこと</dt><dd className="mt-1 text-sm leading-6 text-slate-700">候補を挙げた後、満足度との関係をどのデータで確かめるかがありません。</dd></div>
+        <div><dt className="text-xs font-bold text-slate-500">なぜか</dt><dd className="mt-1 text-sm leading-6 text-slate-700">検証方法がなければ、もっともらしい候補を並べただけで分析が止まります。</dd></div>
+        <div><dt className="text-xs font-bold text-slate-500">今なら</dt><dd className="mt-1 text-sm leading-6 text-slate-700">満足度を味・待ち時間・接客へ層別し、チェックシート、散布図、管理図で確認します。</dd></div>
+      </dl>
+    </section>
+    <section className="pb-6 pt-6">
+      <div aria-hidden="true" className="mb-6 h-px bg-slate-200" />
+      <p className="text-[0.6875rem] font-black tracking-[0.12em] text-teal-800">振り返り 04</p>
+      <h3 className="mt-2 text-lg font-bold text-slate-950 md:text-xl">分類の完全性を目的にしない</h3>
+      <dl className="mt-4 grid gap-x-8 gap-y-3 sm:grid-cols-2">
+        <div><dt className="text-xs font-bold text-slate-500">できていたこと</dt><dd className="mt-1 text-sm leading-6 text-slate-700">4Mを使って原因候補を広く見ようとしています。</dd></div>
+        <div><dt className="text-xs font-bold text-slate-500">見直したいこと</dt><dd className="mt-1 text-sm leading-6 text-slate-700">原因は複数区分に関係するため、「もれなく重複なく」を形式的に保証することは困難です。</dd></div>
+        <div><dt className="text-xs font-bold text-slate-500">なぜか</dt><dd className="mt-1 text-sm leading-6 text-slate-700">分類の美しさより、重要な仮説を取りこぼさず検証できることが実務上重要です。</dd></div>
+        <div><dt className="text-xs font-bold text-slate-500">今なら</dt><dd className="mt-1 text-sm leading-6 text-slate-700">関係者で不足を補い、重複を許容しながらデータで優先順位を付けます。</dd></div>
+      </dl>
+    </section>
+  </div>
+
+  <figure className="mt-4 py-6">
+    <div aria-hidden="true" className="h-px bg-slate-400" />
+    <figcaption className="pt-6">
+      <p className="text-[0.6875rem] font-black tracking-[0.12em] text-teal-800">図1 <span className="ml-2 text-slate-400">FIGURE 01</span></p>
+      <h3 className="mt-2 text-xl font-bold text-slate-950">特性要因図から真因判断まで</h3>
+    </figcaption>
+    <ol className="mt-6 grid gap-2 sm:grid-cols-6 sm:gap-4" aria-label="原因候補を整理してデータで検証し、真因を判断して改善する流れ">
+      <li className="relative grid grid-cols-[2.25rem_1fr] gap-3 pb-2 sm:block sm:pb-0"><span className="text-xs font-black text-teal-800">01</span><div className="sm:mt-2"><p className="text-sm font-bold leading-6 text-slate-950">品質特性</p><p className="mt-0.5 text-xs leading-5 text-slate-500">顧客満足度が低い</p></div><span aria-hidden="true" className="absolute bottom-0 left-[0.85rem] top-6 w-px bg-slate-200 sm:hidden" /><span aria-hidden="true" className="absolute -right-3 top-1 hidden text-sm text-slate-300 sm:block">→</span></li>
+      <li className="relative grid grid-cols-[2.25rem_1fr] gap-3 pb-2 sm:block sm:pb-0"><span className="text-xs font-black text-teal-800">02</span><div className="sm:mt-2"><p className="text-sm font-bold leading-6 text-slate-950">原因候補</p><p className="mt-0.5 text-xs leading-5 text-slate-500">4Mで仮説を広げる</p></div><span aria-hidden="true" className="absolute bottom-0 left-[0.85rem] top-6 w-px bg-slate-200 sm:hidden" /><span aria-hidden="true" className="absolute -right-3 top-1 hidden text-sm text-slate-300 sm:block">→</span></li>
+      <li className="relative grid grid-cols-[2.25rem_1fr] gap-3 pb-2 sm:block sm:pb-0"><span className="text-xs font-black text-teal-800">03</span><div className="sm:mt-2"><p className="text-sm font-bold leading-6 text-slate-950">観察・測定</p><p className="mt-0.5 text-xs leading-5 text-slate-500">事実を集める</p></div><span aria-hidden="true" className="absolute bottom-0 left-[0.85rem] top-6 w-px bg-slate-200 sm:hidden" /><span aria-hidden="true" className="absolute -right-3 top-1 hidden text-sm text-slate-300 sm:block">→</span></li>
+      <li className="relative grid grid-cols-[2.25rem_1fr] gap-3 pb-2 sm:block sm:pb-0"><span className="text-xs font-black text-teal-800">04</span><div className="sm:mt-2"><p className="text-sm font-bold leading-6 text-slate-950">関係を検証</p><p className="mt-0.5 text-xs leading-5 text-slate-500">図表で確かめる</p></div><span aria-hidden="true" className="absolute bottom-0 left-[0.85rem] top-6 w-px bg-slate-200 sm:hidden" /><span aria-hidden="true" className="absolute -right-3 top-1 hidden text-sm text-slate-300 sm:block">→</span></li>
+      <li className="relative grid grid-cols-[2.25rem_1fr] gap-3 pb-2 sm:block sm:pb-0"><span className="text-xs font-black text-teal-800">05</span><div className="sm:mt-2"><p className="text-sm font-bold leading-6 text-slate-950">真因判断</p><p className="mt-0.5 text-xs leading-5 text-slate-500">重要要因を選ぶ</p></div><span aria-hidden="true" className="absolute bottom-0 left-[0.85rem] top-6 w-px bg-slate-200 sm:hidden" /><span aria-hidden="true" className="absolute -right-3 top-1 hidden text-sm text-slate-300 sm:block">→</span></li>
+      <li className="relative grid grid-cols-[2.25rem_1fr] gap-3 pb-2 sm:block sm:pb-0"><span className="text-xs font-black text-teal-800">06</span><div className="sm:mt-2"><p className="text-sm font-bold leading-6 text-slate-950">改善・再測定</p><p className="mt-0.5 text-xs leading-5 text-slate-500">効果を確認する</p></div></li>
+    </ol>
+    <p className="mt-6 max-w-2xl text-sm font-bold leading-6 text-slate-800">特性要因図で得られるのは原因候補です。真因の判断には、観察や測定による検証が必要になります。</p>
+    <p className="mt-3 text-xs italic leading-6 text-slate-500">特性要因図は真因そのものではなく、検証すべき仮説を整理するために使います。</p>
+    <div aria-hidden="true" className="mt-6 h-px bg-slate-300" />
+  </figure>
+</LearningChapter>
+
+<LearningChapter id="review-rewrite" number="04" title="今ならどう書くか" focus="参考解答を読む前に、短答に必要な五つの要素を自分の順序で確認します。">
+  <section aria-labelledby="answer-frame">
+    <p className="text-[0.6875rem] font-bold tracking-[0.12em] text-slate-500">答案骨子</p>
+    <h3 id="answer-frame" className="mt-2 text-xl font-bold text-slate-950">今ならこう組み立てる</h3>
+    <ol className="mt-5 space-y-3">
+      <li className="grid grid-cols-[2.25rem_1fr] gap-3 sm:grid-cols-[2.75rem_1fr]"><span className="pt-0.5 text-sm font-black text-teal-800">01</span><p className="text-sm leading-6 text-slate-600"><span className="mr-2 font-bold text-slate-950">定義</span>特性要因図は、結果と原因仮説の関係を魚骨状に整理する手法と示す。</p></li>
+      <li className="grid grid-cols-[2.25rem_1fr] gap-3 sm:grid-cols-[2.75rem_1fr]"><span className="pt-0.5 text-sm font-black text-teal-800">02</span><p className="text-sm leading-6 text-slate-600"><span className="mr-2 font-bold text-slate-950">4M</span>Man、Machine、Material、Methodの意味を短く説明する。</p></li>
+      <li className="grid grid-cols-[2.25rem_1fr] gap-3 sm:grid-cols-[2.75rem_1fr]"><span className="pt-0.5 text-sm font-black text-teal-800">03</span><p className="text-sm leading-6 text-slate-600"><span className="mr-2 font-bold text-slate-950">作り方</span>特性を魚頭に置き、4Mから「なぜ」を展開すると説明する。</p></li>
+      <li className="grid grid-cols-[2.25rem_1fr] gap-3 sm:grid-cols-[2.75rem_1fr]"><span className="pt-0.5 text-sm font-black text-teal-800">04</span><p className="text-sm leading-6 text-slate-600"><span className="mr-2 font-bold text-slate-950">適用</span>接客、調理設備、食材、標準レシピの観点で原因候補を示す。</p></li>
+      <li className="grid grid-cols-[2.25rem_1fr] gap-3 sm:grid-cols-[2.75rem_1fr]"><span className="pt-0.5 text-sm font-black text-teal-800">05</span><p className="text-sm leading-6 text-slate-600"><span className="mr-2 font-bold text-slate-950">留意点</span>図の要因は仮説であり、観察とデータで検証して改善後も再測定する。</p></li>
+    </ol>
+  </section>
+  <p className="mt-7 text-sm font-bold leading-7 text-slate-800">図で終わらず、原因候補をどのデータで確かめるかまで一文で示します。</p>
+
+  <AnswerBlock variant="reference" title="N-IE Lab参考解答" subtitle="REFERENCE" heading="復元答案の直接性を残し、検証まで補う" note="試験後の検討を反映したN-IE Lab独自の参考解答・569字です。唯一の正解ではなく、公式採点や合格を保証するものではありません。">
+    <div className="space-y-3 text-sm leading-6 text-slate-700">
+      <p>特性要因図は、解決すべき品質特性と、それに影響すると考えられる要因の関係を魚骨状に体系化し、原因仮説を網羅的に抽出するQC七つ道具である。4Mは、①Man（人：技能、教育、作業負荷）、②Machine（機械：設備、治工具、保全状態）、③Material（材料：食材、部品、仕掛品の品質）、④Method（方法：手順、条件、管理方法）である。</p>
+      <p>作成時は、右端の魚頭に「顧客満足度が低い」と結果を具体的に記す。そこへ背骨を引き、4Mを大骨として配置する。次に、現地観察、顧客の声及び従業員への聞取りから「なぜ」を繰り返し、中骨、小骨へ具体的要因を展開する。</p>
+      <p>飲食店では、Manは接客教育不足により応対が不統一、Machineは調理機器の故障や能力不足により提供が遅い、Materialは食材の鮮度や規格のばらつきにより味が安定しない、Methodは標準レシピ、注文伝達及び衛生管理が不徹底、と整理できる。</p>
+      <p>ただし、図に挙げた要因は仮説であり真因ではない。満足度を味、待ち時間、接客等に層別し、チェックシートで発生頻度を収集する。さらに、待ち時間と満足度の散布図、提供時間の管理図等で影響を検証し、重要要因を改善する。分類の重複を避けるより、関係者で不足要因を補い、データで真因を確定することが留意点である。改善後は同条件で再測定し、効果を確認する。</p>
+    </div>
+  </AnswerBlock>
+</LearningChapter>
+
+<LearningChapter id="review-learn" number="05" title="理解を深める" focus="答案で使った手法を、試験以外でも使える通常のKnowledgeへ戻します。">
+  <RelatedReadingList links={[
+    { title: "QC七つ道具と特性要因図", description: "問題を見える化し、原因候補を整理する手法の位置付けを確認します。", href: "/guides/qc/qc-seven-tools" },
+    { title: "散布図で二つの変数の関係を見る", description: "原因仮説と満足度の関係を確認する方法を学びます。", href: "/guides/stat/scatterplot" },
+    { title: "管理図で時間的な安定性を見る", description: "提供時間や改善後の状態を継続確認する方法を学びます。", href: "/guides/stat/control-chart-basics" }
+  ]} />
+
+  <section className="mt-10" aria-labelledby="generalized-learning">
+    <p className="text-[0.6875rem] font-bold tracking-[0.12em] text-slate-500">この問題から一般化できること</p>
+    <h3 id="generalized-learning" className="mt-2 text-xl font-bold text-slate-950">次の短答へ持ち帰る四つの視点</h3>
+    <ol className="mt-5 space-y-3 text-sm leading-7 text-slate-700">
+      <li><span className="mr-2 font-bold text-teal-800">01</span>Ⅱ-1では、設問の動詞と指定項目を先に拾い、問われていない要素を機械的に足さない。</li>
+      <li><span className="mr-2 font-bold text-teal-800">02</span>要因分析の図は、原因を証明するものではなく、検証すべき仮説を整理するために使う。</li>
+      <li><span className="mr-2 font-bold text-teal-800">03</span>具体例では、分類名を挙げるだけでなく、どの品質特性へ影響するかまでつなぐ。</li>
+      <li><span className="mr-2 font-bold text-teal-800">04</span>短い答案でも、最後に検証方法と留意点を一文置くと、専門手法の適用範囲が伝わる。</li>
+    </ol>
+  </section>
+
+  <LearningNextLinks
+    links={[
+      { label: "答案の型を確認する", text: "Ⅱ-1の答案型", href: "/guides/engineer/answer-structure-guide#6-選択科目ⅱ-1で使う骨子" },
+      { label: "次の実答案を読む", text: "Ⅱ-2-2 復元答案レビュー", href: "/guides/engineer/2026-ii-2-2-answer-review" },
+      { label: "過去問へ戻る", text: "Ⅱ-1の問題を探す", href: "/guides/engineer/past-exam-trend-map?type=ii-1" }
+    ]}
+  />
+</LearningChapter>
+
+</ArticleContents>

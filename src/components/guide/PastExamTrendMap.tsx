@@ -22,6 +22,7 @@ type PastExamQuestion = {
   methodTags: string[];
   skeletonTemplateId: string;
   assessedCompetencies?: string[];
+  answerReviewUrl?: string;
 };
 
 type PastExamData = {
@@ -257,10 +258,12 @@ function QuestionCard({ question }: { question: PastExamQuestion }) {
         <p className="text-xs font-bold text-slate-500">参考にする</p>
         <div className="mt-2 flex flex-wrap gap-x-5 gap-y-2">
           <Link
-            href="/guides/engineer/model-answer-examples"
+            href={question.answerReviewUrl ?? '/guides/engineer/model-answer-examples'}
             className="text-sm font-semibold text-slate-600 underline underline-offset-4"
           >
-            同じ答案型の例を確認する
+            {question.answerReviewUrl
+              ? 'この問題の復元答案レビューを読む'
+              : '同じ答案型の例を確認する'}
           </Link>
           <a
             href={question.officialPdfUrl}
@@ -414,7 +417,7 @@ export default function PastExamTrendMap() {
     <section aria-labelledby="past-exam-navigator-title" className="not-prose space-y-6">
       <div className="border-b border-slate-200 pb-5">
         <p className="text-sm font-semibold text-emerald-700">
-          令和元年度から令和7年度までの{questions.length}問
+          令和元年度以降の{questions.length}問
         </p>
         <h2 id="past-exam-navigator-title" className="mt-2 text-2xl font-bold text-slate-950">
           過去問を選ぶ

@@ -12,6 +12,12 @@ type RelatedKnowledge = {
   href: string;
 };
 
+type ReviewExample = {
+  label: string;
+  description: string;
+  href: string;
+};
+
 type AnswerFrameRule = {
   id: string;
   label: string;
@@ -31,6 +37,7 @@ type AnswerFrameRule = {
     text: string;
   };
   relatedKnowledge: RelatedKnowledge[];
+  reviewExamples?: ReviewExample[];
   relatedCompetencies: string[];
   usefulKeywords: string[];
   targetChars: number;
@@ -235,6 +242,21 @@ function Detail({ frame }: { frame: AnswerFrameRule }) {
             </span>
           ))}
         </div>
+        {frame.reviewExamples?.length ? (
+          <div className="mt-5 border-t border-slate-200 pt-5">
+            <p className="text-xs font-bold text-slate-500">この型を使った実例</p>
+            <ul className="mt-3 space-y-3">
+              {frame.reviewExamples.map((example) => (
+                <li key={example.href}>
+                  <Link className="font-bold text-emerald-700 underline-offset-4 hover:underline" href={example.href}>
+                    {example.label}
+                  </Link>
+                  <p className="mt-1 text-sm leading-6 text-slate-600">{example.description}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
         <p className="mt-4 text-xs leading-5 text-slate-500">この型で示す力：{competencies.join('、')}</p>
       </section>
     </section>
