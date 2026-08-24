@@ -159,3 +159,14 @@
 - Migration: まず2026年度Ⅱ-1-4答案レビューへ適用し、UX確認後に残り3答案レビューへ段階展開する。既存URL、SEOメタデータ、本文資料、Knowledge、答案型の正本を維持する。
 - Verification: Desktopと390px Mobileの読解順序、復元答案と参考解答の識別、図の意味、CTA数、horizontal overflow、typecheck、lint、build、route、canonical、sitemapを確認する。
 - Supersedes: なし。既存のDesign PrinciplesとProtected Defaultsを補完する。
+
+## 2026-08-23：ガイドソースと検証入口をOS間で統一する
+
+- Status: Accepted
+- Context: Git indexはLFでも、`core.autocrlf=true`のWindows checkoutで一部MDXがCRLFとなり、ContentlayerのYAML解析前段で文書がskipされてもbuildが成功する状態があった。検査用のMDX guardも暗黙にファイルを書き換えていた。
+- Decision: `content/guides/**`をGit checkout時にLFへ固定し、UTF-8 BOMなし・LF・末尾改行を読み取り専用で検査する。frontmatterはContentlayerと同じ`gray-matter`と`yaml.parse`の境界で検証し、Contentlayerの不完全文書をfailさせる。`npm run check:ci`を本番検証の正本とし、WindowsではContentlayer件数と公開件数を同じ基準で確認する。自動修正は明示コマンドだけに分離する。
+- Reason: 一時LF化、バックアップ、復元に依存せず、WindowsとLinuxで同じ239文書・266ページを再現し、検査やbuildが追跡ファイルを変更しない状態を保つため。
+- Affected areas: `.gitattributes`、`.editorconfig`、frontmatter・MDX検査、npm scripts、Contentlayerの失敗方針、GitHub Actions、ビルド監査文書。
+- Migration: ガイド本文、frontmatter値、URL、sitemap、依存関係は変更しない。Git indexに既存のLF本文を維持し、checkout規則だけを明示する。既存のunused code・依存・循環参照検査はadvisory運用を維持する。
+- Verification: Windowsの`check:ci`と連続2回build、UbuntuとWindowsのGitHub Actions、239文書、238公開ガイド、266ページ、130問、draft除外、4レビューpage-data、build前後SHA-256とGit差分を確認する。
+- Supersedes: 一時的なLF変換と元バイト復元を必要とする手順。frontmatter値のfail-safe正規化方針は維持する。

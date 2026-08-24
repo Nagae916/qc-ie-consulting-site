@@ -1,64 +1,90 @@
-const assert = require("node:assert/strict");
-const test = require("node:test");
+'use strict';
+
+const assert = require('node:assert/strict');
+const test = require('node:test');
 
 const {
   isPublishedGuideStatus,
   normalizeFrontmatterBooleanValue,
   normalizeFrontmatterEnumValue,
   normalizeGuideStatus,
-} = require("../src/lib/frontmatter-normalization.ts");
+} = require('../src/lib/frontmatter-normalization.ts');
+const { parseFrontmatterText } = require('./check-frontmatter.js');
+const { inspectTextFormat } = require('./check-source-format.cjs');
 
-test("normalizes guide status across line endings and boundary whitespace", () => {
-  assert.equal(normalizeGuideStatus("draft"), "draft");
-  assert.equal(normalizeGuideStatus("draft\r"), "draft");
-  assert.equal(normalizeGuideStatus("  draft\t"), "draft");
-  assert.equal(normalizeGuideStatus("\uFEFFdraft"), "draft");
+function documentWith(lines, eol = '\n', body = '# Body\n') {
+  return ['---', ...lines, '---', body].join(eol);
+}
+
+test('parses LF frontmatter through the same gray-matter and YAML boundary as Contentlayer', () => {
+  const source = documentWith([
+    'title: "Fixture"',
+    'status: "published"',
+    'featured: true',
+    'draft: false',
+    'layout: "editorial-learning"',
+  ]);
+  const parsed = parseFrontmatterText(source);
+  assert.equal(parsed.data.status, 'published');
+  assert.equal(parsed.data.featured, true);
+  assert.equal(parsed.content, '# Body\n');
 });
 
-test("accepts known guide status values and rejects unknown values", () => {
-  assert.equal(normalizeGuideStatus("published"), "published");
-  assert.equal(normalizeGuideStatus("planned"), "planned");
-  assert.equal(normalizeFrontmatterEnumValue("unexpected-status"), "unexpected-status");
-  assert.throws(() => normalizeGuideStatus("unexpected-status"), /Invalid guide status/);
-});
-
-test("uses the fallback only for an empty enum value", () => {
-  assert.equal(normalizeGuideStatus(" \r\n"), "published");
-  assert.equal(normalizeFrontmatterEnumValue("", "fallback"), "fallback");
-});
-
-test("publishes only the explicit published status", () => {
-  assert.equal(isPublishedGuideStatus("published"), true);
-  assert.equal(isPublishedGuideStatus(undefined), true);
-  assert.equal(isPublishedGuideStatus("draft"), false);
-  assert.equal(isPublishedGuideStatus("  draft  "), false);
-  assert.equal(isPublishedGuideStatus("draft\r"), false);
-  assert.equal(isPublishedGuideStatus("\uFEFFdraft"), false);
-  assert.equal(isPublishedGuideStatus("planned"), false);
-  assert.equal(isPublishedGuideStatus("unexpected-status"), false);
-});
-
-test("normalizes boolean frontmatter across line endings and boundary whitespace", () => {
-  assert.equal(normalizeFrontmatterBooleanValue(true), true);
-  assert.equal(normalizeFrontmatterBooleanValue("true"), true);
-  assert.equal(normalizeFrontmatterBooleanValue("true\r"), true);
-  assert.equal(normalizeFrontmatterBooleanValue("  true\t"), true);
-  assert.equal(normalizeFrontmatterBooleanValue("\uFEFFtrue"), true);
-  assert.equal(normalizeFrontmatterBooleanValue(false), false);
-  assert.equal(normalizeFrontmatterBooleanValue("false"), false);
-  assert.equal(normalizeFrontmatterBooleanValue("false\r\n"), false);
-});
-
-test("uses the boolean fallback only for empty values and rejects unknown values", () => {
-  assert.equal(normalizeFrontmatterBooleanValue(undefined), false);
-  assert.equal(normalizeFrontmatterBooleanValue(" \r\n"), false);
-  assert.equal(normalizeFrontmatterBooleanValue("", true), true);
-  assert.throws(
-    () => normalizeFrontmatterBooleanValue("yes"),
-    /Invalid frontmatter boolean/
+test('detects the CRLF terminal-scalar failure before Contentlayer can skip a document', () => {
+  const source = documentWith(
+    ['title: "Fixture"', 'status: "published"', 'layout: "editorial-learning"'],
+    '\r\n',
+    '# Body\r\n',
   );
+  assert.equal(inspectTextFormat(Buffer.from(source)).hasCarriageReturn, true);
+  assert.throws(() => parseFrontmatterText(source), /Unexpected scalar at node end/);
+});
+
+test('rejects a file-level BOM at the parser boundary', () => {
+  const source = `\uFEFF${documentWith(['title: "Fixture"', 'status: published'])}`;
+  assert.equal(inspectTextFormat(Buffer.from(source)).hasBom, true);
+  assert.throws(() => parseFrontmatterText(source), /BOM is not allowed/);
+});
+
+test('normalizes known enum values only after YAML parsing', () => {
+  const parsed = parseFrontmatterText(
+    documentWith(['title: "Fixture"', 'status: "  draft\\t"']),
+  );
+  assert.equal(normalizeGuideStatus(parsed.data.status), 'draft');
+  assert.equal(normalizeGuideStatus('draft\r'), 'draft');
+  assert.equal(normalizeGuideStatus('\uFEFFdraft'), 'draft');
+  assert.equal(normalizeGuideStatus('planned'), 'planned');
+});
+
+test('publishes only the explicit published status and preserves the missing-status default', () => {
+  parseFrontmatterText(documentWith(['title: "Fixture"']));
+  assert.equal(isPublishedGuideStatus(undefined), true);
+  assert.equal(isPublishedGuideStatus('published'), true);
+  assert.equal(isPublishedGuideStatus('draft'), false);
+  assert.equal(isPublishedGuideStatus('unexpected-status'), false);
+});
+
+test('accepts booleans and rejects unknown boolean values', () => {
+  parseFrontmatterText(documentWith(['title: "Fixture"', 'featured: true', 'draft: false']));
+  assert.equal(normalizeFrontmatterBooleanValue('true\r'), true);
+  assert.equal(normalizeFrontmatterBooleanValue(' false '), false);
   assert.throws(
-    () => normalizeFrontmatterBooleanValue(1),
-    /Invalid frontmatter boolean/
+    () => parseFrontmatterText(documentWith(['title: "Fixture"', 'featured: maybe'])),
+    /Invalid frontmatter boolean/,
+  );
+});
+
+test('rejects unknown status values instead of publishing them', () => {
+  assert.equal(normalizeFrontmatterEnumValue('unexpected-status'), 'unexpected-status');
+  assert.throws(
+    () => parseFrontmatterText(documentWith(['title: "Fixture"', 'status: unexpected-status'])),
+    /Invalid guide status/,
+  );
+});
+
+test('rejects a missing closing YAML fence', () => {
+  assert.throws(
+    () => parseFrontmatterText('---\ntitle: "Fixture"\nstatus: published\n# Body\n'),
+    /closing --- is missing/,
   );
 });
