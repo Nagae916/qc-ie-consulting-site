@@ -6,13 +6,13 @@ Nagae916/qc-ie-consulting-siteを、次の順に整備してください。実�
 
 正本: AGENTS.md、docs/project/PROJECT_CHARTER.md、PRODUCT_PRINCIPLES.md、OPERATIONS_PLAN_20261017.md。
 
-開発branchは `feat/jev-development-tooling`。少なくとも `3e51b8f95c811b83bba73f92741073a8b67a160d` と今回の方針文書を含む最新先端を取得する。別branch `chore/security-next15528-review` の先端は `0f7d8a733e20e45389058a776dc6edd685379a9a`。remoteにない場合は渡されたbundleからfetchする。空の同名branchを作らない。bundleはmain `98f9d024052a104c6cec98ad722d8581857faaba`を前提とする。
+GitHubから `feat/site-operations-handoff` の最新先端を取得する。元のlocal `d3f5c53c720807bb56763ea413811ad3a8ebd6b9` と同じファイルtreeを持つ共有commitは `3c0f8695d7eb694150e79c53af24fdfb684973f7`。その後の文書更新も含めて取得する。GitHub連携で再作成したため、元のlocal commitを祖先として要求しない。別の更新候補branchは `chore/security-next15528-review`。候補の元local commit `0f7d8a733e20e45389058a776dc6edd685379a9a` とremoteのSHAは異なるため、remote branchのpackage差分と共有branchとの関係で確認する。空の同名branchは作らない。元履歴を保持するbundleはmain `98f9d024052a104c6cec98ad722d8581857faaba`を前提とする。
 
 GitHub連携とshell Git認証は別。通常pushができなければ正規のGitHubログインで本人が承認する。secretを抽出・表示しない。SHAが変わるAPI経由のcommit再作成は、説明して確認を得た場合だけ行う。
 
 ## 2. セキュリティ候補をレビュー
 
-候補はnext/eslint-config-next15.5.28の2ファイル差分。現在の開発branch上でgen、check:ci、16tests成功、critical1→0を確認済み。候補commitだけを対象の専用branchへ適用し、Jev追加一式と無条件にまとめてmainへ統合しない。
+候補はnext/eslint-config-next15.5.28の2ファイル差分。元local環境の開発branch上でgen、check:ci、16tests成功、critical1→0を確認済み。remoteの候補branchは共有branchからpackage.jsonとpackage-lock.jsonだけを変更したレビュー用branch。採用するときはこの更新差分だけを対象の専用branchへ適用し、Jev追加一式と無条件にまとめてmainへ統合しない。
 
 対象環境でNode24とlockfileを使って再検証し、next/image、MDX、KaTeX、既存URL、6ツール、360/768/1280pxの画面を確認する。WindowsとVercel Previewは前回未確認。auditのhigh19、Next内部postcss8.4.31、Contentlayer系の到達性・互換性を別に分類する。audit fix --forceや無検証のmajor更新はしない。残る問題があれば候補の採否条件として明示する。
 

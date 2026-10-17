@@ -31,6 +31,12 @@ Next公式のAVIF画像最適化の問題の対象範囲は15.5.24未満。ソ�
 - 本番SHAを確定するには、対象teamのデプロイ・ドメイン読取権限があるVercel連携か、同じteamへ正規認証済みの環境が必要。独自ドメイン→現在のdeployment→gitSource SHAの順に照合する。
 - GitHubのGit Data API連携でファイル・commitを送る案は用意できるが、現在のwrapperはauthor/committerの指定ができず、元のSHAと履歴を維持する通常pushの代わりにはならない。SHAを変えて再作成する前に確認する、というユーザーの既存指示に従い未実行。
 
+### 承認後の共有更新
+
+2026-10-17にユーザーがSHA変更を伴う別branchへの共有を承認。GitHub連携から `feat/site-operations-handoff` を作成し、共有commit `3c0f8695d7eb694150e79c53af24fdfb684973f7` を送信した。ファイルtreeは元local `d3f5c53c720807bb56763ea413811ad3a8ebd6b9` と一致し、tree SHAは `04fb86b9a383a52a04c3a7ead9b12b43d63acde6`。その後の文書更新はbranch先端へ追加する。元履歴はbundleに保持する。通常Gitの書込認証とVercel権限の不足は解消していない。
+
+更新候補はremoteの `chore/security-next15528-review` へ分け、共有branchに対するpackage.jsonとpackage-lock.jsonの2ファイル差分として渡す。remote側では元localとSHAが変わるため、元のcommitが見つからないことを理由に停止せず、取得branch、祖先、ファイル差分を照合する。mainへのmerge・本番公開は含まない。
+
 ## 今回からの計測方針
 
 最初は新しいtrackerや外部APIを追加せず、出典と期間を確認した集計の取得を優先する。実測値がない欄は「未取得」。0と欠測を区別し、先に数値目標をでっち上げない。28日を基本期間とし、90日を補助にする。比較では取得日と期間を必ず残す。
