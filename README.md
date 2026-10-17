@@ -4,7 +4,7 @@ N-IE Labは、品質、生産、データ、改善のつながりを経営工学
 
 ## 必要な環境
 
-- Node.js 18以上、21未満
+- Node.js 24
 - npm
 - PowerShell
 
@@ -23,9 +23,11 @@ npm.cmd run dev
 npm.cmd run typecheck
 npm.cmd run lint
 npm.cmd run build
+npm.cmd run jev:test
+npm.cmd run jev:doctor
 ```
 
-追加の検証コマンドは `package.json` の `check:*` と `lint:*` を参照してください。自動テスト用の専用スクリプトは現時点ではありません。
+追加の検証コマンドは `package.json` の `check:*`、`lint:*`、`jev:*` を参照してください。Jev開発支援の設定とデータ境界は [`docs/development/JEV_DEVELOPMENT_TOOLING.md`](docs/development/JEV_DEVELOPMENT_TOOLING.md) に記載しています。
 
 ## コンテンツ
 

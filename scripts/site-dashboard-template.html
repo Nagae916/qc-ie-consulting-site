@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="color-scheme" content="light">
+  <title>N-IE Lab | 運営ダッシュボード</title>
+  <style>
+    :root { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP", sans-serif; color: #232a34; background: #f7f8fa; }
+    * { box-sizing: border-box; }
+    body { margin: 0; line-height: 1.55; }
+    main { max-width: 1220px; margin: 0 auto; padding: 38px 30px 72px; }
+    header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 18px; margin-bottom: 28px; }
+    .eyebrow { margin: 0 0 7px; font-size: 12px; letter-spacing: .12em; font-weight: 700; color: #446ab0; text-transform: uppercase; }
+    h1 { margin: 0; font-size: clamp(24px, 3vw, 33px); line-height: 1.25; letter-spacing: -.025em; }
+    h2 { margin: 0 0 14px; font-size: 19px; letter-spacing: -.015em; }
+    h3 { font-size: 15px; margin: 0 0 10px; }
+    .lead, .muted { color: #5b6471; }
+    .lead { margin: 9px 0 0; font-size: 14px; }
+    .snapshot { padding: 9px 13px; background: #edf2fa; color: #335785; border: 1px solid #dae4f3; border-radius: 8px; font-size: 12px; font-weight: 600; }
+    .note { margin: 0 0 23px; padding: 11px 14px; border-left: 3px solid #5377bd; background: #eef2f9; border-radius: 0 7px 7px 0; color: #354557; font-size: 13px; }
+    .grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; }
+    .card, .panel { background: #fff; border: 1px solid #dfe3e8; border-radius: 11px; box-shadow: 0 1px 2px rgba(25,35,50,.035); }
+    .card { padding: 18px 19px; min-height: 148px; display: flex; flex-direction: column; }
+    .card .label { font-size: 13px; color: #4d5766; font-weight: 600; }
+    .card .number { margin: 11px 0 3px; font-size: 29px; letter-spacing: -.035em; line-height: 1.15; font-weight: 760; font-variant-numeric: tabular-nums; }
+    .card .number.small { font-size: 23px; }
+    .card .number.neutral { color: #7b8390; }
+    .card .number.alert { color: #ad584c; }
+    .card .detail { margin-top: auto; font-size: 12px; color: #68727f; }
+    .meter { height: 5px; background: #e9ecef; border-radius: 5px; margin-top: 10px; overflow: hidden; }
+    .meter span { display: block; height: 100%; background: #547bc3; border-radius: 5px; }
+    section { margin-top: 39px; }
+    .section-intro { margin: -7px 0 14px; color: #69727e; font-size: 13px; }
+    .two { display: grid; grid-template-columns: 1.25fr 1fr; gap: 14px; }
+    .panel { padding: 20px; }
+    .breakdown { display: grid; gap: 16px; margin-top: 4px; }
+    .bar-row { display: grid; grid-template-columns: 105px minmax(0,1fr) 64px; align-items: center; gap: 12px; font-size: 13px; }
+    .bar-row strong { text-align: right; font-variant-numeric: tabular-nums; }
+    .bar-track { height: 8px; background: #edf0f4; border-radius: 5px; overflow: hidden; }
+    .bar-fill { height: 100%; background: #6687c9; border-radius: 5px; }
+    .bar-row:nth-child(2) .bar-fill { background: #89a1d6; }
+    .bar-row:nth-child(3) .bar-fill { background: #b4c4e4; }
+    .insight { margin: 19px 0 0; padding-top: 14px; border-top: 1px solid #e5e9ee; color: #64707e; font-size: 12px; }
+    .checks { display: grid; gap: 0; }
+    .check { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid #e9ecef; font-size: 13px; }
+    .check:last-child { border-bottom: none; }
+    .check strong { font-weight: 650; text-align: right; }
+    .table-panel { overflow-x: auto; padding: 0; }
+    table { border-collapse: collapse; width: 100%; font-size: 13px; }
+    th { text-align: left; font-weight: 650; color: #66707c; background: #fbfcfd; }
+    th, td { padding: 12px 15px; vertical-align: middle; border-bottom: 1px solid #e6e9ed; }
+    tr:last-child td { border-bottom: none; }
+    td.id { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; white-space: nowrap; font-size: 12px; color: #4d5663; }
+    td.title { font-weight: 600; min-width: 245px; }
+    td.note-cell { color: #66707d; min-width: 220px; }
+    .pill { display: inline-block; border: 1px solid #dae0e6; border-radius: 6px; padding: 2px 7px; white-space: nowrap; font-weight: 600; font-size: 11px; color: #536171; background: #f7f9fb; }
+    .pill.done { color: #3d765f; border-color: #cfe4d9; background: #f3faf5; }
+    .pill.blocked { color: #a34d45; border-color: #f1d2cc; background: #fff7f5; }
+    .pill.review { color: #936d25; border-color: #f1e2bb; background: #fffbef; }
+    .foot { margin-top: 37px; padding-top: 21px; border-top: 1px solid #dce1e7; font-size: 12px; color: #66707c; }
+    .foot p { margin: 5px 0; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; overflow-wrap: anywhere; }
+    @media(max-width: 950px) { .grid { grid-template-columns: repeat(2,minmax(0,1fr)); } .two { grid-template-columns: 1fr; } }
+    @media(max-width: 560px) { main { padding: 24px 16px 52px; } .grid { gap: 10px; } .card { min-height: 144px; padding: 14px; } .card .number { font-size: 24px; } .bar-row { grid-template-columns: 95px minmax(0,1fr) 45px; gap: 7px; } th,td { padding: 11px 12px; } }
+    @media print { :root { background: #fff; } .card, .panel { box-shadow: none; } }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <div><p class="eyebrow">N-IE Lab / Site Operations</p><h1>運営ダッシュボード</h1><p class="lead">公開資産・計測準備・次の判断を一画面で確認</p></div>
+    <div class="snapshot">ローカル集計：{{generatedAt}}<br>コミット：{{commit}}</div>
+  </header>
+  <p class="note">この画面はリポジトリのローカルスナップショットです。アクセス数・相談件数・売上は未接続のため空欄です。公開サイトの実測や最新のGitHub CI結果は含みません。</p>
+  <div class="grid" aria-label="運営指標">{{cards}}</div>
+  <section aria-labelledby="inventory-title">
+    <h2 id="inventory-title">コンテンツの現在地</h2>
+    <p class="section-intro">公開ガイド{{published}}件の資格分類と、実務への接続に向けたメタデータの記録状況</p>
+    <div class="two">
+      <div class="panel"><h3>公開ガイドの内訳</h3><div class="breakdown">{{bars}}</div><p class="insight">資格分類の件数です。4テーマ別の公開数や検索成果を示すものではありません。</p></div>
+      <div class="panel"><h3>公開資産とデータ接続</h3><div class="checks">{{checks}}</div></div>
+    </div>
+  </section>
+  <section aria-labelledby="tasks-title">
+    <h2 id="tasks-title">次の運営タスク</h2><p class="section-intro">状態は観測できた事実と提案を区別。タスクの優先順位は運営判断で確定します。</p>
+    <div class="panel table-panel"><table><thead><tr><th scope="col">ID</th><th scope="col">状態</th><th scope="col">タスク</th><th scope="col">根拠・次の一歩</th></tr></thead><tbody>{{tasks}}</tbody></table></div>
+  </section>
+  <section aria-labelledby="questions-title">
+    <h2 id="questions-title">未回答の問い</h2><div class="panel table-panel"><table><thead><tr><th scope="col">ID</th><th scope="col">状態</th><th scope="col">問い</th><th scope="col">暫定の行動</th></tr></thead><tbody>{{questions}}</tbody></table></div>
+  </section>
+  <footer class="foot">
+    <p>出典：<code>content/guides/</code> のfrontmatter、<code>src/data/n-ie-lab.ts</code>、<code>src/data/cases.ts</code>、<code>pages/tools/</code>、ローカルGit状態。公開ガイドは <code>status=published</code> のファイル数。</p>
+    <p>更新：リポジトリで <code>npm run dashboard:site</code>（Windowsでは <code>npm.cmd run dashboard:site</code>）。生成物はローカル専用で、本番サイトへ配置しません。</p>
+  </footer>
+</main>
+</body>
+</html>

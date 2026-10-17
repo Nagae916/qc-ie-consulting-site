@@ -8,6 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
@@ -20,4 +22,11 @@ jobs:
       - run: npm run lint:unused:deps
         continue-on-error: true
       - run: npm run lint:graph
+        continue-on-error: true
+      - name: Jev advisory review
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          TYPESAFE_API_KEY: ${{ secrets.TYPESAFE_API_KEY }}
+          AI_GATEWAY_API_KEY: ${{ secrets.AI_GATEWAY_API_KEY }}
+        run: npm run jev:review -- --base "${{ github.event.pull_request.base.sha }}"
         continue-on-error: true

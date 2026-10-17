@@ -75,6 +75,7 @@ function runScript(script, capture = false) {
 const before = snapshot();
 
 for (const script of [
+  'check:agent-context',
   'test:frontmatter',
   'check:source-format',
   'check:frontmatter',

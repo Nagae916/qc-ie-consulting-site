@@ -1,0 +1,2 @@
+{"type":"response_item","payload":{"type":"function_call","call_id":"fixture_call_1","name":"exec_command","arguments":"{\"cmd\":\"npm test\"}"}}
+{"type":"response_item","payload":{"type":"function_call_output","call_id":"fixture_call_1","output":"all tests passed"}}

@@ -1,0 +1,34 @@
+{
+  "description": "Development-only Jev context retention hooks. Fail-open and shadow-only by default.",
+  "hooks": {
+    "PreCompact": [
+      {
+        "matcher": "^(manual|auto)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$(git rev-parse --show-toplevel)/.codex/hooks/jev-precompact.mjs\"",
+            "commandWindows": "powershell -NoProfile -Command \"node (Join-Path (git rev-parse --show-toplevel) '.codex/hooks/jev-precompact.mjs')\"",
+            "timeout": 20,
+            "statusMessage": "Jev is evaluating context retention"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "^compact$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$(git rev-parse --show-toplevel)/.codex/hooks/jev-session-start.mjs\"",
+            "commandWindows": "powershell -NoProfile -Command \"node (Join-Path (git rev-parse --show-toplevel) '.codex/hooks/jev-session-start.mjs')\"",
+            "timeout": 5,
+            "additionalContextLimit": 14000,
+            "statusMessage": "Loading Jev retention packet"
+          }
+        ]
+      }
+    ]
+  }
+}

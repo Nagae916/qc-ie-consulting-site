@@ -170,3 +170,35 @@
 - Migration: ガイド本文、frontmatter値、URL、sitemap、依存関係は変更しない。Git indexに既存のLF本文を維持し、checkout規則だけを明示する。既存のunused code・依存・循環参照検査はadvisory運用を維持する。
 - Verification: Windowsの`check:ci`と連続2回build、UbuntuとWindowsのGitHub Actions、239文書、238公開ガイド、266ページ、130問、draft除外、4レビューpage-data、build前後SHA-256とGit差分を確認する。
 - Supersedes: 一時的なLF変換と元バイト復元を必要とする手順。frontmatter値のfail-safe正規化方針は維持する。
+
+## 2026-09-18：Jevを開発支援のShadow Modeで導入する
+
+- Status: Accepted
+- Context: 差分レビューの見落とし低減、Codex compaction後の再読込削減、task難易度に応じた任意routingを検証したい。一方、Jevの判定は確率的であり、Codex transcript形式とrouter連携には安定性・データ境界上の注意が必要である。
+- Decision: Jevを本番サイトから分離した開発支援として導入する。ReviewはVercel AI Gateway経由のadvisory、Retentionはnative compactionを維持したShadow Mode、Routerは`npm run jev:router`で明示起動するopt-inとする。API障害、credential不足、parse失敗では開発を止めない。Retentionの再注入は`JEV_COMPACTION_MODE=retain`の明示設定時だけ有効とする。
+- Reason: 人のレビューとCodex標準動作を正本に保ったまま、Jevの有効性、誤判定、cost、再読込削減を実測できるため。
+- Affected areas: `scripts/jev/`、`.codex/hooks.json`、`.github/workflows/`、version固定したCodex CLIを含む開発依存関係、開発手順。公開ページ、URL、Contentlayer、production runtimeには影響しない。
+- Migration: まず10〜20 sessionのShadow packetを確認する。重要情報保持率100%、再読込の非増加、task完了率の維持を確認した後、個人local環境でのみRetention再注入を試す。チーム既定値への昇格は別のDecision Log更新を必要とする。
+- Verification: Jev unit test、dry-run review、hookのfail-open、Ubuntu/Windows CI、`npm run check:ci`、production build、変更前後の公開route数を確認する。
+- Supersedes: なし。
+
+## 2026-09-22：公式TypeSafe skillと直接SDK接続を開発支援へ追加する
+
+- Status: Accepted
+- Context: TypeSafeの利用承認後、Codex向け公式skillとJavaScript SDKを利用できるようになった。既存実装はReviewとRetentionがGateway credential、RouterがTypeSafe credentialを別々に必要としていた。
+- Decision: 公式 `typesafe-ai` skillをrepo-localで追跡し、TypeSafe/Jevタスクの設計手順として使用する。ReviewとRetentionは`TYPESAFE_API_KEY`による公式SDK直接接続を優先し、既存のVercel AI Gatewayをフォールバックとして維持する。Routerも同じ直接credentialを使用する。直接評価モデルは検証可能性のため`jev-1.13.0`へ固定する。
+- Reason: 1つのTypeSafe credentialで3経路を試せるようにしつつ、skillとruntimeの役割を分離し、既存のGateway運用とfail-openを保全するため。
+- Affected areas: `.agents/skills/typesafe-ai/`、`skills-lock.json`、`scripts/jev/`、開発依存関係、`AGENTS.md`、Jev開発手順。
+- Migration: `.env.local`へ`TYPESAFE_API_KEY`を設定すると直接接続が有効になる。credential未設定時は従来どおり評価をskipし、通常のCodexとnative compactionを継続する。Production runtime、公開URL、コンテンツには導入しない。
+- Verification: skill検出、provider選択、Noul変換、Jev unit test、dry-run review、Doctor、Codex hook、全体CIを確認する。実APIの接続確認はcredential設定後に架空データだけで行う。
+- Supersedes: 2026-09-18決定のcredential経路だけを拡張し、Shadow Modeと段階導入方針は維持する。
+
+## 2026-09-23：Codexの常時指示量を管理する
+
+- Status: Accepted
+- Context: `AGENTS.md`が128行・4,955文字で、全タスクに広い資料確認と検証を要求していた。OpenAIのCodex向け記事は、常時適用する指示の見直し、skillの明確な適用条件、資料の段階的な読み込み、影響範囲に応じた検証を推奨している。Xの紹介記事にある監査プロンプトは投稿者の提案であり、OpenAIの公式テンプレートではない。
+- Decision: `AGENTS.md`は保護する既定値、作業判断、必要な資料への案内へ絞る。資料と検証はタスクの影響範囲で選ぶ。安全なローカル検証は中断せず完了まで行う。repo-local skillの説明文と指示量を`check:agent-context`で可視化し、常時指示にプロジェクト上限3,500文字を設ける。
+- Reason: 毎回読む指示を減らし、関連情報を必要時に読む一方、公開URL・ブランド・データ境界の判断を維持するため。
+- Affected areas: `AGENTS.md`、`scripts/check-agent-context.cjs`、検証コマンド、Jev開発手順。公式TypeSafe skill本文と本番サイトは変更しない。
+- Verification: 指示量の前後比較、skill frontmatter・本文行数チェック、Jev検証、`npm run check:ci`。文字数はトークン実測ではないため、トークン数と完了率の効果判定は同種タスクの実行比較を待つ。
+- Supersedes: 全タスクで全資料・全検証を要求する旧`AGENTS.md`の手順。
