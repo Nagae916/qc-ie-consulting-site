@@ -76,4 +76,9 @@ Next公式のAVIF画像最適化の問題の対象範囲は15.5.24未満。ソ�
 
 返却形式: URL、読者の問い、確認した事実、問題、出典/検算、最小修正案、既存リンク、情報不足。長い全履歴を全agentへ渡さず、対象資料だけを渡す。単独作業との時間・手戻り・正確性を比較し、分担しただけで費用が下がるとしない。
 
-出典（2026-10-17閲覧）: https://learn.chatgpt.com/docs/agent-configuration/subagents 。mainへの直接push、merge、Production公開は子agentへ委譲しない。今回は分担設計までで、子agentの起動・記事改稿はしていない。
+出典（2026-10-17閲覧）: https://learn.chatgpt.com/docs/agent-configuration/subagents 。mainへの直接push、merge、Production公開は子agentへ委譲しない。計画作成後に読み取り専用の小規模試行を実施したが、記事改稿はしていない。結果は下記の実行記録を参照する。
+
+## 実行記録
+
+この計画に基づく検証結果、権限待ち、Agent小規模試行は
+`docs/development/SITE_OPERATIONS_EXECUTION_20261017.md` に記録する。
