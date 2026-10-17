@@ -37,9 +37,11 @@ const categories = [
 ].map(({ key, label }) => ({
   label, count: published.filter((guide) => guide.category === key).length,
 }));
-const themeSegment = file('src/data/n-ie-lab.ts').split('export const themes: ThemeDefinition[] = [')[1];
+const themeSegment = file('src/data/n-ie-lab.ts')
+  .split('export const themes: ThemeDefinition[] = [')[1]
+  ?.split('export const homeToolHrefs')[0];
 if (!themeSegment) throw new Error('Cannot find registered themes.');
-const themes = [...themeSegment.matchAll(/^    slug: "(quality|production|data|improvement)",/gm)].length;
+const themes = [...themeSegment.matchAll(/^\s+slug:\s*"(quality|production|data|improvement)",/gm)].length;
 const caseSegment = file('src/data/cases.ts').split('export const caseStudies: CaseStudy[] = [')[1]?.split('export const getCaseStudy')[0];
 if (!caseSegment) throw new Error('Cannot find registered cases.');
 const cases = [...caseSegment.matchAll(/^    slug: "[^"]+",/gm)].length;
@@ -112,4 +114,4 @@ if (html.includes('{{')) throw new Error('Unresolved dashboard template field.')
 fs.mkdirSync(path.dirname(output), { recursive: true });
 fs.writeFileSync(output, html, 'utf8');
 console.log(`Dashboard ready: ${output}`);
-console.log(`Guides: published=${published.length} draftOrOther=${drafts.length}; themes=${withThemes}; updatedAt=${withUpdateDate}; cases=${cases}; tools=${tools}`);
+console.log(`Guides: published=${published.length} draftOrOther=${drafts.length}; guidesWithThemes=${withThemes}; updatedAt=${withUpdateDate}; cases=${cases}; tools=${tools}`);
