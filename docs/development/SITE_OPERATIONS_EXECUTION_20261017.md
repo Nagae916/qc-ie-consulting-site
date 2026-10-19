@@ -11,8 +11,9 @@ made to `main`, Production, public content, URLs, or analytics settings.
 
 | Purpose | Branch | Verified remote SHA |
 | --- | --- | --- |
-| Operations handoff | `feat/site-operations-handoff` | `c7348394f7fe24f30fdc7388bb924d80b787a4c2` |
+| Operations handoff | `feat/site-operations-handoff` | `a4cd7a8db9bf2912c0e0b342c6a58b3c7643c7ba` |
 | Security candidate | `chore/security-next15528-review` | `a8192600f5d6c09885a0cb31615dae60b32eb880` |
+| Security adoption review | `codex/security-next15528-adoption-review` | Pending final review commit and push |
 | Current main reference | `main` | `98f9d024052a104c6cec98ad722d8581857faaba` |
 
 The security candidate is based on the operations handoff and changes only
@@ -63,11 +64,14 @@ deployment for the exact candidate SHA:
 - Vercel status page:
   `https://vercel.com/nagae916s-projects/qc-ie-consulting-site/4QGdw11KuvrSSiar3R4MYz6hLQx5`
 
-The deployment is protected and unauthenticated requests redirect to Vercel
-SSO. The available Vercel API identity receives 403 for the project team, and
-the local Vercel CLI has no credentials. Therefore Ready status and source SHA
-are verified through GitHub, while Preview response bodies and Vercel build
-logs remain unverified in this environment.
+The owner opened this protected candidate Preview and followed links to other
+articles. The supplied Vercel log records Next.js 15.5.28, 266 generated pages,
+and a completed build/deployment. This owner evidence does not establish that
+all tools or KaTeX were reviewed on Preview. The available Vercel API identity
+still receives 403 for the project team, the protected-deployment fetch receives
+403 while requesting a bypass, and the local Vercel CLI reports no login.
+Deployment Protection was not changed. Final review-branch Preview evidence
+must be recorded separately from this original candidate Preview.
 
 ### Audit and reachability
 
@@ -193,6 +197,40 @@ multiple-lockfile root inference, stale Browserslist data, and the existing
 `/guides/qc/oc-curve` Page Data warning. The locked 15.5.22 install also still
 reports one critical audit finding; this is the security candidate's reason
 for evaluation and was not modified on the handoff branch.
+
+## Security Adoption Review Continuation (2026-10-19)
+
+The 15.5.28 dependency files were reapplied to the latest handoff on the
+dedicated `codex/security-next15528-adoption-review` branch. The working
+`package.json` and `package-lock.json` blobs were verified byte-for-byte against
+candidate `a8192600f5d6c09885a0cb31615dae60b32eb880` before final validation.
+
+The before/after audits were rerun under the same Node.js 24 / npm 11
+conditions for both full and production-only dependency graphs. The candidate
+removes the two Critical Next.js advisories and two Moderate Next.js cache
+advisories. Forty-five unique High advisory source IDs remain in the full
+audit, of which nineteen also appear in the production dependency graph. These
+numbers are advisory IDs in this snapshot and must not be treated as forty-five
+independent runtime exploit paths.
+
+A temporary KaTeX fixture exercised a fraction, subscript, and summation. It
+returned HTTP 200, produced KaTeX markup, and rendered at 360 / 768 / 1280 px.
+The fixture was removed before the final build. The home page, representative
+MDX, and six tools also returned 200 from the local candidate build. Existing
+narrow-width clipping remains visible in fixed-width tool content, including
+control-chart labels; no application or CSS source changed in the candidate.
+
+After fixture removal, `jev:test` passed 16/16 and `check:ci` passed with 239
+Contentlayer documents, 238 published guides, 266 static pages, 249 prerender
+routes, 130 engineer exam records, and 145 kB guide First Load JS. `jev:doctor`
+confirmed Codex authentication and the project hook definitions; hook trust,
+TypeSafe/Gateway credentials, Review/Retention, and Router remain unconfigured
+fail-open paths rather than failed application tests.
+
+The complete advisory register, install-script decisions, warning
+classification, Preview-access limits, adoption conditions, and rollback plan
+are recorded in
+`docs/development/SECURITY_NEXT15528_ADOPTION_REVIEW_20261019.md`.
 
 ## Remaining Actions
 
