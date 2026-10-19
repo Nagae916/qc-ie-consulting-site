@@ -160,8 +160,8 @@ This is recorded as existing responsive UX debt, not silently treated as a
 The owner previously opened the original candidate Preview and followed links
 to other articles. The supplied Vercel build log reports Next.js 15.5.28,
 266 generated pages, and completed build/deployment. This is owner evidence for
-the old candidate Preview; it is not evidence for the final review-branch
-commit that will contain the same dependency change plus the latest handoff.
+the old candidate Preview; it is not evidence that every tool or KaTeX route was
+reviewed on the final review branch.
 
 The deployment URL recorded for the original candidate is
 `https://qc-ie-consulting-site-ozddl8ddc-nagae916s-projects.vercel.app`.
@@ -172,12 +172,19 @@ Automated access remains blocked:
 - the protected-deployment fetch also receives 403 while requesting a
   protection bypass.
 
-Deployment Protection was not changed or bypassed. Final review-branch Preview
-status must be checked after push through GitHub/Vercel evidence or by an owner
-with the correct team access. The owner-provided Production screen showed
-`main` at `98f9d024052a104c6cec98ad722d8581857faaba` at that time. The current
-custom-domain alias and `gitSource` cannot be re-proven through the available
-API identity and are recorded as an access limitation.
+Deployment Protection was not changed or bypassed. For review commit
+`68ebc198869adf88a0ccd2ee5126c04cc493c82b`, GitHub reports successful Linux,
+Windows, Quality, and Vercel checks. Vercel reports deployment
+`dpl_3JrEwbbBmvKZK6pgv8NZ9UBaiBe7` as `READY`, sourced from that exact commit,
+with the protected alias
+`https://qc-ie-consulting-site-git-codex-secur-3e56b4-nagae916s-projects.vercel.app`.
+Unauthenticated access redirects to Vercel SSO. The available API identity can
+read deployment metadata but receives 403 for build logs and protected page
+content, so the final Preview's rendered body remains owner verification.
+
+The owner-provided Production screen showed `main` at
+`98f9d024052a104c6cec98ad722d8581857faaba` at that time. This remains historical
+screen evidence, not a current API proof of the custom-domain alias.
 
 ## 8. Adoption conditions, rollback, and integration boundary
 

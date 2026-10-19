@@ -13,7 +13,7 @@ made to `main`, Production, public content, URLs, or analytics settings.
 | --- | --- | --- |
 | Operations handoff | `feat/site-operations-handoff` | `a4cd7a8db9bf2912c0e0b342c6a58b3c7643c7ba` |
 | Security candidate | `chore/security-next15528-review` | `a8192600f5d6c09885a0cb31615dae60b32eb880` |
-| Security adoption review | `codex/security-next15528-adoption-review` | Pending final review commit and push |
+| Security adoption review | `codex/security-next15528-adoption-review` | Dependency `c263e1c`; review record `68ebc19` |
 | Current main reference | `main` | `98f9d024052a104c6cec98ad722d8581857faaba` |
 
 The security candidate is based on the operations handoff and changes only
@@ -70,8 +70,8 @@ and a completed build/deployment. This owner evidence does not establish that
 all tools or KaTeX were reviewed on Preview. The available Vercel API identity
 still receives 403 for the project team, the protected-deployment fetch receives
 403 while requesting a bypass, and the local Vercel CLI reports no login.
-Deployment Protection was not changed. Final review-branch Preview evidence
-must be recorded separately from this original candidate Preview.
+Deployment Protection was not changed. Final review-branch Preview evidence is
+recorded separately below from this original candidate Preview.
 
 ### Audit and reachability
 
@@ -232,10 +232,21 @@ classification, Preview-access limits, adoption conditions, and rollback plan
 are recorded in
 `docs/development/SECURITY_NEXT15528_ADOPTION_REVIEW_20261019.md`.
 
+Review commit `68ebc198869adf88a0ccd2ee5126c04cc493c82b` is present on the
+remote review branch. GitHub reports the Linux `check`, Windows content check,
+Quality scan, and Vercel status as successful. Vercel reports deployment
+`dpl_3JrEwbbBmvKZK6pgv8NZ9UBaiBe7` as `READY`, sourced from that exact commit,
+with protected alias
+`https://qc-ie-consulting-site-git-codex-secur-3e56b4-nagae916s-projects.vercel.app`.
+The alias redirects unauthenticated requests to Vercel SSO. The available API
+identity receives 403 for build logs and protected page content, so rendered
+Preview smoke testing remains an owner task; it is not recorded as passed.
+
 ## Remaining Actions
 
-1. Authenticate to the intended Vercel team and verify Preview responses,
-   build logs, and custom-domain alias to deployment to `gitSource` SHA.
+1. Using the intended Vercel team, open the final protected Preview and verify
+   its rendered smoke path and build log. Deployment metadata and exact source
+   SHA are already confirmed; protected body/log access is not.
 2. Confirm the Search Console property/export owner and obtain 28-day and
    90-day exports before connecting measurements.
 3. Confirm the official inquiry channel, response expectation, and paid-work
