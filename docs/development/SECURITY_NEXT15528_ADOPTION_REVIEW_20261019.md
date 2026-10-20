@@ -37,16 +37,29 @@ repository-controlled input.
 
 The full audit and production-only audit were captured separately. npm's
 severity totals count affected package nodes, not independent attack paths.
-In this snapshot, the number of unique High advisory source IDs happens to
-equal the High package count, but that equality must not be assumed in later
-reviews.
+The package-node count, source ID count, and de-duplicated GHSA count are kept
+separate below. Their equality in some columns is incidental and must not be
+assumed in later reviews.
 
 | Scope | Before | After |
 | --- | --- | --- |
 | All dependencies | Critical 1 / High 45 / Moderate 26 / Low 5 / Total 77 | Critical 0 / High 45 / Moderate 27 / Low 5 / Total 77 |
 | Production dependency graph | Critical 1 / High 19 / Moderate 24 / Low 5 / Total 49 | Critical 0 / High 19 / Moderate 25 / Low 5 / Total 49 |
-| Unique High advisory IDs | 45 | 45 |
-| Unique High advisory IDs also present in production audit | 19 | 19 |
+| Unique High advisory source IDs | 45 | 45 |
+| Unique High advisory source IDs also present in production audit | 19 | 19 |
+
+| High measure | Full before | Full after | Production before | Production after |
+| --- | ---: | ---: | ---: | ---: |
+| Affected package nodes in npm audit metadata | 45 | 45 | 19 | 19 |
+| Unique advisory source IDs | 45 | 45 | 19 | 19 |
+| Unique GHSA identifiers | 33 | 33 | 19 | 19 |
+
+Appendix A lists the 45 source IDs in the full after snapshot. Those rows
+collapse to 33 distinct GHSA identifiers because npm can assign multiple source
+IDs to one GHSA. The same method gives 19 source IDs and 19 distinct GHSA
+identifiers in the production-only snapshot. Appendix A's direct advisory
+package labels cover 17 names in the full graph and 11 in the production graph;
+these are not the same measure as npm's 45 and 19 affected dependency nodes.
 
 The total counts remain unchanged because the package-node severity summary is
 not a count of advisories fixed. The after snapshot no longer contains these
@@ -79,6 +92,19 @@ lint, generation, and build checks. Therefore "only trusted repository input"
 is not used as a blanket safety claim: an untrusted contribution can reach
 build-time parsers and pattern matchers even when it cannot reach Production
 runtime or protected credentials.
+
+### Residual-risk ownership and re-evaluation
+
+The dates below are re-evaluation deadlines, not owner approval or acceptance.
+Any bring-forward condition requires review before the dated deadline.
+
+| Risk group | Responsible role | Re-evaluate by | Bring forward when |
+| --- | --- | --- | --- |
+| `sharp` image-processing path | Product engineer investigates; repository owner decides risk acceptance | 2026-10-26 | Before remote images, uploads, new formats such as AVIF, image-processing API changes, Function-trace inclusion, or a compatible fixed Next/sharp release |
+| Next internal PostCSS, `nanoid`, and `source-map-js` | Product engineer | 2026-11-02 | Before external CSS/source maps, altered untrusted-PR build permissions, or a supported Next release updates the dependency range |
+| Contentlayer matchers and YAML/TOML parsers | Product engineer with editorial maintainer | 2026-11-02 | Before public/external authoring, repository-content trust changes, Contentlayer replacement/upgrade, or any parser exploit evidence in CI |
+| Contentlayer telemetry, gRPC, and protobuf paths | Product engineer | 2026-11-02 | Before enabling telemetry export, adding a gRPC service, accepting external telemetry data, or parent dependency updates |
+| ESLint, knip, depcheck, globbing, and Browserslist tooling | Product engineer | 2026-11-02 | Before running tools against external repositories/configuration, changing fork-PR secret policy, or a parent-tool release fixes the chain |
 
 ## 4. Install-script review
 
@@ -134,13 +160,18 @@ from the same candidate build. Screenshots were captured at 360, 768, and
 1280 px under the ignored `.site-ops/security-review/screenshots/` directory.
 Edge logs contained no console, hydration, or unhandled-error match.
 
-At 768 and 1280 px, the reviewed pages rendered normally. At 360 px, existing
+At 768 and 1280 px, the reviewed pages rendered normally. At 360 px,
 fixed-width content is visibly tight or clipped on the right in the home hero,
 several tool controls/results, and especially control-chart legends/labels.
-The dependency candidate has no application/CSS source diff and the prior
-execution record already identified the control-chart narrow-width issue.
-This is recorded as existing responsive UX debt, not silently treated as a
-15.5.28 regression. A pixel-for-pixel 15.5.22 replay was not run in this phase.
+
+The affected narrow-width pages were replayed against 15.5.22 and 15.5.28
+under the same conditions: handoff content at `a4cd7a8`, Node.js `v24.18.1`, npm
+`11.16.0`, production builds, Microsoft Edge `154.0.4258.53`, a 360 x 900
+viewport, and a 5-second virtual-time budget. The home page and all six tools
+produced byte-for-byte identical PNG files across the two versions; all seven
+SHA-256 pairs matched. The narrow-width clipping is therefore confirmed as an
+existing issue rather than a 15.5.28 display regression. Comparison artifacts
+remain ignored under `.site-ops/security-review/version-compare/`.
 
 ## 6. Warning classification
 

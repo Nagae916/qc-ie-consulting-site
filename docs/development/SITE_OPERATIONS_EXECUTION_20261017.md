@@ -232,6 +232,19 @@ classification, Preview-access limits, adoption conditions, and rollback plan
 are recorded in
 `docs/development/SECURITY_NEXT15528_ADOPTION_REVIEW_20261019.md`.
 
+The High audit figures are recorded using separate measures. The full graph
+contains 45 affected package nodes, 45 advisory source IDs, and 33 de-duplicated
+GHSA identifiers. The production-only graph contains 19, 19, and 19
+respectively. These counts must not be interchanged.
+
+A controlled 360 x 900 replay compared the home page and all six tools on
+15.5.22 and 15.5.28 using the same handoff content, Node/npm versions, production
+build mode, Edge version, and wait budget. All seven screenshot SHA-256 pairs
+matched, confirming the observed narrow-width clipping as pre-existing. The
+residual-risk register assigns responsible roles and re-evaluation deadlines of
+2026-10-26 for the `sharp` runtime candidate and 2026-11-02 for build and
+development tooling. Those dates do not record owner acceptance.
+
 Review commit `68ebc198869adf88a0ccd2ee5126c04cc493c82b` is present on the
 remote review branch. GitHub reports the Linux `check`, Windows content check,
 Quality scan, and Vercel status as successful. Vercel reports deployment
