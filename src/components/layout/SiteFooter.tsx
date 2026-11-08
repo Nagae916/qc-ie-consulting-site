@@ -3,7 +3,7 @@ import Link from "next/link";
 import { primaryNavigation, siteIdentity } from "@/data/n-ie-lab";
 
 const supportLinks = [
-  { label: "相談できる内容", href: "/services" },
+  { label: "対応領域と成果物", href: "/services" },
   { label: "お問い合わせ", href: "/contact" },
   { label: "参考資料", href: "/references" },
   { label: "ガイド一覧", href: "/guides" },

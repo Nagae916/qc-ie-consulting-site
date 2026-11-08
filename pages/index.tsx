@@ -299,7 +299,7 @@ export default function HomePage({ contentItems }: InferGetStaticPropsType<typeo
             </div>
             <div className="flex flex-wrap gap-3 md:justify-end">
               <Link href="/about" className="rounded-md bg-white px-5 py-3 text-sm font-bold text-slate-950 hover:bg-teal-50">N-IE Labについて</Link>
-              <Link href="/services" className="rounded-md border border-slate-500 px-5 py-3 text-sm font-bold text-white hover:border-teal-300">相談できる内容</Link>
+              <Link href="/services" className="rounded-md border border-slate-500 px-5 py-3 text-sm font-bold text-white hover:border-teal-300">対応領域と成果物</Link>
             </div>
           </div>
         </section>

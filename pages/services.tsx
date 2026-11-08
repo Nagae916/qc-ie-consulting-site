@@ -30,23 +30,23 @@ export default function ServicesPage() {
   return (
     <>
       <SiteMeta
-        title="相談できる内容"
-        description="品質規格、評価設計、改善プロセス、研修・図解・ツール化について、N-IE Labが支援できる領域を紹介します。"
+        title="対応領域と成果物"
+        description="品質規格、評価設計、改善プロセス、研修・図解・ツール化について、N-IE Labが扱う領域と成果物を紹介します。"
         path="/services"
       />
       <main id="main-content" className="min-h-screen bg-slate-50 text-slate-900">
         <section className="border-b border-slate-200 bg-white">
           <div className="mx-auto max-w-5xl px-4 py-14">
             <p className="text-xs font-bold uppercase text-teal-700">Services</p>
-            <h1 className="mt-3 text-4xl font-black md:text-5xl">相談できる内容</h1>
+            <h1 className="mt-3 text-4xl font-black md:text-5xl">対応領域と成果物</h1>
             <p className="mt-5 max-w-3xl text-base leading-8 text-slate-600">
-              答えだけを提示するのではなく、課題、制約、判断基準を整理し、現場で使える成果物へ変換する支援を想定しています。
+              課題、制約、判断基準を整理し、現場で使える成果物へ変換するための専門領域を紹介します。個別支援や有償相談は現在受け付けていません。
             </p>
           </div>
         </section>
 
         <section className="mx-auto max-w-5xl px-4 py-12">
-          <SectionHeading title="対応領域と成果物" description="依頼内容と保有情報を確認し、実施可能な範囲を個別に判断します。" />
+          <SectionHeading title="扱う領域と成果物の例" description="サイトの記事、ケース、ツールで扱う問題構造化と成果物の例です。" />
           <div className="mt-7 grid gap-6 md:grid-cols-2">
             {serviceAreas.map((area) => (
               <article key={area.title} className="rounded-lg border border-slate-200 bg-white p-5">
@@ -69,7 +69,7 @@ export default function ServicesPage() {
             </div>
             <div className="flex flex-wrap gap-3">
               <Link href="/cases" className="rounded-md border border-slate-300 px-5 py-3 text-sm font-bold hover:border-teal-500">ケースを見る</Link>
-              <Link href="/contact" className="rounded-md bg-slate-950 px-5 py-3 text-sm font-bold text-white hover:bg-teal-800">問い合わせ方法を見る</Link>
+              <Link href="/contact" className="rounded-md bg-slate-950 px-5 py-3 text-sm font-bold text-white hover:bg-teal-800">掲載内容への問い合わせ</Link>
             </div>
           </div>
         </section>

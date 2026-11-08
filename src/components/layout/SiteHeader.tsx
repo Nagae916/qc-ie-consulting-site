@@ -42,7 +42,7 @@ export function SiteHeader() {
             ))}
             <div className="mt-2 border-t border-slate-100 pt-2">
               <Link href="/services" className="block rounded-md px-3 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-100">
-                相談できる内容
+                対応領域と成果物
               </Link>
               <Link href="/contact" className="block rounded-md px-3 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-100">
                 お問い合わせ

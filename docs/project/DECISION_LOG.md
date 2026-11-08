@@ -170,3 +170,14 @@
 - Migration: ガイド本文、frontmatter値、URL、sitemap、依存関係は変更しない。Git indexに既存のLF本文を維持し、checkout規則だけを明示する。既存のunused code・依存・循環参照検査はadvisory運用を維持する。
 - Verification: Windowsの`check:ci`と連続2回build、UbuntuとWindowsのGitHub Actions、239文書、238公開ガイド、266ページ、130問、draft除外、4レビューpage-data、build前後SHA-256とGit差分を確認する。
 - Supersedes: 一時的なLF変換と元バイト復元を必要とする手順。frontmatter値のfail-safe正規化方針は維持する。
+
+## 2026-10-21：問い合わせ窓口と受付範囲を明確にする
+
+- Status: Accepted
+- Context: サイトが示す専門領域・成果物と、現在実際に受け付ける問い合わせの範囲を区別し、個別支援や有償相談を受付中と誤認させない運用が必要になった。
+- Decision: 正式窓口を `n.iecqlab@gmail.com` とし、サイト掲載内容への質問、誤記・不具合の連絡を受け付ける。返信目安は原則3営業日以内とする。質問者の事業・業務に関する個別支援と有償相談は現在受け付けない。`/services` は専門領域と成果物の例を示すページとして維持する。
+- Reason: ポートフォリオとして専門性を示す役割を保ちながら、実際の受付範囲を正確に伝え、読者の期待と運用実態のずれを防ぐため。
+- Affected areas: `/contact`、`/services`、About、トップページ、ヘッダー・フッターの補助導線、問い合わせ運用記録。
+- Migration: 既存URLとサイト構造は変更せず、表示文言と正式窓口を統一する。SNSは正式な問い合わせ窓口として案内しない。
+- Verification: mailto、モバイル表示、内部リンク、typecheck、lint、buildを確認する。土日祝日・休業日の扱いと3営業日の定義は未確定事項として残す。
+- Supersedes: なし。

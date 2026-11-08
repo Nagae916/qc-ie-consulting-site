@@ -445,8 +445,8 @@ export const homeCtas = [
     href: "/cases",
   },
   {
-    title: "相談できる内容を見る",
-    description: "品質規格、評価設計、研修、図解・ツール化の支援領域です。",
+    title: "対応領域と成果物を見る",
+    description: "品質規格、評価設計、研修、図解・ツール化で扱う領域です。",
     href: "/services",
   },
 ] as const;

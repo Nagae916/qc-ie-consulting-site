@@ -62,7 +62,7 @@ export default function AboutPage() {
           </ul>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link href="/cases" className="rounded-md bg-slate-950 px-5 py-3 text-sm font-bold text-white hover:bg-teal-800">ケースを見る</Link>
-            <Link href="/services" className="rounded-md border border-slate-300 bg-white px-5 py-3 text-sm font-bold text-slate-800 hover:border-teal-500">相談できる内容を見る</Link>
+            <Link href="/services" className="rounded-md border border-slate-300 bg-white px-5 py-3 text-sm font-bold text-slate-800 hover:border-teal-500">対応領域と成果物を見る</Link>
           </div>
         </section>
       </main>
