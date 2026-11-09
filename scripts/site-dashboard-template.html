@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>N-IE Lab | 運営ダッシュボード</title>
+  <style>
+    :root { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP", sans-serif; color: #232a34; background: #f7f8fa; }
+    * { box-sizing: border-box; }
+    body { margin: 0; line-height: 1.55; }
+    main { max-width: 1220px; margin: 0 auto; padding: 38px 30px 72px; }
+    header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 18px; margin-bottom: 26px; }
+    h1 { margin: 0; font-size: clamp(25px, 3vw, 34px); line-height: 1.25; }
+    h2 { margin: 0 0 8px; font-size: 20px; }
+    .eyebrow { margin: 0 0 7px; color: #315e69; font-size: 12px; font-weight: 750; letter-spacing: .1em; text-transform: uppercase; }
+    .lead, .detail, .section-intro, .foot { color: #626d78; }
+    .lead { margin: 8px 0 0; font-size: 14px; }
+    .snapshot { padding: 10px 13px; border: 1px solid #d8e3e5; background: #edf4f4; border-radius: 7px; font-size: 12px; color: #365c63; }
+    .notice { padding: 12px 15px; border-left: 3px solid #3c747e; background: #eef5f5; font-size: 13px; }
+    section { margin-top: 38px; }
+    .section-intro { margin: 0 0 15px; font-size: 13px; }
+    .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 13px; }
+    .card, .table-wrap { border: 1px solid #dfe3e8; background: #fff; border-radius: 8px; }
+    .card { min-height: 140px; padding: 17px 18px; display: flex; flex-direction: column; }
+    .label { margin: 0; color: #4d5866; font-size: 13px; font-weight: 650; }
+    .value { margin: 12px 0 5px; font-size: 28px; font-weight: 780; line-height: 1.15; font-variant-numeric: tabular-nums; }
+    .value.small { font-size: 21px; }
+    .value.muted { color: #7c858f; }
+    .detail { margin: auto 0 0; font-size: 12px; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { background: #fafbfc; color: #626d78; text-align: left; white-space: nowrap; }
+    th, td { padding: 11px 13px; border-bottom: 1px solid #e7eaed; vertical-align: top; }
+    tr:last-child td { border-bottom: 0; }
+    td:nth-child(4) { min-width: 250px; }
+    a { color: #276a77; font-weight: 650; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; }
+    .status { display: inline-block; padding: 2px 7px; border: 1px solid #d9e1e4; border-radius: 5px; background: #f6f9f9; white-space: nowrap; font-size: 11px; }
+    .foot { margin-top: 38px; padding-top: 20px; border-top: 1px solid #dde2e6; font-size: 12px; }
+    @media (max-width: 950px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 560px) { main { padding: 24px 16px 48px; } .grid { grid-template-columns: 1fr; gap: 10px; } .card { min-height: 0; } .value { font-size: 24px; } }
+    @media print { :root { background: #fff; } }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <div>
+      <p class="eyebrow">N-IE Lab / Site Operations</p>
+      <h1>運営ダッシュボード</h1>
+      <p class="lead">公開資産、発信準備、事業計測の取得状態をローカルで確認</p>
+    </div>
+    <div class="snapshot">更新: {{generatedAt}}<br>branch: {{branch}} / commit: {{commit}}</div>
+  </header>
+  <p class="notice">この画面はローカル生成物です。未取得は0ではありません。売上・問い合わせ・個人情報をリポジトリや公開サイトへ保存しません。</p>
+
+  <section aria-labelledby="assets-title">
+    <h2 id="assets-title">公開資産と計測準備</h2>
+    <p class="section-intro">コードと台帳から確認できる現在地。外部サービスの実測値は接続していません。</p>
+    <div class="grid">{{assetCards}}</div>
+  </section>
+
+  <section aria-labelledby="business-title">
+    <h2 id="business-title">事業・発信</h2>
+    <p class="section-intro">期間集計。データ源: <code>{{metricsSource}}</code></p>
+    <div class="grid">{{businessCards}}</div>
+  </section>
+
+  <section aria-labelledby="editorial-title">
+    <h2 id="editorial-title">原稿台帳</h2>
+    <p class="section-intro">公開は所有者承認後。正本と媒体ごとの役割を分けて管理します。</p>
+    <div class="table-wrap"><table><thead><tr><th>ID</th><th>媒体</th><th>状態</th><th>テーマ</th><th>正本</th><th>実工数</th></tr></thead><tbody>{{editorialRows}}</tbody></table></div>
+  </section>
+
+  <section aria-labelledby="metrics-title">
+    <h2 id="metrics-title">週次計測</h2>
+    <p class="section-intro">表示、流入、利用、クリック、販売を別の指標として保持します。</p>
+    <div class="table-wrap"><table><thead><tr><th>期間</th><th>表示</th><th>サイト流入</th><th>サンプル</th><th>商品リンク</th><th>販売</th><th>出典</th></tr></thead><tbody>{{metricRows}}</tbody></table></div>
+  </section>
+
+  <footer class="foot">更新コマンド: <code>npm.cmd run dashboard:site</code>。生成先: <code>.site-ops/dashboard.html</code>。生成物はGit管理外です。</footer>
+</main>
+</body>
+</html>

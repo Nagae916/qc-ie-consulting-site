@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-11-09",
+  "valuePolicy": {
+    "null": "未取得または未発生を未確認。0とは扱わない。",
+    "zero": "対象期間・定義・出典を確認した結果が0。",
+    "estimatedCostJpy": "予算または試算。実課金ではない。",
+    "actualChargedJpy": "請求明細等で確認した実課金。"
+  },
+  "records": [
+    {
+      "period": "2026-11-09/2026-11-15",
+      "source": "未接続",
+      "status": "uncollected",
+      "impressions": null,
+      "siteVisits": null,
+      "sampleUses": null,
+      "productLinkClicks": null,
+      "salesCount": null,
+      "grossRevenueJpy": null,
+      "estimatedCostJpy": null,
+      "actualChargedJpy": null,
+      "workMinutes": null,
+      "notes": "GA4・SNS・販売データはいずれも未取得。"
+    },
+    {
+      "period": "2026-11-16/2026-11-22",
+      "source": "未接続",
+      "status": "uncollected",
+      "impressions": null,
+      "siteVisits": null,
+      "sampleUses": null,
+      "productLinkClicks": null,
+      "salesCount": null,
+      "grossRevenueJpy": null,
+      "estimatedCostJpy": null,
+      "actualChargedJpy": null,
+      "workMinutes": null,
+      "notes": "実績値は公開・販売開始後に定義と出典を確認して記録する。"
+    },
+    {
+      "period": "2026-11-23/2026-11-29",
+      "source": "未接続",
+      "status": "uncollected",
+      "impressions": null,
+      "siteVisits": null,
+      "sampleUses": null,
+      "productLinkClicks": null,
+      "salesCount": null,
+      "grossRevenueJpy": null,
+      "estimatedCostJpy": null,
+      "actualChargedJpy": null,
+      "workMinutes": null,
+      "notes": "クリックを購入成功として扱わない。"
+    },
+    {
+      "period": "2026-11-30/2026-12-06",
+      "source": "未接続",
+      "status": "uncollected",
+      "impressions": null,
+      "siteVisits": null,
+      "sampleUses": null,
+      "productLinkClicks": null,
+      "salesCount": null,
+      "grossRevenueJpy": null,
+      "estimatedCostJpy": null,
+      "actualChargedJpy": null,
+      "workMinutes": null,
+      "notes": "媒体間の表示数をユニーク人数として合算しない。"
+    }
+  ]
+}

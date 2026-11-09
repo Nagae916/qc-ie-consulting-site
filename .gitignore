@@ -18,6 +18,7 @@ dist/
 .npm-cache/
 .eslintcache
 tsconfig.tsbuildinfo
+.site-ops/
 
 # Vercel
 .vercel/

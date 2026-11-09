@@ -24,6 +24,7 @@
     "check:engineer-exams": "node ./scripts/validate-engineer-past-exam-coverage.js",
     "check:generated": "node ./scripts/validate-generated-output.cjs",
     "check:build-output": "node ./scripts/validate-build-output.cjs",
+    "dashboard:site": "node ./scripts/generate-site-dashboard.cjs",
     "analyze:engineer-exams": "node scripts/analyze-engineer-past-exam-trends.js",
     "check:fast": "npm run test:frontmatter && npm run check:source-format && npm run check:frontmatter && npm run check:mdx-safety && npm run gen && npm run lint:fast && npm run check:routes && npm run check:dup && npm run check:audit && npm run check:knowledge-map && npm run check:engineer-exams && npm run check:generated",
     "check:ci": "node scripts/run-validation.cjs ci",
