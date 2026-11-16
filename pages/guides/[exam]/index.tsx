@@ -16,7 +16,7 @@ const EXAM_LABEL: Record<ExamKey, string> = {
 
 const EXAM_DESCRIPTION: Record<ExamKey, string> = {
   qc: "QC検定、品質管理、QMS改善、品質工学を学ぶためのガイド一覧です。",
-  stat: "データサイエンティスト検定、統計学習、品質管理、経営工学をつなげて学ぶためのガイド一覧です。",
+  stat: "統計検定 データサイエンス発展、統計学習、品質管理、経営工学をつなげて学ぶためのガイド一覧です。",
   engineer: "技術士第二次試験、経営工学、生産管理、QMS改善を学ぶためのガイド一覧です。",
 };
 
@@ -469,7 +469,7 @@ function StatLearningPath() {
           <p className="text-sm font-semibold text-sky-700">おすすめ学習順</p>
           <h2 className="mt-1 text-xl font-bold text-slate-900">データを読む力から、検定・回帰・品質改善へ進む</h2>
           <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-700">
-            データサイエンティスト検定、統計検定、QC検定、技術士答案に共通する統計の土台を、迷わず進める順番に並べています。
+            統計検定 データサイエンス発展、統計検定、QC検定、技術士答案に共通する統計の土台を、迷わず進める順番に並べています。
           </p>
         </div>
         <Link href="/guides/stat/data-science-stat-roadmap" className="text-sm font-semibold text-sky-800 underline">

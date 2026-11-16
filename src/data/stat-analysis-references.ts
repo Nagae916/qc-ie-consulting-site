@@ -165,6 +165,6 @@ export const STAT_ANALYSIS_REFERENCES: StatReference[] = [
       "/guides/stat/ds-certification-roadmap",
     ],
     usageNote:
-      "統計部門の基礎学習マップ、基本の勉強、統計検定、DS検定の3導線設計、初学者向け統計ガイドの構成参考として使う。",
+      "統計部門の基礎学習マップ、基本の勉強、統計検定、DS発展の3導線設計、初学者向け統計ガイドの構成参考として使う。",
   },
 ];
