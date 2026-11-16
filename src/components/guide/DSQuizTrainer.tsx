@@ -79,10 +79,10 @@ export default function DSQuizTrainer() {
     <section className="rounded-2xl border border-sky-200 bg-sky-50 p-5 shadow-sm sm:p-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
-          <p className="text-sm font-semibold text-sky-700">DS Certification Practice</p>
-          <h2 className="mt-2 text-2xl font-bold text-slate-950">DS検定 4択演習</h2>
+          <p className="text-sm font-semibold text-sky-700">データ活用の基礎確認</p>
+          <h2 className="mt-2 text-2xl font-bold text-slate-950">DS発展の補助演習</h2>
           <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-700">
-            公式・過去問系の出題観点を参考にしたオリジナル類題です。領域やカテゴリで絞り込み、間違えたテーマは関連ガイドで復習できます。
+            統計・データ活用のオリジナル問題です。全試験範囲は網羅していません。領域はサイト独自の整理用分類です。関連ガイドと公式資料で補ってください。
           </p>
         </div>
         <div className="grid grid-cols-3 gap-2 rounded-xl border border-sky-200 bg-white p-3 text-center text-sm">

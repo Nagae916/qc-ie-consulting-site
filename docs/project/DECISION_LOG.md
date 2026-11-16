@@ -170,3 +170,14 @@
 - Migration: ガイド本文、frontmatter値、URL、sitemap、依存関係は変更しない。Git indexに既存のLF本文を維持し、checkout規則だけを明示する。既存のunused code・依存・循環参照検査はadvisory運用を維持する。
 - Verification: Windowsの`check:ci`と連続2回build、UbuntuとWindowsのGitHub Actions、239文書、238公開ガイド、266ページ、130問、draft除外、4レビューpage-data、build前後SHA-256とGit差分を確認する。
 - Supersedes: 一時的なLF変換と元バイト復元を必要とする手順。frontmatter値のfail-safe正規化方針は維持する。
+
+## 2026-11-16：DS学習導線の対象を統計検定データサイエンス発展に統一する
+
+- Status: Accepted
+- Context: ユーザーがサイトのDS学習導線を統計検定データサイエンス発展の受験学習として使うと明示した。既存ページは別資格の名称・分類と固定の6月目標を表示していた。
+- Decision: 対象資格の正式名称を「統計検定 データサイエンス発展」、短縮表記を「DS発展」に統一し、公式範囲に基づく学習地図へ訂正する。別資格のDS検定★と区別する。既存問題は汎用の補助演習として位置付け、公式準拠・頻出・全範囲対応を断定しない。
+- Reason: 読者が資格と学習対象を正しく選び、統計・数理・情報・倫理の不足範囲を確認できるようにするため。
+- Affected areas: 統計ガイド、一覧・学習マップ、補助演習の見出しと説明、参照データの導線説明。
+- Migration: 既存URL、slug、問題データ、操作機能、ブランド、中心4テーマ、依存関係は維持する。個人の受験日や勤務予定は公開本文に書かない。
+- Verification: 公式案内・出題範囲表の照合、名称の検索、生成・lint・型チェック・ビルド・URL回帰を行い、結果をPRへ記録する。
+- Supersedes: 既存DS導線の別資格表記と固定6月目標。
