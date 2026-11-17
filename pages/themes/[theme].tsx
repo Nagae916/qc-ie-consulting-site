@@ -47,9 +47,10 @@ export default function ThemePage({ theme }: InferGetStaticPropsType<typeof getS
       <main id="main-content" className="min-h-screen bg-slate-50 text-slate-900">
         <section className="border-b border-slate-200 bg-white">
           <div className="mx-auto max-w-6xl px-4 py-12">
-            <Breadcrumbs items={[{ label: "ホーム", href: "/" }, { label: "4つのテーマ", href: "/themes" }, { label: theme.title }]} />
+            <Breadcrumbs items={[{ label: "ホーム", href: "/" }, { label: "4つの専門領域", href: "/themes" }, { label: theme.title }]} />
             <p className="mt-8 text-xs font-bold uppercase text-teal-700">Theme</p>
             <h1 className="mt-3 text-4xl font-black leading-tight md:text-5xl">{theme.title}</h1>
+            <p className="mt-3 text-sm font-bold text-teal-800">{theme.supportingLabel}</p>
             <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-600">{theme.description}</p>
             <p className="mt-6 border-l-4 border-teal-600 pl-4 text-base font-bold leading-8 text-slate-800">{theme.question}</p>
           </div>
@@ -59,7 +60,7 @@ export default function ThemePage({ theme }: InferGetStaticPropsType<typeof getS
         <ContentSection title="現場で考える" description="条件、判断基準、他部門とのつながりまで掘り下げます。" items={theme.practical} alternate />
         {theme.cases.length > 0 ? <ContentSection title="ケースから考える" description="一つの正解ではなく、制約下での判断過程を確認します。" items={theme.cases} /> : null}
         {theme.tools.length > 0 ? <ContentSection title="試して理解する" description="数値や条件を動かし、結果の変化を確かめます。" items={theme.tools} alternate /> : null}
-        {theme.learning.length > 0 ? <ContentSection title="学びを深める" description="資格や体系学習を通じて理解を補強します。" items={theme.learning} /> : null}
+        {theme.learning.length > 0 ? <ContentSection title="資格学習" description="資格や体系学習を通じて理解を補強します。" items={theme.learning} /> : null}
 
         <section className="border-t border-slate-200 bg-white">
           <div className="mx-auto max-w-6xl px-4 py-10">

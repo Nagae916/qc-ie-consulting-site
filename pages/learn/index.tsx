@@ -50,7 +50,7 @@ export default function LearningIndex() {
   return (
     <>
       <SiteMeta
-        title="学びを深める"
+        title="資格学習"
         description="技術士、QC検定、統計検定、生産オペレーション、TESを、ものづくりの実務理解へつなげる学習入口です。"
         path="/learn"
       />
@@ -58,7 +58,7 @@ export default function LearningIndex() {
         <section className="border-b border-slate-200 bg-white">
           <div className="mx-auto max-w-6xl px-4 py-14">
             <p className="text-xs font-bold uppercase text-teal-700">Deepen learning</p>
-            <h1 className="mt-3 text-4xl font-black md:text-5xl">学びを深める</h1>
+            <h1 className="mt-3 text-4xl font-black md:text-5xl">資格学習</h1>
             <p className="mt-5 max-w-3xl text-base leading-8 text-slate-600">
               資格はサイトの目的ではなく、理解を体系化し、説明できる力を確認する手段です。今の業務や学習目標に近い入口から進んでください。
             </p>
@@ -69,7 +69,7 @@ export default function LearningIndex() {
           <SectionHeading title="目的から選ぶ" description="各領域の既存ガイドと演習を、そのまま利用できます。" />
           <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {learningAreas.map((area) => (
-              <ContentCard key={area.title} href={area.href} eyebrow="学びを深める" title={area.title} description={area.description} action="学習を始める" />
+              <ContentCard key={area.title} href={area.href} eyebrow="資格から知識を探す" title={area.title} description={area.description} action="学習を始める" />
             ))}
             <ContentCard
               href="/guides/engineer/learning-map"

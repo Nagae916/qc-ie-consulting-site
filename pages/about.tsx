@@ -3,6 +3,7 @@ import Link from "next/link";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { SiteMeta } from "@/components/site/SiteMeta";
 import { siteIdentity, themes } from "@/data/n-ie-lab";
+import { socialChannels } from "@/data/site";
 
 const workingPrinciples = [
   "個別手法を並べるだけでなく、品質・納期・在庫・原価・組織の関係を示す",
@@ -22,6 +23,14 @@ export default function AboutPage() {
             <h1 className="mt-3 text-4xl font-black md:text-5xl">{siteIdentity.name}について</h1>
             <p className="mt-5 max-w-3xl text-xl font-bold leading-9 text-slate-800">{siteIdentity.message}</p>
             <p className="mt-5 max-w-3xl text-base leading-8 text-slate-600">{siteIdentity.subMessage}</p>
+            <nav id="external-media" className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-2 scroll-mt-20 text-sm" aria-label="SNS・外部メディア">
+              <span className="font-bold text-slate-700">SNS・外部メディア</span>
+              {socialChannels.map((channel) => (
+                <a key={channel.name} href={channel.href} target="_blank" rel="noreferrer" className="font-bold text-teal-700 underline decoration-teal-200 underline-offset-4">
+                  {channel.name}
+                </a>
+              ))}
+            </nav>
           </div>
         </section>
 
@@ -48,6 +57,7 @@ export default function AboutPage() {
               {themes.map((theme) => (
                 <Link key={theme.slug} href={`/themes/${theme.slug}`} className="rounded-lg border border-slate-200 p-4 hover:border-teal-500">
                   <h2 className="font-bold">{theme.title}</h2>
+                  <p className="mt-1 text-sm font-semibold text-teal-800">{theme.supportingLabel}</p>
                   <p className="mt-2 text-sm leading-6 text-slate-600">{theme.description}</p>
                 </Link>
               ))}

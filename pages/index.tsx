@@ -6,22 +6,19 @@ import { allGuides, type Guide } from "contentlayer/generated";
 import { ContentCard } from "@/components/site/ContentCard";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { SiteMeta } from "@/components/site/SiteMeta";
-import { caseStudies } from "@/data/cases";
 import {
   contentTypeLabels,
   difficultyLabels,
   featuredGuideHrefs,
-  homeCtas,
-  homeToolHrefs,
-  learningAreas,
-  manufacturingQuestions,
+  homeLearningGuides,
   siteIdentity,
+  supportingInformationAreas,
   themes,
   type ContentType,
   type Difficulty,
   type ThemeSlug,
 } from "@/data/n-ie-lab";
-import { labTools } from "@/data/site";
+import { featuredExternalArticles, socialChannels } from "@/data/site";
 import { classifyContent } from "@/lib/content-classification";
 import { isPublishedGuideStatus } from "@/lib/frontmatter-normalization";
 
@@ -29,7 +26,7 @@ type HomeGuide = {
   href: string;
   title: string;
   description: string;
-  label: "注目記事" | "新着記事" | "最近更新";
+  label: "注目記事" | "新着記事";
   theme: string;
   contentType: string;
   difficulty: string;
@@ -38,13 +35,11 @@ type HomeGuide = {
 };
 
 const themeLabels: Record<ThemeSlug, string> = {
-  quality: "品質をつくる",
-  production: "生産を整える",
-  data: "データで確かめる",
-  improvement: "改善を仕組みにする",
+  quality: "品質マネジメント",
+  production: "生産管理",
+  data: "データマネジメント",
+  improvement: "改善マネジメント",
 };
-
-const processSteps = ["顧客要求", "製品設計", "工程設計", "生産", "検査・データ", "出荷・改善"] as const;
 
 const getGuideHref = (guide: Guide) => {
   const url = (guide as { url?: unknown }).url;
@@ -56,8 +51,7 @@ const getGuideHref = (guide: Guide) => {
 
 const getTimestamp = (guide: Guide) => {
   const values = guide as { updatedAtAuto?: unknown; updatedAt?: unknown; date?: unknown };
-  const value = String(values.updatedAtAuto ?? values.updatedAt ?? values.date ?? "");
-  const time = Date.parse(value);
+  const time = Date.parse(String(values.updatedAtAuto ?? values.updatedAt ?? values.date ?? ""));
   return Number.isFinite(time) ? time : 0;
 };
 
@@ -86,8 +80,9 @@ const inferContentType = (guide: Guide): ContentType => {
 const inferDifficulty = (guide: Guide): Difficulty => {
   const value = (guide as { difficulty?: unknown }).difficulty;
   if (value === "introductory" || value === "practical" || value === "advanced") return value;
-  const classification = classifyContent({ slug: String((guide as { slug?: unknown }).slug ?? "") });
-  return classification === "learning-route" ? "introductory" : "practical";
+  return classifyContent({ slug: String((guide as { slug?: unknown }).slug ?? "") }) === "learning-route"
+    ? "introductory"
+    : "practical";
 };
 
 const toHomeGuide = (guide: Guide, label: HomeGuide["label"]): HomeGuide => {
@@ -114,61 +109,32 @@ const toHomeGuide = (guide: Guide, label: HomeGuide["label"]): HomeGuide => {
 export const getStaticProps: GetStaticProps<{ contentItems: HomeGuide[] }> = async () => {
   const published = allGuides.filter((guide) => isPublishedGuideStatus((guide as { status?: unknown }).status));
   const byHref = new Map(published.map((guide) => [getGuideHref(guide), guide]));
-  const used = new Set<string>();
-
-  const featured = featuredGuideHrefs
-    .map((href) => byHref.get(href))
-    .filter((guide): guide is Guide => !!guide)
+  const featured = featuredGuideHrefs.map((href) => byHref.get(href)).find((guide): guide is Guide => !!guide);
+  const usedHref = featured ? getGuideHref(featured) : "";
+  const recent = published
+    .filter((guide) => getGuideHref(guide) !== usedHref)
+    .sort((a, b) => getTimestamp(b) - getTimestamp(a))
     .slice(0, 2)
-    .map((guide) => {
-      used.add(getGuideHref(guide));
-      return toHomeGuide(guide, "注目記事");
-    });
-
-  const remaining = published
-    .filter((guide) => !used.has(getGuideHref(guide)))
-    .sort((a, b) => getTimestamp(b) - getTimestamp(a));
-
-  const newItems = remaining.slice(0, 2).map((guide) => {
-    used.add(getGuideHref(guide));
-    return toHomeGuide(guide, "新着記事");
-  });
-  const updatedItems = remaining
-    .filter((guide) => !used.has(getGuideHref(guide)))
-    .slice(0, 2)
-    .map((guide) => toHomeGuide(guide, "最近更新"));
-
-  return { props: { contentItems: [...featured, ...newItems, ...updatedItems] }, revalidate: 1800 };
+    .map((guide) => toHomeGuide(guide, "新着記事"));
+  return {
+    props: { contentItems: [...(featured ? [toHomeGuide(featured, "注目記事")] : []), ...recent] },
+    revalidate: 1800,
+  };
 };
 
 export default function HomePage({ contentItems }: InferGetStaticPropsType<typeof getStaticProps>) {
-  const selectedTools = homeToolHrefs
-    .map((href) => labTools.find((tool) => tool.href === href))
-    .filter((tool): tool is (typeof labTools)[number] => !!tool);
-
   return (
     <>
       <SiteMeta
         description="ものづくりは、仕組みが見えるともっと面白い。品質管理、生産管理、統計、改善を経営工学の視点から読み解く専門メディアです。"
         path="/"
         jsonLd={[
-          {
-            "@context": "https://schema.org",
-            "@type": "WebSite",
-            name: siteIdentity.name,
-            url: siteIdentity.siteUrl,
-            description: siteIdentity.description,
-          },
-          {
-            "@context": "https://schema.org",
-            "@type": "Organization",
-            name: siteIdentity.name,
-            url: siteIdentity.siteUrl,
-          },
+          { "@context": "https://schema.org", "@type": "WebSite", name: siteIdentity.name, url: siteIdentity.siteUrl, description: siteIdentity.description },
+          { "@context": "https://schema.org", "@type": "Organization", name: siteIdentity.name, url: siteIdentity.siteUrl },
         ]}
       />
       <main id="main-content" className="bg-slate-50 text-slate-900">
-        <section className="relative flex h-[72svh] min-h-[520px] max-h-[680px] items-center overflow-hidden border-b border-slate-200 bg-white">
+        <section className="relative flex min-h-[460px] items-center overflow-hidden border-b border-slate-200 bg-white md:min-h-[520px]">
           <Image
             src="/images/home/n-ie-lab-manufacturing-hero.jpg"
             alt="製造現場で工程設備と品質データを確認する実務者"
@@ -177,140 +143,119 @@ export default function HomePage({ contentItems }: InferGetStaticPropsType<typeo
             sizes="100vw"
             className="object-cover object-[62%_center] md:object-center"
           />
-          <div className="absolute inset-0 bg-white/80 md:bg-white/20" aria-hidden="true" />
+          <div className="absolute inset-0 bg-white/85 md:bg-white/30" aria-hidden="true" />
           <div className="relative mx-auto w-full max-w-6xl px-4 py-12">
             <div className="max-w-2xl">
-              <p className="text-sm font-bold uppercase text-teal-800">Quality · Production · Data · Improvement</p>
-              <h1 className="mt-4 text-5xl font-black leading-none text-slate-950 md:text-7xl">{siteIdentity.name}</h1>
-              <p className="mt-6 text-2xl font-black leading-tight text-slate-900 md:text-4xl">{siteIdentity.message}</p>
-              <p className="mt-5 max-w-xl text-base leading-8 text-slate-700 md:text-lg">{siteIdentity.subMessage}</p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Link href="/themes" className="rounded-md bg-slate-950 px-5 py-3 text-sm font-bold text-white hover:bg-teal-800">テーマから読む</Link>
-                <Link href="/cases" className="rounded-md border border-slate-500 bg-white/90 px-5 py-3 text-sm font-bold text-slate-900 hover:border-teal-600">ケースを見る</Link>
+              <p className="text-sm font-bold text-teal-800">経営工学から、ものづくりをつなげて学ぶ</p>
+              <h1 className="mt-3 text-5xl font-black leading-none text-slate-950 md:text-7xl">{siteIdentity.name}</h1>
+              <p className="mt-5 text-2xl font-black leading-tight text-slate-900 md:text-4xl">{siteIdentity.message}</p>
+              <p className="mt-4 max-w-xl text-base leading-8 text-slate-700">{siteIdentity.subMessage}</p>
+              <div className="mt-7 flex flex-wrap gap-3">
+                <Link href="#learning-areas" className="rounded-md bg-slate-950 px-5 py-3 text-sm font-bold text-white hover:bg-teal-800">学ぶテーマを選ぶ</Link>
+                <Link href="/guides" className="rounded-md border border-slate-500 bg-white/90 px-5 py-3 text-sm font-bold text-slate-900 hover:border-teal-600">ガイドを探す</Link>
+              </div>
+              <nav className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm" aria-label="SNS・外部メディア">
+                <span className="font-semibold text-slate-600">SNS・外部メディア</span>
+                {socialChannels.map((channel) => (
+                  <a key={channel.name} href={channel.href} target="_blank" rel="noreferrer" className="font-bold text-teal-800 underline decoration-teal-300 underline-offset-4">
+                    {channel.name}
+                  </a>
+                ))}
+              </nav>
+            </div>
+          </div>
+        </section>
+
+        <section id="learning-areas" className="scroll-mt-20 border-b border-slate-200 bg-white">
+          <div className="mx-auto max-w-6xl px-4 py-12">
+            <SectionHeading eyebrow="Learning areas" title="テーマから学ぶ" description="4つの専門領域を中心に、資格学習と外部発信を目的に応じて使い分けます。" />
+            <div className="mt-7 grid gap-x-6 gap-y-7 sm:grid-cols-2 lg:grid-cols-4">
+              {themes.map((theme, index) => (
+                <Link key={theme.slug} href={`/themes/${theme.slug}`} className="border-t-4 border-slate-300 pt-4 hover:border-teal-600">
+                  <span className="text-xs font-bold text-slate-500">専門領域 0{index + 1}</span>
+                  <h2 className="mt-2 text-xl font-bold">{theme.title}</h2>
+                  <p className="mt-1 text-sm font-semibold text-teal-800">{theme.supportingLabel}</p>
+                  <p className="mt-3 text-sm leading-7 text-slate-600">{theme.topicExamples.slice(0, 3).join("／")}</p>
+                  <span className="mt-4 inline-block text-sm font-bold text-teal-700">この領域を見る</span>
+                </Link>
+              ))}
+            </div>
+            <div className="mt-9 grid gap-5 border-t border-slate-200 pt-7 md:grid-cols-2">
+              {supportingInformationAreas.map((area) => (
+                <section key={area.title} className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
+                  <div>
+                    <p className="text-xs font-bold text-slate-500">横断的な入口</p>
+                    <h2 className="mt-1 text-lg font-bold">{area.title}</h2>
+                    <p className="mt-1 text-sm font-semibold text-teal-800">{area.supportingLabel}</p>
+                    <p className="mt-2 text-sm leading-6 text-slate-600">{area.description}</p>
+                    <p className="mt-2 text-xs leading-6 text-slate-500">{area.topics.join("／")}</p>
+                  </div>
+                  <Link href={area.href} className="text-sm font-bold text-teal-700 underline decoration-teal-200 underline-offset-4">入口を見る</Link>
+                </section>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-6xl px-4 py-12">
+          <SectionHeading eyebrow="Guides" title="理解を助けるガイド" description="判断過程を読む、条件を動かす、知識をつなぐ。理解したい内容に合う入口を選べます。" />
+          <div className="mt-7 grid gap-5 md:grid-cols-3">
+            {homeLearningGuides.map((guide) => (
+              <ContentCard key={guide.href} href={guide.href} eyebrow={guide.eyebrow} title={guide.title} description={guide.description} action={guide.action} />
+            ))}
+          </div>
+          <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm font-bold text-teal-700">
+            <Link href="/cases" className="underline decoration-teal-200 underline-offset-4">ケースをすべて見る</Link>
+            <Link href="/tools" className="underline decoration-teal-200 underline-offset-4">ツールをすべて見る</Link>
+            <Link href="/guides" className="underline decoration-teal-200 underline-offset-4">ガイド一覧を見る</Link>
+          </div>
+        </section>
+
+        <section className="border-y border-slate-200 bg-white">
+          <div className="mx-auto max-w-6xl px-4 py-12">
+            <SectionHeading eyebrow="Recent" title="新着・更新" description="サイト内の注目・新着と、noteで公開した記事を分けて掲載します。" />
+            <div className="mt-7 grid gap-10 lg:grid-cols-[minmax(0,1.6fr)_minmax(280px,.8fr)]">
+              <div>
+                <h2 className="text-base font-bold">N-IE Labのガイド</h2>
+                <div className="mt-4 grid gap-5 md:grid-cols-3">
+                  {contentItems.map((item) => (
+                    <ContentCard
+                      key={`${item.label}-${item.href}`}
+                      href={item.href}
+                      eyebrow={`${item.label} · ${item.theme}`}
+                      title={item.title}
+                      description={item.description}
+                      meta={[item.contentType, item.difficulty, item.updatedAt, `約${item.readingMinutes}分`].filter(Boolean).join(" · ")}
+                      action="読む"
+                    />
+                  ))}
+                </div>
+              </div>
+              <div>
+                <h2 className="text-base font-bold">noteの記事から</h2>
+                <p className="mt-2 text-sm leading-6 text-slate-600">学習経験や背景を、文章として記録しています。</p>
+                <ol className="mt-4 divide-y divide-slate-200 border-y border-slate-200">
+                  {featuredExternalArticles.map((article) => (
+                    <li key={article.href} className="py-4">
+                      <a href={article.href} target="_blank" rel="noreferrer" className="font-bold leading-7 text-slate-900 hover:text-teal-700">{article.title}</a>
+                      <p className="mt-1 text-xs text-slate-500">note · {article.publishedAt}</p>
+                    </li>
+                  ))}
+                </ol>
+                <a href={socialChannels.find((channel) => channel.name === "note")?.href} target="_blank" rel="noreferrer" className="mt-4 inline-block text-sm font-bold text-teal-700 underline decoration-teal-200 underline-offset-4">noteのプロフィールを見る</a>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="mx-auto max-w-6xl px-4 py-12">
-          <SectionHeading eyebrow="Questions" title="ものづくりの問いから始める" description="仕事の中の素朴な疑問には、複数の分野がつながっています。" />
-          <div className="mt-7 grid gap-4 md:grid-cols-3">
-            {manufacturingQuestions.map((item) => (
-              <Link key={item.question} href={item.href} className="rounded-lg border border-slate-200 bg-white p-5 hover:border-teal-500">
-                <h2 className="text-lg font-bold leading-7">{item.question}</h2>
-                <p className="mt-3 text-sm leading-7 text-slate-600">{item.answerHint}</p>
-                <span className="mt-5 inline-block text-sm font-bold text-teal-700">考え方を見る</span>
-              </Link>
-            ))}
-          </div>
-        </section>
-
-        <section className="border-y border-slate-200 bg-white">
-          <div className="mx-auto max-w-6xl px-4 py-12">
-            <SectionHeading eyebrow="Four perspectives" title="4つの視点" description="担当業務から入り、隣接する視点までつなげます。" />
-            <div className="mt-7 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              {themes.map((theme, index) => (
-                <Link key={theme.slug} href={`/themes/${theme.slug}`} className="border-t-4 border-slate-300 p-4 hover:border-teal-600">
-                  <span className="text-xs font-bold text-slate-500">0{index + 1}</span>
-                  <h2 className="mt-2 text-xl font-bold">{theme.title}</h2>
-                  <p className="mt-3 text-sm leading-7 text-slate-600">{theme.description}</p>
-                  <span className="mt-4 inline-block text-sm font-bold text-teal-700">テーマへ進む</span>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="mx-auto max-w-6xl px-4 py-12">
-          <SectionHeading eyebrow="System view" title="製品が届くまでを、一つの仕組みとして見る" description="品質、生産、データ、改善は、同じ価値の流れの中で相互に影響します。" />
-          <div className="mt-8" role="img" aria-label="顧客要求から製品設計、工程設計、生産、検査とデータ、出荷と改善へつながるものづくりの流れ">
-            <ol className="grid gap-3 md:grid-cols-6">
-              {processSteps.map((step, index) => (
-                <li key={step} className="relative rounded-lg border border-slate-200 bg-white px-3 py-5 text-center text-sm font-bold text-slate-800">
-                  <span className="mb-2 block text-xs text-teal-700">STEP {index + 1}</span>
-                  {step}
-                  {index < processSteps.length - 1 ? <span className="mt-3 block text-teal-600 md:absolute md:-right-3 md:top-1/2 md:z-10 md:mt-0 md:-translate-y-1/2" aria-hidden="true">→</span> : null}
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
-
-        <section className="border-y border-slate-200 bg-white">
-          <div className="mx-auto max-w-6xl px-4 py-12">
-            <SectionHeading eyebrow="Case studies" title="ケースから考える" description="制約のある実務課題を、情報収集、判断、成果物の順で読み解きます。" />
-            <div className="mt-7 grid gap-5 md:grid-cols-2">
-              {caseStudies.map((study) => (
-                <ContentCard key={study.slug} href={`/cases/${study.slug}`} eyebrow="ケースから学ぶ" title={study.title} description={study.summary} meta="匿名化・再構成ケース" action="判断過程を見る" />
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="mx-auto max-w-6xl px-4 py-12">
-          <SectionHeading eyebrow="Interactive tools" title="試して理解する" description="数値や条件を動かし、判断結果がどう変わるかを確かめます。" />
-          <div className="mt-7 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-            {selectedTools.map((tool) => (
-              <ContentCard key={tool.href} href={tool.href} eyebrow={tool.category} title={tool.title} description={tool.summary} meta="利用可能" action="使ってみる" />
-            ))}
-          </div>
-          <Link href="/tools" className="mt-6 inline-block text-sm font-bold text-teal-700 underline decoration-teal-200 underline-offset-4">すべてのツールを見る</Link>
-        </section>
-
-        <section className="border-y border-slate-200 bg-white">
-          <div className="mx-auto max-w-6xl px-4 py-12">
-            <SectionHeading eyebrow="Library" title="注目・新着コンテンツ" description="実際のガイドから、注目、新着、最近更新した内容を6件に絞っています。" />
-            <div className="mt-7 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {contentItems.map((item) => (
-                <ContentCard
-                  key={`${item.label}-${item.href}`}
-                  href={item.href}
-                  eyebrow={`${item.label} · ${item.theme}`}
-                  title={item.title}
-                  description={item.description}
-                  meta={[item.contentType, item.difficulty, item.updatedAt, `約${item.readingMinutes}分`].filter(Boolean).join(" · ")}
-                  action="読む"
-                />
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="mx-auto max-w-6xl px-4 py-12">
-          <SectionHeading eyebrow="Deepen learning" title="学びを深める" description="体系的な学習や資格試験を通じて、ものづくりへの理解をさらに深めます。" />
-          <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-            {learningAreas.map((area) => (
-              <Link key={area.title} href={area.href} className="rounded-lg border border-slate-200 bg-white p-4 hover:border-teal-500">
-                <h2 className="font-bold">{area.title}</h2>
-                <p className="mt-2 text-sm leading-6 text-slate-600">{area.description}</p>
-              </Link>
-            ))}
-          </div>
-        </section>
-
-        <section className="border-y border-slate-200 bg-slate-950 text-white">
-          <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 md:grid-cols-[1.2fr_.8fr] md:items-center">
-            <div>
-              <p className="text-xs font-bold uppercase text-teal-300">About N-IE Lab</p>
-              <h2 className="mt-3 text-3xl font-bold">知識を、判断と成果物へ変える</h2>
-              <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300">
-                経営工学を中心に品質・生産・統計を扱い、製造業の実務と資格学習を接続します。複雑な課題を図解、ケース、チェックリスト、ツールとして残します。
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-3 md:justify-end">
-              <Link href="/about" className="rounded-md bg-white px-5 py-3 text-sm font-bold text-slate-950 hover:bg-teal-50">N-IE Labについて</Link>
-              <Link href="/services" className="rounded-md border border-slate-500 px-5 py-3 text-sm font-bold text-white hover:border-teal-300">相談できる内容</Link>
-            </div>
-          </div>
-        </section>
-
-        <section className="mx-auto max-w-6xl px-4 py-12">
-          <SectionHeading title="次に進む" description="目的に近い入口を一つ選んでください。" />
-          <div className="mt-7 grid gap-5 md:grid-cols-3">
-            {homeCtas.map((cta) => (
-              <ContentCard key={cta.href} href={cta.href} title={cta.title} description={cta.description} action="開く" />
-            ))}
-          </div>
+        <section className="mx-auto max-w-6xl px-4 py-10">
+          <SectionHeading eyebrow="About" title="関連情報" description="サイトの目的、運営方針、連絡先を確認できます。" />
+          <nav className="mt-6 flex flex-wrap gap-x-6 gap-y-3 text-sm font-bold" aria-label="関連情報">
+            <Link href="/about" className="text-teal-700 underline decoration-teal-200 underline-offset-4">N-IE Labについて</Link>
+            <Link href="/services" className="text-teal-700 underline decoration-teal-200 underline-offset-4">掲載内容と対応範囲</Link>
+            <Link href="/contact" className="text-teal-700 underline decoration-teal-200 underline-offset-4">お問い合わせ</Link>
+            <Link href="/references" className="text-teal-700 underline decoration-teal-200 underline-offset-4">参考資料</Link>
+          </nav>
         </section>
       </main>
     </>
