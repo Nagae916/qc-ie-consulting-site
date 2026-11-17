@@ -55,7 +55,7 @@
   - 静的ページ: 266ページ
   - トップ First Load JS: 101 kB
   - 全ページ共通 First Load JS: 105 kB
-  - ガイド First Load JS: 148 kB
+  - ガイド First Load JS: 142 kB
 - route audit、duplicate URL、generated content、Knowledge map、過去問130問、build output audit: 成功
 - ローカルproduction buildの主要13ルート: すべてHTTP 200
 - 3つの実証ガイド: 関係種別と公開済み関連先を表示
