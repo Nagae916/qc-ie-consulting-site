@@ -23,7 +23,7 @@ export default function NotFoundPage() {
               トップへ戻る
             </Link>
             <Link href="/themes" className="rounded-md border border-slate-300 px-5 py-3 text-sm font-bold text-slate-800 hover:border-teal-500">
-              4つのテーマを見る
+              4つの専門領域を見る
             </Link>
           </div>
         </div>

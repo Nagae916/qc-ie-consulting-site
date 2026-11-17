@@ -23,6 +23,13 @@ export type SocialChannel = {
   purpose: string;
 };
 
+export type ExternalArticle = {
+  title: string;
+  href: string;
+  publishedAt: string;
+  channel: "note";
+};
+
 export const learningPillars: LearningPillar[] = [
   {
     key: "qc",
@@ -165,6 +172,21 @@ export const socialChannels: SocialChannel[] = [
     handle: "n_ieqclab",
     href: "https://twitter.com/n_ieqclab",
     purpose: "日々の気づき、更新通知、公的情報の速報的な整理を流す場所",
+  },
+];
+
+export const featuredExternalArticles: ExternalArticle[] = [
+  {
+    title: "値決めは経営である。～物価高の時代に、私たちはどう価格と向き合うか～",
+    href: "https://note.com/nieqc_0713/n/n1d602ad08b19",
+    publishedAt: "2026-01-05",
+    channel: "note",
+  },
+  {
+    title: "技術士（経営工学・サービスマネジメント）二次試験に効く「情報ソースマップ」",
+    href: "https://note.com/nieqc_0713/n/na3b4c49db1f1",
+    publishedAt: "2025-12-13",
+    channel: "note",
   },
 ];
 

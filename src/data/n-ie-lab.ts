@@ -22,6 +22,8 @@ export type ContentLink = {
 export type ThemeDefinition = {
   slug: ThemeSlug;
   title: string;
+  supportingLabel: string;
+  topicExamples: string[];
   description: string;
   question: string;
   introductory: ContentLink[];
@@ -44,10 +46,10 @@ export const siteIdentity = {
 } as const;
 
 export const primaryNavigation = [
-  { label: "テーマから探す", href: "/themes" },
+  { label: "専門領域", href: "/themes" },
   { label: "ケース", href: "/cases" },
   { label: "ツール", href: "/tools" },
-  { label: "学びを深める", href: "/learn" },
+  { label: "資格学習", href: "/learn" },
   { label: "N-IE Labについて", href: "/about" },
 ] as const;
 
@@ -72,7 +74,9 @@ export const manufacturingQuestions = [
 export const themes: ThemeDefinition[] = [
   {
     slug: "quality",
-    title: "品質をつくる",
+    title: "品質マネジメント",
+    supportingLabel: "品質管理・品質保証",
+    topicExamples: ["品質要求・設計", "工程品質", "検査・測定", "品質保証・QMS"],
     description: "検査だけではなく、要求、工程、標準、判断の仕組みから品質を考えます。",
     question: "顧客が必要とする品質を、工程でどう再現し続けるか。",
     introductory: [
@@ -173,7 +177,9 @@ export const themes: ThemeDefinition[] = [
   },
   {
     slug: "production",
-    title: "生産を整える",
+    title: "生産管理",
+    supportingLabel: "工程・設備・在庫・原価",
+    topicExamples: ["作業・工程設計", "生産計画・進捗", "設備・材料・物流", "原価・投資"],
     description: "人、設備、材料、時間の流れを整え、納期と生産性の関係を読み解きます。",
     question: "変動する需要に対して、人・設備・在庫をどう組み合わせるか。",
     introductory: [
@@ -238,7 +244,9 @@ export const themes: ThemeDefinition[] = [
   },
   {
     slug: "data",
-    title: "データで確かめる",
+    title: "データマネジメント",
+    supportingLabel: "統計・データ分析・判断",
+    topicExamples: ["データの収集・品質", "要約・可視化", "推定・検定", "回帰・実験計画", "最適化"],
     description: "平均やグラフの先にある、ばらつき、比較、予測、意思決定を扱います。",
     question: "限られたデータから、何を言えて、何をまだ言えないか。",
     introductory: [
@@ -325,7 +333,9 @@ export const themes: ThemeDefinition[] = [
   },
   {
     slug: "improvement",
-    title: "改善を仕組みにする",
+    title: "改善マネジメント",
+    supportingLabel: "問題解決・標準化・組織",
+    topicExamples: ["問題構造化", "改善実行・評価", "標準化・教育", "部門間連携"],
     description: "一時的な対策を、標準、教育、管理、組織の仕組みへ変えていきます。",
     question: "個人の工夫を、再現可能で続く仕組みへどう変えるか。",
     introductory: [
@@ -390,6 +400,47 @@ export const themes: ThemeDefinition[] = [
     relatedThemes: ["quality", "production", "data"],
   },
 ];
+
+export const supportingInformationAreas = [
+  {
+    title: "資格学習",
+    supportingLabel: "資格から知識を探す",
+    description: "資格の出題範囲を、品質・生産・データ・改善の知識へつなげます。",
+    href: "/learn",
+    topics: ["技術士〈経営工学〉", "QC検定", "統計検定・DS発展", "生産管理関連", "周辺資格"],
+  },
+  {
+    title: "SNS・外部メディア",
+    supportingLabel: "学習経験・活動・発信",
+    description: "学習の背景や日々の気づき、サイト更新を外部メディアで発信します。",
+    href: "/about#external-media",
+    topics: ["note", "X", "Instagram"],
+  },
+] as const;
+
+export const homeLearningGuides = [
+  {
+    eyebrow: "ケースから学ぶ",
+    title: "実績ゼロから、品質規格をどう決めるか",
+    description: "要求、試作結果、工程リスクから、暫定規格と見直し条件を組み立てます。",
+    href: "/cases/quality-standard-before-production",
+    action: "判断過程を見る",
+  },
+  {
+    eyebrow: "操作して確かめる",
+    title: "管理図ツール",
+    description: "工程の安定状態と異常の兆候を、サンプルデータで確かめます。",
+    href: "/tools/control-chart",
+    action: "管理図を試す",
+  },
+  {
+    eyebrow: "知識をつなぐ",
+    title: "工程能力",
+    description: "規格と工程のばらつきから、安定して作れる状態かを判断します。",
+    href: "/guides/engineer/process-capability",
+    action: "工程能力を学ぶ",
+  },
+] as const;
 
 export const homeToolHrefs = [
   "/tools/control-chart",

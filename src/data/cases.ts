@@ -269,7 +269,7 @@ export const caseStudies: CaseStudy[] = [
         href: "/guides/qc/how-to-set-quality-standards",
       },
       {
-        title: "品質をつくる",
+        title: "品質マネジメント",
         description: "品質保証、工程能力、検査、未然防止の関連コンテンツへ進みます。",
         href: "/themes/quality",
       },
@@ -497,7 +497,7 @@ export const caseStudies: CaseStudy[] = [
         href: "/guides/qc/third-party-testing-validity",
       },
       {
-        title: "品質をつくる",
+        title: "品質マネジメント",
         description: "品質評価、検査、工程能力、未然防止の関連コンテンツへ進みます。",
         href: "/themes/quality",
       },

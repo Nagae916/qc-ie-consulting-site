@@ -16,13 +16,13 @@ export default function ThemesIndexPage() {
   return (
     <>
       <SiteMeta
-        title="4つのテーマ"
-        description="品質、生産、データ、改善の4つの視点から、ものづくりの課題と仕組みを学べます。"
+        title="4つの専門領域"
+        description="品質マネジメント、生産管理、データマネジメント、改善マネジメントから、ものづくりの課題と仕組みを学べます。"
         path="/themes"
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "CollectionPage",
-          name: "N-IE Lab 4つのテーマ",
+          name: "N-IE Lab 4つの専門領域",
           url: "https://n-ie-qclab.com/themes",
         }}
       />
@@ -30,7 +30,7 @@ export default function ThemesIndexPage() {
         <section className="border-b border-slate-200 bg-white">
           <div className="mx-auto max-w-6xl px-4 py-14 md:py-18">
             <p className="text-xs font-bold uppercase text-teal-700">Themes</p>
-            <h1 className="mt-3 text-4xl font-black leading-tight md:text-5xl">ものづくりを4つの視点で見る</h1>
+            <h1 className="mt-3 text-4xl font-black leading-tight md:text-5xl">ものづくりを4つの専門領域で学ぶ</h1>
             <p className="mt-5 max-w-3xl text-base leading-8 text-slate-600">
               品質、生産、データ、改善は別々の仕事ではありません。今の疑問に近いテーマから入り、関連する記事、ケース、ツールへ進んでください。
             </p>
@@ -49,7 +49,7 @@ export default function ThemesIndexPage() {
                 href={`/themes/${theme.slug}`}
                 eyebrow={`視点 ${index + 1}`}
                 title={theme.title}
-                description={theme.description}
+                description={`${theme.supportingLabel}。${theme.description}`}
                 meta={`${theme.introductory.length + theme.practical.length + theme.tools.length + theme.cases.length}件の入口`}
                 action="このテーマを見る"
                 className={themeAccents[index] ?? "border-slate-200"}

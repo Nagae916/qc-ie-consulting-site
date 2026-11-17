@@ -4,10 +4,10 @@
 
 主要テーマは次の4値を基本とする。
 
-- `quality`: 品質をつくる
-- `production`: 生産を整える
-- `data`: データで確かめる
-- `improvement`: 改善を仕組みにする
+- `quality`: 品質マネジメント
+- `production`: 生産管理
+- `data`: データマネジメント
+- `improvement`: 改善マネジメント
 
 資格・理論は独立した中心テーマではなく、関連するThemeに接続した「学びを深める」分類として扱う。
 
@@ -60,8 +60,17 @@
 - `difficulty`: 必要な前提知識と判断の複雑さ。任意。
 - `featured`: 主要導線で優先表示するか。任意。
 - `draft`: 下書きとして扱うか。任意。
+- `knowledgeId`: URLと独立してKnowledgeを識別する安定ID。任意。
+- `primaryArea`: 主となる4専門領域。任意。
+- `subtopics`: 専門領域内の中項目。任意。
+- `relatedKeywords`: 検索・関連付けに使う正規化済みキーワード。任意。
+- `relatedQualifications`: 関連する資格学習入口。任意。
+- `knowledgeRelations`: 関連先と関係種別（`prerequisite`、`together`、`application`）。任意。
+- `sources`: 出典名、URL、確認日。任意。
 
 追加フィールドはすべて任意とし、既存frontmatterに値がなくても表示とビルドが壊れないようにする。一括書換えは行わず、更新する記事から段階的に付与する。
+
+`knowledgeRelations` は読者向けに「先に理解する」「併せて理解する」「判断・適用に使う」と表示する。実在する公開URLだけを最大3件表示し、未設定や不正な参照はリンクへ変換しない。
 
 ## 6. ケースメタデータ
 

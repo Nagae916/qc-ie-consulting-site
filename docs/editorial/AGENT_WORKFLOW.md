@@ -6,6 +6,8 @@ Codexの役割を分け、探索や編集の途中経過が、公開判断やPro
 
 プロジェクトAgentの定義は `.codex/agents/` に置く。詳細な編集方針はこの文書と `EDITORIAL_CHARTER.md`、`KNOWLEDGE_DEFINITION.md` を正本とする。
 
+Knowledge整備で使う「分類・重複確認」「関連づけ」「内容点検」の実行指示と受け渡し形式は、[Knowledge Agent Handoffs](KNOWLEDGE_AGENT_HANDOFFS.md) を参照する。
+
 ## 2. Editor
 
 Rawな思考、会話、メモ、Content Seedを、noteで読める記事案へ編集する。
