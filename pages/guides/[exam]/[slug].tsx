@@ -20,6 +20,12 @@ import { isPublishedGuideStatus, normalizeGuideStatus } from "@/lib/frontmatter-
 
 type ExamKey = "qc" | "stat" | "engineer";
 type GuideStatus = "published" | "draft" | "planned" | "needs-review" | "wip";
+type KnowledgeRelationKind = "prerequisite" | "together" | "application";
+type KnowledgeRelation = {
+  relation: KnowledgeRelationKind;
+  href: string;
+  title: string;
+};
 
 const EXAM_LABEL: Record<ExamKey, string> = {
   qc: "品質管理・QMS",
@@ -65,6 +71,28 @@ const statusClasses: Record<GuideStatus, string> = {
   planned: "bg-amber-50 text-amber-800 border-amber-200",
   "needs-review": "bg-rose-50 text-rose-800 border-rose-200",
   wip: "bg-sky-50 text-sky-800 border-sky-200",
+};
+
+const knowledgeRelationLabels: Record<KnowledgeRelationKind, string> = {
+  prerequisite: "先に理解する",
+  together: "併せて理解する",
+  application: "判断・適用に使う",
+};
+
+const normalizeKnowledgeRelations = (value: unknown, publishedUrls: Set<string>): KnowledgeRelation[] => {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((item) => {
+      if (!item || typeof item !== "object") return null;
+      const values = item as { relation?: unknown; href?: unknown; title?: unknown };
+      const relation = String(values.relation ?? "") as KnowledgeRelationKind;
+      const href = String(values.href ?? "").trim();
+      const title = String(values.title ?? "").trim();
+      if (!(relation in knowledgeRelationLabels) || !href.startsWith("/guides/") || !title || !publishedUrls.has(href)) return null;
+      return { relation, href, title };
+    })
+    .filter((item): item is KnowledgeRelation => item !== null)
+    .slice(0, 3);
 };
 
 const toExamKey = (v: unknown): ExamKey | null => {
@@ -134,6 +162,7 @@ export const getStaticProps: GetStaticProps<{
   html: string | null;
   publishedYmd: string;
   updatedYmd: string;
+  relatedKnowledge: KnowledgeRelation[];
 }> = async ({ params }) => {
   const examParam = toExamKey(params?.exam);
   const slugParam = String(params?.slug ?? "").trim().toLowerCase();
@@ -158,8 +187,17 @@ export const getStaticProps: GetStaticProps<{
   };
   const publishedYmd = formatYMD(guideDates.publishedAt, guideDates.date);
   const updatedYmd = formatYMD(guideDates.updatedAtAuto ?? guideDates.updatedAt, guideDates.date);
+  const publishedUrls = new Set(
+    allGuides
+      .filter((candidate) => isPublishedGuideStatus((candidate as { status?: unknown }).status))
+      .map((candidate) => stablePath(candidate).url),
+  );
+  const relatedKnowledge = normalizeKnowledgeRelations(
+    (guide as { knowledgeRelations?: unknown }).knowledgeRelations,
+    publishedUrls,
+  );
 
-  return { props: { guide, exam: examParam, mdxCode, html, publishedYmd, updatedYmd }, revalidate: 60 };
+  return { props: { guide, exam: examParam, mdxCode, html, publishedYmd, updatedYmd, relatedKnowledge }, revalidate: 60 };
 };
 
 export default function GuidePage({
@@ -169,6 +207,7 @@ export default function GuidePage({
   html,
   publishedYmd,
   updatedYmd,
+  relatedKnowledge,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   const theme = THEME[exam];
   const { url } = stablePath(guide);
@@ -216,6 +255,7 @@ export default function GuidePage({
           </p>
         </div>
         {mdxCode ? <MDX components={components} /> : <div dangerouslySetInnerHTML={{ __html: html ?? "" }} />}
+        <KnowledgeRelations items={relatedKnowledge} />
       </main>
     );
   }
@@ -245,8 +285,30 @@ export default function GuidePage({
         {mdxCode ? <MDX components={components} /> : <div dangerouslySetInnerHTML={{ __html: html ?? "" }} />}
       </article>
 
+      <KnowledgeRelations items={relatedKnowledge} />
+
       <GuideBackLinks exam={exam} currentUrl={url} theme={theme} />
     </main>
+  );
+}
+
+function KnowledgeRelations({ items }: { items: KnowledgeRelation[] }) {
+  if (items.length === 0) return null;
+  return (
+    <aside className="mx-auto mt-10 max-w-3xl border-y border-slate-200 py-6" aria-labelledby="related-knowledge-title">
+      <h2 id="related-knowledge-title" className="text-lg font-bold text-slate-900">関連する知識</h2>
+      <p className="mt-2 text-sm leading-6 text-slate-600">今の内容とどうつながるかを確認しながら、次に読む知識を選べます。</p>
+      <ul className="mt-4 grid gap-3 sm:grid-cols-3">
+        {items.map((item) => (
+          <li key={`${item.relation}-${item.href}`}>
+            <span className="block text-xs font-bold text-slate-500">{knowledgeRelationLabels[item.relation]}</span>
+            <Link href={item.href} className="mt-1 inline-block text-sm font-bold text-teal-700 underline decoration-teal-200 underline-offset-4">
+              {item.title}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </aside>
   );
 }
 
