@@ -5,6 +5,7 @@
   "scripts": {
     "gen": "npx -y contentlayer2 build",
     "test:frontmatter": "node scripts/test-frontmatter-normalization.cjs",
+    "test:control-chart": "node scripts/test-control-chart-learning.mjs",
     "check:source-format": "node scripts/check-source-format.cjs",
     "check:frontmatter": "node scripts/check-frontmatter.js",
     "check:mdx-safety": "node scripts/guard-mdx.js",

@@ -192,3 +192,14 @@
 - Migration: `/themes/{slug}`、既存ガイド、ケース、ツール、資格学習URLは変更しない。Knowledge関連メタデータは任意項目として工程能力周辺の少数ガイドから実証し、一括推測しない。
 - Verification: 同一画面幅でトップの入口位置を比較し、PC・390px表示、外部リンク、note掲載情報、関連URL、typecheck、lint、build、route・duplicate・internal link・sitemap監査を確認する。
 - Supersedes: 2026-08-01「4テーマ構成」の表示名と、資格を「学びを深める」とだけ表示する入口表現。4つの専門領域を中心とし、資格をサイト全体の中心にしない原則は維持する。
+
+## 2026-11-17：図と小さな例を使う学習ページを段階導入する
+
+- Status: Accepted
+- Context: 定義中心のKnowledgeでは、参考書の説明でつまずいた読者が、図の何を見てどのように判断するかを掴みにくい。通常ガイドの本文スタイルもTypographyプラグインを前提とするクラスだけでは生成されていなかった。
+- Decision: 疑問と答え、主図、小さな例・操作、理由と定義、適用条件、読む理由つき関連Knowledge、出典を基本要素とする学習ページを段階導入する。通常ガイドに限定した本文スタイルを持ち、管理図を最初の見本とする。題材固有の数値・図は共通テンプレートへ押し込まない。
+- Reason: 学習内容をUIより主役にしながら、図、説明、計算を一致させ、他のKnowledgeへ安全に展開できる制作・検証単位を作るため。
+- Affected areas: 通常ガイド本文、Contentlayer任意項目、管理図Knowledge、関連Knowledge表示、編集Agentの受け渡し。
+- Migration: 既存URLと既存ページを一括変換しない。`reviewedAt`、`learningOutcomes`、関連理由は任意とし、更新対象から付与する。独自レイアウトとインタラクティブUIの内部へ通常本文スタイルを広げない。
+- Verification: 管理図の純粋計算テスト、typecheck、lint、build、監査、360〜390px・1280〜1440px・200%・キーボード、既存ページ回帰を確認する。
+- Supersedes: なし。Editorial Learning Designと既存Content Modelを補完する。

@@ -28,6 +28,8 @@ const RequiredIWorksheet = dynamic(() => import('./RequiredIWorksheet'), { ssr: 
 const AnswerWorksheetGuide = dynamic(() => import('./AnswerWorksheetGuide'), { ssr: false });
 import AnswerFrameGuide from './AnswerFrameGuide';
 import ProblemMatrix from './ProblemMatrix';
+import ControlChartLearningDemo from './ControlChartLearningDemo';
+import { LearningExample, LearningFigure, LearningQuestion } from './KnowledgeLearning';
 import {
   AnswerBlock,
   AnswerSections,
@@ -85,6 +87,10 @@ export const GUIDE_COMPONENTS = {
   AnswerWorksheetGuide,
   AnswerFrameGuide,
   ProblemMatrix,
+  ControlChartLearningDemo,
+  LearningQuestion,
+  LearningFigure,
+  LearningExample,
   LearningArticleHeader,
   ArticleContents,
   LearningChapter,
