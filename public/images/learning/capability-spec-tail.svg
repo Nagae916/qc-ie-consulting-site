@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="178" viewBox="0 0 360 178">
+  <title>安定した工程の分布が規格上限を越える例</title>
+  <text x="22" y="17" font-family="sans-serif" font-size="13" fill="#334155">確率密度（模式図）</text>
+  <g stroke="#64748b" stroke-dasharray="5 4" stroke-width="1.5">
+    <path d="M46 47V132M286 47V132"/>
+  </g>
+  <defs><pattern id="tail" width="4" height="4" patternUnits="userSpaceOnUse"><path d="M0 4L4 0" stroke="#b91c1c" stroke-width="1.2"/></pattern></defs>
+  <polygon points="286,132 286,121.6 292,125.2 298,127.7 304,129.4 310,130.5 316,131.1 322,131.5 328,131.8 334,131.9 340,131.9 340,132" fill="url(#tail)"/>
+  <path d="M226 49V132" stroke="#0f766e" stroke-dasharray="3 4"/>
+  <polyline points="22,132.0 28,132.0 34,132.0 40,132.0 46,132.0 52,132.0 58,132.0 64,132.0 70,132.0 76,132.0 82,132.0 88,132.0 94,132.0 100,132.0 106,132.0 112,131.9 118,131.9 124,131.8 130,131.5 136,131.1 142,130.5 148,129.4 154,127.7 160,125.2 166,121.6 172,116.8 178,110.6 184,103.1 190,94.5 196,85.3 202,76.1 208,67.7 214,60.9 220,56.5 226,55.0 232,56.5 238,60.9 244,67.7 250,76.1 256,85.3 262,94.5 268,103.1 274,110.6 280,116.8 286,121.6 292,125.2 298,127.7 304,129.4 310,130.5 316,131.1 322,131.5 328,131.8 334,131.9 340,131.9" fill="none" stroke="#0f766e" stroke-width="2.5"/>
+  <text x="226" y="42" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="bold" fill="#115e59">10.30</text>
+  <path d="M320 97L300 126" fill="none" stroke="#991b1b"/>
+  <text x="333" y="91" text-anchor="end" font-family="sans-serif" font-size="13" font-weight="bold" fill="#991b1b">規格外</text>
+  <path d="M18 132H345" stroke="#334155" stroke-width="1.5"/>
+  <g font-family="sans-serif" font-size="13" fill="#0f172a" text-anchor="middle">
+    <text x="46" y="150">9.40</text>
+    <text x="286" y="150">10.60</text>
+    <text x="46" y="168">規格下限</text>
+    <text x="286" y="168">規格上限</text>
+  </g>
+  <text x="165" y="167" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#334155">直径（mm）</text>
+</svg>

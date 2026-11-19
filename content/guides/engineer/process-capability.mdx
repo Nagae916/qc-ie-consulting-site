@@ -1,73 +1,73 @@
 ---
 title: "工程能力｜技術士 経営工学キーワード"
-description: "工程能力を、規格を満たす能力、Cp/Cpk、ばらつき管理、品質改善の観点から整理します。"
+description: "管理図で安定しているのに規格外品が出る理由を、直径の分布と規格限界を重ねた図で読み解きます。"
 tags: ["技術士", "経営工学", "工程能力", "品質管理", "統計"]
 exam: engineer
 slug: process-capability
 status: published
+updatedAt: "2026-11-19"
+reviewedAt: "2026-11-19"
+learningOutcomes: ["工程の安定性と製品の規格適合を区別できる", "分布の中心と幅から、規格外が出る理由を説明できる"]
 knowledgeId: "knowledge.process-capability"
 primaryArea: "quality"
 subtopics: ["工程品質", "検査・測定"]
 relatedKeywords: ["Cp", "Cpk", "管理図", "測定システム解析"]
 relatedQualifications: ["技術士〈経営工学〉", "QC検定", "統計検定"]
 knowledgeRelations:
-  - { relation: "prerequisite", href: "/guides/engineer/control-chart", title: "管理図" }
-  - { relation: "together", href: "/guides/stat/cp-cpk", title: "Cp・Cpk" }
-  - { relation: "application", href: "/guides/stat/msa", title: "測定システム解析" }
+  - { relation: "together", href: "/guides/stat/cp-cpk", title: "Cp・Cpk", reason: "ばらつきを変えずに中心だけを動かすと、二つの指数がどう変わるかを計算するため。" }
+  - { relation: "prerequisite", href: "/guides/engineer/control-chart", title: "管理図", reason: "規格と比べる前に、時間順のデータから工程の変化をどう見分けるかを確かめるため。" }
+  - { relation: "application", href: "/guides/qc/how-to-set-quality-standards", title: "品質規格の決め方", reason: "製品の規格限界を、工程の実績ではなく顧客・法令・用途の要求から決める理由を知るため。" }
 sources:
-  - { title: "NIST/SEMATECH e-Handbook - What is Process Capability?", url: "https://www.itl.nist.gov/div898/handbook/pmc/section1/pmc16.htm", checkedAt: "2026-11-17" }
+  - { title: "NIST/SEMATECH e-Handbook - What is Process Capability?", url: "https://www.itl.nist.gov/div898/handbook/pmc/section1/pmc16.htm", checkedAt: "2026-11-19" }
+  - { title: "NIST/SEMATECH e-Handbook - Individuals Control Charts", url: "https://www.itl.nist.gov/div898/handbook/pmc/section3/pmc322.htm", checkedAt: "2026-11-19" }
 ---
 
-# 工程能力
+<LearningQuestion
+  question="工程が安定していても、なぜ規格外が出るのか？"
+  answer="安定とは、工程の中心やばらつきが時間とともに変わっていないことです。安定した分布でも、中心が規格限界に近い、またはばらつきが規格に対して大きいと、分布の裾が規格の外に出ます。"
+/>
 
-## 1. このキーワードの位置付け
+## 分布の裾と規格上限を見る
 
-工程能力は、工程が規格を満たす製品を安定して生産できる能力を示す考え方です。品質保証、工程改善、サプライヤー品質管理、設備条件管理に使えます。
+<LearningFigure
+  title="安定した加工工程でも、規格上限を越える"
+  caption="説明用の仮想例。直径の平均は10.30 mm、工程内の標準偏差は0.15 mmとします。斜線は規格上限10.60 mmを越える裾です。曲線は正規分布の模式図で、実測値や時間順のグラフではありません。"
+>
+  <img src="/images/learning/capability-spec-tail.svg" alt="直径の規格下限9.40 mm、上限10.60 mm。平均10.30 mmの山の右裾が上限を越え、規格外と表示されている。" width={360} height={178} className="mx-auto block h-auto w-full max-w-[560px]" />
+</LearningFigure>
 
-## 2. 定義・原理
+<LearningExample title="1個の直径を判定する">
 
-工程能力は、工程ばらつきと規格幅の関係を評価します。代表指標にはCpやCpkがあり、平均のずれとばらつきを考慮して、規格外品が発生しにくい状態かを判断します。
+例えば10.65 mmの製品は、上限10.60 mmを0.05 mm越えるため規格外です。その1個が規格外であることと、工程に時間的な変化が起きたことは別の判断です。
 
-## 3. 特徴3つ
+</LearningExample>
 
-1. 工程が規格を満たす能力を定量評価できる
-2. 平均ずれとばらつきを分けて考えられる
-3. 工程改善や設備条件管理に使える
+## 管理図での安定と、工程能力での余裕
 
-## 4. 技術士答案で使うときの論点
+**工程能力**は、安定した工程の分布が製品の規格に対してどの程度余裕を持つか、という見方です。管理図は時間順に並べて工程の変化を調べ、工程能力の図は測定値の分布を規格限界と比べます。この分布図だけで、工程の安定性は確認できません。
 
-答案では、不良低減や品質安定化の効果確認に使えます。管理図で工程安定性を確認したうえで工程能力を評価し、ばらつき低減や中心合わせを行う流れが自然です。
+仮想例では規格幅が1.20 mm、工程の幅の目安である標準偏差6個分は0.90 mmです。それでも、平均から規格上限までの余裕は0.30 mmしかありません。標準偏差3個分の0.45 mmより小さいため、上限側の裾に注意が必要です。標準偏差3個分の位置は、製品の合否を決める線でも、分布の端でもありません。
 
-## 5. 実務上の問題点3つ
+### 数字の置き方
 
-1. 工程が安定していないのに能力評価だけ行う
-2. Cpだけを見て平均ずれを見落とす
-3. 測定誤差やサンプリング条件が不適切である
+個別値を時間順に測る場合、隣り合う2点の差の絶対値を移動範囲とし、その平均を $\overline{MR}$ とします。安定期の移動範囲平均を0.1692 mmと仮定すると、1.128で割った工程内標準偏差の推定値は0.15 mmです。この数値は説明用で、実測データから求めた値ではありません。
 
-## 6. 対策・改善策
+$$
+\hat{\sigma}=\frac{\overline{MR}}{1.128}
+$$
 
-- 先に管理図で工程安定性を確認する
-- CpとCpkを併用し、ばらつきと平均ずれを評価する
-- 測定システム解析で測定誤差を確認する
-- 設備条件、材料、作業標準を見直す
+## 実務に使う前に
 
-## 7. 応用例・企業事例
+- 先に測定方法と時間順のデータを確認し、工程が安定していなければ変化の原因を調べます。
+- 比較する規格は顧客・設計・法令などの要求から決めます。管理図の限界や工程の実績で、製品規格を置き換えません。
+- この例の曲線は正規分布を仮定しています。実務ではデータ量、分布の形、測定誤差、推定方法を確認します。分布が大きく異なる場合、図や指数から正規分布の不適合率を読み替えません。
+- 中心のずれには設定や治具の中心合わせ、ばらつきが大きい場合には材料や設備条件の変動を抑える対策を検討します。
 
-寸法不良が多い工程で、Cpkが低い場合、平均が規格中心からずれているのか、ばらつきが大きいのかを分けて確認し、設備条件調整や治具改善を行います。
-
-## 8. 今後の展望
-
-IoTとMESにより、工程能力をリアルタイムに監視し、異常予兆や保全へつなげる運用が広がります。サプライヤー品質の評価にも活用されます。
-
-## 9. 600字答案例
+## 技術士答案の記述例
 
 品質不良を低減するには、工程が規格を満たす能力を定量的に評価する必要がある。課題は、工程が安定していないのに能力評価を行うこと、Cpだけを見て平均ずれを見落とすこと、測定誤差により判断を誤ることである。解決策として、まず管理図で工程安定性を確認し、CpとCpkを用いてばらつきと平均ずれを評価する。能力不足がある場合は、設備条件、治具、作業標準、材料ばらつきを見直す。さらに、測定システム解析により測定誤差を確認し、改善後は品質KPIとして継続監視する。導入時には指標の形骸化リスクがあるため、顧客要求と工程実態に基づき判断する。技術者は統計的品質管理により、安定した品質保証を実現する必要がある。
 
-## 10. 関連キーワード
+## 出典
 
-- [管理図](/guides/engineer/control-chart)
-- [QC七つ道具](/guides/engineer/qc-seven-tools)
-- [品質KPI](/guides/engineer/quality-kpi)
-- [MES](/guides/engineer/mes)
-- [測定システム解析](/guides/stat/msa)
-- [技術士 経営工学 最重要キーワード100](/guides/engineer/keyword-priority-100)
+- [NIST/SEMATECH e-Handbook: 工程能力と規格幅](https://www.itl.nist.gov/div898/handbook/pmc/section1/pmc16.htm)
+- [NIST/SEMATECH e-Handbook: 個別値と移動範囲](https://www.itl.nist.gov/div898/handbook/pmc/section3/pmc322.htm)
