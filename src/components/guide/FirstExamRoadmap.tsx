@@ -117,7 +117,7 @@ export default function FirstExamRoadmap() {
           {[
             '第一次試験は、技術士として必要な基礎知識を確認する試験です。',
             '本サイトでは、第一次試験を「経営工学を学ぶ入口」として整理します。',
-            '詳細な合格体験記や教材の使い方はnoteで整理予定です。',
+            '独学で使った教材と復習方法は、公開済みのnoteで紹介しています。',
             'サイトでは、基礎・適性・専門を学習カテゴリとして整理し、第二次試験へ接続します。',
           ].map((item) => (
             <p key={item} className="rounded-xl border border-emerald-200 bg-white p-4 text-sm leading-7 text-slate-700">
@@ -201,11 +201,18 @@ export default function FirstExamRoadmap() {
       </section>
 
       <section className="rounded-2xl border border-amber-200 bg-amber-50 p-5 shadow-sm">
-        <h2 className="text-2xl font-bold">3か月合格体験記について</h2>
+        <h2 className="text-2xl font-bold">独学で使った教材と、復習の進め方</h2>
         <p className="mt-3 text-sm leading-7 text-slate-700">
-          第一次試験の合格体験記、使用教材、学習順、やらなくてよかった勉強については、noteで整理予定です。サイトでは学習範囲と二次試験への接続を中心に整理します。
+          過去問で分からなかったことを、テキストのどこへ戻し、どう書き残すか。私が使った2冊と、余白・付箋を活用した復習の進め方をnoteで紹介しています。教材名と選定理由は無料部分、実際の記入例と詳しい活用方法は有料部分（980円）で読めます。
         </p>
-        <span className="mt-4 inline-flex rounded-lg border border-amber-300 bg-white px-4 py-2 text-sm font-bold text-amber-800">note記事を準備中</span>
+        <a
+          href="https://note.com/nieqc_0713/n/ned3be906cd52"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-4 inline-flex rounded-lg border border-amber-300 bg-white px-4 py-2 text-sm font-bold text-amber-900 underline decoration-amber-500 underline-offset-4 hover:border-amber-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-700 focus-visible:ring-offset-2"
+        >
+          教材と復習方法の記事を読む（note・一部有料）
+        </a>
       </section>
 
       <section className="space-y-4">

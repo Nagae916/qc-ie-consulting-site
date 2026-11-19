@@ -25,6 +25,7 @@ type KnowledgeRelation = {
   relation: KnowledgeRelationKind;
   href: string;
   title: string;
+  reason?: string;
 };
 
 const EXAM_LABEL: Record<ExamKey, string> = {
@@ -84,12 +85,16 @@ const normalizeKnowledgeRelations = (value: unknown, publishedUrls: Set<string>)
   return value
     .map((item) => {
       if (!item || typeof item !== "object") return null;
-      const values = item as { relation?: unknown; href?: unknown; title?: unknown };
+      const values = item as { relation?: unknown; href?: unknown; title?: unknown; reason?: unknown };
       const relation = String(values.relation ?? "") as KnowledgeRelationKind;
       const href = String(values.href ?? "").trim();
       const title = String(values.title ?? "").trim();
+      const reason = String(values.reason ?? "").trim();
       if (!(relation in knowledgeRelationLabels) || !href.startsWith("/guides/") || !title || !publishedUrls.has(href)) return null;
-      return { relation, href, title };
+      const normalized: KnowledgeRelation = reason
+        ? { relation, href, title, reason }
+        : { relation, href, title };
+      return normalized;
     })
     .filter((item): item is KnowledgeRelation => item !== null)
     .slice(0, 3);
@@ -162,6 +167,7 @@ export const getStaticProps: GetStaticProps<{
   html: string | null;
   publishedYmd: string;
   updatedYmd: string;
+  reviewedYmd: string;
   relatedKnowledge: KnowledgeRelation[];
 }> = async ({ params }) => {
   const examParam = toExamKey(params?.exam);
@@ -183,10 +189,12 @@ export const getStaticProps: GetStaticProps<{
     publishedAt?: unknown;
     updatedAtAuto?: unknown;
     updatedAt?: unknown;
+    reviewedAt?: unknown;
     date?: unknown;
   };
   const publishedYmd = formatYMD(guideDates.publishedAt, guideDates.date);
   const updatedYmd = formatYMD(guideDates.updatedAtAuto ?? guideDates.updatedAt, guideDates.date);
+  const reviewedYmd = formatYMD(guideDates.reviewedAt);
   const publishedUrls = new Set(
     allGuides
       .filter((candidate) => isPublishedGuideStatus((candidate as { status?: unknown }).status))
@@ -197,7 +205,7 @@ export const getStaticProps: GetStaticProps<{
     publishedUrls,
   );
 
-  return { props: { guide, exam: examParam, mdxCode, html, publishedYmd, updatedYmd, relatedKnowledge }, revalidate: 60 };
+  return { props: { guide, exam: examParam, mdxCode, html, publishedYmd, updatedYmd, reviewedYmd, relatedKnowledge }, revalidate: 60 };
 };
 
 export default function GuidePage({
@@ -207,6 +215,7 @@ export default function GuidePage({
   html,
   publishedYmd,
   updatedYmd,
+  reviewedYmd,
   relatedKnowledge,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   const theme = THEME[exam];
@@ -218,6 +227,10 @@ export default function GuidePage({
 
   const MDX = useMDXComponent(mdxCode || "");
   const components = React.useMemo(() => GUIDE_COMPONENTS as GuideComponentMap, []);
+  const standardComponents = React.useMemo(
+    () => ({ ...GUIDE_COMPONENTS, h1: () => null }) as GuideComponentMap,
+    [],
+  );
   const jsonLd = [
     {
       "@context": "https://schema.org",
@@ -278,11 +291,12 @@ export default function GuidePage({
       <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-gray-500">
         <StatusBadge status={status} />
         <span suppressHydrationWarning>{updatedYmd ? `更新: ${updatedYmd}` : ""}</span>
+        {reviewedYmd ? <span>内容確認: {reviewedYmd}</span> : null}
         {guideMeta.version ? <span className="ml-2">v{String(guideMeta.version)}</span> : null}
       </div>
 
-      <article className="prose prose-neutral mt-6 max-w-none">
-        {mdxCode ? <MDX components={components} /> : <div dangerouslySetInnerHTML={{ __html: html ?? "" }} />}
+      <article className="guide-prose mt-6 max-w-none">
+        {mdxCode ? <MDX components={standardComponents} /> : <div dangerouslySetInnerHTML={{ __html: html ?? "" }} />}
       </article>
 
       <KnowledgeRelations items={relatedKnowledge} />
@@ -305,6 +319,7 @@ function KnowledgeRelations({ items }: { items: KnowledgeRelation[] }) {
             <Link href={item.href} className="mt-1 inline-block text-sm font-bold text-teal-700 underline decoration-teal-200 underline-offset-4">
               {item.title}
             </Link>
+            {item.reason ? <p className="mt-1 text-xs leading-5 text-slate-600">{item.reason}</p> : null}
           </li>
         ))}
       </ul>

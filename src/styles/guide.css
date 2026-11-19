@@ -2,6 +2,103 @@
 
 :root { --qa-gap: 0.5rem; }
 
+/* 通常ガイド本文だけに適用する。独自UIの内部へは子孫セレクタを広げない。 */
+.guide-prose {
+  color: #334155;
+  font-size: 1rem;
+  line-height: 1.82;
+  overflow-wrap: anywhere;
+}
+
+.guide-prose > h2 {
+  margin: 2.75rem 0 1rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid #cbd5e1;
+  color: #0f172a;
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.guide-prose > h3 {
+  margin: 2rem 0 0.75rem;
+  color: #0f172a;
+  font-size: 1.18rem;
+  font-weight: 750;
+  line-height: 1.55;
+}
+
+.guide-prose > h4 {
+  margin: 1.5rem 0 0.5rem;
+  color: #1e293b;
+  font-size: 1rem;
+  font-weight: 750;
+}
+
+.guide-prose > p,
+.guide-prose > ul,
+.guide-prose > ol,
+.guide-prose > blockquote,
+.guide-prose > table,
+.guide-prose > pre,
+.guide-prose > .katex-display {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.guide-prose > ul,
+.guide-prose > ol {
+  padding-left: 1.45rem;
+}
+
+.guide-prose > ul { list-style: disc; }
+.guide-prose > ol { list-style: decimal; }
+.guide-prose > ul > li,
+.guide-prose > ol > li { margin: 0.4rem 0; padding-left: 0.25rem; }
+
+.guide-prose > p a,
+.guide-prose > ul a,
+.guide-prose > ol a {
+  color: #0f766e;
+  font-weight: 650;
+  text-decoration: underline;
+  text-decoration-color: #99f6e4;
+  text-underline-offset: 0.2em;
+}
+
+.guide-prose > blockquote {
+  padding: 0.8rem 1rem;
+  border-left: 4px solid #0f766e;
+  background: #f8fafc;
+  color: #475569;
+}
+
+.guide-prose > table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 0.94rem;
+}
+
+.guide-prose > table th,
+.guide-prose > table td {
+  min-width: 8rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #cbd5e1;
+  text-align: left;
+  vertical-align: top;
+}
+
+.guide-prose > table th { background: #f1f5f9; color: #0f172a; }
+.guide-prose > hr { margin: 2.5rem 0; border: 0; border-top: 1px solid #cbd5e1; }
+.guide-prose > pre { overflow-x: auto; border-radius: 6px; background: #0f172a; padding: 1rem; color: #f8fafc; }
+
+@media (min-width: 768px) {
+  .guide-prose { font-size: 1.04rem; }
+  .guide-prose > h2 { font-size: 1.65rem; }
+}
+
 .qa-card{
   border:1px solid #e5e7eb;
   border-radius:1rem;

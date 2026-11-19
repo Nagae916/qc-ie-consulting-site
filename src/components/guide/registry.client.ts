@@ -6,8 +6,6 @@ import dynamic from 'next/dynamic';
 import GuideQuiz from './GuideQuiz';
 import EngineeringLearningMap from './EngineeringLearningMap';
 import IssueDecompositionMatrix from './IssueDecompositionMatrix';
-import AnswerStructureBuilder from './AnswerStructureBuilder';
-import FirstExamRoadmap from './FirstExamRoadmap';
 import SecondExamRoadmap from './SecondExamRoadmap';
 import StatLearningMap from './StatLearningMap';
 import QcLearningMap from './QcLearningMap';
@@ -28,6 +26,7 @@ const RequiredIWorksheet = dynamic(() => import('./RequiredIWorksheet'), { ssr: 
 const AnswerWorksheetGuide = dynamic(() => import('./AnswerWorksheetGuide'), { ssr: false });
 import AnswerFrameGuide from './AnswerFrameGuide';
 import ProblemMatrix from './ProblemMatrix';
+import { LearningExample, LearningFigure, LearningQuestion } from './KnowledgeLearning';
 import {
   AnswerBlock,
   AnswerSections,
@@ -37,6 +36,11 @@ import {
   LearningNextLinks,
   RelatedReadingList,
 } from './EditorialLearning';
+
+// Keep these in the initial HTML without shipping them to guides that do not use them.
+const AnswerStructureBuilder = dynamic(() => import('./AnswerStructureBuilder'));
+const FirstExamRoadmap = dynamic(() => import('./FirstExamRoadmap'));
+const ControlChartLearningDemo = dynamic(() => import('./ControlChartLearningDemo'));
 
 /**
  * asDefault:
@@ -57,7 +61,7 @@ const asDefault = async <T extends Record<string, any>>(
  * 動的ウィジェットのレジストリ
  * - MDX 側は <Quiz/>, <ControlChart/>, <AvailabilitySimulator/>, <OCSimulator/>, <ChiSquareGuide/> と **タグだけ**を書く
  * - ここに列挙したキー名と MDX タグ名を一致させる
- * - dynamic import は SSR 無効（{ ssr:false }）
+ * - ブラウザ専用の部品だけ SSR を無効にする（{ ssr:false }）
  */
 export const GUIDE_COMPONENTS = {
   GuideQuiz,
@@ -85,6 +89,10 @@ export const GUIDE_COMPONENTS = {
   AnswerWorksheetGuide,
   AnswerFrameGuide,
   ProblemMatrix,
+  ControlChartLearningDemo,
+  LearningQuestion,
+  LearningFigure,
+  LearningExample,
   LearningArticleHeader,
   ArticleContents,
   LearningChapter,

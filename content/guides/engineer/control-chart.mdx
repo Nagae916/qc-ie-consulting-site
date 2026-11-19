@@ -1,73 +1,111 @@
 ---
 title: "管理図｜技術士 経営工学キーワード"
-description: "管理図を、工程安定性、異常検知、ばらつき管理、品質改善の観点から整理します。"
+description: "個別値管理図の図と小さな仮想例から、工程の安定性、管理限界の見方、規格限界との違いを理解します。"
 tags: ["技術士", "経営工学", "管理図", "品質管理", "統計"]
 exam: engineer
 slug: control-chart
 status: published
+contentType: learning
+difficulty: introductory
 knowledgeId: "knowledge.control-chart"
 primaryArea: "quality"
 subtopics: ["工程品質", "データの収集・品質"]
 relatedKeywords: ["管理限界", "偶然原因", "異常原因", "工程能力"]
 relatedQualifications: ["技術士〈経営工学〉", "QC検定", "統計検定"]
+learningOutcomes: ["個別値管理図で見る線と点を説明できる", "管理限界を超えた点を原因調査のシグナルとして読める", "管理限界と規格限界を区別できる"]
+reviewedAt: "2026-11-17"
 knowledgeRelations:
-  - { relation: "prerequisite", href: "/guides/stat/descriptive-statistics", title: "記述統計" }
-  - { relation: "together", href: "/guides/engineer/process-capability", title: "工程能力" }
-  - { relation: "application", href: "/guides/qc/how-to-set-quality-standards", title: "品質規格の決め方" }
+  - { relation: "prerequisite", href: "/guides/stat/descriptive-statistics", title: "記述統計", reason: "平均とばらつきが管理図の線へどうつながるかを理解するため。" }
+  - { relation: "together", href: "/guides/engineer/process-capability", title: "工程能力", reason: "管理図で安定していても、なぜ規格外が出るのかを理解するため。" }
+  - { relation: "application", href: "/guides/qc/how-to-set-quality-standards", title: "品質規格の決め方", reason: "管理限界と規格限界の役割を混同せず、判断基準を設計するため。" }
 sources:
-  - { title: "NIST/SEMATECH e-Handbook - What are Control Charts?", url: "https://www.itl.nist.gov/div898/handbook/pmc/section3/pmc31.htm", checkedAt: "2026-11-17" }
+  - { title: "NIST/SEMATECH e-Handbook - Individuals Control Charts", url: "https://www.itl.nist.gov/div898/handbook/pmc/section3/pmc322.htm", checkedAt: "2026-11-17" }
+  - { title: "NIST/SEMATECH e-Handbook - What are Variables Control Charts?", url: "https://www.itl.nist.gov/div898/handbook/pmc/section3/pmc32.htm", checkedAt: "2026-11-17" }
 ---
 
-# 管理図
+<LearningQuestion
+  question="管理図は、何を見て工程の変化に気づく図なのか？"
+  answer="安定していた工程から求めた中心線と管理限界を基準に、時間順のデータが通常の変動から外れた兆候を示していないかを見ます。限界超過は原因調査を始めるシグナルであり、原因や不良そのものを確定する判定ではありません。"
+/>
 
-## 1. このキーワードの位置付け
+## 図で見る：個別値管理図
 
-管理図は、工程データの時間的変化を監視し、偶然原因と異常原因を区別するための統計的品質管理手法です。工程安定性、異常検知、予防保全、QMS改善に使えます。
+ここでは、1回ごとに得られる測定値を並べる **個別値管理図（I管理図）** を使います。表示する12点は説明用の仮想データです。製品や実工程の実績ではありません。
 
-## 2. 定義・原理
+<LearningFigure
+  title="安定時の基準を固定して、状態の違いを比べる"
+  caption="青い丸は通常の測定点、赤いひし形と「信号」は管理限界外の点です。色だけに頼らず形と文字でも区別します。"
+>
+  <ControlChartLearningDemo />
+</LearningFigure>
 
-管理図は、中心線と管理限界を用いてデータの変動を判断します。点が管理限界を超える、連続した偏りがあるなどの兆候から、工程に異常原因があるかを確認します。
+<LearningExample title="小さな例で見るポイント">
 
-## 3. 特徴3つ
+「平均が移動」や「ばらつきが増大」へ切り替えても、管理限界は安定時のままです。変化後のデータに合わせて限界を計算し直すと、比較の基準まで動き、工程変化を見逃しやすくなります。
 
-1. 工程の安定性を時系列で監視できる
-2. 異常原因を早期に検出できる
-3. 工程能力評価やCAPAと接続できる
+</LearningExample>
 
-## 4. 技術士答案で使うときの論点
+## 管理限界はどう求めるか
 
-答案では、品質ばらつき、不良増加、工程異常の早期検知策として使えます。管理図で異常を検出し、原因分析、標準化、CAPAへつなげる流れを書くと実務性が高まります。
+安定した状態の12点から、中心線と移動範囲の平均を求めます。個別値管理図の管理限界は、NISTが示す次の関係で計算します。
 
-## 5. 実務上の問題点3つ
+$$
+UCL = \bar{x} + 3\frac{\overline{MR}}{1.128},\quad
+CL = \bar{x},\quad
+LCL = \bar{x} - 3\frac{\overline{MR}}{1.128}
+$$
 
-1. データ収集頻度や測定方法が不適切で判断できない
-2. 管理限界を規格限界と混同する
-3. 異常検出後の原因分析と対策が遅れる
+この例では、$CL=50.00$、$\overline{MR}=0.20$、$UCL=50.53$、$LCL=49.47$です。
 
-## 6. 対策・改善策
+## 管理図で何を判断するか
 
-- 測定方法、サンプリング頻度、管理項目を標準化する
-- 管理限界と規格限界の違いを教育する
-- 異常時のエスカレーションとCAPAを決める
-- MESやIoTでリアルタイム監視する
+管理図は、工程データを時間順に並べ、工程がこれまでの安定した状態を保っているかを監視する手法です。
 
-## 7. 応用例・企業事例
+1. **中心線**：工程の基準となる水準を示す
+2. **上下管理限界**：安定時のばらつきから統計的に求める
+3. **測定点**：実際の変化を時間順に確認する
+4. **信号**：管理限界外など、原因を調べる必要がある兆候を示す
 
-加工寸法のばらつきを管理図で監視し、連続的な上昇傾向を検出した場合、工具摩耗や設備条件の変化を確認し、交換基準や保全計画を見直します。
+この見本では管理限界外だけを信号とし、連や偏りの追加判定は実装していません。実務で追加ルールを使う場合は、採用する規格や社内基準、誤警報とのバランスを明示します。
 
-## 8. 今後の展望
+## 管理限界と規格限界は別のもの
 
-IoTやMESにより、管理図はリアルタイム監視や予知保全と結びつきます。今後は、品質データを現場改善だけでなく、QMSと経営KPIへ接続することが重要です。
+| 比較 | 管理限界 | 規格限界 |
+| --- | --- | --- |
+| 何から決まるか | 安定時の工程データ | 顧客要求、設計要求、法令など |
+| 何を見るか | 工程の状態が変わった兆候 | 製品・サービスが要求を満たすか |
+| 超えたとき | 原因調査のシグナル | 不適合または要求未達の判断につながる |
 
-## 9. 600字答案例
+管理図で安定していても規格を満たすとは限りません。反対に、一時点が規格内でも、工程の平均やばらつきが変化している可能性があります。工程の安定性を管理図で確認したうえで、工程能力によって規格に対する余裕を評価します。
+
+## 実務で使う前に決めること
+
+- 品質特性と測定単位を明確にする
+- データの時間順を保持し、測定方法と頻度を標準化する
+- データの性質と群の大きさに合う管理図を選ぶ
+- 管理限界を設定する安定期間と、見直し条件を決める
+- 信号が出たときの確認、記録、エスカレーションを決める
+
+このページの個別値管理図は、1回に1つの測定値が得られる場合の小さな例です。群ごとの平均を扱う$\bar{X}$管理図、不適合品率を扱う$p$管理図などでは、データと管理限界の計算方法が異なります。
+
+## 技術士答案で使うとき
+
+品質ばらつきや工程異常の早期検知策として管理図を挙げる場合は、単に「管理図を導入する」と書かず、次までつなげます。
+
+1. 重要品質特性とデータ収集方法を決める
+2. 安定時の基準で工程を監視する
+3. 信号が出たら、設備、材料、方法、測定などの変化を調べる
+4. 原因への対策後に効果を確認し、標準や管理計画を更新する
+
+### 答案記述例（約280字）
 
 品質ばらつきを低減するには、工程が安定しているかを継続的に監視する必要がある。課題は、データ収集方法が標準化されていないこと、管理限界と規格限界を混同すること、異常検出後の原因分析が遅れることである。解決策として、管理図を用いて重要品質特性を時系列で監視し、管理限界を超えた場合や偏りが見られた場合に異常原因を調査する。さらに、測定方法、サンプリング頻度、エスカレーション基準を標準化し、CAPAと工程能力評価に接続する。導入時には現場負荷や誤判定のリスクがあるため、教育と自動データ収集を行う。技術者は統計的管理により、品質安定と顧客信頼を確保する必要がある。
 
-## 10. 関連キーワード
+## 出典と確認範囲
 
-- [QC七つ道具](/guides/engineer/qc-seven-tools)
-- [工程能力](/guides/engineer/process-capability)
-- [CAPA](/guides/engineer/capa)
-- [MES](/guides/engineer/mes)
-- [品質KPI](/guides/engineer/quality-kpi)
-- [技術士 経営工学 最重要キーワード100](/guides/engineer/keyword-priority-100)
+- [NIST/SEMATECH e-Handbook：Individuals Control Charts](https://www.itl.nist.gov/div898/handbook/pmc/section3/pmc322.htm)
+- [NIST/SEMATECH e-Handbook：What are Variables Control Charts?](https://www.itl.nist.gov/div898/handbook/pmc/section3/pmc32.htm)
+
+内容確認日：2026-11-17。計算式、管理限界と規格限界の区別、基準を頻繁に変更しない考え方を確認しました。
+
+補助キーワード：QC七つ道具、CAPA、MES、品質KPI。これらは本文理解に必須ではないため、重複するリンク一覧にはしていません。

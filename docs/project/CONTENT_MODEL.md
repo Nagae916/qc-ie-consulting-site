@@ -55,6 +55,7 @@
 - `version`: コンテンツ版。
 - `status`: `published` または `draft` 等の公開状態。
 - `updatedAt` / `date` / `publishedAt`: 更新・公開日の情報。
+- `reviewedAt`: 本文の根拠と内容を確認した日。ビルド日時では代用しない。任意。
 - `themes`: 4テーマとの関連。任意。
 - `contentType`: 主なコンテンツ形式。任意。
 - `difficulty`: 必要な前提知識と判断の複雑さ。任意。
@@ -66,11 +67,12 @@
 - `relatedKeywords`: 検索・関連付けに使う正規化済みキーワード。任意。
 - `relatedQualifications`: 関連する資格学習入口。任意。
 - `knowledgeRelations`: 関連先と関係種別（`prerequisite`、`together`、`application`）。任意。
+- `learningOutcomes`: 読了後に説明・判断できること。任意。
 - `sources`: 出典名、URL、確認日。任意。
 
 追加フィールドはすべて任意とし、既存frontmatterに値がなくても表示とビルドが壊れないようにする。一括書換えは行わず、更新する記事から段階的に付与する。
 
-`knowledgeRelations` は読者向けに「先に理解する」「併せて理解する」「判断・適用に使う」と表示する。実在する公開URLだけを最大3件表示し、未設定や不正な参照はリンクへ変換しない。
+`knowledgeRelations` は読者向けに「先に理解する」「併せて理解する」「判断・適用に使う」と表示する。各関係には必要に応じて `reason` を付け、何を理解するために読むかを示す。実在する公開URLだけを最大3件表示し、未設定や不正な参照はリンクへ変換しない。
 
 ## 6. ケースメタデータ
 

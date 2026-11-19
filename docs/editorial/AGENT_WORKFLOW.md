@@ -8,6 +8,8 @@ Codexの役割を分け、探索や編集の途中経過が、公開判断やPro
 
 Knowledge整備で使う「分類・重複確認」「関連づけ」「内容点検」の実行指示と受け渡し形式は、[Knowledge Agent Handoffs](KNOWLEDGE_AGENT_HANDOFFS.md) を参照する。
 
+図と小さな例を含む学習ページの「調査・分類」「制作」「関連づけ」「検証」は、[Learning Content Agent Handoffs](LEARNING_CONTENT_AGENT_HANDOFFS.md) と [Learning Page Template](LEARNING_PAGE_TEMPLATE.md) を参照する。初回の実行記録は `docs/editorial/jobs/` に置き、文書作成と実運用を区別する。
+
 ## 2. Editor
 
 Rawな思考、会話、メモ、Content Seedを、noteで読める記事案へ編集する。
