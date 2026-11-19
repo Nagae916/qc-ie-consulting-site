@@ -16,7 +16,7 @@ learningOutcomes: ["個別値管理図で見る線と点を説明できる", "�
 reviewedAt: "2026-11-17"
 knowledgeRelations:
   - { relation: "prerequisite", href: "/guides/stat/descriptive-statistics", title: "記述統計", reason: "平均とばらつきが管理図の線へどうつながるかを理解するため。" }
-  - { relation: "together", href: "/guides/engineer/process-capability", title: "工程能力", reason: "工程の安定を確認した後に、規格を満たす力を評価するため。" }
+  - { relation: "together", href: "/guides/engineer/process-capability", title: "工程能力", reason: "管理図で安定していても、なぜ規格外が出るのかを理解するため。" }
   - { relation: "application", href: "/guides/qc/how-to-set-quality-standards", title: "品質規格の決め方", reason: "管理限界と規格限界の役割を混同せず、判断基準を設計するため。" }
 sources:
   - { title: "NIST/SEMATECH e-Handbook - Individuals Control Charts", url: "https://www.itl.nist.gov/div898/handbook/pmc/section3/pmc322.htm", checkedAt: "2026-11-17" }
@@ -32,16 +32,6 @@ sources:
 
 ここでは、1回ごとに得られる測定値を並べる **個別値管理図（I管理図）** を使います。表示する12点は説明用の仮想データです。製品や実工程の実績ではありません。
 
-安定した状態の12点から、中心線と移動範囲の平均を求めます。個別値管理図の管理限界は、NISTが示す次の関係で計算します。
-
-$$
-UCL = \bar{x} + 3\frac{\overline{MR}}{1.128},\quad
-CL = \bar{x},\quad
-LCL = \bar{x} - 3\frac{\overline{MR}}{1.128}
-$$
-
-この例では、$CL=50.00$、$\overline{MR}=0.20$、$UCL=50.53$、$LCL=49.47$です。
-
 <LearningFigure
   title="安定時の基準を固定して、状態の違いを比べる"
   caption="青い丸は通常の測定点、赤いひし形と「信号」は管理限界外の点です。色だけに頼らず形と文字でも区別します。"
@@ -54,6 +44,18 @@ $$
 「平均が移動」や「ばらつきが増大」へ切り替えても、管理限界は安定時のままです。変化後のデータに合わせて限界を計算し直すと、比較の基準まで動き、工程変化を見逃しやすくなります。
 
 </LearningExample>
+
+## 管理限界はどう求めるか
+
+安定した状態の12点から、中心線と移動範囲の平均を求めます。個別値管理図の管理限界は、NISTが示す次の関係で計算します。
+
+$$
+UCL = \bar{x} + 3\frac{\overline{MR}}{1.128},\quad
+CL = \bar{x},\quad
+LCL = \bar{x} - 3\frac{\overline{MR}}{1.128}
+$$
+
+この例では、$CL=50.00$、$\overline{MR}=0.20$、$UCL=50.53$、$LCL=49.47$です。
 
 ## 管理図で何を判断するか
 
@@ -74,7 +76,7 @@ $$
 | 何を見るか | 工程の状態が変わった兆候 | 製品・サービスが要求を満たすか |
 | 超えたとき | 原因調査のシグナル | 不適合または要求未達の判断につながる |
 
-管理図で安定していても規格を満たすとは限りません。反対に、一時点が規格内でも、工程の平均やばらつきが変化している可能性があります。工程の安定性を管理図で確認したうえで、[工程能力](/guides/engineer/process-capability)によって規格に対する余裕を評価します。
+管理図で安定していても規格を満たすとは限りません。反対に、一時点が規格内でも、工程の平均やばらつきが変化している可能性があります。工程の安定性を管理図で確認したうえで、工程能力によって規格に対する余裕を評価します。
 
 ## 実務で使う前に決めること
 
