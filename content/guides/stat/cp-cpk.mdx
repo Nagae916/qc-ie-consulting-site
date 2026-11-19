@@ -3,56 +3,77 @@ title: "Cp・Cpkスタディガイド"
 exam: "stat"
 slug: "cp-cpk"
 section: "統計"
-description: "工程能力指数を使って工程の余裕を評価する"
+description: "ばらつきが同じで工程平均がずれると、なぜCpは変わらずCpkが下がるのかを、直径の図と計算で確かめます。"
 tags: ["統計", "Cp・Cpk", "キーワード"]
 status: "published"
 date: "2026-05-01"
-updatedAt: "2026-05-01"
+updatedAt: "2026-11-19"
+reviewedAt: "2026-11-19"
+learningOutcomes: ["同じ規格とばらつきなら、平均がずれてもCpが変わらない理由を説明できる", "平均から近い側の規格限界までの距離を使ってCpkを求められる"]
 knowledgeId: "knowledge.cp-cpk"
 primaryArea: "quality"
 subtopics: ["工程品質", "推定・検定"]
 relatedKeywords: ["工程能力", "規格限界", "工程平均", "工程ばらつき"]
 relatedQualifications: ["QC検定", "統計検定", "技術士〈経営工学〉"]
 knowledgeRelations:
-  - { relation: "prerequisite", href: "/guides/engineer/control-chart", title: "管理図" }
-  - { relation: "together", href: "/guides/engineer/process-capability", title: "工程能力" }
-  - { relation: "application", href: "/guides/stat/normal-distribution", title: "正規分布" }
+  - { relation: "prerequisite", href: "/guides/engineer/process-capability", title: "工程能力", reason: "工程が安定していても規格外が出る理由を、分布の裾から確認するため。" }
+  - { relation: "together", href: "/guides/engineer/control-chart", title: "管理図", reason: "指数を計算する前に、平均やばらつきに時間的な変化がないかを調べるため。" }
+  - { relation: "application", href: "/guides/qc/how-to-set-quality-standards", title: "品質規格の決め方", reason: "指数の計算で用いる規格限界が、顧客・法令・用途のどの要求から来るのかを知るため。" }
 sources:
-  - { title: "NIST/SEMATECH e-Handbook - What is Process Capability?", url: "https://www.itl.nist.gov/div898/handbook/pmc/section1/pmc16.htm", checkedAt: "2026-11-17" }
+  - { title: "NIST/SEMATECH e-Handbook - What is Process Capability?", url: "https://www.itl.nist.gov/div898/handbook/pmc/section1/pmc16.htm", checkedAt: "2026-11-19" }
+  - { title: "NIST/SEMATECH e-Handbook - Individuals Control Charts", url: "https://www.itl.nist.gov/div898/handbook/pmc/section3/pmc322.htm", checkedAt: "2026-11-19" }
 ---
 
-# Cp・Cpkスタディガイド
+<LearningQuestion
+  question="ばらつきが同じで平均がずれると、CpとCpkはどう変わるか？"
+  answer="規格とばらつきが同じならCpは変わりません。平均が規格中心から離れると、近い側の規格までの余裕が小さくなるため、Cpkは下がります。"
+/>
 
-<div className="guide-hero">
-  <p className="guide-kicker">ここだけは押さえよう</p>
-  <h2>Cp・Cpkは、工程能力指数を使って工程の余裕を評価するためのキーワードです。</h2>
-  <p>試験では、定義だけでなく「どの場面で使うか」「何と区別するか」「どのような判断につながるか」まで説明できることが重要です。</p>
-</div>
+## 同じ幅の山を右に移す
 
-## 何を理解するキーワードか
+<LearningFigure
+  title="規格幅は同じでも、上限までの余裕は違う"
+  caption="直径の仮想例。破線は平均が規格中心にある状態（10.00 mm）、実線は平均が上限に寄った状態（10.30 mm）です。同じ形の二つの曲線を重ねた正規分布の模式図で、時間変化の記録ではありません。"
+>
+  <img src="/images/learning/cp-cpk-center-shift.svg" alt="規格9.40〜10.60 mm。平均10.00 mmの破線と、右にずれた平均10.30 mmの実線は同じ幅。実線の平均は規格上限に近い。" width={360} height={178} className="mx-auto block h-auto w-full max-w-[560px]" />
+</LearningFigure>
 
-Cp・Cpkは、工程能力指数を使って工程の余裕を評価するために使います。
-まずは用語の定義を押さえたうえで、入力となる情報、判断したい問い、得られる結果をセットで整理します。
+<LearningExample title="平均だけを0.30 mm動かす">
 
-## 学習の観点
+平均が10.00 mmなら、上下の規格限界まで各0.60 mmです。平均が10.30 mmなら、下限まで0.90 mm、上限まで0.30 mm。規格幅と工程のばらつきは同じなので、Cpはどちらも1.33。近い側の余裕を使うCpkは1.33から0.67に下がります。
 
-<div className="guide-steps">
-  <div><span>1</span><p>定義を一文で説明できるようにする。</p></div>
-  <div><span>2</span><p>使う場面と、使わない場面を分ける。</p></div>
-  <div><span>3</span><p>関連するキーワードとの違いを押さえる。</p></div>
-  <div><span>4</span><p>試験では、課題・原因・対策・効果の流れで説明する。</p></div>
-</div>
+</LearningExample>
 
-## 実務・試験での使い方
+## Cpは幅の比、Cpkは近い側の余裕
 
-<div className="guide-card">
-  <h3>答案や説明に入れる観点</h3>
-  <p>背景、目的、適用条件、留意点、期待効果の順に整理すると、単なる用語説明で終わらず、実務に接続した説明になります。</p>
-</div>
+規格上限を $USL$、下限を $LSL$、工程平均の推定値を $\bar{x}$、工程内の標準偏差の推定値を $\hat{\sigma}$ とします。両側規格のとき、CpとCpkの推定値を次のように求めます。いずれも同じ単位どうしを割るため、指数に単位はありません。
 
-## 関連づけて覚える
+$$
+\hat{C}_p=\frac{USL-LSL}{6\hat{\sigma}}
+$$
 
-統計・データサイエンスのキーワードは単独で覚えるより、品質・コスト・納期・リスク・データ活用のどれに効くかを整理すると定着しやすくなります。
+$$
+\hat{C}_{pu}=\frac{USL-\bar{x}}{3\hat{\sigma}}
+$$
+
+$$
+\hat{C}_{pl}=\frac{\bar{x}-LSL}{3\hat{\sigma}}
+$$
+
+上の二つが、それぞれ上限側と下限側の余裕です。推定値 $\hat{C}_{pk}$ は、この二つの小さい方です。
+
+この例の規格幅は1.20 mm、標準偏差6個分は0.90 mmなので、Cpは $1.20/0.90\approx1.33$ です。平均が10.30 mmのときは上限側が近いので、Cpkは $0.30/0.45\approx0.67$ です。平均が規格中心にあれば、両側の余裕が等しく、CpkはCpと一致します。
+
+### この例の標準偏差はどう置いたか
+
+時間順の個別値を想定し、安定期の隣り合う2点の差の絶対値（移動範囲）の平均を0.1692 mmと仮定します。移動範囲平均を1.128で割り、工程内の標準偏差の推定値を0.15 mmとします。両ケースで同じ値です。実測値を集計した結果ではなく、群を作って測定する場合もこの方法をそのまま使うわけではありません。
+
+## 実務・試験で使う前に
+
+- 工程の安定性、測定方法と十分な観測数を先に確認します。推定方法や集計期間の異なる指数をそのまま比べません。
+- 両側規格の例です。片側にしか規格がない場合は対応する片側の指数を用い、存在しない限界を補ってCpを計算しません。
+- 曲線は正規分布を仮定しています。指数は実測の不適合率そのものではなく、非正規や不安定な工程で正規分布上の不適合率に換算しません。
+- Cpは高くCpkが低いなら、まず平均のずれを調べます。幅も大きければ、中心合わせだけでなく変動要因を抑えます。
 
 <GuideQuiz
   questions={[
@@ -72,3 +93,8 @@ Cp・Cpkは、工程能力指数を使って工程の余裕を評価するため
     },
   ]}
 />
+
+## 出典
+
+- [NIST/SEMATECH e-Handbook: 能力指数の定義と片側規格](https://www.itl.nist.gov/div898/handbook/pmc/section1/pmc16.htm)
+- [NIST/SEMATECH e-Handbook: 個別値のばらつきと移動範囲](https://www.itl.nist.gov/div898/handbook/pmc/section3/pmc322.htm)
